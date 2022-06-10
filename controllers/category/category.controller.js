@@ -1,0 +1,488 @@
+import ApiResponse from "../../helpers/ApiResponse";
+import { checkExist, checkExistThenGet, isImgUrl,isInArray } from "../../helpers/CheckMethods";
+import { handleImg, checkValidations ,convertLang} from "../shared/shared.controller";
+import { body } from "express-validator/check";
+import Category from "../../models/category/category.model";
+import SubCategory from "../../models/category/sub-category.model";
+import User from "../../models/user/user.model";
+import Offer from "../../models/offer/offer.model";
+import Report from "../../models/reports/report.model";
+import i18n from "i18n";
+
+const populateQuery = [ 
+    { path: 'child', model: 'category' },
+];
+
+export default {
+
+    //find main category pagenation
+    async findCategoryPagenation(req, res, next) {
+        try {
+            convertLang(req)
+             //get lang
+            let lang = i18n.getLocale(req)
+            let page = +req.query.page || 1, limit = +req.query.limit || 20,
+            { main,orderByPriority,} = req.query;
+            
+            let query = { deleted: false, parent: { $exists: false }};
+            if (main)
+                query.main = main;
+            let sortd = { createdAt: 1 }
+            if(orderByPriority){
+                sortd = { priority: 1 }
+            }
+           
+            await Category.find(query)
+                .populate(populateQuery)
+                .sort(sortd)
+                .limit(limit)
+                .skip((page - 1) * limit)
+                .then(async (data) => {
+                    var newdata = [];
+                    await Promise.all(data.map(async(e) =>{
+                        let childs = []
+                        await Promise.all(e.child.map((e)=>{
+                            childs.push({
+                                categoryName:lang=="ar"?e.categoryName_ar:e.categoryName_en,
+                                categoryName_en:e.categoryName_en,
+                                categoryName_ar:e.categoryName_ar,
+                                img:e.img,
+                                type:e.type,
+                                parent:e.parent,
+                                priority:e.priority,
+                                hasChild:e.hasChild,
+                                id: e._id,
+                                createdAt: e.createdAt,
+                            });
+                        }))
+                        newdata.push({
+                            categoryName:lang=="ar"?e.categoryName_ar:e.categoryName_en,
+                            categoryName_en:e.categoryName_en,
+                            categoryName_ar:e.categoryName_ar,
+                            img:e.img,
+                            type:e.type,
+                            priority:e.priority,
+                            hasChild:e.hasChild,
+                            child:childs,
+                            id: e._id,
+                            createdAt: e.createdAt,
+                        });
+                    }))
+                    const count = await Category.countDocuments(query);
+                    const pageCount = Math.ceil(count / limit);
+
+                    res.send(new ApiResponse(newdata, page, pageCount, limit, count, req));
+                })
+           
+        } catch (err) {
+            next(err);
+        }
+    },
+    //get subCategory under category with pagenation
+    async findSubCategoryPagenation(req, res, next) {
+        try {
+            convertLang(req)
+             //get lang
+            let lang = i18n.getLocale(req)
+            let { categoryId ,orderByPriority} = req.params,
+                page = +req.query.page || 1,
+                limit = +req.query.limit || 20;
+
+            await checkExist(categoryId, Category);
+
+            let query = { parent: categoryId, deleted: false };
+            let sortd = { createdAt: 1 }
+            if(orderByPriority){
+                sortd = { priority: 1 }
+            }
+            await SubCategory.find(query)
+                .sort(sortd)
+                .limit(limit)
+                .skip((page - 1) * limit)
+                .then(async (data) => {
+                    var newdata = [];
+                    await Promise.all(data.map(async(e) =>{
+                        newdata.push({
+                            categoryName:lang=="ar"?e.categoryName_ar:e.categoryName_en,
+                            categoryName_en:e.categoryName_en,
+                            categoryName_ar:e.categoryName_ar,
+                            img:e.img,
+                            type:e.type,
+                            priority:e.priority,
+                            hasChild:e.hasChild,
+                            parent:e.parent,
+                            id: e._id,
+                            createdAt: e.createdAt,
+                        });
+                    }))
+                    const count = await SubCategory.countDocuments(query);
+                    const pageCount = Math.ceil(count / limit);
+
+                    res.send(new ApiResponse(newdata, page, pageCount, limit, count, req));
+                })
+
+        } catch (error) {
+            next(error);
+        }
+    },
+    //get main categories without pagenation
+    async findCategory(req, res, next) {
+        try {         
+            convertLang(req)
+             //get lang
+            let lang = i18n.getLocale(req)   
+            let {orderByPriority,main} = req.query
+            let query = { deleted: false, parent: { $exists: false }};
+            let sortd = { createdAt: 1 }
+            if(orderByPriority){
+                sortd = { priority: 1 }
+            }
+            if (main)
+                query.main = main;
+            await Category.find(query)
+                .populate(populateQuery)
+                .sort(sortd)
+                .then(async (data) => {
+                    var newdata = [];
+                    await Promise.all(data.map(async(e) =>{
+                        let childs = []
+                        await Promise.all(e.child.map((e)=>{
+                            childs.push({
+                                categoryName:lang=="ar"?e.categoryName_ar:e.categoryName_en,
+                                categoryName_en:e.categoryName_en,
+                                categoryName_ar:e.categoryName_ar,
+                                img:e.img,
+                                type:e.type,
+                                parent:e.parent,
+                                priority:e.priority,
+                                hasChild:e.hasChild,
+                                id: e._id,
+                                createdAt: e.createdAt,
+                            });
+                        }))
+                        newdata.push({
+                            categoryName:lang=="ar"?e.categoryName_ar:e.categoryName_en,
+                            categoryName_en:e.categoryName_en,
+                            categoryName_ar:e.categoryName_ar,
+                            img:e.img,
+                            type:e.type,
+                            priority:e.priority,
+                            hasChild:e.hasChild,
+                            child:childs,
+                            id: e._id,
+                            createdAt: e.createdAt,
+                        });
+                    }))
+                    res.send({
+                        success:true,
+                        data:newdata
+                    });
+                })
+
+        } catch (err) {
+            next(err);
+        }
+    },
+    //get subCategories under category without pagenation
+    async findSubCategory(req, res, next) {
+        try {
+            convertLang(req)
+             //get lang
+            let lang = i18n.getLocale(req)
+            let {orderByPriority,ids} = req.query
+            let { categoryId } = req.params;
+            await checkExist(categoryId, Category);
+            let query = { parent: categoryId, deleted: false};
+            if(ids){
+                let values = ids.split(",");
+                console.log(values)
+                query.parent = {$in:values};
+            }
+            let sortd = { createdAt: 1 }
+            if(orderByPriority){
+                sortd = { priority: 1 }
+            }
+            await SubCategory.find(query)
+                .sort(sortd)
+                .then(async (data) => {
+                    var newdata = [];
+                    await Promise.all(data.map(async(e) =>{
+                        newdata.push({
+                            categoryName:lang=="ar"?e.categoryName_ar:e.categoryName_en,
+                            categoryName_en:e.categoryName_en,
+                            categoryName_ar:e.categoryName_ar,
+                            img:e.img,
+                            type:e.type,
+                            priority:e.priority,
+                            hasChild:e.hasChild,
+                            parent:e.parent,
+                            id: e._id,
+                            createdAt: e.createdAt,
+                        });
+                    }))
+                    res.send({
+                        success:true,
+                        data:newdata
+                    });
+                })
+
+        } catch (error) {
+            next(error);
+        }
+    },
+    validateBody(isUpdate = false) {
+        let validations = [
+            body('categoryName_en').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('categoryName_en.required', { value});
+            }).custom(async (val, { req }) => {
+                    let query = { categoryName_en: val, deleted: false };
+
+                    if (isUpdate)
+                        query._id = { $ne: req.params.categoryId };
+
+                    let category = await Category.findOne(query).lean();
+                    console.log(category)
+                    if (category)
+                        throw req.__('categoryName_en.duplicated')
+
+                    return true;
+                }),
+            body('categoryName_ar').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('categoryName_ar.required', { value});
+            }).custom(async (val, { req }) => {
+                    let query = { categoryName_en: val, deleted: false };
+
+                    if (isUpdate)
+                        query._id = { $ne: req.params.categoryId };
+
+                    let category = await Category.findOne(query).lean();
+                    if (category)
+                        throw req.__('categoryName_ar.duplicated')
+
+                    return true;
+                }),
+            body('parent').trim().escape().optional(),
+            body('details').trim().escape().optional(),
+            body('main').trim().escape().optional(),
+            body('priority').trim().escape().optional(),
+            body('type').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('type.required', { value});
+            }).isIn(['PLACES','EDUCATIONAL']).withMessage((value, { req}) => {
+                return req.__('type.invalid', { value});
+            }),
+            
+        ];
+        if (isUpdate)
+            validations.push([
+                body('img').optional().custom(val => isImgUrl(val)).withMessage((value, { req}) => {
+                    return req.__('img.syntax', { value});
+                })
+            ]);
+
+        return validations;
+    },
+    //create new record
+    async create(req, res, next) {
+        try {
+            convertLang(req)
+            const validatedBody = checkValidations(req);
+            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
+                return next(new ApiError(403, i18n.__('admin.auth')));
+            let model;
+            if(validatedBody.main){
+                validatedBody.main = true
+            }
+            //if parent exist use sub-category modal
+            if (validatedBody.parent) {
+                let parentCategory = await checkExistThenGet(validatedBody.parent, Category);
+                parentCategory.hasChild = true;
+                await parentCategory.save();
+                model = SubCategory;
+            }
+            else {
+                model = Category;
+            }
+            if (req.file) {
+                let image = await handleImg(req, { attributeName: 'img'});
+                validatedBody.img = image;
+            }
+           
+
+            let createdCategory = await model.create({ ...validatedBody});
+            if(model == SubCategory){
+                let parentCategory = await checkExistThenGet(validatedBody.parent, Category);
+                parentCategory.child.push(createdCategory._id);
+                await parentCategory.save();
+            }
+            let reports = {
+                "action":"Create New Category",
+                "type":"CATEGORIES",
+                "deepId":createdCategory.id,
+                "user": req.user._id
+            };
+            await Report.create({...reports });
+            res.status(201).send({
+                success:true,
+                data:createdCategory
+            });
+        } catch (err) {
+            next(err);
+        }
+    },
+
+    //find by id
+    async findById(req, res, next) {
+        try {
+            convertLang(req)
+            let lang = i18n.getLocale(req)
+            let { categoryId } = req.params;
+            await checkExist(categoryId, Category, { deleted: false });
+            await Category.findById(categoryId).populate(populateQuery)
+            .then( e => {
+                let category = {
+                    categoryName:lang=="ar"?e.categoryName_ar:e.categoryName_en,
+                    categoryName_en:e.categoryName_en,
+                    categoryName_ar:e.categoryName_ar,
+                    img:e.img,
+                    type:e.type,
+                    priority:e.priority,
+                    hasChild:e.hasChild,
+                    parent:e.parent,
+                    id: e._id,
+                    createdAt: e.createdAt,
+                }
+                return res.send({
+                    success:true,
+                    data:category,
+                });
+                
+            })
+        } catch (err) {
+            next(err);
+        }
+    },
+    //update category
+    async update(req, res, next) {
+
+        try {
+            convertLang(req)
+            let { categoryId } = req.params, model;
+            await checkExist(categoryId, Category, { deleted: false });
+
+            const validatedBody = checkValidations(req);
+            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
+            return next(new ApiError(403, i18n.__('admin.auth')));
+
+            if (validatedBody.parent) {
+                let parentCategory = await checkExistThenGet(validatedBody.parent, Category);
+                parentCategory.hasChild = true;
+                await parentCategory.save();
+                model = SubCategory;
+            }
+            else {
+                model = Category;
+            }
+
+            if (req.file) {
+                let image = await handleImg(req, { attributeName: 'img', isUpdate: true });
+                validatedBody.img = image;
+            }
+
+            let updatedCategory = await model.findByIdAndUpdate(categoryId, {
+                ...validatedBody,
+            }, { new: true });
+            if(model == SubCategory){
+                let parentCategory = await checkExistThenGet(validatedBody.parent, Category);
+                parentCategory.child.push(updatedCategory._id);
+                await parentCategory.save();
+            }
+            let reports = {
+                "action":"Update  Category",
+                "type":"CATEGORIES",
+                "deepId":updatedCategory.id,
+                "user": req.user._id
+            };
+            await Report.create({...reports });
+            res.send({
+                success:true,
+                data:updatedCategory
+            });
+        }
+        catch (err) {
+            next(err);
+        }
+    },
+    //delete category
+    async delete(req, res, next) {
+        try {
+            convertLang(req)
+            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
+                return next(new ApiError(403, i18n.__('admin.auth')));
+            let { categoryId } = req.params;
+
+            let category = await checkExistThenGet(categoryId, Category, { deleted: false });
+             /* delete category from her parent child array */
+            if(typeof category.parent == 'number'){
+                let parentCategory = await checkExistThenGet(category.parent, Category, { deleted: false });
+                let arr = parentCategory.child;
+                console.log(arr);
+                for(let i = 0;i<= arr.length;i=i+1){
+                    console.log(category.id);
+                    if(arr[i] == category.id){
+                        arr.splice(i, 1);
+                    }
+                }
+                parentCategory.child = arr;
+                await parentCategory.save();
+            }
+            /* delete all category children */
+            if(category.hasChild == true){
+                let childs = await SubCategory.find({parent : categoryId });
+                for (let child of childs ) {
+                    console.log(child)
+                    child.deleted = true;
+                    await child.save();
+                }
+            }
+            /* delete users under category */
+            let users = await User.find({
+                $or: [
+                    {category : categoryId},
+                    {subCategory : categoryId}, 
+                ]  
+            });
+            for (let user of users ) {
+                user.active = false;
+                user.deleted = true;
+                await user.save();
+            }
+             /* delete Offers under category */
+             let offers = await Offer.find({
+                $or: [
+                    {category : categoryId},
+                    {subCategory : categoryId}, 
+                ]  
+            });
+            for (let offerId of offers ) {
+                offerId.deleted = true;
+                await offerId.save();
+            }
+            category.deleted = true;
+
+            await category.save();
+            let reports = {
+                "action":"Delete  Category",
+                "type":"CATEGORIES",
+                "deepId":categoryId,
+                "user": req.user._id
+            };
+            await Report.create({...reports });
+            res.send({success:true});
+
+        }
+        catch (err) {
+            next(err);
+        }
+    },
+
+};
