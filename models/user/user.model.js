@@ -31,16 +31,22 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
+    salesmanCode: {//for salesman
+        type: String,
+    },
+    salesman: {// if user is sign up with salesman code
+        type: String,
+        ref:'user',
+    },
     type: {
         type: String,
-        enum: ['PLACE','SUBERVISOR','ADMIN','USER'],
+        enum: ['PLACE','SUBERVISOR','ADMIN','USER','AGENCY','SALESMAN'],
         required:true
     },
     gender: {
         type: String,
         enum: ['MALE','FEMALE','OTHER'],
         default: 'MALE'
-
     },
     accountType:{
         type: String,
@@ -85,6 +91,10 @@ const userSchema = new Schema({
         type:[Number],
         ref:'offer'
     },
+    balance: {
+        type: Number,
+        default: 0
+    },
     deleted: {
         type: Boolean,
         default: false
@@ -121,6 +131,9 @@ userSchema.set('toJSON', {
         delete ret.verifycode;
         if(ret.type =="USER" || ret.type == "ADMIN"){
             delete ret.place;
+        }
+        if(ret.type !="SALESMAN"){
+            delete ret.salesmanCode;
         }
     }
 });

@@ -13,6 +13,7 @@ export async function transformUser(e,lang,myUser,userId) {
         gender:e.gender,
         img:e.img,
         block:e.block,
+        salesmanCode:e.salesmanCode,
         createdAt: e.createdAt,
         updatedAt: e.updatedAt,
     }
@@ -24,6 +25,7 @@ export async function transformUserById(e,lang,myUser,userId) {
         fullname:e.fullname,
         email:e.email,
         phone:e.phone,
+        salesman:e.salesman,
         id:e._id,
         type:e.type,
         accountType:e.accountType,
@@ -31,9 +33,13 @@ export async function transformUserById(e,lang,myUser,userId) {
         gender:e.gender,
         img:e.img,
         block:e.block,
+        balance:e.balance,
         createdAt: e.createdAt,
         updatedAt: e.updatedAt,
         
+    }
+    if(e.type =="SALESMAN"){
+        index.salesmanCode = e.salesmanCode
     }
     if(e.place){
         index.place = {

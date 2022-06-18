@@ -16,11 +16,21 @@ import educationSystemRoute  from './education system/education system.route';
 import placeRoute  from './place/place.route';
 import educationPhasesRoute  from './education phase/education phase.route';
 import packagesRoute from './package/package.route';
+import fundsRoute from './fund/fund.route';
+import premiumsRoute from './premium/premium.route';
+import feesRoute from './fees/fees.route';
+import studentRoute from './student/student.route';
+
 import { requireAuth } from '../services/passport';
 
 const router = express.Router();
 
 router.use('/', userRoute);
+router.use('/funds',fundsRoute);
+router.use('/fees',feesRoute);
+router.use('/students',studentRoute);
+
+router.use('/premiums',premiumsRoute);
 router.use('/educationPhases',educationPhasesRoute);
 router.use('/educationInstitutions',educationInstitutionRoute);
 router.use('/contact-us',contactRoute);

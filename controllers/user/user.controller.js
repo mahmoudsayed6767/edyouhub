@@ -7,7 +7,7 @@ import User from "../../models/user/user.model";
 import Report from "../../models/reports/report.model";
 import ApiError from '../../helpers/ApiError';
 import bcrypt from 'bcryptjs';
-import { generateVerifyCode } from '../../services/generator-code-service';
+import { generateVerifyCode,generateCode } from '../../services/generator-code-service';
 import DeviceDetector from "device-detector-js";
 import { sendEmail } from "../../services/sendGrid";
 import { sendNotifiAndPushNotifi } from "../../services/notification-service";
@@ -129,6 +129,7 @@ export default {
             body('token').optional(),
             body('fullname').optional(),
             body('place').optional(),
+            body('salesmanCode').optional(),
             body('password').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('password.required', { value});
             }).isLength({ min: 8 }).withMessage((value, { req}) => {
@@ -175,7 +176,7 @@ export default {
             }),
             body('type').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('type.required', { value});
-            }).isIn(['PLACE','SUBERVISOR','ADMIN','USER']).withMessage((value, { req}) => {
+            }).isIn(['PLACE','SUBERVISOR','ADMIN','USER','AGENCY','SALESMAN']).withMessage((value, { req}) => {
                     return req.__('type.invalid', { value});
                 }),
             body('gender').optional().isIn(['MALE','FEMALE','OTHER']).withMessage((value, { req}) => {
@@ -197,6 +198,11 @@ export default {
             if (req.file) {
                 let image = await handleImg(req, { attributeName: 'img', isUpdate: true });
                 validatedBody.img = image;
+            }
+            if(validatedBody.salesmanCode){
+                let salesman = await User.findOne({deleted: false,salesmanCode:validatedBody.salesmanCode})
+                if(salesman)
+                    validatedBody.salesman = salesman
             }
             let createdUser = await User.create({
                 ...validatedBody
@@ -336,6 +342,9 @@ export default {
             }
             if(validatedBody.type !="SUBERVISOR" && !validatedBody.place){
                 return next(new ApiError(422,  i18n.__('place.required')));
+            }
+            if(validatedBody.type =="SALESMAN"){
+                validatedBody.salesmanCode = generateCode(6)
             }
             
             
@@ -948,7 +957,7 @@ export default {
                     else
                         return true;
             }),
-            body('type').optional().isIn(['PLACE','SUBERVISOR','ADMIN','USER']).withMessage((value, { req}) => {
+            body('type').optional().isIn(['PLACE','SUBERVISOR','ADMIN','USER','AGENCY','SALESMAN']).withMessage((value, { req}) => {
                 return req.__('wrong.type', { value});
             }),
         ];

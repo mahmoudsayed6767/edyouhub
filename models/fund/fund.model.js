@@ -5,7 +5,12 @@ const fundSchema = new Schema({
         type: Number,
         required: true
     },
-    user: {
+    status:{
+        type: String,
+        enum:['PENDING','ACCEPTED','REJECTED','STARTED','ENDED'],
+        default:'PENDING'
+    },
+    owner: {
         type: Number,
         ref: 'user',
         required: true
@@ -28,11 +33,12 @@ const fundSchema = new Schema({
     },
     workPosition: {
         type: String,
+        enum:['EMPLOYEE','BUSINESS-OWNER'],
         required: true
     },
     personalId:{
         type: String,
-        enum:['NATIONAL-ID','PASSPORT'],
+        enum:['NATIONAL-ID','PASSPORT','RESIDENCE'],//بطاقه قوميه- باسبور- اقامه
         default: 'NATIONAL-ID'
     },
     personalIdImgs: {
@@ -43,6 +49,9 @@ const fundSchema = new Schema({
         type: String,
         enum:['OWNER','RENTER'],
         default: 'RENTER'
+    },
+    billType:{
+        type: String,
     },
     utilityBillsImgs: {
         type: [String],
@@ -62,9 +71,22 @@ const fundSchema = new Schema({
         ref: 'student',
         required: true
     },
+    educationInstitutions:{
+        type: [Number],
+        ref: 'educationInstitution',
+    },
     totalFees:{
         type: Number,
         required: true
+    },
+    firstPaid:{
+        type: Number,
+    },
+    startDate:{
+        type: Date,
+    },
+    endDate:{
+        type: Date,
     },
     deleted: {
         type: Boolean,

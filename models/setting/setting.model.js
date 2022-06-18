@@ -5,6 +5,26 @@ const SettingSchema = new Schema({
         type: Number,
         required: true
     },
+    monthCount: {
+        type: Number,
+        default:12,
+        required: true
+    },
+    cashBackRatio: {
+        type: Number,
+        default:15,
+        required: true
+    },
+    feesCashBackRatio:{
+        type: Number,
+        default:5,
+        required: true
+    },
+    expensesRatio: {
+        type: Number,
+        default:10,
+        required: true
+    },
     iosAppVersion:{
         type: String,
         required: true,

@@ -21,7 +21,7 @@ const NotifSchema = new Schema({
     },
     type:{
         type:String,
-        enum: ['OFFER','USER','APP','BILL','FAVOURITE','RATE']
+        enum: ['OFFER','USER','APP','BILL','FAVOURITE','RATE','FUND','PREMIUM','FEES']
     },
    
     title_en:{

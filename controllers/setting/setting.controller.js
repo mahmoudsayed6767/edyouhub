@@ -30,6 +30,27 @@ export default {
             body('iosAppVersion').trim().escape().not().isEmpty().withMessage((value, { req}) => {
                 return req.__('iosAppVersion.required', { value});
             }),
+            
+            body('feesCashBackRatio').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('feesCashBackRatio.required', { value});
+            }).isNumeric().withMessage((value, { req}) => {
+                return req.__('feesCashBackRatio.numeric', { value});
+            }),
+            body('monthCount').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('monthCount.required', { value});
+            }).isNumeric().withMessage((value, { req}) => {
+                return req.__('monthCount.numeric', { value});
+            }),
+            body('cashBackRatio').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('cashBackRatio.required', { value});
+            }).isNumeric().withMessage((value, { req}) => {
+                return req.__('cashBackRatio.numeric', { value});
+            }),
+            body('expensesRatio').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('expensesRatio.required', { value});
+            }).isNumeric().withMessage((value, { req}) => {
+                return req.__('expensesRatio.numeric', { value});
+            }),
            
         ];
         return validations;

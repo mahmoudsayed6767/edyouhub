@@ -10,7 +10,7 @@ const studentSchema = new Schema({
         required: true
     },
     type:{
-        type: String,
+        type: String,//مؤسسه دراسيه مسجله- مؤسسه خارجيه غير مسجله
         enum:['INSIDE-INSTITUTION','OUTSIDE-INSTITUTION'],
         default: 'INSIDE-INSTITUTION'
     },
@@ -27,6 +27,9 @@ const studentSchema = new Schema({
     educationInstitution: {
         type: Number,
         ref: 'educationInstitution',
+    },
+    educationInstitutionName:{
+        type: String,
     },
     year: {
         type: String,

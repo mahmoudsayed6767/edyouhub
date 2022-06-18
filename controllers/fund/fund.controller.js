@@ -1,4 +1,7 @@
 import Fund from "../../models/fund/fund.model";
+import {transformFund,transformFundById} from "../../models/fund/transformFund";
+import Student from "../../models/student/student.model";
+import Premium from "../../models/premium/premium.model";
 import Report from "../../models/reports/report.model";
 import { body } from "express-validator/check";
 import { checkValidations,convertLang} from "../shared/shared.controller";
@@ -9,9 +12,27 @@ import { checkExistThenGet } from "../../helpers/CheckMethods";
 import EducationInstitution from "../../models/education institution/education institution.model";
 import EducationPhase from "../../models/education phase/education phase.model";
 import EducationSystem from "../../models/education system/education system.model";
-
+import Setting from "../../models/setting/setting.model"
 import i18n from "i18n";
-
+import { toImgUrl } from "../../utils";
+import { sendNotifiAndPushNotifi } from "../../services/notification-service";
+import Notif from "../../models/notif/notif.model";
+import User from "../../models/user/user.model";
+const populateQuery = [
+    { path: 'owner', model: 'user'},
+    {
+        path: 'students', model: 'student',
+        populate: { path: 'educationPhase', model: 'educationPhase' },
+    },
+    {
+        path: 'students', model: 'student',
+        populate: { path: 'educationSystem', model: 'educationSystem' },
+    },
+    {
+        path: 'students', model: 'student',
+        populate: { path: 'educationInstitution', model: 'educationInstitution' },
+    },
+];
 export default {
     //validate body
     validateBody(isUpdate = false) {
@@ -34,8 +55,11 @@ export default {
             }),
             body('personalId').trim().escape().not().isEmpty().withMessage((value, { req}) => {
                 return req.__('personalId.required', { value});
-            }).isIn(['NATIONAL-ID','PASSPORT']).withMessage((value, { req}) => {
+            }).isIn(['NATIONAL-ID','PASSPORT','RESIDENCE']).withMessage((value, { req}) => {
                 return req.__('personalId.invalid', { value});
+            }),
+            body('personalIdImgs').not().isEmpty().withMessage((value) => {
+                return req.__('personalIdImgs.required', { value});
             }),
 
             body('utilityBills').trim().escape().not().isEmpty().withMessage((value, { req}) => {
@@ -43,17 +67,27 @@ export default {
             }).isIn(['OWNER','RENTER']).withMessage((value, { req}) => {
                 return req.__('utilityBills.invalid', { value});
             }),
+            body('billType').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('billType.required', { value});
+            }),
+            body('utilityBillsImgs').not().isEmpty().withMessage((value) => {
+                return req.__('utilityBillsImgs.required', { value});
+            }),
 
             body('proofIncome').trim().escape().not().isEmpty().withMessage((value, { req}) => {
                 return req.__('proofIncome.required', { value});
             }).isIn(['WORK-ID','HR-LETTER','WORK-CONTRACT','BANK-ACCOUNT','COMMERCIAL-REGISTRATION','TAX-ID']).withMessage((value, { req}) => {
                 return req.__('proofIncome.invalid', { value});
             }),
+            body('proofIncomeImgs').not().isEmpty().withMessage((value) => {
+                return req.__('proofIncomeImgs.required', { value});
+            }),
+
             body('totalFees').trim().escape().not().isEmpty().withMessage((value, { req}) => {
                 return req.__('totalFees.required', { value});
             }),
             //student
-            body('students').trim().escape().optional()
+            body('theStudents').trim().escape().optional()
             .custom(async (students, { req }) => {
                 convertLang(req)
                 for (let student of students) {
@@ -65,8 +99,8 @@ export default {
                     }),
                     body('type').not().isEmpty().withMessage((value) => {
                         return req.__('type.required', { value});
-                    }).isNumeric().withMessage((value) => {
-                        return req.__('type.numeric', { value});
+                    }).isIn(['INSIDE-INSTITUTION','OUTSIDE-INSTITUTION']).withMessage((value, { req}) => {
+                        return req.__('type.invalid', { value});
                     }),
                     body('educationPhase').not().isEmpty().withMessage((value) => {
                         return req.__('educationPhase.required', { value});
@@ -81,6 +115,7 @@ export default {
                     body('educationInstitution').optional().isNumeric().withMessage((value) => {
                         return req.__('educationInstitution.numeric', { value});
                     }),
+                    body('educationInstitutionName').optional(),
                     body('year').not().isEmpty().withMessage((value) => {
                         return req.__('year.required', { value});
                     }),
@@ -94,9 +129,8 @@ export default {
                         return req.__('tuitionFees.required', { value});
                     }).isNumeric().withMessage((value) => {
                         return req.__('tuitionFees.numeric', { value});
-                    })
-                    return true
-
+                    }),
+                    body('feesLetter').optional()
                 }
                 return true;
             }),
@@ -105,40 +139,72 @@ export default {
         return validations;
     },
     //add new fund
-    async create(req, res, next) {
+    async uploadImgs(req, res, next) {
         try {
             convertLang(req)
-            const validatedBody = checkValidations(req);
+            let personalIdImgs = []
+            let utilityBillsImgs=[]
+            let proofIncomeImgs=[]
+            let feesLetter=[];
             if (req.files) {
                 if (req.files['personalIdImgs']) {
                     let imagesList = [];
                     for (let imges of req.files['personalIdImgs']) {
                         imagesList.push(await toImgUrl(imges))
                     }
-                    validatedBody.personalIdImgs = imagesList;
-                }else{
-                    return next(new ApiError(422, i18n.__('personalIdImgs.required'))); 
+                    personalIdImgs = imagesList;
                 }
                 if (req.files['utilityBillsImgs']) {
                     let imagesList = [];
                     for (let imges of req.files['utilityBillsImgs']) {
                         imagesList.push(await toImgUrl(imges))
                     }
-                    validatedBody.utilityBillsImgs = imagesList;
-                }else{
-                    return next(new ApiError(422, i18n.__('utilityBillsImgs.required'))); 
+                    utilityBillsImgs = imagesList;
                 }
                 if (req.files['proofIncomeImgs']) {
                     let imagesList = [];
                     for (let imges of req.files['proofIncomeImgs']) {
                         imagesList.push(await toImgUrl(imges))
                     }
-                    validatedBody.proofIncomeImgs = imagesList;
-                }else{
-                    return next(new ApiError(422, i18n.__('proofIncomeImgs.required'))); 
+                    proofIncomeImgs = imagesList;
+                }
+                if (req.files['feesLetter']) {
+                    let imagesList = [];
+                    for (let imges of req.files['feesLetter']) {
+                        imagesList.push(await toImgUrl(imges))
+                    }
+                    feesLetter = imagesList;
                 }
             }
+            res.status(201).send({
+                success:true,
+                personalIdImgs :personalIdImgs,
+                utilityBillsImgs:utilityBillsImgs,
+                proofIncomeImgs:proofIncomeImgs,
+                feesLetter:feesLetter
+            });
+        } catch (error) {
+            next(error);
+        }
+    },
+    async create(req, res, next) {
+        try {
+            convertLang(req)
+            const validatedBody = checkValidations(req);
+            validatedBody.owner = req.user._id;
             let fund = await Fund.create({ ...validatedBody });
+            let educationInstitutions = []
+            if(validatedBody.theStudents){
+                let students = []
+                await Promise.all(validatedBody.theStudents.map(async(student) => {
+                    let createdStudent = await Student.create({...student})
+                    students.push(createdStudent.id)
+                    if(student.educationInstitution) educationInstitutions.push(student.educationInstitution)
+                }));  
+                
+                fund.students = students
+                await fund.save();
+            }
             let reports = {
                 "action":"Create New fund",
                 "type":"FUND",
@@ -155,7 +221,7 @@ export default {
         }
     },
     //get by id
-    async getById(req, res, next) {
+    async findById(req, res, next) {
         try {
             convertLang(req)
              //get lang
@@ -164,8 +230,8 @@ export default {
             
             await checkExist(fundId, Fund, { deleted: false });
 
-            await Fund.findById(fundId).then(async(e) => {
-                let fund = await transformFund(e,lang)
+            await Fund.findById(fundId).populate(populateQuery).then(async(e) => {
+                let fund = await transformFundById(e,lang)
                 res.send({
                     success:true,
                     data:fund
@@ -182,7 +248,15 @@ export default {
             let { fundId } = req.params;
             await checkExist(fundId,Fund, { deleted: false })
             const validatedBody = checkValidations(req);
-
+            if(validatedBody.theStudents){
+                let students = []
+                await Promise.all(validatedBody.theStudents.map(async(student) => {
+                    let createdStudent = await Student.create({...student})
+                    students.push(createdStudent.id)
+                }));  
+                
+                validatedBody.students = students
+            }
             await Fund.findByIdAndUpdate(fundId, { ...validatedBody });
             let reports = {
                 "action":"Update fund",
@@ -204,8 +278,13 @@ export default {
             convertLang(req)
              //get lang
             let lang = i18n.getLocale(req)
-            let query = {deleted: false }
-            await Fund.find(query)
+            let {student,owner,status,educationInstitution} = req.query;
+            let query = {  deleted: false }
+            if(student) query.students = student
+            if(educationInstitution) query.educationInstitutions = educationInstitution
+            if(owner) query.owner = owner
+            if(status) query.status = status
+            await Fund.find(query).populate(populateQuery)
                 .sort({ _id: 1 })
                 .then( async(data) => {
                     var newdata = [];
@@ -228,10 +307,14 @@ export default {
             convertLang(req)
              //get lang
             let lang = i18n.getLocale(req)
-            let page = +req.query.page || 1, limit = +req.query.limit || 20;
+            let page = +req.query.page || 1, limit = +req.query.limit || 20,
+            {student,owner,status,educationInstitution} = req.query;
             let query = {  deleted: false }
-           
-            await Fund.find(query)
+            if(student) query.students = student
+            if(owner) query.owner = owner
+            if(educationInstitution) query.educationInstitutions = educationInstitution
+            if(status) query.status = status
+            await Fund.find(query).populate(populateQuery)
                 .sort({ _id: 1 })
                 .limit(limit)
                 .skip((page - 1) * limit)
@@ -275,6 +358,151 @@ export default {
             next(err);
         }
     },
+    //accept 
+    async accept(req, res, next) {
+        try {
+            convertLang(req)
+            let { fundId } = req.params;
+            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
+                return next(new ApiError(403, i18n.__('admin.auth')));
+            let fund = await checkExistThenGet(fundId, Fund);
+            fund.status = 'ACCEPTED';
+            if(req.body.startDate) fund.startDate = req.body.startDate
+            let setting = await Setting.findOne({deleted: false})
+            fund.firstPaid = (fund.totalFees * setting.expensesRatio) / 100
+            await fund.save();
+            sendNotifiAndPushNotifi({
+                targetUser: fund.owner, 
+                fromUser: fund.owner, 
+                text: ' EdHub',
+                subject: fund.id,
+                subjectType: 'fund Status',
+                info:'FUND'
+            });
+            let notif = {
+                "description_en":'Your Fund Request Has Been Confirmed ',
+                "description_ar":'  تمت الموافقه على طلب التمويل الخاص بك',
+                "title_en":'Your Fund Request Has Been Confirmed ',
+                "title_ar":' تمت الموافقه على طلب التمويل الخاص بك',
+                "type":'FUND'
+            }
+            await Notif.create({...notif,resource:req.user,target:fund.owner,fund:fund.id});
+            let reports = {
+                "action":"Accept Fund Request",
+                "type":"FUND",
+                "deepId":fundId,
+                "user": req.user._id
+            };
+            await Report.create({...reports});
+            res.send({
+                success:true
+            });
+        } catch (err) {
+            next(err);
+        }
+    },
+    //payFirstPaid 
+    async payFirstPaid(req, res, next) {
+        try {
+            convertLang(req)
+            let { fundId } = req.params;
+            let fund = await checkExistThenGet(fundId, Fund);
+            fund.status = 'STARTED';
+            //12 months - 10% firstpaid
+            //15 % cashBack
+            let setting = await Setting.findOne({deleted: false})
+            
+            let total = fund.totalFees + (fund.totalFees * setting.expensesRatio) / 100
+            console.log("total",total)
+            let cashBack = (total * setting.cashBackRatio) / 100 
+            console.log("cashBack",cashBack)
+            //add cashBack to fund owner
+            let fundOwner = await checkExistThenGet(fund.owner, User)
+            fundOwner.balance = fundOwner.balance + cashBack
+            await fundOwner.save();
+            let date = new Date();
+            if(fund.startDate){
+                date = fund.startDate
+            }else{
+                date = new Date(date.setMonth(date.getMonth() + 2));
+            }
+            let monthCount = setting.monthCount;
+            let endDate = new Date(date.setMonth(date.getMonth() + monthCount));
+            fund.endDate = endDate;
+            let cost = (fund.totalFees * monthCount) / 12
+            //////////////////////////create premiums////////////////////////////
+            for(var i=0; i < monthCount; i++){
+                let installmentDate = new Date(date.setMonth(date.getMonth() + i));
+                console.log("installmentDate",installmentDate)
+
+                let lastMonth = false
+                if(monthCount - 1 == i) lastMonth = true
+                
+                await Premium.create({
+                    fund:fund.id,
+                    receiptNum:i+1,
+                    student: fund.students,
+                    installmentDate:installmentDate,
+                    cost:cost ,
+                    lastPremium:lastMonth
+                });
+            }
+            await fund.save();
+            let reports = {
+                "action":"Pay Fund FirstPaid",
+                "type":"FUND",
+                "deepId":fundId,
+                "user": req.user._id
+            };
+            await Report.create({...reports});
+            res.send({
+                success:true
+            });
+        } catch (err) {
+            next(err);
+        }
+    },
+    async reject(req, res, next) {
+        
+        try {
+            convertLang(req)
+            let { fundId } = req.params;
+            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
+                return next(new ApiError(403, i18n.__('admin.auth')));
+            let fund = await checkExistThenGet(fundId, Fund);
+            fund.status = 'REJECTED';
+            await fund.save();
+            sendNotifiAndPushNotifi({
+                targetUser: fund.owner, 
+                fromUser: fund.owner, 
+                text: ' EdHub',
+                subject: fund.id,
+                subjectType: 'fund Status',
+                info:'FUND'
+            });
+            let notif = {
+                "description_en":'Your Fund Request Has Been Rejected ',
+                "description_ar":'   تم رفض  طلب التمويل الخاص بك',
+                "title_en":'Your Fund Request Has Been Rejected ',
+                "title_ar":' تم رفض على طلب التمويل الخاص بك',
+                "type":'FUND'
+            }
+            await Notif.create({...notif,resource:req.user,target:fund.owner,fund:fund.id});
+            let reports = {
+                "action":"Reject Fund Request",
+                "type":"FUND",
+                "deepId":fundId,
+                "user": req.user._id
+            };
+            await Report.create({...reports});
+            res.send({
+                success:true
+            });
+        } catch (err) {
+            next(err);
+        }
+    },
+
 
    
 
