@@ -203,6 +203,10 @@ export default {
             await premium.save();
             if(premium.fund){
                 let fund = await checkExistThenGet(premium.fund, Fund);
+                if(premium.lastMonth == true){
+                    fund.status = "COMPLETED"
+                    await fund.save();
+                }
                 sendNotifiAndPushNotifi({
                     targetUser: fund.owner, 
                     fromUser: fund.owner, 
@@ -228,6 +232,10 @@ export default {
                 let fundOwner = await checkExistThenGet(req.user._id, User)
                 fundOwner.balance = fundOwner.balance + cashBack
                 await fundOwner.save();
+                if(premium.lastMonth == true){
+                    fees.status = "COMPLETED"
+                    await fees.save();
+                }
                 sendNotifiAndPushNotifi({
                     targetUser: fees.owner, 
                     fromUser: fees.owner, 

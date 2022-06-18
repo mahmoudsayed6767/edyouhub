@@ -188,7 +188,11 @@
 	"fund.pending":"يلزم ان يكون الطلب تحت الانتظار",
 	"firstPaid.numeric":"حقل المقدم قيمه عدديه",
 	"startDate.invalid":"حقل تاريخ البدايه غير صالح",
-	"student.required":"حقل الطالب مطلوب"
+	"student.required":"حقل الطالب مطلوب",
+	"feesCashBackRatio.required":"حقل نسبه الكاش باك عند دفع المصاريف مطلوب",
+	"feesCashBackRatio.numeric":"حقل نسبه الكاش باك قيمه عدديه",
+	"salesManRatio.required":"حقل نسبه المسوق مطلوب",
+	"salesManRatio.numeric":"حقل نسبه المسوق قيمه عدديه"
 
 	
 }

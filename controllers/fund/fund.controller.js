@@ -438,6 +438,14 @@ export default {
             let fundOwner = await checkExistThenGet(fund.owner, User)
             fundOwner.balance = fundOwner.balance + cashBack
             await fundOwner.save();
+            //add cashBack to salesMan
+            if(fundOwner.salesman){
+                let salesManCashBack = (fund.totalFees * setting.salesManRatio) / 100 
+                let salesman = await checkExistThenGet(fundOwner.salesman, User)
+                salesman.balance = salesman.balance + salesManCashBack
+                await salesman.save();
+            }
+            
             let date = new Date();
             if(fund.startDate){
                 date = fund.startDate

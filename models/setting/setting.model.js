@@ -20,6 +20,11 @@ const SettingSchema = new Schema({
         default:5,
         required: true
     },
+    salesManRatio:{
+        type: Number,
+        default:5,
+        required: true
+    },
     expensesRatio: {
         type: Number,
         default:10,

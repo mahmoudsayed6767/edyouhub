@@ -190,5 +190,9 @@
 	"fund.pending":"fund must be pending",
 	"firstPaid.numeric":"firstPaid is numeric",
 	"startDate.invalid":"startDate is invalid",
-	"student.required":"student is required"
+	"student.required":"student is required",
+	"feesCashBackRatio.required":"Fees CashBack Ratio is required",
+	"feesCashBackRatio.numeric":"Fees CashBack Ratio is numeric",
+	"salesManRatio.required":"salesMan Ratio is required",
+	"salesManRatio.numeric":"salesMan Ratio is numeric"
 }
