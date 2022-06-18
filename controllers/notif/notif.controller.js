@@ -54,6 +54,15 @@ export default {
                         if(e.offer){
                             index.deepId = e.offer
                         }
+                        if(e.fund){
+                            index.deepId = e.fund
+                        }
+                        if(e.fees){
+                            index.deepId = e.fees
+                        }
+                        if(e.premium){
+                            index.deepId = e.premium
+                        }
                         newdata.push(index)
                         
                     }))

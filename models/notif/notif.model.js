@@ -30,6 +30,18 @@ const NotifSchema = new Schema({
     title_ar:{
         type:String
     },
+    fund:{
+        type:Number,
+        ref:'fund'
+    },
+    fees:{
+        type:Number,
+        ref:'fees'
+    },
+    premium:{
+        type:Number,
+        ref:'premium'
+    },
     offer:{
         type:Number,
         ref:'offer'

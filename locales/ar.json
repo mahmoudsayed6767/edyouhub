@@ -192,7 +192,8 @@
 	"feesCashBackRatio.required":"حقل نسبه الكاش باك عند دفع المصاريف مطلوب",
 	"feesCashBackRatio.numeric":"حقل نسبه الكاش باك قيمه عدديه",
 	"salesManRatio.required":"حقل نسبه المسوق مطلوب",
-	"salesManRatio.numeric":"حقل نسبه المسوق قيمه عدديه"
+	"salesManRatio.numeric":"حقل نسبه المسوق قيمه عدديه",
+	"balance.notEnough":"رصيدك غير كافي"
 
 	
 }

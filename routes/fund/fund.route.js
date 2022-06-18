@@ -36,6 +36,7 @@ router.route('/:fundId')
 router.route('/:fundId/accept')
     .put(
         requireAuth,
+        fundController.validateTakeActionBody(),
         fundController.accept
     )
 router.route('/:fundId/payFirstPaid')
@@ -46,6 +47,7 @@ router.route('/:fundId/payFirstPaid')
 router.route('/:fundId/reject')
     .put(
         requireAuth,
+        fundController.validateTakeActionBody(),
         fundController.reject
     )
 export default router;
