@@ -5,6 +5,7 @@ export async function transformFund(e,lang) {
         address:e.address,
         phone:e.phone,
         job:e.job,
+        reason:e.reason,
         totalFees:e.totalFees,
         endDate:e.endDate,
         status:e.status,
@@ -22,6 +23,7 @@ export async function transformFund(e,lang) {
 }
 export async function transformFundById(e,lang) {
     let index = {
+        reason:e.reason,
         fullname:e.fullname,
         address:e.address,
         phone:e.phone,

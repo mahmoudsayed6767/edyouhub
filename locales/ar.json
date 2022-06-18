@@ -183,8 +183,12 @@
 	"cashBackRatio.numeric":"حقل نسبه الكاش باك قيمه عدديه",
 	"expensesRatio.required":"حقل نسبه المصاريف الاداريه مطلوب",
 	"expensesRatio.numeric":"حقل نسبه المصاريف الاداريه قيمه عدديه",
-	"installmentDate.required":"",
-	"cost.required":""
+	"installmentDate.required":"حقل تاريخ القسط الزامى",
+	"cost.required":"حقل القيمه الماليه مطلوب",
+	"fund.pending":"يلزم ان يكون الطلب تحت الانتظار",
+	"firstPaid.numeric":"حقل المقدم قيمه عدديه",
+	"startDate.invalid":"حقل تاريخ البدايه غير صالح",
+	"student.required":"حقل الطالب مطلوب"
 
 	
 }

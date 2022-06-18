@@ -361,6 +361,8 @@ export default {
             .custom(async (fees, { req }) => {
                 convertLang(req)
                 for (let feesId of fees) {
+                    await checkExist(feesId.educationInstitution,EducationInstitution, { deleted: false })
+                    await checkExist(feesId.student, Student,{ deleted: false})
                     body('educationInstitution').trim().escape().not().isEmpty().withMessage((value, { req}) => {
                         return req.__('educationInstitution.required', { value});
                     }),

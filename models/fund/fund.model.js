@@ -79,6 +79,7 @@ const fundSchema = new Schema({
         type: Number,
         required: true
     },
+    //if accept
     firstPaid:{
         type: Number,
     },
@@ -87,6 +88,10 @@ const fundSchema = new Schema({
     },
     endDate:{
         type: Date,
+    },
+    //if reject
+    reason:{
+        type: String,
     },
     deleted: {
         type: Boolean,
