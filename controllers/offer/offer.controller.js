@@ -295,6 +295,10 @@ export default {
                 return next(new ApiError(403, i18n.__('admin.auth')));
             let { offerId } = req.params;
             let offer = await checkExistThenGet(offerId, Offer, { deleted: false });
+            let user = await checkExistThenGet(req.user._id, User, { deleted: false})
+            if(user.balance < offer.coins)
+                return next(new ApiError(500, i18n.__('balance.notEnough')));
+
             let arr = offer.bookedUsers;
             var found = arr.find(e => e == req.user._id)
             if(!found){
@@ -302,6 +306,9 @@ export default {
                 offer.bookedUsersCount = offer.bookedUsersCount + 1
                 await offer.save();
                 let offerCode = generateCode(8)
+                //get coins from user balance 
+                user.balance = user.balance - offer.coins
+                await user.save();
                 await Bill.create({
                     client:req.user._id,
                     offer:offerId,

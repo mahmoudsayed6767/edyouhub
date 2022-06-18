@@ -378,7 +378,7 @@ export default {
                 return next(new ApiError(403, i18n.__('admin.auth')));
             let fund = await checkExistThenGet(fundId, Fund);
             if(fund.status != "PENDING")
-                return next(new ApiError(403, i18n.__('fund.pending')));
+                return next(new ApiError(500, i18n.__('fund.pending')));
             fund.status = 'ACCEPTED';
             if(req.body.startDate) fund.startDate = req.body.startDate
             let setting = await Setting.findOne({deleted: false})
@@ -497,7 +497,7 @@ export default {
                 return next(new ApiError(403, i18n.__('admin.auth')));
             let fund = await checkExistThenGet(fundId, Fund);
             if(fund.status != "PENDING")
-                return next(new ApiError(403, i18n.__('fund.pending')));
+                return next(new ApiError(500, i18n.__('fund.pending')));
             fund.status = 'REJECTED';
             fund.reason  = req.body.reason
             await fund.save();
