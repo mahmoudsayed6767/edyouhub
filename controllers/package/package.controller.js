@@ -7,6 +7,7 @@ import { body } from "express-validator/check";
 import Package from "../../models/package/package.model";
 import {transformPackage} from "../../models/package/transformPackage"
 import i18n from "i18n";
+import User from "../../models/user/user.model";
 export default {
     //get with pagenation
     async findAll(req, res, next) {
@@ -83,7 +84,7 @@ export default {
             })
         ];
     },
-//add package
+    //add package
     async create(req, res, next) {
 
         try {
@@ -108,7 +109,7 @@ export default {
         }
     },
 
-//get by id
+    //get by id
     async findById(req, res, next) {
         try {
             convertLang(req)
@@ -170,6 +171,31 @@ export default {
             await packages.save();
             let reports = {
                 "action":"Delete Package",
+                "type":"PACKAGES",
+                "deepId":packageId,
+                "user": req.user._id
+            };
+            await Report.create({...reports});
+            res.status(200).send({success:true});
+
+        }
+        catch (err) {
+            next(err);
+        }
+    },
+    //buy package
+    async buyPackage(req, res, next) {
+        try {
+            convertLang(req)
+            let { packageId } = req.params;
+            let packages = await checkExistThenGet(packageId, Package, { deleted: false });
+            packages.deleted = true;
+            await packages.save();
+            let user = await checkExistThenGet(req.user._id,User, { deleted: false });
+            user.balance  = user.balance + packages.coins
+            await user.save();
+            let reports = {
+                "action":"Buy Package",
                 "type":"PACKAGES",
                 "deepId":packageId,
                 "user": req.user._id
