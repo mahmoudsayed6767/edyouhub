@@ -73,6 +73,7 @@ export default {
                     educationInstitution:lang=="ar"?e.educationInstitution_ar:e.educationInstitution_en,
                     educationInstitution_ar:e.educationInstitution_ar,
                     educationInstitution_en:e.educationInstitution_en,
+                    img:e.img,
                     id: e._id,
                     createdAt: e.createdAt,
                 }
@@ -145,6 +146,7 @@ export default {
                             educationInstitution:lang=="ar"?e.educationInstitution_ar:e.educationInstitution_en,
                             educationInstitution_ar:e.educationInstitution_ar,
                             educationInstitution_en:e.educationInstitution_en,
+                            img:e.img,
                             id: e._id,
                             createdAt: e.createdAt,
                         }
@@ -193,6 +195,7 @@ export default {
                             educationInstitution:lang=="ar"?e.educationInstitution_ar:e.educationInstitution_en,
                             educationInstitution_ar:e.educationInstitution_ar,
                             educationInstitution_en:e.educationInstitution_en,
+                            img:e.img,
                             id: e._id,
                             createdAt: e.createdAt,
                         }
