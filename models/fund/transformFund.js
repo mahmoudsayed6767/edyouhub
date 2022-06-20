@@ -10,6 +10,7 @@ export async function transformFund(e,lang) {
         endDate:e.endDate,
         status:e.status,
         firstPaid:e.firstPaid,
+        createdAt: e.createdAt, 
         id:e._id
     }
     if(e.owner){

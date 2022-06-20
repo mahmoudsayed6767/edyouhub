@@ -7,7 +7,14 @@ import { checkExist,isInArray,isImgUrl } from "../../helpers/CheckMethods";
 import ApiResponse from "../../helpers/ApiResponse";
 import { checkExistThenGet } from "../../helpers/CheckMethods";
 import i18n from "i18n";
-
+import EducationPhase from "../../models/education phase/education phase.model";
+import EducationSystem from "../../models/education system/education system.model";
+import { transformEducationInstitution } from "../../models/education institution/transformEducationInstitution";
+const populateQuery = [
+    { path: 'educationPhase', model: 'educationPhase' },
+    { path: 'educationSystem', model: 'educationSystem' },
+    
+];
 export default {
     //validate body
     validateBody(isUpdate = false) {
@@ -23,6 +30,11 @@ export default {
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('educationSystem.numeric', { value});
             }),
+            body('educationPhase').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('educationPhase.required', { value});
+            }).isNumeric().withMessage((value, { req}) => {
+                return req.__('educationPhase.numeric', { value});
+            }),
             
         ];
         if (isUpdate)
@@ -33,13 +45,15 @@ export default {
             ]);
         return validations;
     },
-    //add new educationInstitution
+    //add new education Institution
     async create(req, res, next) {
         try {
             convertLang(req)
             const validatedBody = checkValidations(req);
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
+            await checkExist(validatedBody.educationPhase, EducationPhase,{ deleted: false});
+            await checkExist(validatedBody.educationSystem, EducationSystem,{ deleted: false});
             let image = await handleImg(req, { attributeName: 'img'});
             validatedBody.img = image;
             let educationInstitution = await EducationInstitution.create({ ...validatedBody });
@@ -68,15 +82,10 @@ export default {
             
             await checkExist(educationInstitutionId, EducationInstitution, { deleted: false });
 
-            await EducationInstitution.findById(educationInstitutionId).then( e => {
-                let educationInstitution ={
-                    educationInstitution:lang=="ar"?e.educationInstitution_ar:e.educationInstitution_en,
-                    educationInstitution_ar:e.educationInstitution_ar,
-                    educationInstitution_en:e.educationInstitution_en,
-                    img:e.img,
-                    id: e._id,
-                    createdAt: e.createdAt,
-                }
+            await EducationInstitution.findById(educationInstitutionId)
+            .populate(populateQuery)
+            .then(async(e) => {
+                let educationInstitution = await transformEducationInstitution(e,lang)
                 res.send({
                     success:true,
                     data:educationInstitution
@@ -95,6 +104,10 @@ export default {
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
             const validatedBody = checkValidations(req);
+
+            await checkExist(validatedBody.educationPhase, EducationPhase,{ deleted: false});
+            await checkExist(validatedBody.educationSystem, EducationSystem,{ deleted: false});
+
             if (req.file) {
                 let image = await handleImg(req, { attributeName: 'img'});
                 validatedBody.img = image;
@@ -137,19 +150,12 @@ export default {
                     ]
                 };
             }
-            await EducationInstitution.find(query)
+            await EducationInstitution.find(query).populate(populateQuery)
                 .sort({ _id: 1 })
                 .then( async(data) => {
                     var newdata = [];
                     await Promise.all(data.map(async(e) =>{
-                        let index = {
-                            educationInstitution:lang=="ar"?e.educationInstitution_ar:e.educationInstitution_en,
-                            educationInstitution_ar:e.educationInstitution_ar,
-                            educationInstitution_en:e.educationInstitution_en,
-                            img:e.img,
-                            id: e._id,
-                            createdAt: e.createdAt,
-                        }
+                        let index = await transformEducationInstitution(e,lang)
                         newdata.push(index)
                     }))
                     res.send({
@@ -184,21 +190,14 @@ export default {
                     ]
                 };
             }
-            await EducationInstitution.find(query)
+            await EducationInstitution.find(query).populate(populateQuery)
                 .sort({ _id: 1 })
                 .limit(limit)
                 .skip((page - 1) * limit)
                 .then(async (data) => {
                     var newdata = [];
                     await Promise.all(data.map(async(e) =>{
-                        let index = {
-                            educationInstitution:lang=="ar"?e.educationInstitution_ar:e.educationInstitution_en,
-                            educationInstitution_ar:e.educationInstitution_ar,
-                            educationInstitution_en:e.educationInstitution_en,
-                            img:e.img,
-                            id: e._id,
-                            createdAt: e.createdAt,
-                        }
+                        let index = await transformEducationInstitution(e,lang)
                         newdata.push(index)
                     }))
                     const count = await EducationInstitution.countDocuments(query);

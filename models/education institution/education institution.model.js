@@ -17,6 +17,12 @@ const educationInstitutionSchema = new Schema({
         trim: true,
         required: true,
     },
+    educationPhase: {
+        type: Number,
+        ref: 'educationPhase',
+        required: true,
+        default: 1,
+    },
     educationSystem: {
         type: Number,
         ref:'educationSystem',
