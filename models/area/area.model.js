@@ -2,36 +2,46 @@ import mongoose, { Schema } from 'mongoose';
 import autoIncrement from 'mongoose-auto-increment';
 
 
-const educationPhaseSchema = new Schema({
+const areaSchema = new Schema({
+
     _id: {
         type: Number,
         required: true
     },
-    educationPhase_en: {
+    name_en: {
         type: String,
         required: true,
-        trim: true,
+        trim: true
     },
-    educationPhase_ar: {
+    name_ar: {
         type: String,
-        trim: true,
         required: true,
+        trim: true
+    },
+    city: {
+        type: Number,
+        ref: 'city',
+        required: true
     },
     deleted:{
         type:Boolean,
         default:false
     }
 });
-educationPhaseSchema.set('toJSON', {
+
+areaSchema.set('toJSON', {
     transform: function (doc, ret) {
         ret.id = ret._id;
         delete ret._id;
         delete ret.__v;
         delete ret.deleted;
+        if (ret.location) {
+            ret.location = ret.location.coordinates;
+        }
     }
 });
 
 
-educationPhaseSchema.plugin(autoIncrement.plugin, { model: 'educationPhase', startAt: 1 });
+areaSchema.plugin(autoIncrement.plugin, { model: 'area', startAt: 1 });
 
-export default mongoose.model('educationPhase', educationPhaseSchema);
+export default mongoose.model('area', areaSchema);

@@ -10,22 +10,30 @@ export async function transformStudent(e,lang) {
         feesLetter:e.feesLetter,
         id:e._id,                         
     }
-    if(e.educationPhase){
-        index.educationPhase = {
-            educationPhase:lang=="ar"?e.educationPhase.educationPhase_ar:e.educationPhase.educationPhase_en,
-            id: e.educationPhase._id,
+    if(e.category){
+        index.category = {
+            name:lang=="ar"?e.category.name_ar:e.category.name_en,
+            img: e.category.img,
+            id: e.category._id,
+        }
+    }
+    if(e.subCategory){
+        index.subCategory = {
+            name:lang=="ar"?e.subCategory.name_ar:e.subCategory.name_en,
+            img: e.subCategory.img,
+            id: e.subCategory._id,
         }
     }
     if(e.educationSystem){
         index.educationSystem = {
-            educationSystem:lang=="ar"?e.educationSystem.educationSystem_ar:e.educationSystem.educationSystem_en,
+            name:lang=="ar"?e.educationSystem.name_ar:e.educationSystem.name_en,
             img: e.educationSystem.img,
             id: e.educationSystem._id,
         }
     }
     if(e.educationInstitution){
         index.educationInstitution = {
-            educationInstitution:lang=="ar"?e.educationInstitution.educationInstitution_ar:e.educationInstitution.educationInstitution_en,
+            name:lang=="ar"?e.educationInstitution.name_ar:e.educationInstitution.name_en,
             id: e.educationInstitution._id,
         }
     }

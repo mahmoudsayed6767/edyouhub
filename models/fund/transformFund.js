@@ -17,6 +17,7 @@ export async function transformFund(e,lang) {
         index.owner = {
             phone:e.owner.phone,
             fullname:e.owner.fullname,
+            type:e.owner.type,
             id:e.owner._id
         }
     }
@@ -47,6 +48,7 @@ export async function transformFundById(e,lang) {
         index.owner = {
             phone:e.owner.phone,
             fullname:e.owner.fullname,
+            type:e.owner.type,
             id:e.owner._id
         }
     }
@@ -62,22 +64,30 @@ export async function transformFundById(e,lang) {
             feesLetter:val.feesLetter,
             id:val._id,                         
         }
-        if(val.educationPhase){
-            student.educationPhase = {
-                educationPhase:lang=="ar"?val.educationPhase.educationPhase_ar:val.educationPhase.educationPhase_en,
-                id: val.educationPhase._id,
+        if(e.category){
+            index.category = {
+                name:lang=="ar"?e.category.name_ar:e.category.name_en,
+                img: e.category.img,
+                id: e.category._id,
+            }
+        }
+        if(e.subCategory){
+            index.subCategory = {
+                name:lang=="ar"?e.subCategory.name_ar:e.subCategory.name_en,
+                img: e.subCategory.img,
+                id: e.subCategory._id,
             }
         }
         if(val.educationSystem){
             student.educationSystem = {
-                educationSystem:lang=="ar"?val.educationSystem.educationSystem_ar:val.educationSystem.educationSystem_en,
+                name:lang=="ar"?val.educationSystem.name_ar:val.educationSystem.name_en,
                 img: val.educationSystem.img,
                 id: val.educationSystem._id,
             }
         }
         if(val.educationInstitution){
             student.educationInstitution = {
-                educationInstitution:lang=="ar"?val.educationInstitution.educationInstitution_ar:val.educationInstitution.educationInstitution_en,
+                name:lang=="ar"?val.educationInstitution.name_ar:val.educationInstitution.name_en,
                 id: val.educationInstitution._id,
             }
         }

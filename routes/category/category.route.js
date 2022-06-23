@@ -8,9 +8,9 @@ import { cache } from '../../services/caching'
 const router = express.Router();
 
 //find sub category under category without pagenation
-router.get('/:categoryId/sub-categories', cache(10),CategoryController.findSubCategory);
+router.get('/:categoryId/sub-categories', cache(10),CategoryController.findsubCategory);
 //find sub category under category with pagenation
-router.get('/:categoryId/pagenation-subCategories', cache(10),CategoryController.findSubCategoryPagenation);
+router.get('/:categoryId/pagenation-subCategories', cache(10),CategoryController.findsubCategoryPagenation);
 //find category under category with pagenation
 router.get('/pagenation-categories', cache(10),CategoryController.findCategoryPagenation);
 

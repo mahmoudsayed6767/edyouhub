@@ -1,17 +1,17 @@
-import EducationSystem from "../../models/education system/education system.model";
+import Area from "../../models/area/area.model";
+import City from "../../models/city/city.model";
 import Report from "../../models/reports/report.model";
 import { body } from "express-validator/check";
-import { checkValidations,convertLang,handleImg} from "../shared/shared.controller";
+import { checkValidations,convertLang } from "../shared/shared.controller";
 import ApiError from "../../helpers/ApiError";
-import { checkExist,isInArray,isImgUrl } from "../../helpers/CheckMethods";
+import { checkExist ,checkExistThenGet,isInArray} from "../../helpers/CheckMethods";
 import ApiResponse from "../../helpers/ApiResponse";
-import { checkExistThenGet } from "../../helpers/CheckMethods";
 import i18n from "i18n";
 
 export default {
-    //validate body
-    validateBody(isUpdate = false) {
-        let validations = [
+    //body validate
+    validateAreaBody() {
+        return [
             body('name_en').trim().escape().not().isEmpty().withMessage((value, { req}) => {
                 return req.__('name_en.required', { value});
             }),
@@ -20,89 +20,85 @@ export default {
             }),
             
         ];
-        if (isUpdate)
-            validations.push([
-                body('img').optional().custom(val => isImgUrl(val)).withMessage((value, { req}) => {
-                    return req.__('img.syntax', { value});
-                })
-            ]);
-        return validations;
     },
-    //add new educationSystem
+    //create new record
     async create(req, res, next) {
         try {
             convertLang(req)
-            const validatedBody = checkValidations(req);
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
+            let { cityId } = req.params;
+            await checkExist(cityId, City);
+             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
-            let image = await handleImg(req, { attributeName: 'img'});
-            validatedBody.img = image;
-            let educationSystem = await EducationSystem.create({ ...validatedBody });
+            const validatedBody = checkValidations(req);
+            
+            validatedBody.city = cityId;
+            let area = await Area.create({ ...validatedBody });
             let reports = {
-                "action":"Create New educationSystem",
-                "type":"EDUCATION-SYSTEM",
-                "deepId":educationSystem.id,
+                "action":"Create New Area",
+                "type":"AREAS",
+                "deepId":area.id,
                 "user": req.user._id
             };
             await Report.create({...reports });
-            res.status(201).send({
+            return res.status(201).send({
                 success:true,
-                data:educationSystem
+                data:area,
             });
         } catch (error) {
             next(error);
+            send(error);
         }
     },
     //get by id
     async getById(req, res, next) {
         try {
             convertLang(req)
-             //get lang
             let lang = i18n.getLocale(req)
-            let { educationSystemId } = req.params;
-            
-            await checkExist(educationSystemId, EducationSystem, { deleted: false });
+            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
+               return next(new ApiError(403, i18n.__('admin.auth')));            
+            let { areaId } = req.params;
+            await checkExist(areaId, Area, { deleted: false });
 
-            await EducationSystem.findById(educationSystemId).then( e => {
-                let educationSystem ={
-                    name:lang=="ar"?e.name_ar:e.name_en,
+            await Area.findById(areaId).then( e => {
+                let area = {
+                    areaName:lang=="ar"?e.name_ar:e.name_en,
                     name_ar:e.name_ar,
                     name_en:e.name_en,
-                    img:e.img,
                     id: e._id,
                     createdAt: e.createdAt,
                 }
-                res.send({
+                return res.send({
                     success:true,
-                    data:educationSystem
+                    data:area,
                 });
+                
             })
         } catch (error) {
             next(error);
+
         }
     },
-    //update educationSystem
+    //update record
     async update(req, res, next) {
         try {
             convertLang(req)
-            let { educationSystemId } = req.params;
-            await checkExist(educationSystemId,EducationSystem, { deleted: false })
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
+            let { areaId } = req.params;
+            await checkExist(areaId,Area, { deleted: false })
+            //check on user type
+             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
             const validatedBody = checkValidations(req);
-            if (req.file) {
-                let image = await handleImg(req, { attributeName: 'img'});
-                validatedBody.img = image;
-            }
-            await EducationSystem.findByIdAndUpdate(educationSystemId, { ...validatedBody });
+            
+            await Area.findByIdAndUpdate(areaId, { ...validatedBody });
+
             let reports = {
-                "action":"Update educationSystem",
-                "type":"EDUCATION-SYSTEM",
-                "deepId":educationSystemId,
+                "action":"Update Area",
+                "type":"AREAS",
+                "deepId":areaId,
                 "user": req.user._id
             };
-            await Report.create({...reports});
-            res.send({
+            await Report.create({...reports });
+            return res.send({
                 success:true
             });
         } catch (error) {
@@ -113,12 +109,13 @@ export default {
     async getAll(req, res, next) {
         try {
             convertLang(req)
+            let{name} = req.query
              //get lang
             let lang = i18n.getLocale(req)
-            let {name} = req.query;
-
-            let query = {deleted: false }
-             /*search by name */
+            let { cityId } = req.params;
+            await checkExist(cityId, City, { deleted: false });
+            let query = { 'city': cityId, deleted: false }
+            /*search by name */
             if(name) {
                 query = {
                     $and: [
@@ -129,23 +126,24 @@ export default {
                           ] 
                         },
                         {deleted: false},
+                        {city: cityId},
                     ]
                 };
             }
-            await EducationSystem.find(query)
+            console.log(query)
+            await Area.find(query)
                 .sort({ _id: 1 })
                 .then( async(data) => {
                     var newdata = [];
                     await Promise.all(data.map(async(e) =>{
-                        let index = {
-                            name:lang=="ar"?e.name_ar:e.name_en,
+                        newdata.push({
+                            areaName:lang=="ar"?e.name_ar:e.name_en,
                             name_ar:e.name_ar,
                             name_en:e.name_en,
-                            img:e.img,
+                            city:e.city,
                             id: e._id,
                             createdAt: e.createdAt,
-                        }
-                        newdata.push(index)
+                        });
                     }))
                     res.send({
                         success:true,
@@ -160,11 +158,12 @@ export default {
     async getAllPaginated(req, res, next) {
         try {
             convertLang(req)
-             //get lang
+            //get lang
             let lang = i18n.getLocale(req)
+            let { cityId } = req.params;
             let {name} = req.query
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
-            let query = {  deleted: false }
+            let query = { 'city': cityId, deleted: false }
             /*search by name */
             if(name) {
                 query = {
@@ -176,27 +175,27 @@ export default {
                           ] 
                         },
                         {deleted: false},
+                        {city: cityId},
                     ]
                 };
             }
-            await EducationSystem.find(query)
+            await Area.find(query)
                 .sort({ _id: 1 })
                 .limit(limit)
                 .skip((page - 1) * limit)
                 .then(async (data) => {
                     var newdata = [];
                     await Promise.all(data.map(async(e) =>{
-                        let index = {
-                            name:lang=="ar"?e.name_ar:e.name_en,
-                            name_ar:e.name_ar,
+                        newdata.push({
+                            areaName:lang=="ar"?e.name_ar:e.name_en,
                             name_en:e.name_en,
-                            img:e.img,
+                            name_ar:e.name_ar,
+                            city:e.city,
                             id: e._id,
                             createdAt: e.createdAt,
-                        }
-                        newdata.push(index)
+                        });
                     }))
-                    const count = await EducationSystem.countDocuments(query);
+                    const count = await Area.countDocuments({ 'city': cityId, deleted: false });
                     const pageCount = Math.ceil(count / limit);
 
                     res.send(new ApiResponse(newdata, page, pageCount, limit, count, req));
@@ -205,32 +204,32 @@ export default {
             next(error);
         }
     },
-    //delete 
+    //delete record
     async delete(req, res, next) {
-        
         try {
             convertLang(req)
-            let { educationSystemId } = req.params;
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
-            let educationSystem = await checkExistThenGet(educationSystemId, EducationSystem);
-            educationSystem.deleted = true;
-            await educationSystem.save();
+            let { areaId } = req.params;
+             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
+               return next(new ApiError(403, i18n.__('admin.auth')));
+            let area = await checkExistThenGet(areaId, Area);
+            
+            area.deleted = true;
+            await area.save();
             let reports = {
-                "action":"Delete educationSystem",
-                "type":"EDUCATION-SYSTEM",
-                "deepId":educationSystemId,
+                "action":"Delete Area",
+                "type":"AREAS",
+                "deepId":areaId,
                 "user": req.user._id
             };
-            await Report.create({...reports});
-            res.send({
-                success:true
+            await Report.create({...reports });
+            return res.send({
+                success:true,
             });
+
         } catch (err) {
             next(err);
         }
     },
 
-   
 
 }

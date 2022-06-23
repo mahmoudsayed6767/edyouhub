@@ -10,6 +10,7 @@ router.route('/uploads')
         requireAuth,
         multerSaveTo('funds').fields([
             { name: 'personalIdImgs', maxCount: 4, options: false },
+            { name: 'contractImgs', maxCount: 4, options: false },
             { name: 'utilityBillsImgs', maxCount: 4, options: false },
             { name: 'proofIncomeImgs', maxCount: 4, options: false },
             { name: 'feesLetter', maxCount: 4, options: false },

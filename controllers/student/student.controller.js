@@ -8,9 +8,12 @@ import { checkExist,isInArray } from "../../helpers/CheckMethods";
 import ApiResponse from "../../helpers/ApiResponse";
 import { checkExistThenGet } from "../../helpers/CheckMethods";
 import i18n from "i18n";
+import Category from "../../models/category/category.model"
+
 const populateQuery = [
     { path: 'owner', model: 'user'},
-    { path: 'educationPhase', model: 'educationPhase' },
+    { path: 'category', model: 'category' },
+    { path: 'subCategory', model: 'category' },
     { path: 'educationSystem', model: 'educationSystem' },
     { path: 'educationInstitution', model: 'educationInstitution' }
 
@@ -25,10 +28,15 @@ export default {
             body('studentName').not().isEmpty().withMessage((value) => {
                 return req.__('studentName.required', { value});
             }),
-            body('educationPhase').not().isEmpty().withMessage((value) => {
-                return req.__('educationPhase.required', { value});
-            }).isNumeric().withMessage((value) => {
-                return req.__('educationPhase.numeric', { value});
+            body('category').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('category.required', { value});
+            }).isNumeric().withMessage((value, { req}) => {
+                return req.__('category.numeric', { value});
+            }),
+            body('subCategory').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('subCategory.required', { value});
+            }).isNumeric().withMessage((value, { req}) => {
+                return req.__('subCategory.numeric', { value});
             }),
             body('educationSystem').not().isEmpty().withMessage((value) => {
                 return req.__('educationSystem.required', { value});

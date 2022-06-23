@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import Category from "./category.model";
+import category from "./category.model";
 const subCategorySchema = new Schema({
     parent: {
         type: Number,
@@ -13,4 +13,4 @@ const subCategorySchema = new Schema({
 }, { discriminatorKey: 'kind', _id: false });
 
 
-export default Category.discriminator('sub-category', subCategorySchema);
+export default category.discriminator('sub-category', subCategorySchema);

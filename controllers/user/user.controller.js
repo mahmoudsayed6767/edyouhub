@@ -129,7 +129,7 @@ export default {
             body('token').optional(),
             body('fullname').optional(),
             body('place').optional(),
-            body('salesmanCode').optional(),
+            body('affiliateCode').optional(),
             body('password').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('password.required', { value});
             }).isLength({ min: 8 }).withMessage((value, { req}) => {
@@ -176,7 +176,7 @@ export default {
             }),
             body('type').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('type.required', { value});
-            }).isIn(['PLACE','SUBERVISOR','ADMIN','USER','AGENCY','SALESMAN']).withMessage((value, { req}) => {
+            }).isIn(['PLACE','SUBERVISOR','ADMIN','USER','AGENCY','AFFILIATE']).withMessage((value, { req}) => {
                     return req.__('type.invalid', { value});
                 }),
             body('gender').optional().isIn(['MALE','FEMALE','OTHER']).withMessage((value, { req}) => {
@@ -199,10 +199,10 @@ export default {
                 let image = await handleImg(req, { attributeName: 'img', isUpdate: true });
                 validatedBody.img = image;
             }
-            if(validatedBody.salesmanCode){
-                let salesman = await User.findOne({deleted: false,salesmanCode:validatedBody.salesmanCode})
-                if(salesman)
-                    validatedBody.salesman = salesman
+            if(validatedBody.affiliateCode){
+                let affiliate = await User.findOne({deleted: false,affiliateCode:validatedBody.affiliateCode})
+                if(affiliate)
+                    validatedBody.affiliate = affiliate
             }
             let createdUser = await User.create({
                 ...validatedBody
@@ -343,8 +343,8 @@ export default {
             if(validatedBody.type !="SUBERVISOR" && !validatedBody.place){
                 return next(new ApiError(422,  i18n.__('place.required')));
             }
-            if(validatedBody.type =="SALESMAN"){
-                validatedBody.salesmanCode = generateCode(6)
+            if(validatedBody.type =="affiliate"){
+                validatedBody.affiliateCode = generateCode(6)
             }
             
             
@@ -957,7 +957,7 @@ export default {
                     else
                         return true;
             }),
-            body('type').optional().isIn(['PLACE','SUBERVISOR','ADMIN','USER','AGENCY','SALESMAN']).withMessage((value, { req}) => {
+            body('type').optional().isIn(['PLACE','SUBERVISOR','ADMIN','USER','AGENCY','AFFILIATE']).withMessage((value, { req}) => {
                 return req.__('wrong.type', { value});
             }),
         ];

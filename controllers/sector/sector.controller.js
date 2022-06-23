@@ -2,10 +2,8 @@ import ApiResponse from "../../helpers/ApiResponse";
 import { checkExist, checkExistThenGet, isImgUrl,isInArray } from "../../helpers/CheckMethods";
 import { handleImg, checkValidations ,convertLang} from "../shared/shared.controller";
 import { body } from "express-validator/check";
-import Category from "../../models/category/category.model";
+import category from "../../models/category/category.model";
 import subCategory from "../../models/category/sub-category.model";
-import User from "../../models/user/user.model";
-import Offer from "../../models/offer/offer.model";
 import Report from "../../models/reports/report.model";
 import i18n from "i18n";
 
@@ -16,7 +14,7 @@ const populateQuery = [
 export default {
 
     //find main category pagenation
-    async findCategoryPagenation(req, res, next) {
+    async findcategoryPagenation(req, res, next) {
         try {
             convertLang(req)
              //get lang
@@ -32,7 +30,7 @@ export default {
                 sortd = { priority: 1 }
             }
            
-            await Category.find(query)
+            await category.find(query)
                 .populate(populateQuery)
                 .sort(sortd)
                 .limit(limit)
@@ -43,32 +41,28 @@ export default {
                         let childs = []
                         await Promise.all(e.child.map((e)=>{
                             childs.push({
-                                categoryName:lang=="ar"?e.name_ar:e.name_en,
+                                name:lang=="ar"?e.name_ar:e.name_en,
                                 name_en:e.name_en,
                                 name_ar:e.name_ar,
                                 img:e.img,
-                                type:e.type,
                                 parent:e.parent,
-                                priority:e.priority,
                                 hasChild:e.hasChild,
                                 id: e._id,
                                 createdAt: e.createdAt,
                             });
                         }))
                         newdata.push({
-                            categoryName:lang=="ar"?e.name_ar:e.name_en,
+                            name:lang=="ar"?e.name_ar:e.name_en,
                             name_en:e.name_en,
                             name_ar:e.name_ar,
                             img:e.img,
-                            type:e.type,
-                            priority:e.priority,
                             hasChild:e.hasChild,
                             child:childs,
                             id: e._id,
                             createdAt: e.createdAt,
                         });
                     }))
-                    const count = await Category.countDocuments(query);
+                    const count = await category.countDocuments(query);
                     const pageCount = Math.ceil(count / limit);
 
                     res.send(new ApiResponse(newdata, page, pageCount, limit, count, req));
@@ -88,7 +82,7 @@ export default {
                 page = +req.query.page || 1,
                 limit = +req.query.limit || 20;
 
-            await checkExist(categoryId, Category);
+            await checkExist(categoryId, category);
 
             let query = { parent: categoryId, deleted: false };
             let sortd = { createdAt: 1 }
@@ -103,12 +97,10 @@ export default {
                     var newdata = [];
                     await Promise.all(data.map(async(e) =>{
                         newdata.push({
-                            categoryName:lang=="ar"?e.name_ar:e.name_en,
+                            name:lang=="ar"?e.name_ar:e.name_en,
                             name_en:e.name_en,
                             name_ar:e.name_ar,
                             img:e.img,
-                            type:e.type,
-                            priority:e.priority,
                             hasChild:e.hasChild,
                             parent:e.parent,
                             id: e._id,
@@ -126,7 +118,7 @@ export default {
         }
     },
     //get main categories without pagenation
-    async findCategory(req, res, next) {
+    async findcategory(req, res, next) {
         try {         
             convertLang(req)
              //get lang
@@ -139,7 +131,7 @@ export default {
             }
             if (main)
                 query.main = main;
-            await Category.find(query)
+            await category.find(query)
                 .populate(populateQuery)
                 .sort(sortd)
                 .then(async (data) => {
@@ -148,25 +140,21 @@ export default {
                         let childs = []
                         await Promise.all(e.child.map((e)=>{
                             childs.push({
-                                categoryName:lang=="ar"?e.name_ar:e.name_en,
+                                name:lang=="ar"?e.name_ar:e.name_en,
                                 name_en:e.name_en,
                                 name_ar:e.name_ar,
                                 img:e.img,
-                                type:e.type,
                                 parent:e.parent,
-                                priority:e.priority,
                                 hasChild:e.hasChild,
                                 id: e._id,
                                 createdAt: e.createdAt,
                             });
                         }))
                         newdata.push({
-                            categoryName:lang=="ar"?e.name_ar:e.name_en,
+                            name:lang=="ar"?e.name_ar:e.name_en,
                             name_en:e.name_en,
                             name_ar:e.name_ar,
                             img:e.img,
-                            type:e.type,
-                            priority:e.priority,
                             hasChild:e.hasChild,
                             child:childs,
                             id: e._id,
@@ -191,7 +179,7 @@ export default {
             let lang = i18n.getLocale(req)
             let {orderByPriority,ids} = req.query
             let { categoryId } = req.params;
-            await checkExist(categoryId, Category);
+            await checkExist(categoryId, category);
             let query = { parent: categoryId, deleted: false};
             if(ids){
                 let values = ids.split(",");
@@ -208,12 +196,10 @@ export default {
                     var newdata = [];
                     await Promise.all(data.map(async(e) =>{
                         newdata.push({
-                            categoryName:lang=="ar"?e.name_ar:e.name_en,
+                            name:lang=="ar"?e.name_ar:e.name_en,
                             name_en:e.name_en,
                             name_ar:e.name_ar,
                             img:e.img,
-                            type:e.type,
-                            priority:e.priority,
                             hasChild:e.hasChild,
                             parent:e.parent,
                             id: e._id,
@@ -240,7 +226,7 @@ export default {
                     if (isUpdate)
                         query._id = { $ne: req.params.categoryId };
 
-                    let category = await Category.findOne(query).lean();
+                    let category = await category.findOne(query).lean();
                     console.log(category)
                     if (category)
                         throw req.__('name_en.duplicated')
@@ -255,21 +241,14 @@ export default {
                     if (isUpdate)
                         query._id = { $ne: req.params.categoryId };
 
-                    let category = await Category.findOne(query).lean();
+                    let category = await category.findOne(query).lean();
                     if (category)
                         throw req.__('name_ar.duplicated')
 
                     return true;
                 }),
             body('parent').trim().escape().optional(),
-            body('details').trim().escape().optional(),
             body('main').trim().escape().optional(),
-            body('priority').trim().escape().optional(),
-            body('type').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('type.required', { value});
-            }).isIn(['PLACES','EDUCATION']).withMessage((value, { req}) => {
-                return req.__('type.invalid', { value});
-            }),
             
         ];
         if (isUpdate)
@@ -294,13 +273,13 @@ export default {
             }
             //if parent exist use sub-category modal
             if (validatedBody.parent) {
-                let parentCategory = await checkExistThenGet(validatedBody.parent, Category);
-                parentCategory.hasChild = true;
-                await parentCategory.save();
+                let parentcategory = await checkExistThenGet(validatedBody.parent, category);
+                parentcategory.hasChild = true;
+                await parentcategory.save();
                 model = subCategory;
             }
             else {
-                model = Category;
+                model = category;
             }
             if (req.file) {
                 let image = await handleImg(req, { attributeName: 'img'});
@@ -308,22 +287,22 @@ export default {
             }
            
 
-            let createdCategory = await model.create({ ...validatedBody});
+            let createdcategory = await model.create({ ...validatedBody});
             if(model == subCategory){
-                let parentCategory = await checkExistThenGet(validatedBody.parent, Category);
-                parentCategory.child.push(createdCategory._id);
-                await parentCategory.save();
+                let parentcategory = await checkExistThenGet(validatedBody.parent, category);
+                parentcategory.child.push(createdcategory._id);
+                await parentcategory.save();
             }
             let reports = {
-                "action":"Create New Category",
+                "action":"Create New category",
                 "type":"CATEGORIES",
-                "deepId":createdCategory.id,
+                "deepId":createdcategory.id,
                 "user": req.user._id
             };
             await Report.create({...reports });
             res.status(201).send({
                 success:true,
-                data:createdCategory
+                data:createdcategory
             });
         } catch (err) {
             next(err);
@@ -336,16 +315,14 @@ export default {
             convertLang(req)
             let lang = i18n.getLocale(req)
             let { categoryId } = req.params;
-            await checkExist(categoryId, Category, { deleted: false });
-            await Category.findById(categoryId).populate(populateQuery)
+            await checkExist(categoryId, category, { deleted: false });
+            await category.findById(categoryId).populate(populateQuery)
             .then( e => {
                 let category = {
-                    categoryName:lang=="ar"?e.name_ar:e.name_en,
+                    name:lang=="ar"?e.name_ar:e.name_en,
                     name_en:e.name_en,
                     name_ar:e.name_ar,
                     img:e.img,
-                    type:e.type,
-                    priority:e.priority,
                     hasChild:e.hasChild,
                     parent:e.parent,
                     id: e._id,
@@ -367,20 +344,20 @@ export default {
         try {
             convertLang(req)
             let { categoryId } = req.params, model;
-            await checkExist(categoryId, Category, { deleted: false });
+            await checkExist(categoryId, category, { deleted: false });
 
             const validatedBody = checkValidations(req);
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
             return next(new ApiError(403, i18n.__('admin.auth')));
 
             if (validatedBody.parent) {
-                let parentCategory = await checkExistThenGet(validatedBody.parent, Category);
-                parentCategory.hasChild = true;
-                await parentCategory.save();
+                let parentcategory = await checkExistThenGet(validatedBody.parent, category);
+                parentcategory.hasChild = true;
+                await parentcategory.save();
                 model = subCategory;
             }
             else {
-                model = Category;
+                model = category;
             }
 
             if (req.file) {
@@ -388,24 +365,24 @@ export default {
                 validatedBody.img = image;
             }
 
-            let updatedCategory = await model.findByIdAndUpdate(categoryId, {
+            let updatedcategory = await model.findByIdAndUpdate(categoryId, {
                 ...validatedBody,
             }, { new: true });
             if(model == subCategory){
-                let parentCategory = await checkExistThenGet(validatedBody.parent, Category);
-                parentCategory.child.push(updatedCategory._id);
-                await parentCategory.save();
+                let parentcategory = await checkExistThenGet(validatedBody.parent, category);
+                parentcategory.child.push(updatedcategory._id);
+                await parentcategory.save();
             }
             let reports = {
-                "action":"Update  Category",
+                "action":"Update  category",
                 "type":"CATEGORIES",
-                "deepId":updatedCategory.id,
+                "deepId":updatedcategory.id,
                 "user": req.user._id
             };
             await Report.create({...reports });
             res.send({
                 success:true,
-                data:updatedCategory
+                data:updatedcategory
             });
         }
         catch (err) {
@@ -420,11 +397,11 @@ export default {
                 return next(new ApiError(403, i18n.__('admin.auth')));
             let { categoryId } = req.params;
 
-            let category = await checkExistThenGet(categoryId, Category, { deleted: false });
+            let category = await checkExistThenGet(categoryId, category, { deleted: false });
              /* delete category from her parent child array */
             if(typeof category.parent == 'number'){
-                let parentCategory = await checkExistThenGet(category.parent, Category, { deleted: false });
-                let arr = parentCategory.child;
+                let parentcategory = await checkExistThenGet(category.parent, category, { deleted: false });
+                let arr = parentcategory.child;
                 console.log(arr);
                 for(let i = 0;i<= arr.length;i=i+1){
                     console.log(category.id);
@@ -432,8 +409,8 @@ export default {
                         arr.splice(i, 1);
                     }
                 }
-                parentCategory.child = arr;
-                await parentCategory.save();
+                parentcategory.child = arr;
+                await parentcategory.save();
             }
             /* delete all category children */
             if(category.hasChild == true){
@@ -444,34 +421,11 @@ export default {
                     await child.save();
                 }
             }
-            /* delete users under category */
-            let users = await User.find({
-                $or: [
-                    {category : categoryId},
-                    {subCategory : categoryId}, 
-                ]  
-            });
-            for (let user of users ) {
-                user.active = false;
-                user.deleted = true;
-                await user.save();
-            }
-             /* delete Offers under category */
-             let offers = await Offer.find({
-                $or: [
-                    {category : categoryId},
-                    {subCategory : categoryId}, 
-                ]  
-            });
-            for (let offerId of offers ) {
-                offerId.deleted = true;
-                await offerId.save();
-            }
             category.deleted = true;
 
             await category.save();
             let reports = {
-                "action":"Delete  Category",
+                "action":"Delete  category",
                 "type":"CATEGORIES",
                 "deepId":categoryId,
                 "user": req.user._id

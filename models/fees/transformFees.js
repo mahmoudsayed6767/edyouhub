@@ -8,7 +8,7 @@ export async function transformFees(e,lang) {
     
     if(e.educationInstitution){
         index.educationInstitution = {
-            educationInstitution:lang=="ar"?e.educationInstitution.educationInstitution_ar:e.educationInstitution.educationInstitution_en,
+            name:lang=="ar"?e.educationInstitution.name_ar:e.educationInstitution.name_en,
             id: e.educationInstitution._id,
         }
     }
@@ -29,7 +29,7 @@ export async function transformFees(e,lang) {
         }
         if(e.student.educationSystem){
             student.educationSystem = {
-                educationSystem:lang=="ar"?e.student.educationSystem.educationSystem_ar:e.student.educationSystem.educationSystem_en,
+                name:lang=="ar"?e.student.educationSystem.name_ar:e.student.educationSystem.name_en,
                 img: e.student.educationSystem.img,
                 id: e.student.educationSystem._id,
             }

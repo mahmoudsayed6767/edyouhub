@@ -14,12 +14,14 @@ import contactRoute  from './contact/contact.route';
 import categoriesRoute  from './category/category.route';
 import educationSystemRoute  from './education system/education system.route';
 import placeRoute  from './place/place.route';
-import educationPhasesRoute  from './education phase/education phase.route';
 import packagesRoute from './package/package.route';
 import fundsRoute from './fund/fund.route';
 import premiumsRoute from './premium/premium.route';
 import feesRoute from './fees/fees.route';
 import studentRoute from './student/student.route';
+import countriesRoute from './country/country.route';
+import citiesRoute from './city/city.route';
+import businessRoute from './business/business.route';
 
 import { requireAuth } from '../services/passport';
 
@@ -28,10 +30,11 @@ const router = express.Router();
 router.use('/', userRoute);
 router.use('/funds',fundsRoute);
 router.use('/fees',feesRoute);
+router.use('/countries',countriesRoute);
+router.use('/cities',citiesRoute);
 router.use('/students',studentRoute);
-
 router.use('/premiums',premiumsRoute);
-router.use('/educationPhases',educationPhasesRoute);
+router.use('/business',businessRoute);
 router.use('/educationInstitutions',educationInstitutionRoute);
 router.use('/contact-us',contactRoute);
 router.use('/educationSystems',educationSystemRoute);

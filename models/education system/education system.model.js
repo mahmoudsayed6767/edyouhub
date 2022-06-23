@@ -7,12 +7,12 @@ const educationSystemSchema = new Schema({
         type: Number,
         required: true
     },
-    educationSystem_en: {
+    name_en: {
         type: String,
         required: true,
         trim: true,
     },
-    educationSystem_ar: {
+    name_ar: {
         type: String,
         trim: true,
         required: true,

@@ -31,16 +31,16 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
-    salesmanCode: {//for salesman
+    affiliateCode: {//for affiliate
         type: String,
     },
-    salesman: {// if user is sign up with salesman code
+    affiliate: {// if user is sign up with affiliate code
         type: String,
         ref:'user',
     },
     type: {
         type: String,
-        enum: ['PLACE','SUBERVISOR','ADMIN','USER','AGENCY','SALESMAN'],
+        enum: ['PLACE','SUBERVISOR','ADMIN','USER','AGENCY','AFFILIATE'],
         required:true
     },
     gender: {
@@ -132,8 +132,8 @@ userSchema.set('toJSON', {
         if(ret.type =="USER" || ret.type == "ADMIN"){
             delete ret.place;
         }
-        if(ret.type !="SALESMAN"){
-            delete ret.salesmanCode;
+        if(ret.type !="affiliate"){
+            delete ret.affiliateCode;
         }
     }
 });

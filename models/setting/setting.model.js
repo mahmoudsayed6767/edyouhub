@@ -20,7 +20,7 @@ const SettingSchema = new Schema({
         default:5,
         required: true
     },
-    salesManRatio:{
+    affiliateRatio:{
         type: Number,
         default:5,
         required: true

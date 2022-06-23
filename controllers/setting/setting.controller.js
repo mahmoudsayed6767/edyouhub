@@ -36,10 +36,10 @@ export default {
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('feesCashBackRatio.numeric', { value});
             }),
-            body('salesManRatio').trim().escape().not().isEmpty().withMessage((value, { req}) => {
-                return req.__('salesManRatio.required', { value});
+            body('affiliateRatio').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('affiliateRatio.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
-                return req.__('salesManRatio.numeric', { value});
+                return req.__('affiliateRatio.numeric', { value});
             }),
             body('monthCount').trim().escape().not().isEmpty().withMessage((value, { req}) => {
                 return req.__('monthCount.required', { value});

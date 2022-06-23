@@ -10,7 +10,7 @@ import { checkExist,isInArray } from "../../helpers/CheckMethods";
 import ApiResponse from "../../helpers/ApiResponse";
 import { checkExistThenGet } from "../../helpers/CheckMethods";
 import EducationInstitution from "../../models/education institution/education institution.model";
-import EducationPhase from "../../models/education phase/education phase.model";
+import Category from "../../models/category/category.model"
 import EducationSystem from "../../models/education system/education system.model";
 import Setting from "../../models/setting/setting.model"
 import i18n from "i18n";
@@ -22,7 +22,11 @@ const populateQuery = [
     { path: 'owner', model: 'user'},
     {
         path: 'students', model: 'student',
-        populate: { path: 'educationPhase', model: 'educationPhase' },
+        populate: { path: 'category', model: 'category' },
+    },
+    {
+        path: 'students', model: 'student',
+        populate: { path: 'subCategory', model: 'category' },
     },
     {
         path: 'students', model: 'student',
@@ -67,6 +71,7 @@ export default {
             }).isIn(['OWNER','RENTER']).withMessage((value, { req}) => {
                 return req.__('utilityBills.invalid', { value});
             }),
+            body('contractImgs').optional(),
             body('billType').trim().escape().not().isEmpty().withMessage((value, { req}) => {
                 return req.__('billType.required', { value});
             }),
@@ -91,7 +96,8 @@ export default {
             .custom(async (students, { req }) => {
                 convertLang(req)
                 for (let student of students) {
-                    await checkExistThenGet(student.educationPhase, EducationPhase);
+                    await checkExist(student.category, Category,{ deleted: false});
+                    await checkExist(student.subCategory, Category,{ deleted: false});
                     await checkExistThenGet(student.educationSystem, EducationSystem);
                     //await checkExistThenGet(student.educationInstitution, EducationInstitution);
                     body('studentName').not().isEmpty().withMessage((value) => {
@@ -102,10 +108,15 @@ export default {
                     }).isIn(['INSIDE-INSTITUTION','OUTSIDE-INSTITUTION']).withMessage((value, { req}) => {
                         return req.__('type.invalid', { value});
                     }),
-                    body('educationPhase').not().isEmpty().withMessage((value) => {
-                        return req.__('educationPhase.required', { value});
-                    }).isNumeric().withMessage((value) => {
-                        return req.__('educationPhase.numeric', { value});
+                    body('category').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                        return req.__('category.required', { value});
+                    }).isNumeric().withMessage((value, { req}) => {
+                        return req.__('category.numeric', { value});
+                    }),
+                    body('subCategory').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                        return req.__('subCategory.required', { value});
+                    }).isNumeric().withMessage((value, { req}) => {
+                        return req.__('subCategory.numeric', { value});
                     }),
                     body('educationSystem').not().isEmpty().withMessage((value) => {
                         return req.__('educationSystem.required', { value});
@@ -145,6 +156,7 @@ export default {
             let personalIdImgs = []
             let utilityBillsImgs=[]
             let proofIncomeImgs=[]
+            let contractImgs=[]
             let feesLetter=[];
             if (req.files) {
                 if (req.files['personalIdImgs']) {
@@ -153,6 +165,13 @@ export default {
                         imagesList.push(await toImgUrl(imges))
                     }
                     personalIdImgs = imagesList;
+                }
+                if (req.files['contractImgs']) {
+                    let imagesList = [];
+                    for (let imges of req.files['contractImgs']) {
+                        imagesList.push(await toImgUrl(imges))
+                    }
+                    contractImgs = imagesList;
                 }
                 if (req.files['utilityBillsImgs']) {
                     let imagesList = [];
@@ -181,7 +200,8 @@ export default {
                 personalIdImgs :personalIdImgs,
                 utilityBillsImgs:utilityBillsImgs,
                 proofIncomeImgs:proofIncomeImgs,
-                feesLetter:feesLetter
+                feesLetter:feesLetter,
+                contractImgs:contractImgs
             });
         } catch (error) {
             next(error);
@@ -438,12 +458,12 @@ export default {
             let fundOwner = await checkExistThenGet(fund.owner, User)
             fundOwner.balance = fundOwner.balance + cashBack
             await fundOwner.save();
-            //add cashBack to salesMan
-            if(fundOwner.salesman){
-                let salesManCashBack = (fund.totalFees * setting.salesManRatio) / 100 
-                let salesman = await checkExistThenGet(fundOwner.salesman, User)
-                salesman.balance = salesman.balance + salesManCashBack
-                await salesman.save();
+            //add cashBack to affiliate
+            if(fundOwner.affiliate){
+                let affiliateCashBack = (fund.totalFees * setting.affiliateRatio) / 100 
+                let affiliate = await checkExistThenGet(fundOwner.affiliate, User)
+                affiliate.balance = affiliate.balance + affiliateCashBack
+                await affiliate.save();
             }
             
             let date = new Date();

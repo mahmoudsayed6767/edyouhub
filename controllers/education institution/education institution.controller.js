@@ -7,33 +7,38 @@ import { checkExist,isInArray,isImgUrl } from "../../helpers/CheckMethods";
 import ApiResponse from "../../helpers/ApiResponse";
 import { checkExistThenGet } from "../../helpers/CheckMethods";
 import i18n from "i18n";
-import EducationPhase from "../../models/education phase/education phase.model";
+import Category from "../../models/category/category.model"
 import EducationSystem from "../../models/education system/education system.model";
 import { transformEducationInstitution } from "../../models/education institution/transformEducationInstitution";
 const populateQuery = [
-    { path: 'educationPhase', model: 'educationPhase' },
     { path: 'educationSystem', model: 'educationSystem' },
-    
+    { path: 'category', model: 'category' },
+    { path: 'subCategory', model: 'category' },
 ];
 export default {
     //validate body
     validateBody(isUpdate = false) {
         let validations = [
-            body('educationInstitution_en').trim().escape().not().isEmpty().withMessage((value, { req}) => {
-                return req.__('educationInstitution_en.required', { value});
+            body('name_en').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('name_en.required', { value});
             }),
-            body('educationInstitution_ar').trim().escape().not().isEmpty().withMessage((value, { req}) => {
-                return req.__('educationInstitution_ar.required', { value});
+            body('name_ar').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('name_ar.required', { value});
             }),
             body('educationSystem').trim().escape().not().isEmpty().withMessage((value, { req}) => {
                 return req.__('educationSystem.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('educationSystem.numeric', { value});
             }),
-            body('educationPhase').trim().escape().not().isEmpty().withMessage((value, { req}) => {
-                return req.__('educationPhase.required', { value});
+            body('category').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('category.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
-                return req.__('educationPhase.numeric', { value});
+                return req.__('category.numeric', { value});
+            }),
+            body('subCategory').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('subCategory.required', { value});
+            }).isNumeric().withMessage((value, { req}) => {
+                return req.__('subCategory.numeric', { value});
             }),
             
         ];
@@ -52,8 +57,9 @@ export default {
             const validatedBody = checkValidations(req);
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
-            await checkExist(validatedBody.educationPhase, EducationPhase,{ deleted: false});
             await checkExist(validatedBody.educationSystem, EducationSystem,{ deleted: false});
+            await checkExist(validatedBody.category, Category,{ deleted: false});
+            await checkExist(validatedBody.subCategory, Category,{ deleted: false});
             let image = await handleImg(req, { attributeName: 'img'});
             validatedBody.img = image;
             let educationInstitution = await EducationInstitution.create({ ...validatedBody });
@@ -105,9 +111,9 @@ export default {
                 return next(new ApiError(403, i18n.__('admin.auth')));
             const validatedBody = checkValidations(req);
 
-            await checkExist(validatedBody.educationPhase, EducationPhase,{ deleted: false});
             await checkExist(validatedBody.educationSystem, EducationSystem,{ deleted: false});
-
+            await checkExist(validatedBody.category, Category,{ deleted: false});
+            await checkExist(validatedBody.subCategory, Category,{ deleted: false});
             if (req.file) {
                 let image = await handleImg(req, { attributeName: 'img'});
                 validatedBody.img = image;
@@ -141,8 +147,8 @@ export default {
                 query = {
                     $and: [
                         { $or: [
-                            {educationInstitution_ar: { $regex: '.*' + name + '.*' , '$options' : 'i'  }}, 
-                            {educationInstitution_en: { $regex: '.*' + name + '.*', '$options' : 'i'  }}, 
+                            {name_ar: { $regex: '.*' + name + '.*' , '$options' : 'i'  }}, 
+                            {name_en: { $regex: '.*' + name + '.*', '$options' : 'i'  }}, 
                           
                           ] 
                         },
@@ -181,8 +187,8 @@ export default {
                 query = {
                     $and: [
                         { $or: [
-                            {educationInstitution_ar: { $regex: '.*' + name + '.*' , '$options' : 'i'  }}, 
-                            {educationInstitution_en: { $regex: '.*' + name + '.*', '$options' : 'i'  }}, 
+                            {name_ar: { $regex: '.*' + name + '.*' , '$options' : 'i'  }}, 
+                            {name_en: { $regex: '.*' + name + '.*', '$options' : 'i'  }}, 
                           
                           ] 
                         },

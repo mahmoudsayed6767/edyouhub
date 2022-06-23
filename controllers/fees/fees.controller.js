@@ -9,14 +9,19 @@ import { body } from "express-validator/check";
 import i18n from "i18n";
 import {transformFees} from "../../models/fees/transformFees"
 import EducationInstitution from "../../models/education institution/education institution.model";
-import EducationPhase from "../../models/education phase/education phase.model";
 import EducationSystem from "../../models/education system/education system.model";
 import Student from "../../models/student/student.model"
+import Category from "../../models/category/category.model"
+
 const populateQuery = [
     { path: 'educationInstitution', model: 'educationInstitution'},
     {
         path: 'student', model: 'student',
-        populate: { path: 'educationPhase', model: 'educationPhase' },
+        populate: { path: 'category', model: 'category' },
+    },
+    {
+        path: 'student', model: 'student',
+        populate: { path: 'subCategory', model: 'category' },
     },
     {
         path: 'student', model: 'student',
@@ -109,10 +114,15 @@ export default {
             body('studentName').not().isEmpty().withMessage((value) => {
                 return req.__('studentName.required', { value});
             }),
-            body('educationPhase').not().isEmpty().withMessage((value) => {
-                return req.__('educationPhase.required', { value});
-            }).isNumeric().withMessage((value) => {
-                return req.__('educationPhase.numeric', { value});
+            body('category').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('category.required', { value});
+            }).isNumeric().withMessage((value, { req}) => {
+                return req.__('category.numeric', { value});
+            }),
+            body('subCategory').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('subCategory.required', { value});
+            }).isNumeric().withMessage((value, { req}) => {
+                return req.__('subCategory.numeric', { value});
             }),
             body('educationSystem').not().isEmpty().withMessage((value) => {
                 return req.__('educationSystem.required', { value});
@@ -163,13 +173,15 @@ export default {
                 return next(new ApiError(403, i18n.__('admin.auth')));
             const validatedBody = checkValidations(req);
             await checkExist(validatedBody.educationInstitution, EducationInstitution,{ deleted: false})
-            await checkExist(validatedBody.educationPhase, EducationPhase,{ deleted: false});
+            await checkExist(validatedBody.category, Category,{ deleted: false});
+            await checkExist(validatedBody.subCategory, Category,{ deleted: false});
             await checkExist(validatedBody.educationSystem, EducationSystem,{ deleted: false});
             //create student
             let theStudent = await Student.create({
                 educationInstitution:validatedBody.educationInstitution,
                 studentName:validatedBody.studentName,
-                educationPhase:validatedBody.educationPhase,
+                category:validatedBody.category,
+                subCategory:validatedBody.subCategory,
                 educationSystem:validatedBody.educationSystem,
                 year:validatedBody.year,
                 busFees:validatedBody.busFees,
@@ -236,10 +248,15 @@ export default {
                     body('studentName').not().isEmpty().withMessage((value) => {
                         return req.__('studentName.required', { value});
                     }),
-                    body('educationPhase').not().isEmpty().withMessage((value) => {
-                        return req.__('educationPhase.required', { value});
-                    }).isNumeric().withMessage((value) => {
-                        return req.__('educationPhase.numeric', { value});
+                    body('category').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                        return req.__('category.required', { value});
+                    }).isNumeric().withMessage((value, { req}) => {
+                        return req.__('category.numeric', { value});
+                    }),
+                    body('subCategory').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                        return req.__('subCategory.required', { value});
+                    }).isNumeric().withMessage((value, { req}) => {
+                        return req.__('subCategory.numeric', { value});
                     }),
                     body('educationSystem').not().isEmpty().withMessage((value) => {
                         return req.__('educationSystem.required', { value});
@@ -299,13 +316,15 @@ export default {
             const data = checkValidations(req);
             for (let validatedBody of data.fees) {
                 await checkExist(validatedBody.educationInstitution, EducationInstitution,{ deleted: false})
-                await checkExist(validatedBody.educationPhase, EducationPhase,{ deleted: false});
+                await checkExist(validatedBody.category, Category,{ deleted: false});
+                await checkExist(validatedBody.subCategory, Category,{ deleted: false});
                 await checkExist(validatedBody.educationSystem, EducationSystem,{ deleted: false});
                 //create student
                 let theStudent = await Student.create({
                     educationInstitution:validatedBody.educationInstitution,
                     studentName:validatedBody.studentName,
-                    educationPhase:validatedBody.educationPhase,
+                    category:validatedBody.category,
+                    subCategory:validatedBody.subCategory,
                     educationSystem:validatedBody.educationSystem,
                     year:validatedBody.year,
                     busFees:validatedBody.busFees,

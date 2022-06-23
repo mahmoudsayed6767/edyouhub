@@ -2,7 +2,8 @@ import mongoose, { Schema } from 'mongoose';
 import autoIncrement from 'mongoose-auto-increment';
 
 
-const educationInstitutionSchema = new Schema({
+const citySchema = new Schema({
+
     _id: {
         type: Number,
         required: true
@@ -17,23 +18,9 @@ const educationInstitutionSchema = new Schema({
         trim: true,
         required: true,
     },
-    category: {
+    country: {
         type: Number,
-        ref:'category',
-        required: true,
-    },
-    subCategory: {
-        type: Number,
-        ref:'category',
-        required: true,
-    },
-    educationSystem: {
-        type: Number,
-        ref:'educationSystem',
-        required: true,
-    },
-    img: {
-        type: String,
+        ref: 'country',
         required: true,
     },
     deleted:{
@@ -41,7 +28,7 @@ const educationInstitutionSchema = new Schema({
         default:false
     }
 });
-educationInstitutionSchema.set('toJSON', {
+citySchema.set('toJSON', {
     transform: function (doc, ret) {
         ret.id = ret._id;
         delete ret._id;
@@ -51,6 +38,6 @@ educationInstitutionSchema.set('toJSON', {
 });
 
 
-educationInstitutionSchema.plugin(autoIncrement.plugin, { model: 'educationInstitution', startAt: 1 });
+citySchema.plugin(autoIncrement.plugin, { model: 'city', startAt: 1 });
 
-export default mongoose.model('educationInstitution', educationInstitutionSchema);
+export default mongoose.model('city', citySchema);

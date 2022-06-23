@@ -1,7 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 import { isImgUrl } from "../../helpers/CheckMethods";
 import autoIncrement from 'mongoose-auto-increment';
-const CategorySchema = new Schema({
+const categorySchema = new Schema({
     _id: {
         type: Number,
         required: true
@@ -15,16 +15,6 @@ const CategorySchema = new Schema({
         type: String,
         trim: true,
         required: true,
-    },
-    type: {
-        type: String,
-        required: true,
-        enum:['PLACES','EDUCATION'],
-        default:'PLACES'
-    },
-    priority:{
-        type:Number,
-        default:0,
     },
     img: {
         type: String,
@@ -49,13 +39,9 @@ const CategorySchema = new Schema({
         type: Boolean,
         default: false
     },
-    details:{
-        type:String,
-        default:''
-    }
 }, { discriminatorKey: 'kind', timestamps: true });
 
-CategorySchema.set('toJSON', {
+categorySchema.set('toJSON', {
     transform: function (doc, ret, options) {
         ret.id = ret._id;
         delete ret._id;
@@ -65,6 +51,6 @@ CategorySchema.set('toJSON', {
     }
 });
 autoIncrement.initialize(mongoose.connection);
-CategorySchema.plugin(autoIncrement.plugin, { model: 'category', startAt: 1 });
+categorySchema.plugin(autoIncrement.plugin, { model: 'category', startAt: 1 });
 
-export default mongoose.model('category', CategorySchema);
+export default mongoose.model('category', categorySchema);

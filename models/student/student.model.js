@@ -14,10 +14,15 @@ const studentSchema = new Schema({
         enum:['INSIDE-INSTITUTION','OUTSIDE-INSTITUTION'],
         default: 'INSIDE-INSTITUTION'
     },
-    educationPhase: {
+    category: {
         type: Number,
-        ref: 'educationPhase',
-        required: true
+        ref:'category',
+        required: true,
+    },
+    subCategory: {
+        type: Number,
+        ref:'category',
+        required: true,
     },
     educationSystem: {
         type: Number,
