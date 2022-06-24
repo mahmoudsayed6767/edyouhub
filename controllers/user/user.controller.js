@@ -33,6 +33,18 @@ const checkUserExistByEmail = async (email) => {
 }
 const populateQuery = [
     { path: 'place', model: 'place'},
+    {
+        path: 'user', model: 'user',
+        populate: { path: 'country', model: 'country' },
+    },
+    {
+        path: 'user', model: 'user',
+        populate: { path: 'city', model: 'city' },
+    },
+    {
+        path: 'user', model: 'user',
+        populate: { path: 'area', model: 'area' },
+    },
 ];
 
 export default {

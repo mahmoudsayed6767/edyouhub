@@ -329,8 +329,6 @@ export default {
             }else{
                 return next(new ApiError(400,  i18n.__('you.takeOffer')));
             }
-            
-            
 
         }
         catch (err) {

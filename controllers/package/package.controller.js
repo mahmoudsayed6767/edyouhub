@@ -189,8 +189,6 @@ export default {
             convertLang(req)
             let { packageId } = req.params;
             let packages = await checkExistThenGet(packageId, Package, { deleted: false });
-            packages.deleted = true;
-            await packages.save();
             let user = await checkExistThenGet(req.user._id,User, { deleted: false });
             user.balance  = user.balance + packages.coins
             await user.save();

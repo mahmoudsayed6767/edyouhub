@@ -42,7 +42,7 @@ export async function transformPlaceById(e,lang,myUser,userId) {
     let categories=[]
     for (let val of e.categories) {
         categories.push({
-            categoryName:lang=="ar"?val.name_ar:val.name_en,
+            name:lang=="ar"?val.name_ar:val.name_en,
             id:val._id,                         
         })
     }
@@ -51,7 +51,7 @@ export async function transformPlaceById(e,lang,myUser,userId) {
     let subCategories=[]
     for (let val of e.subCategories) {
         subCategories.push({
-            categoryName:lang=="ar"?val.name_ar:val.name_en,
+            name:lang=="ar"?val.name_ar:val.name_en,
             id:val._id,                         
         })
     }

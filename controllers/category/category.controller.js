@@ -29,8 +29,6 @@ export default {
             if (type) query.type = type;
             let sortd = { createdAt: 1 }
             if(orderByPriority) sortd = { priority: 1 }
-            
-           
             await Category.find(query)
                 .populate(populateQuery)
                 .sort(sortd)
@@ -42,25 +40,23 @@ export default {
                         let childs = []
                         await Promise.all(e.child.map((e)=>{
                             childs.push({
-                                categoryName:lang=="ar"?e.name_ar:e.name_en,
+                                name:lang=="ar"?e.name_ar:e.name_en,
                                 name_en:e.name_en,
                                 name_ar:e.name_ar,
                                 img:e.img,
                                 type:e.type,
                                 parent:e.parent,
-                                priority:e.priority,
                                 hasChild:e.hasChild,
                                 id: e._id,
                                 createdAt: e.createdAt,
                             });
                         }))
                         newdata.push({
-                            categoryName:lang=="ar"?e.name_ar:e.name_en,
+                            name:lang=="ar"?e.name_ar:e.name_en,
                             name_en:e.name_en,
                             name_ar:e.name_ar,
                             img:e.img,
                             type:e.type,
-                            priority:e.priority,
                             hasChild:e.hasChild,
                             child:childs,
                             id: e._id,
@@ -102,12 +98,11 @@ export default {
                     var newdata = [];
                     await Promise.all(data.map(async(e) =>{
                         newdata.push({
-                            categoryName:lang=="ar"?e.name_ar:e.name_en,
+                            name:lang=="ar"?e.name_ar:e.name_en,
                             name_en:e.name_en,
                             name_ar:e.name_ar,
                             img:e.img,
                             type:e.type,
-                            priority:e.priority,
                             hasChild:e.hasChild,
                             parent:e.parent,
                             id: e._id,
@@ -145,25 +140,23 @@ export default {
                         let childs = []
                         await Promise.all(e.child.map((e)=>{
                             childs.push({
-                                categoryName:lang=="ar"?e.name_ar:e.name_en,
+                                name:lang=="ar"?e.name_ar:e.name_en,
                                 name_en:e.name_en,
                                 name_ar:e.name_ar,
                                 img:e.img,
                                 type:e.type,
                                 parent:e.parent,
-                                priority:e.priority,
                                 hasChild:e.hasChild,
                                 id: e._id,
                                 createdAt: e.createdAt,
                             });
                         }))
                         newdata.push({
-                            categoryName:lang=="ar"?e.name_ar:e.name_en,
+                            name:lang=="ar"?e.name_ar:e.name_en,
                             name_en:e.name_en,
                             name_ar:e.name_ar,
                             img:e.img,
                             type:e.type,
-                            priority:e.priority,
                             hasChild:e.hasChild,
                             child:childs,
                             id: e._id,
@@ -205,12 +198,11 @@ export default {
                     var newdata = [];
                     await Promise.all(data.map(async(e) =>{
                         newdata.push({
-                            categoryName:lang=="ar"?e.name_ar:e.name_en,
+                            name:lang=="ar"?e.name_ar:e.name_en,
                             name_en:e.name_en,
                             name_ar:e.name_ar,
                             img:e.img,
                             type:e.type,
-                            priority:e.priority,
                             hasChild:e.hasChild,
                             parent:e.parent,
                             id: e._id,
@@ -337,7 +329,7 @@ export default {
             await Category.findById(categoryId).populate(populateQuery)
             .then( e => {
                 let category = {
-                    categoryName:lang=="ar"?e.name_ar:e.name_en,
+                    name:lang=="ar"?e.name_ar:e.name_en,
                     name_en:e.name_en,
                     name_ar:e.name_ar,
                     img:e.img,
