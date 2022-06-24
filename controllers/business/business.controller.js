@@ -16,11 +16,12 @@ import EducationInstitution from "../../models/education institution/education i
 import { transformBusiness,transformBusinessById } from "../../models/business/transformBusiness";
 import { sendNotifiAndPushNotifi } from "../../services/notification-service";
 import Notif from "../../models/notif/notif.model";
+import User from "../../models/user/user.model";
 const populateQuery = [
     { path: 'owner', model: 'user' },
     { path: 'educationSystem', model: 'educationSystem' },
-    { path: 'category', model: 'category' },
-    { path: 'subCategory', model: 'category' },
+    { path: 'sector', model: 'category' },
+    { path: 'subSector', model: 'category' },
     { path: 'country', model: 'country' },
     { path: 'city', model: 'city' },
     { path: 'area', model: 'area' },
@@ -30,44 +31,90 @@ export default {
     //validate body
     validateBody(isUpdate = false) {
         let validations = [
-            body('businessName_en').trim().escape().not().isEmpty().withMessage((value, { req}) => {
-                return req.__('businessName_en.required', { value});
+            body('name_en').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('name_en.required', { value});
             }),
-            body('businessName_ar').trim().escape().not().isEmpty().withMessage((value, { req}) => {
-                return req.__('businessName_ar.required', { value});
+            body('name_ar').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('name_ar.required', { value});
             }),
             body('educationSystem').trim().escape().not().isEmpty().withMessage((value, { req}) => {
                 return req.__('educationSystem.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('educationSystem.numeric', { value});
+            }).custom(async (value, { req }) => {
+                if (!await EducationSystem.findOne({_id:value,deleted:false}))
+                    throw new Error(req.__('educationSystem.invalid'));
+                else
+                    return true;
             }),
             body('webSite').trim().not().isEmpty().withMessage((value, { req}) => {
                 return req.__('webSite.required', { value});
             }),
-            body('category').trim().escape().not().isEmpty().withMessage((value, { req}) => {
-                return req.__('category.required', { value});
-            }).isNumeric().withMessage((value, { req}) => {
-                return req.__('category.numeric', { value});
+            body('email').trim().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('email.required', { value});
             }),
-            body('subCategory').trim().escape().not().isEmpty().withMessage((value, { req}) => {
-                return req.__('subCategory.required', { value});
+            body('phones').trim().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('phones.required', { value});
+            }),
+            body('sector').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('sector.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
-                return req.__('subCategory.numeric', { value});
+                return req.__('sector.numeric', { value});
+            }).custom(async (value, { req }) => {
+                if (!await Category.findOne({_id:value,deleted:false}))
+                    throw new Error(req.__('sector.invalid'));
+                else
+                    return true;
+            }),
+            body('subSector').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('subSector.required', { value});
+            }).isNumeric().withMessage((value, { req}) => {
+                return req.__('subSector.numeric', { value});
+            }).custom(async (value, { req }) => {
+                if (!await Category.findOne({_id:value,deleted:false}))
+                    throw new Error(req.__('subSector.invalid'));
+                else
+                    return true;
             }),
             body('country').trim().escape().not().isEmpty().withMessage((value, { req}) => {
                 return req.__('country.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('country.numeric', { value});
+            }).custom(async (value, { req }) => {
+                if (!await Country.findOne({_id:value,deleted:false}))
+                    throw new Error(req.__('country.invalid'));
+                else
+                    return true;
             }),
             body('city').trim().escape().not().isEmpty().withMessage((value, { req}) => {
                 return req.__('city.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('city.numeric', { value});
+            }).custom(async (value, { req }) => {
+                if (!await City.findOne({_id:value,deleted:false}))
+                    throw new Error(req.__('city.invalid'));
+                else
+                    return true;
             }),
             body('area').trim().escape().not().isEmpty().withMessage((value, { req}) => {
                 return req.__('area.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('area.numeric', { value});
+            }).custom(async (value, { req }) => {
+                if (!await Area.findOne({_id:value,deleted:false}))
+                    throw new Error(req.__('area.invalid'));
+                else
+                    return true;
+            }),
+            body('owner').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('owner.required', { value});
+            }).isNumeric().withMessage((value, { req}) => {
+                return req.__('owner.numeric', { value});
+            }).custom(async (value, { req }) => {
+                if (!await User.findOne({_id:value,deleted:false}))
+                    throw new Error(req.__('owner.invalid'));
+                else
+                    return true;
             }),
             
         ];
@@ -84,15 +131,24 @@ export default {
         try {
             convertLang(req)
             const validatedBody = checkValidations(req);
-            await checkExist(validatedBody.country, Country,{ deleted: false});
-            await checkExist(validatedBody.area, Area,{ deleted: false});
-            await checkExist(validatedBody.city, City,{ deleted: false});
-            await checkExist(validatedBody.category, Category,{ deleted: false});
-            await checkExist(validatedBody.subCategory, Category,{ deleted: false});
-            await checkExist(validatedBody.educationSystem, EducationSystem,{ deleted: false});
             let image = await handleImg(req, { attributeName: 'img'});
             validatedBody.img = image;
-            let business = await business.create({ ...validatedBody });
+            let business = await Business.create({ ...validatedBody });
+            if(req.user.type =="ADMIN"){
+                let educationInstitution = await EducationInstitution.create({ 
+                    name_en:business.name_en,
+                    name_ar:business.name_ar,
+                    educationSystem:business.educationSystem,
+                    educationSystem:business.educationSystem,
+                    sector:business.sector,
+                    subSector:business.subSector,
+                    img:business.img,
+    
+                });
+                business.status = "ACCEPTED"
+                business.educationInstitution = educationInstitution
+                await business.save();
+            }
             let reports = {
                 "action":"Create New business",
                 "type":"BUSINESS",
@@ -137,13 +193,6 @@ export default {
             let { businessId } = req.params;
             await checkExist(businessId,Business, { deleted: false })
             const validatedBody = checkValidations(req);
-
-            await checkExist(validatedBody.country, Country,{ deleted: false});
-            await checkExist(validatedBody.area, Area,{ deleted: false});
-            await checkExist(validatedBody.city, City,{ deleted: false});
-            await checkExist(validatedBody.category, Category,{ deleted: false});
-            await checkExist(validatedBody.subCategory, Category,{ deleted: false});
-            await checkExist(validatedBody.educationSystem, EducationSystem,{ deleted: false});
             if (req.file) {
                 let image = await handleImg(req, { attributeName: 'img'});
                 validatedBody.img = image;
@@ -167,18 +216,18 @@ export default {
     async getAll(req, res, next) {
         try {
             convertLang(req)
-             //get lang
+            //get lang
             let lang = i18n.getLocale(req)
-            let {name} = req.query;
+            let {owner,name,sector,subSector,educationSystem,country,city,area,status} = req.query;
 
             let query = {deleted: false }
-             /*search by name */
+            /*search by name */
             if(name) {
                 query = {
                     $and: [
                         { $or: [
-                            {businessName_ar: { $regex: '.*' + name + '.*' , '$options' : 'i'  }}, 
-                            {businessName_en: { $regex: '.*' + name + '.*', '$options' : 'i'  }}, 
+                            {name_ar: { $regex: '.*' + name + '.*' , '$options' : 'i'  }}, 
+                            {name_en: { $regex: '.*' + name + '.*', '$options' : 'i'  }}, 
                           
                           ] 
                         },
@@ -186,6 +235,14 @@ export default {
                     ]
                 };
             }
+            if(owner) query.owner = owner
+            if(sector) query.sector = sector
+            if(subSector) query.subSector = subSector
+            if(educationSystem) query.educationSystem = educationSystem
+            if(country) query.country = country
+            if(city) query.city = city
+            if(area) query.area = area
+            if(status) query.status = status
             await Business.find(query).populate(populateQuery)
                 .sort({ _id: 1 })
                 .then( async(data) => {
@@ -207,18 +264,19 @@ export default {
     async getAllPaginated(req, res, next) {
         try {
             convertLang(req)
-             //get lang
+            //get lang
             let lang = i18n.getLocale(req)
-            let {name} = req.query
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
-            let query = {  deleted: false }
+            let {owner,name,sector,subSector,educationSystem,country,city,area,status} = req.query;
+
+            let query = {deleted: false }
             /*search by name */
             if(name) {
                 query = {
                     $and: [
                         { $or: [
-                            {businessName_ar: { $regex: '.*' + name + '.*' , '$options' : 'i'  }}, 
-                            {businessName_en: { $regex: '.*' + name + '.*', '$options' : 'i'  }}, 
+                            {name_ar: { $regex: '.*' + name + '.*' , '$options' : 'i'  }}, 
+                            {name_en: { $regex: '.*' + name + '.*', '$options' : 'i'  }}, 
                           
                           ] 
                         },
@@ -226,6 +284,14 @@ export default {
                     ]
                 };
             }
+            if(owner) query.owner = owner
+            if(sector) query.sector = sector
+            if(subSector) query.subSector = subSector
+            if(educationSystem) query.educationSystem = educationSystem
+            if(country) query.country = country
+            if(city) query.city = city
+            if(area) query.area = area
+            if(status) query.status = status
             await Business.find(query).populate(populateQuery)
                 .sort({ _id: 1 })
                 .limit(limit)
@@ -278,36 +344,41 @@ export default {
                 return next(new ApiError(403, i18n.__('admin.auth')));
             let business = await checkExistThenGet(businessId, Business);
             business.status = 'ACCEPTED';
-            await business.save();
-            await EducationInstitution.create({ 
-                name_en:business.businessName_en,
-                name_ar:business.businessName_ar,
-                educationSystem:business.educationSystem,
-                educationSystem:business.educationSystem,
-                category:business.category,
-                subCategory:business.subCategory,
-                img:business.img,
+            
+            if(!business.educationInstitution){
+                let educationInstitution = await EducationInstitution.create({ 
+                    name_en:business.name_en,
+                    name_ar:business.name_ar,
+                    educationSystem:business.educationSystem,
+                    educationSystem:business.educationSystem,
+                    sector:business.sector,
+                    subSector:business.subSector,
+                    img:business.img,
 
-            });
+                });
+                business.educationInstitution = educationInstitution
+            }
+            
+            await business.save();
             sendNotifiAndPushNotifi({
                 targetUser: business.owner, 
                 fromUser: business.owner, 
                 text: ' EdHub',
                 subject: business.id,
                 subjectType: 'Business Status',
-                info:'BUSSINESS'
+                info:'BUSINESS'
             });
             let notif = {
                 "description_en":'Your business Request Has Been Confirmed ',
                 "description_ar":'  تمت الموافقه على طلب  الخاص بك',
                 "title_en":'Your business Request Has Been Confirmed ',
                 "title_ar":' تمت الموافقه على طلب  الخاص بك',
-                "type":'BUSSINESS'
+                "type":'BUSINESS'
             }
             await Notif.create({...notif,resource:req.user,target:business.owner,business:business.id});
             let reports = {
                 "action":"Accept business Request",
-                "type":"BUSSINESS",
+                "type":"BUSINESS",
                 "deepId":businessId,
                 "user": req.user._id
             };
@@ -338,19 +409,19 @@ export default {
                 text: ' EdHub',
                 subject: business.id,
                 subjectType: 'business Status',
-                info:'BUSSINESS'
+                info:'BUSINESS'
             });
             let notif = {
                 "description_en":'Your business Request Has Been Rejected ',
                 "description_ar":'   تم رفض  طلب التمويل الخاص بك',
                 "title_en":'Your business Request Has Been Rejected ',
                 "title_ar":' تم رفض على طلب التمويل الخاص بك',
-                "type":'BUSSINESS'
+                "type":'BUSINESS'
             }
             await Notif.create({...notif,resource:req.user,target:business.owner,business:business.id});
             let reports = {
                 "action":"Reject business Request",
-                "type":"BUSSINESS",
+                "type":"BUSINESS",
                 "deepId":businessId,
                 "user": req.user._id
             };
@@ -362,7 +433,4 @@ export default {
             next(err);
         }
     },
-
-   
-
 }

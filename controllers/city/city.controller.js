@@ -108,9 +108,9 @@ export default {
             convertLang(req)
              //get lang
             let lang = i18n.getLocale(req)
-            let {name,country} = req.query;
+            let {name} = req.query;
 
-            let query = {deleted: false }
+            let query = {deleted: false,country:req.params.country }
              /*search by name */
             if(name) {
                 query = {
@@ -125,7 +125,6 @@ export default {
                     ]
                 };
             }
-            if(country) query.country = country
             await City.find(query)
                 .sort({ _id: 1 })
                 .then( async(data) => {
@@ -155,9 +154,9 @@ export default {
             convertLang(req)
              //get lang
             let lang = i18n.getLocale(req)
-            let {name,country} = req.query
+            let {name} = req.query
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
-            let query = {  deleted: false }
+            let query = {  deleted: false,country:req.params.country }
             /*search by name */
             if(name) {
                 query = {
@@ -172,7 +171,6 @@ export default {
                     ]
                 };
             }
-            if(country) query.country = country
             await City.find(query)
                 .sort({ _id: 1 })
                 .limit(limit)

@@ -15,13 +15,13 @@ export default {
     validateCountryBody(isUpdate = false) {
         let validations = [
             body('name_en').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('country_en.required', { value});
+                return req.__('name_en.required', { value});
             }) .custom(async (value, { req }) => {
                 let userQuery = { name_en: value, deleted: false };
                 if (isUpdate)
                     userQuery._id = { $ne: req.params.countryId };
                 if (await Country.findOne(userQuery))
-                    throw req.__('country_en.duplicated');
+                    throw req.__('country.duplicated');
                 else
                     return true;
             }),
@@ -32,7 +32,7 @@ export default {
                 if (isUpdate)
                     userQuery._id = { $ne: req.params.countryId };
                 if (await Country.findOne(userQuery)){
-                    throw req.__('country_ar.duplicated')
+                    throw req.__('country.duplicated')
                 }
                 else
                     return true;

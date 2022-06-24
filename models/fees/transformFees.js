@@ -21,12 +21,6 @@ export async function transformFees(e,lang) {
             tuitionFees:e.student.tuitionFees,
             id:e.student._id,                         
         }
-        if(e.student.educationPhase){
-            student.educationPhase = {
-                educationPhase:lang=="ar"?e.student.educationPhase.educationPhase_ar:e.student.educationPhase.educationPhase_en,
-                id: e.student.educationPhase._id,
-            }
-        }
         if(e.student.educationSystem){
             student.educationSystem = {
                 name:lang=="ar"?e.student.educationSystem.name_ar:e.student.educationSystem.name_en,

@@ -31,6 +31,24 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
+    country: {
+        type: Number,
+        ref: 'country',
+        default:1,
+        required: true,
+    },
+    city: {
+        type: Number,
+        ref: 'city',
+        default:1,
+        required: true,
+    },
+    area: {
+        type: Number,
+        ref: 'area',
+        default:1,
+        required: true,
+    },
     affiliateCode: {//for affiliate
         type: String,
     },

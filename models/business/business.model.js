@@ -18,12 +18,22 @@ const businessSchema = new Schema({
         enum:['PENDING','ACCEPTED','REJECTED'],
         default:'PENDING'
     },
-    businessName_en: {
+    name_en: {
         type: String,
         required: true,
         trim: true,
     },
-    businessName_ar: {
+    name_ar: {
+        type: String,
+        trim: true,
+        required: true,
+    },
+    phones: {
+        type: [String],
+        trim: true,
+        required: true,
+    },
+    email: {
         type: String,
         trim: true,
         required: true,
@@ -42,12 +52,16 @@ const businessSchema = new Schema({
         ref:'educationSystem',
         required: true,
     },
-    category: {
+    educationInstitution: {//if accepted
+        type: Number,
+        ref: 'educationInstitution',
+    },
+    sector: {
         type: Number,
         ref:'category',
         required: true,
     },
-    subCategory: {
+    subSector: {
         type: Number,
         ref:'category',
         required: true,

@@ -14,7 +14,9 @@ import { sendNotifiAndPushNotifi } from "../../services/notification-service";
 import i18n from "i18n";
 import {transformUser,transformUserById } from '../../models/user/transformUser';
 import UserDevice from "../../models/user devices/user devices.model";
-
+import Country from "../../models/country/country.model";
+import City from "../../models/city/city.model";
+import Area from "../../models/area/area.model";
 const checkUserExistByPhone = async (phone) => {
     let user = await User.findOne({ phone:phone,deleted:false });
     if (!user)
@@ -174,11 +176,41 @@ export default {
                     return true;
                 
             }),
+            body('country').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('country.required', { value});
+            }).isNumeric().withMessage((value, { req}) => {
+                return req.__('country.numeric', { value});
+            }).custom(async (value, { req }) => {
+                if (!await Country.findOne({_id:value,deleted:false}))
+                    throw new Error(req.__('country.invalid'));
+                else
+                    return true;
+            }),
+            body('city').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('city.required', { value});
+            }).isNumeric().withMessage((value, { req}) => {
+                return req.__('city.numeric', { value});
+            }).custom(async (value, { req }) => {
+                if (!await City.findOne({_id:value,deleted:false}))
+                    throw new Error(req.__('city.invalid'));
+                else
+                    return true;
+            }),
+            body('area').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('area.required', { value});
+            }).isNumeric().withMessage((value, { req}) => {
+                return req.__('area.numeric', { value});
+            }).custom(async (value, { req }) => {
+                if (!await Area.findOne({_id:value,deleted:false}))
+                    throw new Error(req.__('area.invalid'));
+                else
+                    return true;
+            }),
             body('type').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('type.required', { value});
             }).isIn(['PLACE','SUBERVISOR','ADMIN','USER','AGENCY','AFFILIATE']).withMessage((value, { req}) => {
                     return req.__('type.invalid', { value});
-                }),
+            }),
             body('gender').optional().isIn(['MALE','FEMALE','OTHER']).withMessage((value, { req}) => {
                     return req.__('gender.invalid', { value});
             }),
@@ -340,7 +372,7 @@ export default {
             if(req.user.type =="PLACE" && validatedBody.type !="SUBERVISOR"){
                 return next(new ApiError(403,  i18n.__('notAllow')));
             }
-            if(validatedBody.type !="SUBERVISOR" && !validatedBody.place){
+            if(validatedBody.type =="SUBERVISOR" && !validatedBody.place){
                 return next(new ApiError(422,  i18n.__('place.required')));
             }
             if(validatedBody.type =="affiliate"){
@@ -957,6 +989,36 @@ export default {
                     else
                         return true;
             }),
+            body('country').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('country.required', { value});
+            }).isNumeric().withMessage((value, { req}) => {
+                return req.__('country.numeric', { value});
+            }).custom(async (value, { req }) => {
+                if (!await Country.findOne({_id:value,deleted:false}))
+                    throw new Error(req.__('country.invalid'));
+                else
+                    return true;
+            }),
+            body('city').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('city.required', { value});
+            }).isNumeric().withMessage((value, { req}) => {
+                return req.__('city.numeric', { value});
+            }).custom(async (value, { req }) => {
+                if (!await City.findOne({_id:value,deleted:false}))
+                    throw new Error(req.__('city.invalid'));
+                else
+                    return true;
+            }),
+            body('area').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('area.required', { value});
+            }).isNumeric().withMessage((value, { req}) => {
+                return req.__('area.numeric', { value});
+            }).custom(async (value, { req }) => {
+                if (!await Area.findOne({_id:value,deleted:false}))
+                    throw new Error(req.__('area.invalid'));
+                else
+                    return true;
+            }),
             body('type').optional().isIn(['PLACE','SUBERVISOR','ADMIN','USER','AGENCY','AFFILIATE']).withMessage((value, { req}) => {
                 return req.__('wrong.type', { value});
             }),
@@ -991,6 +1053,15 @@ export default {
             if (req.file) {
                 let image = await handleImg(req, { attributeName: 'img', isUpdate: true });
                 user.img = image;
+            }
+            if(validatedBody.country){
+                user.country = validatedBody.country;
+            }
+            if(validatedBody.city){
+                user.city = validatedBody.city;
+            }
+            if(validatedBody.area){
+                user.area = validatedBody.area;
             }
             if(validatedBody.phone){
                 user.phone = validatedBody.phone;

@@ -22,15 +22,14 @@ export default {
              //get lang
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20,
-            { main,orderByPriority,} = req.query;
+            { main,orderByPriority,type} = req.query;
             
             let query = { deleted: false, parent: { $exists: false }};
-            if (main)
-                query.main = main;
+            if (main) query.main = main;
+            if (type) query.type = type;
             let sortd = { createdAt: 1 }
-            if(orderByPriority){
-                sortd = { priority: 1 }
-            }
+            if(orderByPriority) sortd = { priority: 1 }
+            
            
             await Category.find(query)
                 .populate(populateQuery)
@@ -131,14 +130,12 @@ export default {
             convertLang(req)
              //get lang
             let lang = i18n.getLocale(req)   
-            let {orderByPriority,main} = req.query
+            let {orderByPriority,main,type} = req.query
             let query = { deleted: false, parent: { $exists: false }};
             let sortd = { createdAt: 1 }
-            if(orderByPriority){
-                sortd = { priority: 1 }
-            }
-            if (main)
-                query.main = main;
+            if (orderByPriority) sortd = { priority: 1 }
+            if (main) query.main = main;
+            if (type) query.type = type;
             await Category.find(query)
                 .populate(populateQuery)
                 .sort(sortd)

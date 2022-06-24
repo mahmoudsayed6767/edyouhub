@@ -12,8 +12,8 @@ import EducationSystem from "../../models/education system/education system.mode
 import { transformEducationInstitution } from "../../models/education institution/transformEducationInstitution";
 const populateQuery = [
     { path: 'educationSystem', model: 'educationSystem' },
-    { path: 'category', model: 'category' },
-    { path: 'subCategory', model: 'category' },
+    { path: 'sector', model: 'category' },
+    { path: 'subSector', model: 'category' },
 ];
 export default {
     //validate body
@@ -29,16 +29,31 @@ export default {
                 return req.__('educationSystem.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('educationSystem.numeric', { value});
+            }).custom(async (value, { req }) => {
+                if (!await EducationSystem.findOne({_id:value,deleted:false}))
+                    throw new Error(req.__('educationSystem.invalid'));
+                else
+                    return true;
             }),
-            body('category').trim().escape().not().isEmpty().withMessage((value, { req}) => {
-                return req.__('category.required', { value});
+            body('sector').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('sector.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
-                return req.__('category.numeric', { value});
+                return req.__('sector.numeric', { value});
+            }).custom(async (value, { req }) => {
+                if (!await Category.findOne({_id:value,deleted:false}))
+                    throw new Error(req.__('sector.invalid'));
+                else
+                    return true;
             }),
-            body('subCategory').trim().escape().not().isEmpty().withMessage((value, { req}) => {
-                return req.__('subCategory.required', { value});
+            body('subSector').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('subSector.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
-                return req.__('subCategory.numeric', { value});
+                return req.__('subSector.numeric', { value});
+            }).custom(async (value, { req }) => {
+                if (!await Category.findOne({_id:value,deleted:false}))
+                    throw new Error(req.__('subSector.invalid'));
+                else
+                    return true;
             }),
             
         ];
@@ -57,9 +72,6 @@ export default {
             const validatedBody = checkValidations(req);
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
-            await checkExist(validatedBody.educationSystem, EducationSystem,{ deleted: false});
-            await checkExist(validatedBody.category, Category,{ deleted: false});
-            await checkExist(validatedBody.subCategory, Category,{ deleted: false});
             let image = await handleImg(req, { attributeName: 'img'});
             validatedBody.img = image;
             let educationInstitution = await EducationInstitution.create({ ...validatedBody });
@@ -111,9 +123,6 @@ export default {
                 return next(new ApiError(403, i18n.__('admin.auth')));
             const validatedBody = checkValidations(req);
 
-            await checkExist(validatedBody.educationSystem, EducationSystem,{ deleted: false});
-            await checkExist(validatedBody.category, Category,{ deleted: false});
-            await checkExist(validatedBody.subCategory, Category,{ deleted: false});
             if (req.file) {
                 let image = await handleImg(req, { attributeName: 'img'});
                 validatedBody.img = image;
@@ -139,7 +148,7 @@ export default {
             convertLang(req)
              //get lang
             let lang = i18n.getLocale(req)
-            let {name} = req.query;
+            let {name,sector,subSector,educationSystem} = req.query;
 
             let query = {deleted: false }
              /*search by name */
@@ -156,6 +165,9 @@ export default {
                     ]
                 };
             }
+            if(sector) query.sector = sector
+            if(subSector) query.subSector = subSector
+            if(educationSystem) query.educationSystem = educationSystem
             await EducationInstitution.find(query).populate(populateQuery)
                 .sort({ _id: 1 })
                 .then( async(data) => {
@@ -179,10 +191,10 @@ export default {
             convertLang(req)
              //get lang
             let lang = i18n.getLocale(req)
-            let {name} = req.query
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
-            let query = {  deleted: false }
-            /*search by name */
+            let {name,sector,subSector,educationSystem} = req.query;
+            let query = {deleted: false }
+             /*search by name */
             if(name) {
                 query = {
                     $and: [
@@ -196,6 +208,9 @@ export default {
                     ]
                 };
             }
+            if(sector) query.sector = sector
+            if(subSector) query.subSector = subSector
+            if(educationSystem) query.educationSystem = educationSystem
             await EducationInstitution.find(query).populate(populateQuery)
                 .sort({ _id: 1 })
                 .limit(limit)

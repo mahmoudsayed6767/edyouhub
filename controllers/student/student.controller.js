@@ -9,11 +9,12 @@ import ApiResponse from "../../helpers/ApiResponse";
 import { checkExistThenGet } from "../../helpers/CheckMethods";
 import i18n from "i18n";
 import Category from "../../models/category/category.model"
-
+import EducationInstitution from "../../models/education institution/education institution.model";
+import EducationSystem from "../../models/education system/education system.model";
 const populateQuery = [
     { path: 'owner', model: 'user'},
-    { path: 'category', model: 'category' },
-    { path: 'subCategory', model: 'category' },
+    { path: 'sector', model: 'category' },
+    { path: 'subSector', model: 'category' },
     { path: 'educationSystem', model: 'educationSystem' },
     { path: 'educationInstitution', model: 'educationInstitution' }
 
@@ -24,24 +25,44 @@ export default {
         let validations = [
             body('educationInstitution').trim().escape().not().isEmpty().withMessage((value, { req}) => {
                 return req.__('educationInstitution.required', { value});
+            }).custom(async (value, { req }) => {
+                if (!await EducationInstitution.findOne({_id:value,deleted:false}))
+                    throw new Error(req.__('educationInstitution.invalid'));
+                else
+                    return true;
             }),
             body('studentName').not().isEmpty().withMessage((value) => {
                 return req.__('studentName.required', { value});
             }),
-            body('category').trim().escape().not().isEmpty().withMessage((value, { req}) => {
-                return req.__('category.required', { value});
+            body('sector').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('sector.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
-                return req.__('category.numeric', { value});
+                return req.__('sector.numeric', { value});
+            }).custom(async (value, { req }) => {
+                if (!await Category.findOne({_id:value,deleted:false}))
+                    throw new Error(req.__('sector.invalid'));
+                else
+                    return true;
             }),
-            body('subCategory').trim().escape().not().isEmpty().withMessage((value, { req}) => {
-                return req.__('subCategory.required', { value});
+            body('subSector').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('subSector.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
-                return req.__('subCategory.numeric', { value});
+                return req.__('subSector.numeric', { value});
+            }).custom(async (value, { req }) => {
+                if (!await Category.findOne({_id:value,deleted:false}))
+                    throw new Error(req.__('subSector.invalid'));
+                else
+                    return true;
             }),
-            body('educationSystem').not().isEmpty().withMessage((value) => {
+            body('educationSystem').trim().escape().not().isEmpty().withMessage((value, { req}) => {
                 return req.__('educationSystem.required', { value});
-            }).isNumeric().withMessage((value) => {
+            }).isNumeric().withMessage((value, { req}) => {
                 return req.__('educationSystem.numeric', { value});
+            }).custom(async (value, { req }) => {
+                if (!await EducationSystem.findOne({_id:value,deleted:false}))
+                    throw new Error(req.__('educationSystem.invalid'));
+                else
+                    return true;
             }),
             body('year').not().isEmpty().withMessage((value) => {
                 return req.__('year.required', { value});
@@ -130,10 +151,11 @@ export default {
             convertLang(req)
              //get lang
             let lang = i18n.getLocale(req)
-            let {type,educationPhase,educationSystem,educationInstitution} = req.query;
+            let {type,sector,subSector,educationSystem,educationInstitution} = req.query;
             let query = {  deleted: false }
             if(type) query.type = type
-            if(educationPhase) query.educationPhase = educationPhase
+            if(sector) query.sector = sector
+            if(subSector) query.subSector = subSector
             if(educationSystem) query.educationSystem = educationSystem
             if(educationInstitution) query.educationInstitution = educationInstitution
             await Student.find(query).populate(populateQuery)
@@ -160,10 +182,11 @@ export default {
              //get lang
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20,
-            {type,educationPhase,educationSystem,educationInstitution} = req.query;
+            {type,sector,subSector,educationSystem,educationInstitution} = req.query;
             let query = {  deleted: false }
             if(type) query.type = type
-            if(educationPhase) query.educationPhase = educationPhase
+            if(sector) query.sector = sector
+            if(subSector) query.subSector = subSector
             if(educationSystem) query.educationSystem = educationSystem
             if(educationInstitution) query.educationInstitution = educationInstitution
             await Student.find(query).populate(populateQuery)

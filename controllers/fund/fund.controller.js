@@ -22,11 +22,11 @@ const populateQuery = [
     { path: 'owner', model: 'user'},
     {
         path: 'students', model: 'student',
-        populate: { path: 'category', model: 'category' },
+        populate: { path: 'sector', model: 'category' },
     },
     {
         path: 'students', model: 'student',
-        populate: { path: 'subCategory', model: 'category' },
+        populate: { path: 'subSector', model: 'category' },
     },
     {
         path: 'students', model: 'student',
@@ -96,8 +96,8 @@ export default {
             .custom(async (students, { req }) => {
                 convertLang(req)
                 for (let student of students) {
-                    await checkExist(student.category, Category,{ deleted: false});
-                    await checkExist(student.subCategory, Category,{ deleted: false});
+                    await checkExist(student.sector, Category,{ deleted: false});
+                    await checkExist(student.subSector, Category,{ deleted: false});
                     await checkExistThenGet(student.educationSystem, EducationSystem);
                     //await checkExistThenGet(student.educationInstitution, EducationInstitution);
                     body('studentName').not().isEmpty().withMessage((value) => {
@@ -108,15 +108,15 @@ export default {
                     }).isIn(['INSIDE-INSTITUTION','OUTSIDE-INSTITUTION']).withMessage((value, { req}) => {
                         return req.__('type.invalid', { value});
                     }),
-                    body('category').trim().escape().not().isEmpty().withMessage((value, { req}) => {
-                        return req.__('category.required', { value});
+                    body('sector').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                        return req.__('sector.required', { value});
                     }).isNumeric().withMessage((value, { req}) => {
-                        return req.__('category.numeric', { value});
+                        return req.__('sector.numeric', { value});
                     }),
-                    body('subCategory').trim().escape().not().isEmpty().withMessage((value, { req}) => {
-                        return req.__('subCategory.required', { value});
+                    body('subSector').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                        return req.__('subSector.required', { value});
                     }).isNumeric().withMessage((value, { req}) => {
-                        return req.__('subCategory.numeric', { value});
+                        return req.__('subSector.numeric', { value});
                     }),
                     body('educationSystem').not().isEmpty().withMessage((value) => {
                         return req.__('educationSystem.required', { value});

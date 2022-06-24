@@ -14,12 +14,12 @@ const studentSchema = new Schema({
         enum:['INSIDE-INSTITUTION','OUTSIDE-INSTITUTION'],
         default: 'INSIDE-INSTITUTION'
     },
-    category: {
+    sector: {
         type: Number,
         ref:'category',
         required: true,
     },
-    subCategory: {
+    subSector: {
         type: Number,
         ref:'category',
         required: true,

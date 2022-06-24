@@ -2,6 +2,7 @@ import express from 'express';
 import {  requireAuth} from '../../services/passport';
 import businessController from '../../controllers/business/business.controller';
 import { multerSaveTo } from '../../services/multer-service';
+import { parseStringToArrayOfObjectsMwv2 } from '../../utils';
 
 const router = express.Router();
 
@@ -9,6 +10,7 @@ router.route('/')
     .post(  
         requireAuth,
         multerSaveTo('business').single('img'),
+        parseStringToArrayOfObjectsMwv2('phones'),
         businessController.validateBody(),
         businessController.create
     ).get(requireAuth,businessController.getAllPaginated);
@@ -18,6 +20,7 @@ router.route('/:businessId')
     .put(
         requireAuth,
         multerSaveTo('business').single('img'),
+        parseStringToArrayOfObjectsMwv2('phones'),
         businessController.validateBody(true),
         businessController.update
     )

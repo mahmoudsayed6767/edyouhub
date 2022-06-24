@@ -1,8 +1,10 @@
 
 export async function transformBusiness(e,lang) {
     let index = {
-        businessName:lang=="ar"?e.businessName_ar:e.businessName_en,
+        businessName:lang=="ar"?e.name_ar:e.name_en,
         webSite:e.webSite,
+        phones:e.phones,
+        email:e.email,
         logo:e.logo,
         reason:e.reason,
         status:e.status,
@@ -21,10 +23,12 @@ export async function transformBusiness(e,lang) {
 }
 export async function transformBusinessById(e,lang) {
     let index = {
-        businessName:lang=="ar"?e.businessName_ar:e.businessName_en,
-        businessName_en:e.businessName_en,
-        businessName_ar:e.businessName_ar,
+        businessName:lang=="ar"?e.name_ar:e.name_en,
+        name_en:e.name_en,
+        name_ar:e.name_ar,
         webSite:e.webSite,
+        phones:e.phones,
+        email:e.email,
         logo:e.logo,
         reason:e.reason,
         status:e.status,
@@ -46,18 +50,18 @@ export async function transformBusinessById(e,lang) {
             id: e.educationSystem._id,
         }
     }
-    if(e.category){
-        index.category = {
-            name:lang=="ar"?e.category.name_ar:e.category.name_en,
-            img: e.category.img,
-            id: e.category._id,
+    if(e.sector){
+        index.sector = {
+            name:lang=="ar"?e.sector.name_ar:e.sector.name_en,
+            img: e.sector.img,
+            id: e.sector._id,
         }
     }
-    if(e.subCategory){
-        index.subCategory = {
-            name:lang=="ar"?e.subCategory.name_ar:e.subCategory.name_en,
-            img: e.subCategory.img,
-            id: e.subCategory._id,
+    if(e.subSector){
+        index.subSector = {
+            name:lang=="ar"?e.subSector.name_ar:e.subSector.name_en,
+            img: e.subSector.img,
+            id: e.subSector._id,
         }
     }
     if(e.country){
@@ -69,13 +73,13 @@ export async function transformBusinessById(e,lang) {
     }
     if(e.city){
         index.city = {
-            cityName:lang=="ar"?e.city.name_ar:e.city.name_en,
+            cityName:lang=="ar"?e.city.cityName_ar:e.city.name_en,
             id: e.city._id,
         }
     }
     if(e.area){
         index.area = {
-            areaName:lang=="ar"?e.area.name_ar:e.area.name_en,
+            areaName:lang=="ar"?e.area.areaName_ar:e.area.name_en,
             id: e.area._id,
         }
     }

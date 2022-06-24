@@ -10,18 +10,18 @@ export async function transformStudent(e,lang) {
         feesLetter:e.feesLetter,
         id:e._id,                         
     }
-    if(e.category){
-        index.category = {
-            name:lang=="ar"?e.category.name_ar:e.category.name_en,
-            img: e.category.img,
-            id: e.category._id,
+    if(e.sector){
+        index.sector = {
+            name:lang=="ar"?e.sector.name_ar:e.sector.name_en,
+            img: e.sector.img,
+            id: e.sector._id,
         }
     }
-    if(e.subCategory){
-        index.subCategory = {
-            name:lang=="ar"?e.subCategory.name_ar:e.subCategory.name_en,
-            img: e.subCategory.img,
-            id: e.subCategory._id,
+    if(e.subSector){
+        index.subSector = {
+            name:lang=="ar"?e.subSector.name_ar:e.subSector.name_en,
+            img: e.subSector.img,
+            id: e.subSector._id,
         }
     }
     if(e.educationSystem){

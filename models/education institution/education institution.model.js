@@ -17,12 +17,12 @@ const educationInstitutionSchema = new Schema({
         trim: true,
         required: true,
     },
-    category: {
+    sector: {
         type: Number,
         ref:'category',
         required: true,
     },
-    subCategory: {
+    subSector: {
         type: Number,
         ref:'category',
         required: true,

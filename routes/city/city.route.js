@@ -11,9 +11,10 @@ router.route('/')
         CityController.validateCityBody(),
         CityController.create
     )
+router.route('/:country/countries')
     .get(CityController.getAllPaginated);
 
-router.route('/withoutPagenation/get')
+router.route('/:country/countries/withoutPagenation/get')
     .get(CityController.getAll);
 
 router.route('/:cityId')
@@ -33,7 +34,7 @@ router.route('/:cityId/areas')
     )
     .get(AreaController.getAllPaginated);
 
-router.route('/:cityId/areas/:areaId')
+router.route('/:areaId/areas')
     .put(
         requireAuth,
         AreaController.validateAreaBody(true),
