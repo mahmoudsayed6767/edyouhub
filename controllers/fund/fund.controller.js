@@ -59,7 +59,7 @@ export default {
             }),
             body('personalId').trim().escape().not().isEmpty().withMessage((value, { req}) => {
                 return req.__('personalId.required', { value});
-            }).isIn(['NATIONAL-ID','PASSPORT','RESIDENCE']).withMessage((value, { req}) => {
+            }).isIn(['EGYPTIAN','NONEGYPTIAN']).withMessage((value, { req}) => {
                 return req.__('personalId.invalid', { value});
             }),
             body('personalIdImgs').not().isEmpty().withMessage((value) => {
@@ -508,6 +508,49 @@ export default {
             next(err);
         }
     },
+    async needAction(req, res, next) {
+        
+        try {
+            convertLang(req)
+            let { fundId } = req.params;
+            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
+                return next(new ApiError(403, i18n.__('admin.auth')));
+            let fund = await checkExistThenGet(fundId, Fund);
+            if(fund.status != "PENDING")
+                return next(new ApiError(500, i18n.__('fund.pending')));
+            fund.status = 'NEED-ACTION';
+            fund.reason  = req.body.reason
+            await fund.save();
+            sendNotifiAndPushNotifi({
+                targetUser: fund.owner, 
+                fromUser: fund.owner, 
+                text: ' EdHub',
+                subject: fund.id,
+                subjectType: 'fund Status',
+                info:'FUND'
+            });
+            let notif = {
+                "description_en":'Your Fund Request Need Some Fix ',
+                "description_ar":'  طلب التمويل الخاص بك يحتاج بعض التعديلات',
+                "title_en":'Your Fund Request Need Some Fix ',
+                "title_ar":'  طلب التمويل الخاص بك يحتاج بعض التعديلات',
+                "type":'FUND'
+            }
+            await Notif.create({...notif,resource:req.user,target:fund.owner,fund:fund.id});
+            let reports = {
+                "action":"Fund Request need to fix",
+                "type":"FUND",
+                "deepId":fundId,
+                "user": req.user._id
+            };
+            await Report.create({...reports});
+            res.send({
+                success:true
+            });
+        } catch (err) {
+            next(err);
+        }
+    },
     async reject(req, res, next) {
         
         try {
@@ -519,7 +562,6 @@ export default {
             if(fund.status != "PENDING")
                 return next(new ApiError(500, i18n.__('fund.pending')));
             fund.status = 'REJECTED';
-            fund.reason  = req.body.reason
             await fund.save();
             sendNotifiAndPushNotifi({
                 targetUser: fund.owner, 

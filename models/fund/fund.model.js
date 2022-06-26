@@ -7,7 +7,7 @@ const fundSchema = new Schema({
     },
     status:{
         type: String,
-        enum:['PENDING','ACCEPTED','REJECTED','STARTED','COMPLETED'],
+        enum:['PENDING','ACCEPTED','NEED-ACTION','REJECTED','STARTED','COMPLETED'],
         default:'PENDING'
     },
     owner: {
@@ -38,8 +38,8 @@ const fundSchema = new Schema({
     },
     personalId:{
         type: String,
-        enum:['NATIONAL-ID','PASSPORT','RESIDENCE'],//بطاقه قوميه- باسبور- اقامه
-        default: 'NATIONAL-ID'
+        enum:['EGYPTIAN','NONEGYPTIAN'],
+        default:'EGYPTIAN'
     },
     personalIdImgs: {
         type: [String],
