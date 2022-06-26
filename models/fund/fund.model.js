@@ -38,7 +38,7 @@ const fundSchema = new Schema({
     },
     personalId:{
         type: String,
-        enum:['EGYPTIAN','NONEGYPTIAN'],
+        enum:['EGYPTIAN','NON-EGYPTIAN'],
         default:'EGYPTIAN'
     },
     personalIdImgs: {

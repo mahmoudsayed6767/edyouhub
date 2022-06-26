@@ -59,7 +59,7 @@ export default {
             }),
             body('personalId').trim().escape().not().isEmpty().withMessage((value, { req}) => {
                 return req.__('personalId.required', { value});
-            }).isIn(['EGYPTIAN','NONEGYPTIAN']).withMessage((value, { req}) => {
+            }).isIn(['EGYPTIAN','NON-EGYPTIAN']).withMessage((value, { req}) => {
                 return req.__('personalId.invalid', { value});
             }),
             body('personalIdImgs').not().isEmpty().withMessage((value) => {
@@ -100,6 +100,7 @@ export default {
                     await checkExist(student.subSector, Category,{ deleted: false});
                     await checkExistThenGet(student.educationSystem, EducationSystem);
                     //await checkExistThenGet(student.educationInstitution, EducationInstitution);
+                    body('studentId').optional()
                     body('studentName').not().isEmpty().withMessage((value) => {
                         return req.__('studentName.required', { value});
                     }),
@@ -271,7 +272,7 @@ export default {
             if(validatedBody.theStudents){
                 let students = []
                 await Promise.all(validatedBody.theStudents.map(async(student) => {
-                    let createdStudent = await Student.create({...student})
+                    let createdStudent = await Student.findByIdAndUpdate(student.studentId, {...student });
                     students.push(createdStudent.id)
                 }));  
                 
