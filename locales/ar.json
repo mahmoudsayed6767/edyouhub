@@ -200,7 +200,8 @@
 	"city.invalid":"المدينه غير صحيحه",
 	"area.numeric":"حقل الحى قيمه رقميه",
 	"area.invalid":"الحى غير صحيح",
-	"owner.numeric":"حقل المالك قيمه رقميه"
+	"owner.numeric":"حقل المالك قيمه رقميه",
+	"premium.paid":"تم دفع القسط من قبل"
 
 	
 }

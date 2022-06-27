@@ -71,9 +71,10 @@ export default {
             }).isIn(['OWNER','RENTER']).withMessage((value, { req}) => {
                 return req.__('utilityBills.invalid', { value});
             }),
-            body('contractImgs').optional(),
             body('billType').trim().escape().not().isEmpty().withMessage((value, { req}) => {
                 return req.__('billType.required', { value});
+            }).isIn(["WATER","GAS","TELEPHONE","ELECTRICITY"]).withMessage((value, { req}) => {
+                return req.__('billType.invalid', { value});
             }),
             body('utilityBillsImgs').not().isEmpty().withMessage((value) => {
                 return req.__('utilityBillsImgs.required', { value});
@@ -81,7 +82,7 @@ export default {
 
             body('proofIncome').trim().escape().not().isEmpty().withMessage((value, { req}) => {
                 return req.__('proofIncome.required', { value});
-            }).isIn(['WORK-ID','HR-LETTER','WORK-CONTRACT','BANK-ACCOUNT','COMMERCIAL-REGISTRATION','TAX-ID']).withMessage((value, { req}) => {
+            }).isIn(['EMPLOYEE','BUSINESS-OWNER']).withMessage((value, { req}) => {
                 return req.__('proofIncome.invalid', { value});
             }),
             body('proofIncomeImgs').not().isEmpty().withMessage((value) => {
@@ -157,7 +158,6 @@ export default {
             let personalIdImgs = []
             let utilityBillsImgs=[]
             let proofIncomeImgs=[]
-            let contractImgs=[]
             let feesLetter=[];
             if (req.files) {
                 if (req.files['personalIdImgs']) {
@@ -202,7 +202,6 @@ export default {
                 utilityBillsImgs:utilityBillsImgs,
                 proofIncomeImgs:proofIncomeImgs,
                 feesLetter:feesLetter,
-                contractImgs:contractImgs
             });
         } catch (error) {
             next(error);

@@ -50,12 +50,9 @@ const fundSchema = new Schema({
         enum:['OWNER','RENTER'],
         default: 'RENTER'
     },
-    contractImgs: {//if utilityBills is Renter
-        type: [String],
-
-    },
     billType:{
         type: String,
+        enum: ["WATER","GAS","TELEPHONE","ELECTRICITY"]
     },
     utilityBillsImgs: {
         type: [String],
@@ -63,8 +60,9 @@ const fundSchema = new Schema({
     },
     proofIncome:{
         type: String,
-        enum:['WORK-ID','HR-LETTER','WORK-CONTRACT','BANK-ACCOUNT','COMMERCIAL-REGISTRATION','TAX-ID'],
-        default: 'RENTER'
+        //enum:['WORK-ID','HR-LETTER','WORK-CONTRACT','BANK-ACCOUNT','COMMERCIAL-REGISTRATION','TAX-ID'],
+        enum:['EMPLOYEE','BUSINESS-OWNER'],
+        default: 'EMPLOYEE'
     },
     proofIncomeImgs: {
         type: [String],

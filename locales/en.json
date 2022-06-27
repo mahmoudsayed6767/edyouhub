@@ -201,5 +201,6 @@
 	"area.numeric": "area should be numeric",
 	"area.invalid": "area is invalid",
 	"owner.numeric": "owner is numeric",
-	"transaction exist": "transaction exist"
+	"transaction exist": "transaction exist",
+	"premium.paid":"premium is paid before"
 }

@@ -31,6 +31,8 @@ const populateQuery2 = [
 const payPremium = async (thePremium,client) => {
     console.log("thePremium",thePremium)
     let premium = await checkExistThenGet(thePremium, Premium);
+    if(premium.status == "PAID")
+        return next(new ApiError(500, i18n.__('premium.paid')));
     premium.status = 'PAID';
     premium.paidDate = premium.installmentDate;
     await premium.save();
@@ -97,6 +99,8 @@ const payPremium = async (thePremium,client) => {
 };
 const payFirstPaid = async (theFund,client) => {
     let fund = await checkExistThenGet(theFund, Fund);
+    if(fund.status != "PENDING")
+        return next(new ApiError(500, i18n.__('fund.pending')));
     fund.status = 'STARTED';
     let setting = await Setting.findOne({deleted: false})
     
@@ -184,6 +188,8 @@ export default {
             if(validatedBody.type =="OFFER"){
                 transactionData.offer = validatedBody.offer
                 let offer = await checkExistThenGet(validatedBody.offer, Offer, { deleted: false });
+                if(user.balance < offer.coins)
+                    return next(new ApiError(500, i18n.__('balance.notEnough')));
                 let arr = offer.bookedUsers;
                 var found = arr.find(e => e == userId)
                 if(!found){
