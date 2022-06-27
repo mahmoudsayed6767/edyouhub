@@ -22,12 +22,14 @@ import studentRoute from './student/student.route';
 import countriesRoute from './country/country.route';
 import citiesRoute from './city/city.route';
 import businessRoute from './business/business.route';
+import transactionsRoute from './transactions/transactions.route';
 
 import { requireAuth } from '../services/passport';
 
 const router = express.Router();
 
 router.use('/', userRoute);
+router.use('/transactions', transactionsRoute);
 router.use('/funds',fundsRoute);
 router.use('/fees',feesRoute);
 router.use('/countries',countriesRoute);

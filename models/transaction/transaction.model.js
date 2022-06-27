@@ -21,10 +21,6 @@ const transactionSchema = new Schema({
         type:Number,
         ref:'booking',
     },   
-    fees:{
-        type:Number,
-        ref:'fees',
-    },
     premium:{
         type:Number,
         ref:'premium',
@@ -46,7 +42,8 @@ const transactionSchema = new Schema({
     status:{
         type:String,
         required:true,
-        enum:["FAILED", "SUCCESS"]
+        enum:["FAILED", "SUCCESS"],
+        default:"FAILED"
     },
     dateMillSec:{
         type:Number,

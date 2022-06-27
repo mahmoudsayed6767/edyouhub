@@ -12,41 +12,50 @@ export async function transformTransaction(e,lang) {
         id: e._id,
     }
     if(e.user){
-        let user = {
+        index.user = {
             fullname:e.user.fullname,
             img:e.user.img?e.user.img:"",
             type:e.user.type,
             id:e.user._id, 
-            city:e.user.city?{
-                cityName:lang=="ar"?e.user.city.cityName_ar:e.user.city.cityName_en,
-                id:e.user.city._id
-            }:null
         }
-        if(e.user.country){
-            user.country={
-                countryName:lang=="ar"?e.user.country.countryName_ar:e.user.country.countryName_en,
-                id:e.user.country._id
-            }
-        }
-        index.user = user
     }
-    if(e.package && e.type =="1"){
+    if(e.premium) {
+        index.premium = {
+            type:e.premium.type,
+            cost:e.premium.cost,
+            installmentDate:e.premium.installmentDate,
+            status:e.premium.status,
+            receiptNum:e.premium.receiptNum,
+            paidDate:e.premium.paidDate,
+            id:e.premium._id,   
+        }
+                              
+    }
+    if(e.fund){
+        index.fund = {
+            fullname:e.fund.fullname,
+            address:e.fund.address,
+            phone:e.fund.phone,
+            job:e.fund.job,
+            totalFees:e.fund.totalFees,
+            endDate:e.fund.endDate,
+            status:e.fund.status,
+            id:e.fund._id
+        }
+    }
+    if(e.package){
         index.package = {
-            name:lang=="ar"?e.package.name_ar:e.package.name_en,
-            description:lang=="ar"?e.package.description_ar:e.package.description_en,
-            defaultPackage:e.package.defaultPackage,
-            type:e.package.type,
+            title:lang=="ar"?e.package.title_ar:e.package.title_en,
             id: e.package._id,
         }
-        index.packageDuration = e.packageDuration
     }
-    if(e.ads){
-        index.ads = {
-            title:lang=="ar"?e.ads.title_ar:e.ads.title_en,
-            unitNumber:e.ads.unitNumber?e.ads.unitNumber:e._id,
-            id: e.ads._id,
+    if(e.offer){
+        index.offer = {
+            title:lang=="ar"?e.offer.title_ar:e.offer.title_en,
+            id:e.offer._id,
+            type:e.offer.type,
+            coins:e.offer.coins,
         }
-        
     }
     return index
 }

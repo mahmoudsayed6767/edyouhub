@@ -3,8 +3,10 @@ config.mongoUrl = 'mongodb+srv://edhub:edhub@cluster0.gzdzusy.mongodb.net/?retry
 
 config.jwtSecret = 'EdHub';
 config.jwt_secret_mail = 'EdHub'
-config.encryptSecret = "ZWGcON/5fIQb.U/2";
-config.initVector = "mcgw2K5uCV5$%x&n"
+
+config.encryptSecret = "ZWGcON/5fIQb.U/1";
+config.initVector = "mcgw2K5uCV5$%x&b";
+config.Securitykey =  "$2a$10$h/Vx2RtN0Ew01elQr8GWFeGrV";
 config.twilio = {
   accountSid: '',
   authToken: ''
