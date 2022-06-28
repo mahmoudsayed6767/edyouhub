@@ -33,7 +33,11 @@ router.route('/:fundId')
     )
     .get(requireAuth,fundController.findById)
     .delete(requireAuth,fundController.delete);
-
+router.route('/:fundId/reviewing')
+    .put(
+        requireAuth,
+        fundController.reviewing
+    )
 router.route('/:fundId/accept')
     .put(
         requireAuth,

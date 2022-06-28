@@ -390,6 +390,47 @@ export default {
             body('reason').trim().escape().optional()
         ]
     },
+    async reviewing(req, res, next) {
+        try {
+            convertLang(req)
+            let { fundId } = req.params;
+            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
+                return next(new ApiError(403, i18n.__('admin.auth')));
+            let fund = await checkExistThenGet(fundId, Fund);
+            if(fund.status != "NEW")
+                return next(new ApiError(500, i18n.__('fund.pending')));
+            fund.status = 'PENDING';
+            await fund.save();
+            sendNotifiAndPushNotifi({
+                targetUser: fund.owner, 
+                fromUser: fund.owner, 
+                text: ' EdHub',
+                subject: fund.id,
+                subjectType: 'fund Status',
+                info:'FUND'
+            });
+            let notif = {
+                "description_en":'Your Fund Request is Reviewing ',
+                "description_ar":'  جارى مراجعه طلب التمويل الخاص بك',
+                "title_en":'Your Fund Request is Reviewing ',
+                "title_ar":'  جارى مراجعه طلب التمويل الخاص بك',
+                "type":'FUND'
+            }
+            await Notif.create({...notif,resource:req.user,target:fund.owner,fund:fund.id});
+            let reports = {
+                "action":"Reviewing Fund Request",
+                "type":"FUND",
+                "deepId":fundId,
+                "user": req.user._id
+            };
+            await Report.create({...reports});
+            res.send({
+                success:true
+            });
+        } catch (err) {
+            next(err);
+        }
+    },
     async accept(req, res, next) {
         try {
             convertLang(req)
