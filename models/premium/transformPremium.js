@@ -22,6 +22,13 @@ export async function transformPremium(e,lang) {
             id:e.fund._id
         }
     }
+    if(e.fees){
+        index.fees = {
+            status:e.fees.status,
+            id:e.fees._id
+        },
+        index.feesType = e.feesType
+    }
     /* students*/
     let students=[]
     for (let val of e.student) {

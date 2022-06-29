@@ -173,6 +173,11 @@ export default {
                     }).isNumeric().withMessage((value) => {
                         return req.__('cost.numeric', { value});
                     }),
+                    body('feesType').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                        return req.__('feesType.required', { value});
+                    }).isIn(['BUS','TUITION']).withMessage((value, { req}) => {
+                        return req.__('feesType.invalid', { value});
+                    }),
                     body('installmentDate').not().isEmpty().withMessage((value) => {
                         return req.__('installmentDate.required', { value});
                     }).isISO8601().withMessage((value) => {
@@ -226,6 +231,7 @@ export default {
                 let thePremium = await Premium.create({
                     fees:fees.id,
                     type:'FEES',
+                    feesType:payment.feesType,
                     receiptNum:i+1,
                     student: theStudent._id,
                     installmentDate:installmentDate,
@@ -369,6 +375,7 @@ export default {
                     await Premium.create({
                         fees:fees.id,
                         type:'FEES',
+                        feesType:payment.feesType,
                         receiptNum:i+1,
                         student: theStudent._id,
                         installmentDate:installmentDate,
