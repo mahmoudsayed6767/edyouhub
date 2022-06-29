@@ -63,7 +63,7 @@ export default {
 
             await City.findById(cityId).then( e => {
                 let city ={
-                    cityName:lang=="ar"?e.name_ar:e.name_en,
+                    name:lang=="ar"?e.name_ar:e.name_en,
                     name_ar:e.name_ar,
                     name_en:e.name_en,
                     id: e._id,
@@ -131,7 +131,7 @@ export default {
                     var newdata = [];
                     await Promise.all(data.map(async(e) =>{
                         let index = {
-                            cityName:lang=="ar"?e.name_ar:e.name_en,
+                            name:lang=="ar"?e.name_ar:e.name_en,
                             name_ar:e.name_ar,
                             name_en:e.name_en,
                             id: e._id,
@@ -179,7 +179,7 @@ export default {
                     var newdata = [];
                     await Promise.all(data.map(async(e) =>{
                         let index = {
-                            cityName:lang=="ar"?e.name_ar:e.name_en,
+                            name:lang=="ar"?e.name_ar:e.name_en,
                             name_ar:e.name_ar,
                             name_en:e.name_en,
                             id: e._id,

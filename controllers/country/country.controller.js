@@ -109,7 +109,7 @@ export default {
                     var newdata = [];
                     data.map(async(e) =>{
                         newdata.push({
-                            countryName:lang=="ar"?e.name_ar:e.name_en,
+                            name:lang=="ar"?e.name_ar:e.name_en,
                             name_en:e.name_en,
                             name_ar:e.name_ar,
                             countryCode:e.countryCode,
@@ -160,7 +160,7 @@ export default {
                     var newdata = [];
                     data.map(async(e) =>{
                         newdata.push({
-                            countryName:lang=="ar"?e.name_ar:e.name_en,
+                            name:lang=="ar"?e.name_ar:e.name_en,
                             name_en:e.name_en,
                             name_ar:e.name_ar,
                             countryCode:e.countryCode,
@@ -219,7 +219,7 @@ export default {
             await checkExist(countryId, Country, { deleted: false });
             await Country.findById(countryId).then( e => {
                 let country = {
-                    countryName:lang=="ar"?e.name_ar:e.name_en,
+                    name:lang=="ar"?e.name_ar:e.name_en,
                     name_en:e.name_en,
                     name_ar:e.name_ar,
                     countryCode:e.countryCode,

@@ -120,11 +120,7 @@ export default {
                     }).isNumeric().withMessage((value, { req}) => {
                         return req.__('subSector.numeric', { value});
                     }),
-                    body('educationSystem').not().isEmpty().withMessage((value) => {
-                        return req.__('educationSystem.required', { value});
-                    }).isNumeric().withMessage((value) => {
-                        return req.__('educationSystem.numeric', { value});
-                    }),
+                    body('educationSystem').optional(),
                     body('educationInstitution').optional().isNumeric().withMessage((value) => {
                         return req.__('educationInstitution.numeric', { value});
                     }),

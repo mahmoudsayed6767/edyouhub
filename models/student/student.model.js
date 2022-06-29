@@ -27,7 +27,7 @@ const studentSchema = new Schema({
     educationSystem: {
         type: Number,
         ref: 'educationSystem',
-        required: true
+        //required: true
     },
     educationInstitution: {
         type: Number,

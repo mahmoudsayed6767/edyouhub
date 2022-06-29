@@ -51,20 +51,20 @@ export async function transformUserById(e,lang,myUser,userId) {
     }
     if(e.country){
         index.country = {
-            countryName:lang=="ar"?e.country.name_ar:e.country.name_en,
+            name:lang=="ar"?e.country.name_ar:e.country.name_en,
             img: e.country.img,
             id: e.country._id,
         }
     }
     if(e.city){
         index.city = {
-            cityName:lang=="ar"?e.city.cityName_ar:e.city.name_en,
+            name:lang=="ar"?e.city.name_ar:e.city.name_en,
             id: e.city._id,
         }
     }
     if(e.area){
         index.area = {
-            areaName:lang=="ar"?e.area.areaName_ar:e.area.name_en,
+            name:lang=="ar"?e.area.name_ar:e.area.name_en,
             id: e.area._id,
         }
     }

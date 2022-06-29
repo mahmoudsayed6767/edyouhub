@@ -61,7 +61,7 @@ export default {
 
             await Area.findById(areaId).then( e => {
                 let area = {
-                    areaName:lang=="ar"?e.name_ar:e.name_en,
+                    name:lang=="ar"?e.name_ar:e.name_en,
                     name_ar:e.name_ar,
                     name_en:e.name_en,
                     id: e._id,
@@ -137,7 +137,7 @@ export default {
                     var newdata = [];
                     await Promise.all(data.map(async(e) =>{
                         newdata.push({
-                            areaName:lang=="ar"?e.name_ar:e.name_en,
+                            name:lang=="ar"?e.name_ar:e.name_en,
                             name_ar:e.name_ar,
                             name_en:e.name_en,
                             city:e.city,
@@ -187,7 +187,7 @@ export default {
                     var newdata = [];
                     await Promise.all(data.map(async(e) =>{
                         newdata.push({
-                            areaName:lang=="ar"?e.name_ar:e.name_en,
+                            name:lang=="ar"?e.name_ar:e.name_en,
                             name_en:e.name_en,
                             name_ar:e.name_ar,
                             city:e.city,
