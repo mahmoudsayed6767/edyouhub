@@ -70,6 +70,8 @@ const payPremium = async (thePremium,client) => {
         if(premium.lastMonth == true){
             fees.status = "COMPLETED"
             await fees.save();
+        }else{
+            fees.status = "STARTED"
         }
         sendNotifiAndPushNotifi({
             targetUser: fees.owner, 

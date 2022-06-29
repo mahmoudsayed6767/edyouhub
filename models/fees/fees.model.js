@@ -19,7 +19,7 @@ const feesSchema = new Schema({
     },
     status:{
         type: String,
-        enum:['PENDING','COMPLETED'],
+        enum:['PENDING','STARTED','COMPLETED'],
         default:'PENDING'
     },
     deleted:{
