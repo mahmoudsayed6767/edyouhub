@@ -21,8 +21,8 @@ const transactionSchema = new Schema({
         type:Number,
         ref:'booking',
     },   
-    premium:{
-        type:Number,
+    premiums:{
+        type:[Number],
         ref:'premium',
     },
     package:{

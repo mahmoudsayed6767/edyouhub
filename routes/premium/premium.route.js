@@ -11,7 +11,11 @@ router.route('/')
         premiumController.create
     )
     .get(requireAuth,premiumController.findAllPagenation);
-
+router.route('/paidMulti')
+    .put(
+        requireAuth,
+        premiumController.paidMulti
+    )
 router.route('/withoutPagenation/get')
     .get(requireAuth,premiumController.findAll);
 
@@ -29,6 +33,7 @@ router.route('/:premiumId/paid')
         requireAuth,
         premiumController.paid
     )
+
 
 
 

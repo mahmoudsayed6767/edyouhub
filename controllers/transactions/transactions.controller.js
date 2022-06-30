@@ -28,81 +28,84 @@ const populateQuery2 = [
     {path: 'offer', model: 'offer'},
     {path: 'user', model: 'user'},
 ];
-const payPremium = async (thePremium,client) => {
-    console.log("thePremium",thePremium)
-    let premium = await checkExistThenGet(thePremium, Premium);
-    if(premium.status == "PAID")
-        return next(new ApiError(500, i18n.__('premium.paid')));
-    premium.status = 'PAID';
-    premium.paidDate = premium.installmentDate;
-    await premium.save();
-    if(premium.fund){
-        let fund = await checkExistThenGet(premium.fund, Fund);
-        if(premium.lastMonth == true){
-            fund.status = "COMPLETED"
-            await fund.save();
+const payPremium = async (premiums,client) => {
+    for (let thePremium of premiums) {
+        console.log("thePremium",thePremium)
+        let premium = await checkExistThenGet(thePremium, Premium);
+        if(premium.status == "PAID")
+            throw new ApiError(500, i18n.__('premium.paid'));
+        premium.status = 'PAID';
+        premium.paidDate = premium.installmentDate;
+        await premium.save();
+        if(premium.fund){
+            let fund = await checkExistThenGet(premium.fund, Fund);
+            if(premium.lastMonth == true){
+                fund.status = "COMPLETED"
+                await fund.save();
+            }
+            sendNotifiAndPushNotifi({
+                targetUser: fund.owner, 
+                fromUser: fund.owner, 
+                text: 'EdHub',
+                subject: fund.id,
+                subjectType: 'fund Premium Paid',
+                info:'PREMIUM'
+            });
+            let notif = {
+                "description_en":'Your Fund Premium Has Been Paid ',
+                "description_ar":' تم دفع قسط التمويل الخاص بك',
+                "title_en":'Your Fund Premium Has Been Paid ',
+                "title_ar":' تم دفع قسط التمويل الخاص بك',
+                "type":'PREMIUM'
+            }
+            await Notif.create({...notif,resource:client,target:fund.owner,premium:premium.id});
         }
-        sendNotifiAndPushNotifi({
-            targetUser: fund.owner, 
-            fromUser: fund.owner, 
-            text: 'EdHub',
-            subject: fund.id,
-            subjectType: 'fund Premium Paid',
-            info:'PREMIUM'
-        });
-        let notif = {
-            "description_en":'Your Fund Premium Has Been Paid ',
-            "description_ar":' تم دفع قسط التمويل الخاص بك',
-            "title_en":'Your Fund Premium Has Been Paid ',
-            "title_ar":' تم دفع قسط التمويل الخاص بك',
-            "type":'PREMIUM'
+        if(premium.fees){
+            let fees = await checkExistThenGet(premium.fees, Fees);
+            let setting = await Setting.findOne({deleted: false})
+            let cashBack = (premium.cost * setting.feesCashBackRatio) / 100 
+            console.log("cashBack",cashBack)
+            let fundOwner = await checkExistThenGet(client, User)
+            fundOwner.balance = fundOwner.balance + cashBack
+            await fundOwner.save();
+            if(premium.lastMonth == true){
+                fees.status = "COMPLETED"
+                await fees.save();
+            }else{
+                fees.status = "STARTED"
+            }
+            sendNotifiAndPushNotifi({
+                targetUser: fees.owner, 
+                fromUser: fees.owner, 
+                text: 'EdHub',
+                subject: fees.id,
+                subjectType: 'Fees Premium Paid',
+                info:'PREMIUM'
+            });
+            let notif = {
+                "description_en":'Your Fees Premium Has Been Paid ',
+                "description_ar":'  تم دفع قسط المصاريف الخاصه بك',
+                "title_en":'Your Fees Premium Has Been Paid ',
+                "title_ar":' تم دف عقسط المصاريف الخاصه بك',
+                "type":'PREMIUM'
+            }
+            await Notif.create({...notif,resource:client,target:client,premium:premium.id});
         }
-        await Notif.create({...notif,resource:client,target:fund.owner,premium:premium.id});
+        let reports = {
+            "action":"Pay Premium",
+            "type":"PREMIUMS",
+            "deepId":premium.id,
+            "user": client
+        };
+        await Report.create({...reports});
     }
-    if(premium.fees){
-        let fees = await checkExistThenGet(premium.fees, Fees);
-        let setting = await Setting.findOne({deleted: false})
-        let cashBack = (premium.cost * setting.feesCashBackRatio) / 100 
-        console.log("cashBack",cashBack)
-        let fundOwner = await checkExistThenGet(client, User)
-        fundOwner.balance = fundOwner.balance + cashBack
-        await fundOwner.save();
-        if(premium.lastMonth == true){
-            fees.status = "COMPLETED"
-            await fees.save();
-        }else{
-            fees.status = "STARTED"
-        }
-        sendNotifiAndPushNotifi({
-            targetUser: fees.owner, 
-            fromUser: fees.owner, 
-            text: 'EdHub',
-            subject: fees.id,
-            subjectType: 'Fees Premium Paid',
-            info:'PREMIUM'
-        });
-        let notif = {
-            "description_en":'Your Fees Premium Has Been Paid ',
-            "description_ar":'  تم دفع قسط المصاريف الخاصه بك',
-            "title_en":'Your Fees Premium Has Been Paid ',
-            "title_ar":' تم دف عقسط المصاريف الخاصه بك',
-            "type":'PREMIUM'
-        }
-        await Notif.create({...notif,resource:client,target:client,premium:premium.id});
-    }
-    let reports = {
-        "action":"Pay Premium",
-        "type":"PREMIUMS",
-        "deepId":premium.id,
-        "user": client
-    };
-    await Report.create({...reports});
+    
     return true
 };
 const payFirstPaid = async (theFund,client) => {
     let fund = await checkExistThenGet(theFund, Fund);
     if(fund.status != "PENDING")
-        return next(new ApiError(500, i18n.__('fund.pending')));
+        throw new ApiError(500, i18n.__('fund.pending'));
     fund.status = 'STARTED';
     let setting = await Setting.findOne({deleted: false})
     
@@ -218,8 +221,8 @@ export default {
                 }
             }
             if(validatedBody.type =="PREMIUM"){
-                transactionData.premium = validatedBody.premium
-                await payPremium(validatedBody.premium,userId)
+                transactionData.premiums = validatedBody.premiums
+                await payPremium(validatedBody.premiums,userId)
             }
             if(validatedBody.type =="FUND-FIRSTPAID"){
                 transactionData.fund = validatedBody.fund

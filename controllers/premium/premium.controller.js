@@ -269,5 +269,86 @@ export default {
             next(err);
         }
     },
+    async paidMulti(req, res, next) {
+        
+        try {
+            convertLang(req)
+            for (let premiumId of req.body.premiums) {
+                console.log("premium",premiumId)
+                let premium = await checkExistThenGet(premiumId, Premium);
+                premium.status = 'PAID';
+                premium.paidDate = req.body.paidDate?req.body.paidDate:premium.installmentDate;
+                await premium.save();
+                if(premium.fund){
+                    let fund = await checkExistThenGet(premium.fund, Fund);
+                    if(premium.lastMonth == true){
+                        fund.status = "COMPLETED"
+                        await fund.save();
+                    }
+                    sendNotifiAndPushNotifi({
+                        targetUser: fund.owner, 
+                        fromUser: fund.owner, 
+                        text: 'EdHub',
+                        subject: fund.id,
+                        subjectType: 'fund Premium Paid',
+                        info:'PREMIUM'
+                    });
+                    let notif = {
+                        "description_en":'Your Fund Premium Has Been Paid ',
+                        "description_ar":'   تم دفع قسط التمويل الخاص بك',
+                        "title_en":'Your Fund Premium Has Been Paid ',
+                        "title_ar":' تم دفع قسط التمويل الخاص بك',
+                        "type":'PREMIUM'
+                    }
+                    await Notif.create({...notif,resource:req.user,target:fund.owner,premium:premium.id});
+                }
+                if(premium.fees){
+                    let fees = await checkExistThenGet(premium.fees, Fees);
+                    let setting = await Setting.findOne({deleted: false})
+                    let cashBack = (premium.cost * setting.feesCashBackRatio) / 100 
+                    console.log("cashBack",cashBack)
+                    let fundOwner = await checkExistThenGet(req.user._id, User)
+                    fundOwner.balance = fundOwner.balance + cashBack
+                    await fundOwner.save();
+                    if(premium.lastMonth == true){
+                        fees.status = "COMPLETED"
+                        await fees.save();
+                    }else{
+                        fees.status = "STARTED"
+                    }
+                    sendNotifiAndPushNotifi({
+                        targetUser: fees.owner, 
+                        fromUser: fees.owner, 
+                        text: 'EdHub',
+                        subject: fees.id,
+                        subjectType: 'Fees Premium Paid',
+                        info:'PREMIUM'
+                    });
+                    let notif = {
+                        "description_en":'Your Fees Premium Has Been Paid ',
+                        "description_ar":'  تم دفع قسط المصاريف الخاصه بك',
+                        "title_en":'Your Fees Premium Has Been Paid ',
+                        "title_ar":' تم دف عقسط المصاريف الخاصه بك',
+                        "type":'PREMIUM'
+                    }
+                    await Notif.create({...notif,resource:req.user,target:req.user._id,premium:premium.id});
+                }
+                let reports = {
+                    "action":"Pay Premium",
+                    "type":"PREMIUMS",
+                    "deepId":premiumId,
+                    "user": req.user._id
+                };
+                await Report.create({...reports});
+            }
+            
+            
+            res.send({
+                success:true
+            });
+        } catch (err) {
+            next(err);
+        }
+    },
 
 };

@@ -20,16 +20,21 @@ export async function transformTransaction(e,lang) {
         }
     }
     if(e.premium) {
-        index.premium = {
-            type:e.premium.type,
-            cost:e.premium.cost,
-            installmentDate:e.premium.installmentDate,
-            status:e.premium.status,
-            receiptNum:e.premium.receiptNum,
-            paidDate:e.premium.paidDate,
-            id:e.premium._id,   
+        /* students*/
+        let premiums=[]
+        for (let val of e.premium) {
+            premiums.push({
+                type:val.type,
+                cost:val.cost,
+                installmentDate:val.installmentDate,
+                status:val.status,
+                receiptNum:val.receiptNum,
+                paidDate:val.paidDate,
+                id:val._id,   
+            })  
         }
-                              
+        index.premiums = premiums
+                         
     }
     if(e.fund){
         index.fund = {
