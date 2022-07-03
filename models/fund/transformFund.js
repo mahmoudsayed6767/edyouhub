@@ -21,6 +21,20 @@ export async function transformFund(e,lang) {
             id:e.owner._id
         }
     }
+    /* educationInstitutionName*/
+    let educationInstitutionName=[]
+    for (let val of e.students) {
+        if(e.educationInstitutionName){
+            educationInstitutionName.push(val.educationInstitutionName)
+        }else{
+
+        }
+        if(val.educationInstitution){
+            educationInstitutionName.push(lang=="ar"?val.educationInstitution.name_ar:val.educationInstitution.name_en)
+        }
+        students.push(student)
+    }
+    index.educationInstitutionName = educationInstitutionName;
     return index
 }
 export async function transformFundById(e,lang) {
