@@ -32,7 +32,6 @@ export async function transformFund(e,lang) {
         if(val.educationInstitution){
             educationInstitutionName.push(lang=="ar"?val.educationInstitution.name_ar:val.educationInstitution.name_en)
         }
-        students.push(student)
     }
     index.educationInstitutionName = educationInstitutionName;
     return index
