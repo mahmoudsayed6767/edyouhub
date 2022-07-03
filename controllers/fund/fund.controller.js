@@ -99,7 +99,6 @@ export default {
                 for (let student of students) {
                     await checkExist(student.sector, Category,{ deleted: false});
                     await checkExist(student.subSector, Category,{ deleted: false});
-                    await checkExistThenGet(student.educationSystem, EducationSystem);
                     //await checkExistThenGet(student.educationInstitution, EducationInstitution);
                     body('studentId').optional()
                     body('studentName').not().isEmpty().withMessage((value) => {
