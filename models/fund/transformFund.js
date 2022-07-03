@@ -62,6 +62,7 @@ export async function transformFundById(e,lang) {
             busFees:val.busFees,
             tuitionFees:val.tuitionFees,
             feesLetter:val.feesLetter,
+            educationInstitutionName:val.educationInstitutionName,
             id:val._id,                         
         }
         if(e.sector){
