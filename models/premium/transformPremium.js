@@ -1,5 +1,6 @@
 
 export async function transformPremium(e,lang) {
+    let now = Date.parse(new Date());
     let index = {
         type:e.type,
         cost:e.cost,
@@ -9,6 +10,9 @@ export async function transformPremium(e,lang) {
         paidDate:e.paidDate,
         lastPremium:e.lastPremium,
         id:e._id,                         
+    }
+    if(now > Date.parse(installmentDate) && e.status == "PENDING"){
+        index.status = "LATE"
     }
     if(e.fund){
         index.fund = {

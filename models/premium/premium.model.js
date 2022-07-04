@@ -39,7 +39,7 @@ const premiumSchema = new Schema({
     },
     status:{
         type: String,
-        enum:['PENDING','PAID','UN-PAID'],
+        enum:['PENDING','PAID','LATE'],
         default:'PENDING'
     },
     receiptNum: {
