@@ -7,7 +7,7 @@ import User from "../../models/user/user.model";
 import Report from "../../models/reports/report.model";
 import ApiError from '../../helpers/ApiError';
 import bcrypt from 'bcryptjs';
-import { generateVerifyCode,generateCode } from '../../services/generator-code-service';
+import { generateVerifyCode,generateCode ,generateMaxCode} from '../../services/generator-code-service';
 import DeviceDetector from "device-detector-js";
 import { sendEmail } from "../../services/sendGrid";
 import { sendNotifiAndPushNotifi } from "../../services/notification-service";
@@ -240,6 +240,7 @@ export default {
                 if(affiliate)
                     validatedBody.affiliate = affiliate
             }
+            validatedBody.username = generateMaxCode(8)
             let createdUser = await User.create({
                 ...validatedBody
             });
@@ -382,7 +383,7 @@ export default {
             if(validatedBody.type =="affiliate"){
                 validatedBody.affiliateCode = generateCode(6)
             }
-            
+            validatedBody.username = generateMaxCode(8)
             
             //delete un active users with the same phone
             let unActiveUsers = await User.find({deleted: false,accountType:'SIGNUP-PROCESS',phone: validatedBody.phone})

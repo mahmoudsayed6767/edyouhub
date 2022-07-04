@@ -3,6 +3,7 @@ import i18n from "i18n";
 import moment from 'moment';
 export async function transformUser(e,lang,myUser,userId) {
     let index = {
+        username:e.username,
         fullname:e.fullname,
         email:e.email,
         phone:e.phone,
@@ -22,6 +23,7 @@ export async function transformUser(e,lang,myUser,userId) {
 }
 export async function transformUserById(e,lang,myUser,userId) {
     let index = {
+        username:e.username,
         fullname:e.fullname,
         email:e.email,
         phone:e.phone,

@@ -12,7 +12,7 @@ export async function toImgUrl (multerObject) {
   try {
     let result = await cloudinary.v2.uploader.upload(multerObject.path);
     return result.secure_url;
-    // multerObject.path = 'https'+'://'+'api.wisht7b.app'+'/'+multerObject.path;
+    // multerObject.path = 'https'+'://'+'api.edHub.com'+'/'+multerObject.path;
     // console.log("path:  "+multerObject.path);
     // return multerObject.path;
 
