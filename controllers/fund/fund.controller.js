@@ -88,6 +88,7 @@ export default {
             body('proofIncomeImgs').not().isEmpty().withMessage((value) => {
                 return req.__('proofIncomeImgs.required', { value});
             }),
+            
 
             body('totalFees').trim().escape().not().isEmpty().withMessage((value, { req}) => {
                 return req.__('totalFees.required', { value});

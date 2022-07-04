@@ -24,7 +24,7 @@ export async function transformFund(e,lang) {
     /* educationInstitutionName*/
     let educationInstitutionName=[]
     for (let val of e.students) {
-        if(e.educationInstitutionName){
+        if(val.educationInstitutionName){
             educationInstitutionName.push(val.educationInstitutionName)
         }else{
 
