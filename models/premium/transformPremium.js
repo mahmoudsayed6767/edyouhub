@@ -11,7 +11,7 @@ export async function transformPremium(e,lang) {
         lastPremium:e.lastPremium,
         id:e._id,                         
     }
-    if(now > Date.parse(installmentDate) && e.status == "PENDING"){
+    if(now > Date.parse(e.installmentDate) && e.status == "PENDING"){
         index.status = "LATE"
     }
     if(e.fund){
