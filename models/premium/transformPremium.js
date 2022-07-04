@@ -45,6 +45,11 @@ export async function transformPremium(e,lang) {
         feesLetter:val.feesLetter,
         id:val._id,                         
     }
+    if(val.educationInstitutionName){
+        student.educationInstitutionName = val.educationInstitutionName
+    }else{
+        student.educationInstitutionName = lang=="ar"?val.educationInstitution.name_ar:val.educationInstitution.name_en
+    }
     students.push(student)
     }
     index.students = students;
