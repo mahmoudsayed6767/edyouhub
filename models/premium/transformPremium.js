@@ -48,7 +48,9 @@ export async function transformPremium(e,lang) {
     if(val.educationInstitutionName){
         student.educationInstitutionName = val.educationInstitutionName
     }else{
-        student.educationInstitutionName = lang=="ar"?val.educationInstitution.name_ar:val.educationInstitution.name_en
+        if(val.educationInstitution){
+            student.educationInstitutionName = lang=="ar"?val.educationInstitution.name_ar:val.educationInstitution.name_en
+        }
     }
     students.push(student)
     }
