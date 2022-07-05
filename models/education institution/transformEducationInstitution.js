@@ -4,6 +4,7 @@ export async function transformEducationInstitution(e,lang) {
         name:lang=="ar"?e.name_ar:e.name_en,
         name_ar:e.name_ar,
         name_en:e.name_en,
+        services:e.services,
         img:e.img,
         id: e._id,
         createdAt: e.createdAt,                       

@@ -6,6 +6,7 @@ import Report from "../../models/reports/report.model";
 import i18n from "i18n";
 import {convertLang,checkValidations} from "../shared/shared.controller";
 import { body } from "express-validator/check";
+import { sendNotifiAndPushNotifi } from "../../services/notification-service";
 
 const populateQuery = [
     { path: 'resource', model: 'user',},

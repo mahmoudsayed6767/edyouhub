@@ -70,5 +70,16 @@ export async function transformUserById(e,lang,myUser,userId) {
             id: e.area._id,
         }
     }
+    if(e.affiliate){
+        index.affiliate = {
+            username:e.affiliate.username,
+            fullname:e.affiliate.fullname,
+            email:e.affiliate.email,
+            phone:e.affiliate.phone,
+            id:e.affiliate._id,
+            type:e.affiliate.type,
+        }
+        
+    }
     return index;
 }

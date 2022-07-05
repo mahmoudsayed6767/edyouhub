@@ -3,6 +3,7 @@ import { requireAuth } from '../../services/passport';
 import { cache } from '../../services/caching'
 import EducationInstitutionController from '../../controllers/education institution/education institution.controller';
 import { multerSaveTo } from '../../services/multer-service';
+import { parseStringToArrayOfObjectsMw } from '../../utils';
 
 const router = express.Router();
 
@@ -10,6 +11,7 @@ router.route('/')
     .post(
         requireAuth,
         multerSaveTo('education').single('img'),
+        parseStringToArrayOfObjectsMw('services'),
         EducationInstitutionController.validateBody(),
         EducationInstitutionController.create
     )
@@ -22,6 +24,7 @@ router.route('/:educationInstitutionId')
     .put(
         requireAuth,
         multerSaveTo('education').single('img'),
+        parseStringToArrayOfObjectsMw('services'),
         EducationInstitutionController.validateBody(true),
         EducationInstitutionController.update
     )

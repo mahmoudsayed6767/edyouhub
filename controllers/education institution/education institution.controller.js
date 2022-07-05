@@ -25,6 +25,9 @@ export default {
             body('name_ar').trim().escape().not().isEmpty().withMessage((value, { req}) => {
                 return req.__('name_ar.required', { value});
             }),
+            body('services').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('services.required', { value});
+            }),
             body('educationSystem').trim().escape().not().isEmpty().withMessage((value, { req}) => {
                 return req.__('educationSystem.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
@@ -148,7 +151,7 @@ export default {
             convertLang(req)
              //get lang
             let lang = i18n.getLocale(req)
-            let {name,sector,subSector,educationSystem} = req.query;
+            let {service,name,sector,subSector,educationSystem} = req.query;
 
             let query = {deleted: false }
              /*search by name */
@@ -165,6 +168,7 @@ export default {
                     ]
                 };
             }
+            if(service) query.service = service
             if(sector) query.sector = sector
             if(subSector) query.subSector = subSector
             if(educationSystem) query.educationSystem = educationSystem
@@ -192,7 +196,7 @@ export default {
              //get lang
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
-            let {name,sector,subSector,educationSystem} = req.query;
+            let {service,name,sector,subSector,educationSystem} = req.query;
             let query = {deleted: false }
              /*search by name */
             if(name) {
@@ -208,6 +212,7 @@ export default {
                     ]
                 };
             }
+            if(service) query.service = service
             if(sector) query.sector = sector
             if(subSector) query.subSector = subSector
             if(educationSystem) query.educationSystem = educationSystem

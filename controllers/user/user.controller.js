@@ -36,6 +36,7 @@ const populateQuery = [
     { path: 'country', model: 'country' },
     { path: 'city', model: 'city' },
     { path: 'area', model: 'area' },
+    { path: 'affiliate', model: 'user'}
     
 ];
 
@@ -963,6 +964,7 @@ export default {
     },
     validateUpdatedUser(isUpdate = true) {
         let validation = [
+            body('affiliateCode').optional(),
             body('fullname').optional(),
             body('phone').optional()
             .custom(async (value, { req }) => {
@@ -1054,6 +1056,11 @@ export default {
                     
                 }
                 
+            }
+            if(user.affiliateCode){
+                let affiliate = await User.findOne({deleted: false,affiliateCode:user.affiliateCode})
+                if(affiliate)
+                    user.affiliate = affiliate
             }
             if (req.file) {
                 let image = await handleImg(req, { attributeName: 'img', isUpdate: true });

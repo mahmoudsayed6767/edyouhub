@@ -85,8 +85,23 @@ export default {
             }).isIn(['EMPLOYEE','BUSINESS-OWNER']).withMessage((value, { req}) => {
                 return req.__('proofIncome.invalid', { value});
             }),
-            body('proofIncomeImgs').not().isEmpty().withMessage((value) => {
+            //student
+            body('proofIncomeImgs').trim().escape().not().isEmpty().withMessage((value) => {
                 return req.__('proofIncomeImgs.required', { value});
+            })
+            .custom(async (proofIncomeImgs, { req }) => {
+                convertLang(req)
+                for (let img of proofIncomeImgs) {
+                    body('img').not().isEmpty().withMessage((value) => {
+                        return req.__('img.required', { value});
+                    }),
+                    body('type').not().isEmpty().withMessage((value) => {
+                        return req.__('type.required', { value});
+                    }).isIn(['WORK-ID','HR-LETTER','WORK-CONTRACT','BANK-ACCOUNT','COMMERCIAL-REGISTRATION','TAX-ID']).withMessage((value, { req}) => {
+                        return req.__('type.invalid', { value});
+                    })
+                }
+                return true;
             }),
             
 
@@ -599,6 +614,7 @@ export default {
             if(fund.status != "PENDING")
                 return next(new ApiError(500, i18n.__('fund.pending')));
             fund.status = 'REJECTED';
+            fund.reason  = req.body.reason
             await fund.save();
             sendNotifiAndPushNotifi({
                 targetUser: fund.owner, 

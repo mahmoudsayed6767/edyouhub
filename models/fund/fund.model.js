@@ -41,6 +41,7 @@ const fundSchema = new Schema({
         enum:['EGYPTIAN','NON-EGYPTIAN'],
         default:'EGYPTIAN'
     },
+    
     personalIdImgs: {
         type: [String],
         required: true
@@ -60,14 +61,27 @@ const fundSchema = new Schema({
     },
     proofIncome:{
         type: String,
-        //enum:['WORK-ID','HR-LETTER','WORK-CONTRACT','BANK-ACCOUNT','COMMERCIAL-REGISTRATION','TAX-ID'],
         enum:['EMPLOYEE','BUSINESS-OWNER'],
         default: 'EMPLOYEE'
     },
-    proofIncomeImgs: {
-        type: [String],
-        required: true
-    },
+    // proofIncomeImgs: {
+    //     type: [String],
+    //     required: true
+    // },
+    proofIncomeImgs: [
+        new Schema({
+            type: {
+                type: String,
+                enum:['WORK-ID','HR-LETTER','WORK-CONTRACT','BANK-ACCOUNT','COMMERCIAL-REGISTRATION','TAX-ID'],
+            },
+            img: {
+                type: String,
+                required: true,
+            },
+        }, { _id: false })
+        
+    ],
+    
     students: {
         type: [Number],
         ref: 'student',

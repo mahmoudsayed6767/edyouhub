@@ -58,6 +58,7 @@ router.route('/:fundId/needAction')
 router.route('/:fundId/reject')
     .put(
         requireAuth,
+        fundController.validateTakeActionBody(),
         fundController.reject
     )
 export default router;
