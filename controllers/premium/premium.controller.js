@@ -17,7 +17,7 @@ const populateQuery = [
     { path: 'fund', model: 'fund'},
     { path: 'fees', model: 'fees'},
     {
-        path: 'students', model: 'student',
+        path: 'student', model: 'student',
         populate: { path: 'educationInstitution', model: 'educationInstitution' },
     },
 ];
