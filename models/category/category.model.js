@@ -19,7 +19,7 @@ const CategorySchema = new Schema({
     type: {
         type: String,
         required: true,
-        enum:['PLACES','EDUCATION'],
+        enum:['PLACES','EDUCATION','PRODUCTS'],
         default:'PLACES'
     },
     priority:{

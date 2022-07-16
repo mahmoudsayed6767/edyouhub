@@ -8,8 +8,8 @@ config.encryptSecret = "ZWGcON/5fIQb.U/1";
 config.initVector = "mcgw2K5uCV5$%x&b";
 config.Securitykey =  "$2a$10$h/Vx2RtN0Ew01elQr8GWFeGrV";
 config.twilio = {
-  accountSid: '',
-  authToken: ''
+  accountSid: 'ACfc08f403d0c878ecbb608c545ca7d46a',
+  authToken: '4f660c99306b397b2647fdb3b8f2da7b'
 }
 config.SENDGRID_API_KEY = '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'
 
