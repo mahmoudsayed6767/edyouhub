@@ -256,7 +256,7 @@ export default {
             body('priority').trim().escape().optional(),
             body('type').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('type.required', { value});
-            }).isIn(['PLACES','EDUCATION']).withMessage((value, { req}) => {
+            }).isIn(['PLACES','EDUCATION','PRODUCTS']).withMessage((value, { req}) => {
                 return req.__('type.invalid', { value});
             }),
             

@@ -23,12 +23,22 @@ import countriesRoute from './country/country.route';
 import citiesRoute from './city/city.route';
 import businessRoute from './business/business.route';
 import transactionsRoute from './transactions/transactions.route';
-
+import colorRoute from './color/color.route';
+import couponRoute from './coupon/coupon.route';
+import productRoute from './product/product.route';
+import suppliesRoute from './supplies/supplies.route';
+import brandRoute from './brand/brand.route';
 import { requireAuth } from '../services/passport';
 
 const router = express.Router();
 
 router.use('/', userRoute);
+router.use('/brands',brandRoute);
+router.use('/colors',colorRoute);
+router.use('/coupons',couponRoute);
+router.use('/products',productRoute);
+router.use('/supplies',suppliesRoute);
+
 router.use('/transactions', transactionsRoute);
 router.use('/funds',fundsRoute);
 router.use('/fees',feesRoute);
