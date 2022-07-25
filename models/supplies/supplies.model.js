@@ -14,6 +14,11 @@ const suppliesSchema=new Schema({
         type: String,
         required:true
     },
+    attachment:{
+        type: String,
+        default:"",
+        required:true
+    },
     educationInstitution: {
         type: Number,
         ref:'educationInstitution',

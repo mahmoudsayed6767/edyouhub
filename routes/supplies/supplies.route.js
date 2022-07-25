@@ -1,9 +1,17 @@
 import express from 'express';
 import {  requireAuth} from '../../services/passport';
 import suppliesController from '../../controllers/supplies/supplies.controller';
+import { multerSaveTo } from '../../services/multer-service';
 
 const router = express.Router();
-
+router.route('/upload')
+    .post(  
+        requireAuth,
+        multerSaveTo('files').fields([
+            { name: 'file', maxCount: 1, options: false },
+        ]),
+        suppliesController.uploadFile
+    )
 router.route('/')
     .post(  
         requireAuth,

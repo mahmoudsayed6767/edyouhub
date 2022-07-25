@@ -13,6 +13,8 @@ import { transformSupplies,transformSuppliesById } from "../../models/supplies/t
 import EducationInstitution from "../../models/education institution/education institution.model";
 import Product from "../../models/product/product.model";
 import Color from "../../models/color/color.model";
+import { toImgUrl } from "../../utils";
+
 const populateQuery = [
     { path: 'educationInstitution', model: 'educationInstitution' },
     {
@@ -258,12 +260,34 @@ export default {
                 }
                 return true;
             }),
+            body('attachment').optional()
             
             
             
         ];
     
         return validations;
+    },
+    async uploadFile(req, res, next) {
+        try {
+            convertLang(req)
+            let file 
+            if (req.files) {
+                if (req.files['file']) {
+                    let imagesList = [];
+                    for (let imges of req.files['file']) {
+                        imagesList.push(await toImgUrl(imges))
+                    }
+                    file = imagesList[0];
+                }
+            }
+            res.status(201).send({
+                success:true,
+                file:file
+            });
+        } catch (error) {
+            next(error);
+        }
     },
     async create(req, res, next) {
         try {
@@ -293,7 +317,9 @@ export default {
                 
                 validatedBody.existItems = existItems
             }
+
             console.log("data",validatedBody.existItems)
+
             let createdsupplies = await Supplies.create({
                 ...validatedBody,
             });
