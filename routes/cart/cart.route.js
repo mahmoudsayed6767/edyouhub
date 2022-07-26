@@ -5,19 +5,22 @@ import { cache } from '../../services/caching';
 
 const router = express.Router();
 
-router.route('/:productId/products')
+router.route('/:suppliesId/supplies')
     .post(
         requireAuth,
         CartController.validateBody(),
         CartController.create
     );
-
-router.route('/:userId/get')
-    .get(requireAuth,CartController.findAll);
-    
-
-router.route('/:cartId/products/:productId')
+router.route('/:cartId')
+    .put(
+        requireAuth,
+        CartController.validateBody(),
+        CartController.update
+    )
     .delete( requireAuth,CartController.unCart);
+
+router.route('/')
+    .get(requireAuth,CartController.findAll);
 
 router.route('/deleteAll')
     .delete( requireAuth,CartController.deleteAll);

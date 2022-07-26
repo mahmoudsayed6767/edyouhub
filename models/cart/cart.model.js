@@ -13,10 +13,10 @@ const CartSchema = new Schema({
     },
     supplies: {
         type: Number,
-        ref: 'product',
+        ref: 'supplies',
         required: true
     },
-    products: [
+    items: [
         new Schema({
             product: {
                 type: Number,

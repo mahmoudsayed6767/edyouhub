@@ -1,75 +1,104 @@
-import { checkExist, checkExistThenGet,isInArray,isArray } from "../../helpers/CheckMethods";
+import { checkExistThenGet } from "../../helpers/CheckMethods";
 import ApiResponse from "../../helpers/ApiResponse";
 import User from "../../models/user/user.model";
 import Product from "../../models/product/product.model";
 import { checkValidations,convertLang } from "../shared/shared.controller";
-
+import Color from "../../models/color/color.model";
 import Cart from "../../models/cart/cart.model";
 import ApiError from '../../helpers/ApiError';
-import Notif from "../../models/notif/notif.model";
-import { sendNotifiAndPushNotifi } from "../../services/notification-service";
 import { body } from "express-validator/check";
 import i18n from "i18n";
+import { transformCart } from "../../models/cart/transformCart";
 
 const populateQuery = [
     {
-        path: 'product', model: 'product' ,
-        populate: { path: 'category', model: 'category' },
-       
+        path: 'items.product', model: 'product',
+        populate: { path: 'colors', model: 'color' }
     },
-    {
-        path: 'product', model: 'product' ,
-        populate: { path: 'brand', model: 'brand' },
-       
-    },
-    {
-        path: 'product', model: 'product' ,
-        populate: { path: 'subCategory', model: 'category' },
-       
-    },
+    { path: 'items.color', model: 'color' },
+
+    { path: 'supplies', model: 'supplies'},
 ];
 export default {
     async findAll(req, res, next) {
         try {
             convertLang(req)
+            let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
-            let { userId } = req.params;
-            let query = { user: userId,deleted:false };
+            let query = { user: req.user._id,deleted:false };
             let Carts = await Cart.find(query).populate(populateQuery)
                 .sort({ createdAt: -1 })
                 .limit(limit)
                 .skip((page - 1) * limit)
-
-
-            const CartsCount = await Cart.countDocuments(query);
-            const pageCount = Math.ceil(CartsCount / limit);
-
-            res.send(new ApiResponse(Carts, page, pageCount, limit, CartsCount, req));
+                .then(async (data) => {
+                    var newdata = [];
+                    await Promise.all(data.map(async(e) =>{
+                        let index = await transformCart(e,lang)
+                        newdata.push(index);
+                    }))
+                    
+                    const CartsCount = await Cart.countDocuments(query);
+                    const pageCount = Math.ceil(CartsCount / limit);
+                    res.send(new ApiResponse(newdata, page, pageCount, limit, CartsCount, req));
+                })
         } catch (err) {
             next(err);
         }
     },
     validateBody() {
         let validations = [
-            
+            body('items').not().isEmpty().withMessage((val, { req}) => {
+                return req.__('items.required', { val});
+            })
+            .custom(async (items, { req }) => {
+                convertLang(req)
+                for (let item of items) {
+                    body('product').not().isEmpty().withMessage((val, { req}) => {
+                        return req.__('product.required', { val});
+                    })
+                    .isNumeric().isNumeric().withMessage((val, { req}) => {
+                        return req.__('product.numeric', { val});
+                    }).custom(async (val, { req }) => {
+                        if (!await Product.findOne({_id:val,deleted:false}))
+                            throw new Error(req.__('product.invalid'));
+                        else
+                            return true;
+                    })
+                    body('size').not().isEmpty().withMessage((val, { req}) => {
+                        return req.__('size.required', { val});
+                    })
+                    body('color').not().isEmpty().withMessage((val, { req}) => {
+                        return req.__('color.required', { val});
+                    })
+                    .isNumeric().isNumeric().withMessage((val, { req}) => {
+                        return req.__('color.numeric', { val});
+                    }).custom(async (val, { req }) => {
+                        if (!await Color.findOne({_id:val,deleted:false}))
+                            throw new Error(req.__('color.invalid'));
+                        else
+                            return true;
+                    })
+                    body('count').not().isEmpty().withMessage((val) => {
+                        return req.__('count.required', { val});
+                    }).isLength({ max: 10 }).withMessage((val) => {
+                        return req.__('count.invalid', { val});
+                    })
+                    return true
+
+                }
+                return true;
+            }),
         ]
         return validations;
     },
     async create(req, res, next) {
         try {
             convertLang(req)
-            let {productId} = req.params;
+            let {suppliesId} = req.params;
             const validatedBody = checkValidations(req);
-            validatedBody.product = productId;
+            validatedBody.supplies = suppliesId;
             validatedBody.user = req.user._id;
-            let user = await checkExistThenGet(req.user._id, User);
-            let arr = user.carts;
-            var found = arr.find(e=>e == productId); 
-            if(!found){
-                user.carts.push(productId);
-                await Cart.create({ ...validatedBody});
-            }
-            await user.save();
+            await Cart.create({...validatedBody})
             res.status(201).send({
                 success: true,
             });
@@ -77,26 +106,29 @@ export default {
             next(error)
         }
     },
+    async update(req, res, next) {
+        try {
+            convertLang(req)
+            let { cartId } = req.params;
+            let cart = await checkExistThenGet(cartId, Cart, { deleted: false });
+            if (cart.user != req.user._id)
+                return next(new ApiError(403, i18n.__('notAllow')));
+            const validatedBody = checkValidations(req);
+            await Cart.findByIdAndUpdate(cartId, { ...validatedBody });
+            return res.status(200).send({success: true});
+        } catch (error) {
+            next(error);
+        }
+    },
     async unCart(req, res, next) {
         try {
             convertLang(req)
-            let {productId,cartId} = req.params;
+            let {cartId} = req.params;
             let cart = await checkExistThenGet(cartId, Cart, { deleted: false });
             if (cart.user != req.user._id)
                 return next(new ApiError(403, i18n.__('notAllow')));
             cart.deleted = true;
             await cart.save();
-            let user = await checkExistThenGet(req.user._id, User);
-
-            let arr = user.carts;
-            console.log(arr);
-            for(let i = 0;i<= arr.length;i=i+1){
-                if(arr[i] == productId){
-                    arr.splice(i, 1);
-                }
-            }
-            user.carts = arr;
-            await user.save();
             res.send({
                 success: true,
             });
@@ -107,14 +139,11 @@ export default {
     async deleteAll(req, res, next) {
         try {
             convertLang(req)
-            let theUser = await checkExistThenGet(req.user._id, User);
-            theUser.carts = [];
             let carts = await Cart.find({ user: req.user._id });
             for (let cart of carts ) {
                 cart.deleted = true;
                 await cart.save();
             }
-            await theUser.save()
             res.send({
                 success: true,
             });

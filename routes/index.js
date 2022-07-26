@@ -28,9 +28,12 @@ import couponRoute from './coupon/coupon.route';
 import productRoute from './product/product.route';
 import suppliesRoute from './supplies/supplies.route';
 import brandRoute from './brand/brand.route';
+import cartsRoute from './cart/cart.route';
+
 import { requireAuth } from '../services/passport';
 
 const router = express.Router();
+router.use('/cart', cartsRoute);
 
 router.use('/', userRoute);
 router.use('/brands',brandRoute);
