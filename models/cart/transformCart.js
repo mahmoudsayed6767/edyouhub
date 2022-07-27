@@ -31,6 +31,7 @@ export async function transformCart(e,lang) {
                 retailPrice:selectedSize.retailPrice,
                 costPrice:selectedSize.costPrice,
                 count:selectedSize.count,
+                index:selectedSize.index
             }
         }
         if(val.product){

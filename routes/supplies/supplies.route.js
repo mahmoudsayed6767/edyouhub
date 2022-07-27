@@ -20,6 +20,8 @@ router.route('/')
     ).get(requireAuth,suppliesController.findAll);
 router.route('/withoutPagenation/get')
     .get(requireAuth,suppliesController.getAll);
+router.route('/suppliesMobile')
+    .get(requireAuth,suppliesController.getSuplliesMobile);
 router.route('/:suppliesId')
     .put(
         requireAuth,

@@ -21,12 +21,23 @@ const populateQuery = [
         path: 'existItems', model: 'suppliesItems',
         populate: { path: 'items.product', model: 'product' },
     },
+    {
+        path: 'existItems', model: 'suppliesItems',
+        populate: { path: 'items.color', model: 'color' },
+    },
 
     {
         path: 'existItems', model: 'suppliesItems',
         populate: { 
             path: 'items.alternatives', model: 'alternative' ,
             populate: { path: 'product', model: 'product' }
+        },
+    },
+    {
+        path: 'existItems', model: 'suppliesItems',
+        populate: { 
+            path: 'items.alternatives', model: 'alternative' ,
+            populate: { path: 'color', model: 'color' }
         },
     },
 ];
@@ -112,6 +123,29 @@ export default {
                         newdata.push(index);
                     }))
                     res.send({success:true,data:newdata});
+                })
+
+            
+        } catch (err) {
+            next(err);
+        }
+    }, 
+    async getSuplliesMobile(req, res, next) {
+        
+        try {
+            convertLang(req)
+            let lang = i18n.getLocale(req)
+            let {educationInstitution,grade} = req.query;
+            let query = {deleted: false };
+
+            if (grade) query.grade = grade
+            if (educationInstitution) query.educationInstitution = educationInstitution
+            let sortd = {createdAt: -1}
+            await Supplies.findOne(query).populate(populateQuery)
+                .sort(sortd).then(async (e) => {
+                    let index = await transformSuppliesById(e,lang)
+                       
+                    res.send({success:true,data:index});
                 })
 
             
