@@ -5,6 +5,7 @@ export async function transformProduct(e,lang) {
         name_en:e.name_en,
         name_ar:e.name_ar,
         quantity:e.quantity,
+        sku:e.sku,
         img:e.img,
         available:e.available,
         id: e._id,
@@ -14,6 +15,22 @@ export async function transformProduct(e,lang) {
             name:lang=="ar"?e.brand.name_ar:e.brand.name_en,
             id: e.brand._id,
             img: e.brand.img,
+        }
+    }
+    if(e.category){
+        index.category = {
+            name:lang=="ar"?e.category.name_ar:e.category.name_en,
+            img: e.category.img,
+            type: e.category.type,
+            id: e.category._id,
+        }
+    }
+    if(e.subCategory){
+        index.subCategory = {
+            name:lang=="ar"?e.subCategory.name_ar:e.subCategory.name_en,
+            id: e.subCategory._id,
+            type: e.subCategory.type,
+            img: e.subCategory.img,
         }
     }
     /*colors */
@@ -60,6 +77,13 @@ export async function transformProductById(e,lang,myUser,userId){
             id: e.subCategory._id,
             type: e.subCategory.type,
             img: e.subCategory.img,
+        }
+    }
+    if(e.brand){
+        index.brand ={
+            name:lang=="ar"?e.brand.name_ar:e.brand.name_en,
+            id: e.brand._id,
+            img: e.brand.img,
         }
     }
     /*colors */

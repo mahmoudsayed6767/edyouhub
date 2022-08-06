@@ -46,7 +46,20 @@ export default {
                 "user": req.user._id
             };
             await Report.create({...reports });
-            return res.status(201).send({success:true});
+            await Brand.findById(brand.id).then((e) => {
+                let brand = {
+                    brandName:lang=="ar"?e.name_ar:e.name_en,
+                    name_ar:e.name_ar,
+                    name_en:e.name_en,
+                    img: e.img,
+                    id: e._id,
+                    createdAt: e.createdAt,
+                }
+                return res.status(201).send({
+                    success:true,
+                    data:brand
+                });
+            })
         } catch (error) {
             next(error);
         }
@@ -97,7 +110,20 @@ export default {
                 "user": req.user._id
             };
             await Report.create({...reports });
-            return res.status(200).send({success: true});
+            await Brand.findById(brandId).then((e) => {
+                let brand = {
+                    brandName:lang=="ar"?e.name_ar:e.name_en,
+                    name_ar:e.name_ar,
+                    name_en:e.name_en,
+                    img: e.img,
+                    id: e._id,
+                    createdAt: e.createdAt,
+                }
+                return res.status(200).send({
+                    success:true,
+                    data:brand
+                });
+            })
         } catch (error) {
             next(error);
         }
