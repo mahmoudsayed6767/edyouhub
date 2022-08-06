@@ -57,6 +57,12 @@ const ProductSchema=new Schema({
 
         }, { _id: false })
     ],
+    brand: {
+        type: Number,
+        ref: 'brand',
+        default:1,
+        required:true
+    },
     category: {
         type: Number,
         ref: 'category',
