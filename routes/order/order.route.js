@@ -13,12 +13,12 @@ router.route('/:userId/users')
     );
 
 router.route('/')
-    .get(OrderController.findOrders)
+    .get(requireAuth,OrderController.findOrders)
 
 router.route('/withoutPagenation/get')
-    .get(OrderController.getOrders)
+    .get(requireAuth,OrderController.getOrders)
 router.route('/:orderId')
-    .get(OrderController.findById)
+    .get(requireAuth,OrderController.findById)
     .delete( requireAuth,OrderController.delete);
 
 

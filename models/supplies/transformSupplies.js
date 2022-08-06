@@ -3,9 +3,14 @@ export async function transformSupplies(e,lang) {
     let index ={
         name:lang=="ar"?e.name_ar:e.name_en,
         attachment: e.attachment,
-        grade: e.grade,
         createdAt:e.createdAt,
         id: e._id,
+    }
+    if(e.grade){
+        index.grade ={
+            name:lang=="ar"?e.grade.name_ar:e.grade.name_en,
+            id: e.grade._id,
+        }
     }
     if(e.educationInstitution){
         index.educationInstitution ={
@@ -20,9 +25,14 @@ export async function transformSuppliesById(e,lang) {
     let index ={
         name:lang=="ar"?e.name_ar:e.name_en,
         attachment: e.attachment,
-        grade: e.grade,
         createdAt:e.createdAt,
         id: e._id,
+    }
+    if(e.grade){
+        index.grade ={
+            name:lang=="ar"?e.grade.name_ar:e.grade.name_en,
+            id: e.grade._id,
+        }
     }
     if(e.educationInstitution){
         index.educationInstitution ={

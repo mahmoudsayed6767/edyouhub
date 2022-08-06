@@ -25,8 +25,8 @@ const suppliesSchema=new Schema({
         required: true,
     },
     grade: {
-        type: String,
-        default:'',
+        type: Number,
+        ref:'grade',
         required: true
     },
     existItems: [{

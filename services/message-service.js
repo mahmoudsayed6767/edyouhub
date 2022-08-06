@@ -7,7 +7,7 @@ export function sendConfirmCode(phone,verifyCode) {
     client.messages.create({
         body: config.confirmMessage + verifyCode,
         to: phone,
-        from: '+17207073481'
+        from: '+19379752310'
     }).then((message) => {
         console.log(message);
     }).catch(err => console.log('Twilio Error: ', err))
@@ -18,7 +18,7 @@ export function sendSms(phone,message) {
     client.messages.create({
         body: message,
         to: phone,
-        from: '+17207073481'
+        from: '+19379752310'
     }).then((message) => {
         console.log(message);
     }).catch(err => console.log('Twilio Error: ', err))
@@ -29,7 +29,7 @@ export function sendForgetPassword(password, phone) {
     client.messages.create({
         body: ' verify Code :'+ password,
         to: phone /*phone*/,
-        from: '+17207073481'
+        from: '+19379752310'
     }).then((message) => {
         console.log(message);
     }).catch(err => console.log('Twilio Error: ', err))

@@ -10,6 +10,7 @@ import bcrypt from 'bcryptjs';
 import { generateVerifyCode,generateCode ,generateMaxCode} from '../../services/generator-code-service';
 import DeviceDetector from "device-detector-js";
 import { sendEmail } from "../../services/sendGrid";
+import {sendSms} from "../../services/message-service"
 import { sendNotifiAndPushNotifi } from "../../services/notification-service";
 import i18n from "i18n";
 import {transformUser,transformUserById } from '../../models/user/transformUser';
@@ -282,7 +283,7 @@ export default {
             theUser.verifycode = "0000" 
             await theUser.save();
             let realPhone =  validatedBody.phone;
-            let message =  ' رمز الدخول الخاص ب Noor هو ' + theUser.verifycode
+            let message =  ' رمز الدخول الخاص ب Edu Hub هو ' + theUser.verifycode
             //sendSms(realPhone,message)
             let reports = {
                 "action":"User sign Up ",
@@ -434,7 +435,7 @@ export default {
             sendNotifiAndPushNotifi({
                 targetUser: userId, 
                 fromUser: user._id, 
-                text: 'Noor ',
+                text: 'Edu Hub ',
                 subject: userId,
                 subjectType: 'logout',
                 info:'LOGOUT',
@@ -656,14 +657,14 @@ export default {
         try {
             convertLang(req)
             let validatedBody = checkValidations(req);
-            let realPhone = validatedBody.phone;
+            let realPhone = "+2" + validatedBody.phone;
             let user = await checkUserExistByPhone(validatedBody.phone);
 
-            user.verifycode = "0000"//generateVerifyCode();
+            user.verifycode = generateVerifyCode();
             await user.save();
              //send code
-            let message =  ' رمز الدخول الخاص ب Noor هو ' + user.verifycode
-            //sendSms(realPhone,message)
+            let message =  ' رمز الدخول الخاص ب Edu Hub هو ' + user.verifycode
+            sendSms(realPhone,message)
             let reports = {
                 "action":"Send code to phone for forget pass",
                 "type":"USERS",

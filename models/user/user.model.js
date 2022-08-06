@@ -117,6 +117,10 @@ const userSchema = new Schema({
         type: Number,
         default: 0
     },
+    usedCoupons: {
+        type:[Number],
+        ref:'coupons'
+    },
     deleted: {
         type: Boolean,
         default: false

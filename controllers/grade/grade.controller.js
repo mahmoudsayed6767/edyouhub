@@ -1,17 +1,22 @@
-import City from "../../models/city/city.model";
-import Area from "../../models/area/area.model";
+import Grade from "../../models/grade/grade.model";
 import Report from "../../models/reports/report.model";
 import { body } from "express-validator/check";
 import { checkValidations,convertLang} from "../shared/shared.controller";
 import ApiError from "../../helpers/ApiError";
+import EducationInstitution from "../../models/education institution/education institution.model";
 import { checkExist,isInArray } from "../../helpers/CheckMethods";
 import ApiResponse from "../../helpers/ApiResponse";
 import { checkExistThenGet } from "../../helpers/CheckMethods";
 import i18n from "i18n";
-
+import EducationSystem from "../../models/education system/education system.model";
+import { transformGrade } from "../../models/grade/transformGrade";
+const populateQuery = [
+    { path: 'educationSystem', model: 'educationSystem' },
+    { path: 'educationInstitution', model: 'educationInstitution' },
+];
 export default {
     //validate body
-    validateCityBody(isUpdate = false) {
+    validateBody(isUpdate = false) {
         let validations = [
             body('name_en').trim().escape().not().isEmpty().withMessage((value, { req}) => {
                 return req.__('name_en.required', { value});
@@ -19,36 +24,46 @@ export default {
             body('name_ar').trim().escape().not().isEmpty().withMessage((value, { req}) => {
                 return req.__('name_ar.required', { value});
             }),
-            body('country').trim().escape().not().isEmpty().withMessage((value, { req}) => {
-                return req.__('country.required', { value});
+            body('educationSystem').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('educationSystem.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
-                return req.__('country.numeric', { value});
+                return req.__('educationSystem.numeric', { value});
+            }).custom(async (value, { req }) => {
+                if (!await EducationSystem.findOne({_id:value,deleted:false}))
+                    throw new Error(req.__('educationSystem.invalid'));
+                else
+                    return true;
             }),
-            body('delivaryCost').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('delivaryCost.required', { value});
+            body('educationInstitution').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('educationInstitution.required', { value});
+            }).isNumeric().withMessage((value, { req}) => {
+                return req.__('educationInstitution.numeric', { value});
+            }).custom(async (value, { req }) => {
+                if (!await EducationInstitution.findOne({_id:value,deleted:false}))
+                    throw new Error(req.__('educationInstitution.invalid'));
+                else
+                    return true;
             }),
             
         ];
         return validations;
     },
-    //add new city
+    //add new grade
     async create(req, res, next) {
         try {
             convertLang(req)
             const validatedBody = checkValidations(req);
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
-            let city = await City.create({ ...validatedBody });
+            let grade = await Grade.create({ ...validatedBody });
             let reports = {
-                "action":"Create New City",
-                "type":"CITIES",
-                "deepId":city.id,
+                "action":"Create New grade",
+                "type":"GRADE",
+                "deepId":grade.id,
                 "user": req.user._id
             };
             await Report.create({...reports });
             res.status(201).send({
                 success:true,
-                data:city
+                data:grade
             });
         } catch (error) {
             next(error);
@@ -60,42 +75,35 @@ export default {
             convertLang(req)
              //get lang
             let lang = i18n.getLocale(req)
-            let { cityId } = req.params;
+            let { gradeId } = req.params;
             
-            await checkExist(cityId, City, { deleted: false });
+            await checkExist(gradeId, Grade, { deleted: false });
 
-            await City.findById(cityId).then( e => {
-                let city ={
-                    name:lang=="ar"?e.name_ar:e.name_en,
-                    name_ar:e.name_ar,
-                    name_en:e.name_en,
-                    delivaryCost:e.delivaryCost,
-                    id: e._id,
-                    createdAt: e.createdAt,
-                }
+            await Grade.findById(gradeId)
+            .populate(populateQuery)
+            .then(async(e) => {
+                let grade = await transformGrade(e,lang)
                 res.send({
                     success:true,
-                    data:city
+                    data:grade
                 });
             })
         } catch (error) {
             next(error);
         }
     },
-    //update city
+    //update Grade
     async update(req, res, next) {
         try {
             convertLang(req)
-            let { cityId } = req.params;
-            await checkExist(cityId,City, { deleted: false })
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
+            let { gradeId } = req.params;
+            await checkExist(gradeId,Grade, { deleted: false })
             const validatedBody = checkValidations(req);
-            await City.findByIdAndUpdate(cityId, { ...validatedBody });
+            await Grade.findByIdAndUpdate(gradeId, { ...validatedBody });
             let reports = {
-                "action":"Update City",
-                "type":"CITIES",
-                "deepId":cityId,
+                "action":"Update grade",
+                "type":"GRADE",
+                "deepId":gradeId,
                 "user": req.user._id
             };
             await Report.create({...reports});
@@ -112,9 +120,9 @@ export default {
             convertLang(req)
              //get lang
             let lang = i18n.getLocale(req)
-            let {name} = req.query;
+            let {name,educationInstitution,educationSystem} = req.query;
 
-            let query = {deleted: false,country:req.params.country }
+            let query = {deleted: false }
              /*search by name */
             if(name) {
                 query = {
@@ -129,19 +137,14 @@ export default {
                     ]
                 };
             }
-            await City.find(query)
+            if(educationInstitution) query.educationInstitution = educationInstitution
+            if(educationSystem) query.educationSystem = educationSystem
+            await Grade.find(query).populate(populateQuery)
                 .sort({ _id: 1 })
                 .then( async(data) => {
                     var newdata = [];
                     await Promise.all(data.map(async(e) =>{
-                        let index = {
-                            name:lang=="ar"?e.name_ar:e.name_en,
-                            name_ar:e.name_ar,
-                            name_en:e.name_en,
-                            delivaryCost:e.delivaryCost,
-                            id: e._id,
-                            createdAt: e.createdAt,
-                        }
+                        let index = await transformGrade(e,lang)
                         newdata.push(index)
                     }))
                     res.send({
@@ -159,10 +162,10 @@ export default {
             convertLang(req)
              //get lang
             let lang = i18n.getLocale(req)
-            let {name} = req.query
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
-            let query = {  deleted: false,country:req.params.country }
-            /*search by name */
+            let {name,educationInstitution,educationSystem} = req.query;
+            let query = {deleted: false }
+             /*search by name */
             if(name) {
                 query = {
                     $and: [
@@ -176,24 +179,19 @@ export default {
                     ]
                 };
             }
-            await City.find(query)
+            if(educationInstitution) query.educationInstitution = educationInstitution
+            if(educationSystem) query.educationSystem = educationSystem
+            await Grade.find(query).populate(populateQuery)
                 .sort({ _id: 1 })
                 .limit(limit)
                 .skip((page - 1) * limit)
                 .then(async (data) => {
                     var newdata = [];
                     await Promise.all(data.map(async(e) =>{
-                        let index = {
-                            name:lang=="ar"?e.name_ar:e.name_en,
-                            name_ar:e.name_ar,
-                            name_en:e.name_en,
-                            delivaryCost:e.delivaryCost,
-                            id: e._id,
-                            createdAt: e.createdAt,
-                        }
+                        let index = await transformGrade(e,lang)
                         newdata.push(index)
                     }))
-                    const count = await City.countDocuments(query);
+                    const count = await Grade.countDocuments(query);
                     const pageCount = Math.ceil(count / limit);
 
                     res.send(new ApiResponse(newdata, page, pageCount, limit, count, req));
@@ -207,21 +205,15 @@ export default {
         
         try {
             convertLang(req)
-            let { cityId } = req.params;
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
-            let city = await checkExistThenGet(cityId, City);
-            city.deleted = true;
-            let areas = await Area.find({ data: cityId });
-                for (let areaId of areas) {
-                    areaId.deleted = true;
-                    await areaId.save();
-                }
-            await city.save();
+            let { gradeId } = req.params;
+            
+            let grade = await checkExistThenGet(gradeId, Grade);
+            grade.deleted = true;
+            await grade.save();
             let reports = {
-                "action":"Delete City",
-                "type":"CITIES",
-                "deepId":cityId,
+                "action":"Delete grade",
+                "type":"GRADE",
+                "deepId":gradeId,
                 "user": req.user._id
             };
             await Report.create({...reports});

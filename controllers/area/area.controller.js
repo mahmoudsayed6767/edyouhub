@@ -18,6 +18,9 @@ export default {
             body('name_ar').trim().escape().not().isEmpty().withMessage((value, { req}) => {
                 return req.__('name_ar.required', { value});
             }),
+            body('delivaryCost').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('delivaryCost.required', { value});
+            }),
             
         ];
     },
@@ -64,6 +67,7 @@ export default {
                     name:lang=="ar"?e.name_ar:e.name_en,
                     name_ar:e.name_ar,
                     name_en:e.name_en,
+                    delivaryCost:e.delivaryCost,
                     id: e._id,
                     createdAt: e.createdAt,
                 }
@@ -140,6 +144,7 @@ export default {
                             name:lang=="ar"?e.name_ar:e.name_en,
                             name_ar:e.name_ar,
                             name_en:e.name_en,
+                            delivaryCost:e.delivaryCost,
                             city:e.city,
                             id: e._id,
                             createdAt: e.createdAt,
@@ -189,6 +194,7 @@ export default {
                         newdata.push({
                             name:lang=="ar"?e.name_ar:e.name_en,
                             name_en:e.name_en,
+                            delivaryCost:e.delivaryCost,
                             name_ar:e.name_ar,
                             city:e.city,
                             id: e._id,

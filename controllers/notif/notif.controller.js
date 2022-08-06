@@ -64,6 +64,9 @@ export default {
                         if(e.premium){
                             index.deepId = e.premium
                         }
+                        if(e.order){
+                            index.deepId = e.order
+                        }
                         newdata.push(index)
                         
                     }))
@@ -191,7 +194,7 @@ export default {
                     sendNotifiAndPushNotifi({
                         targetUser: user.id, 
                         fromUser: req.user._id, 
-                        text: 'Noor',
+                        text: 'Edu Hub',
                         subject: validatedBody.title,
                         subjectType: validatedBody.description,
                         info:'APP'
@@ -215,7 +218,7 @@ export default {
                     sendNotifiAndPushNotifi({
                         targetUser: user.id, 
                         fromUser: req.user._id, 
-                        text: 'Noor',
+                        text: 'Edu Hub',
                         subject: validatedBody.title,
                         subjectType:validatedBody.description ,
                         info:'APP'

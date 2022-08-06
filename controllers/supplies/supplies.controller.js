@@ -14,9 +14,10 @@ import EducationInstitution from "../../models/education institution/education i
 import Product from "../../models/product/product.model";
 import Color from "../../models/color/color.model";
 import { toImgUrl } from "../../utils";
-
+import Grade from "../../models/grade/grade.model"
 const populateQuery = [
     { path: 'educationInstitution', model: 'educationInstitution' },
+    { path: 'grade', model: 'grade' },
     {
         path: 'existItems', model: 'suppliesItems',
         populate: { path: 'items.product', model: 'product' },
@@ -164,6 +165,13 @@ export default {
             }),
             body('grade').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('grade.required', { value});
+            }).isNumeric().isNumeric().withMessage((value, { req}) => {
+                return req.__('grade.numeric', { value});
+            }).custom(async (value, { req }) => {
+                if (!await Grade.findOne({_id:value,deleted:false}))
+                    throw new Error(req.__('grade.invalid'));
+                else
+                    return true;
             }),
             body('educationInstitution').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('educationInstitution.required', { value});

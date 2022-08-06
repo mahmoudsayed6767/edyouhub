@@ -82,7 +82,7 @@ export default {
             contact.reply = true;
             contact.replyText = validatedBody.reply;
             await contact.save();
-            let description = 'Noor Reply on your message';
+            let description = 'Edu Hub Reply on your message';
             sendEmail(contact.email, validatedBody.reply,description)
 
             res.status(200).send({success:true});

@@ -14,28 +14,26 @@ const OrderSchema = new Schema({
         type: Number,
         required: true
     },
+    delivaryCost: {
+        type: Number,
+        required: true
+    },
     finalTotal:{
         type: Number,
         required: true,
         default:0
     },
-    delivaryCost: {
+    discount:{
         type: Number,
-        required: true
-    },
-    discount: {
-        type: Number,
+        required: true,
         default:0
     },
+    
     destination: {
         type: { type: String, enum: 'Point' },
         coordinates: { type: [Number] }
     },
     address: {
-        type: String,
-        required: true
-    },
-    phone: {
         type: String,
         required: true
     },
@@ -71,7 +69,12 @@ const OrderSchema = new Schema({
         type:Boolean,
         default:false
     },
-    productOrders: [
+    supplies: {
+        type: Number,
+        ref: 'supplies',
+        required: true
+    },
+    items: [
         new Schema({
             product: {
                 type: Number,
@@ -80,6 +83,15 @@ const OrderSchema = new Schema({
             },
             unitCost: {// price of single product
                 type: Number,
+            },
+            color: {
+                type: Number,
+                ref: 'color',
+                //required: true
+            },
+            size: {
+                type: String,
+                required: true
             },
             count: {
                 type: Number,
@@ -91,14 +103,7 @@ const OrderSchema = new Schema({
     reason:{
         type:String
     },
-    rated: {
-        type: Boolean,
-        default: false
-    },
-    freeShipping:{
-        type: Boolean,
-        default: false
-    },
+    
     refusedDateMillSec:{
         type:Number,
     },

@@ -23,6 +23,11 @@ const areaSchema = new Schema({
         ref: 'city',
         required: true
     },
+    delivaryCost:{
+        type: Number,
+        default:50,
+        required: true
+    },
     deleted:{
         type:Boolean,
         default:false

@@ -398,7 +398,7 @@ export default {
                 sendNotifiAndPushNotifi({
                     targetUser: bill.client, 
                     fromUser: bill.place, 
-                    text: ' Noor',
+                    text: ' Edu Hub',
                     subject: bill.id,
                     subjectType: 'Bill Status',
                     info:'BILL'

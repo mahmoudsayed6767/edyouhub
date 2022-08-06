@@ -19,7 +19,7 @@ const educationInstitutionSchema = new Schema({
     },
     services:{
         type: [String],
-        enum: ['FUND','FEES'],
+        enum: ['FUND','FEES','SUPPLIES'],
         required: true,
     },
     sector: {

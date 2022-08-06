@@ -29,11 +29,14 @@ import productRoute from './product/product.route';
 import suppliesRoute from './supplies/supplies.route';
 import brandRoute from './brand/brand.route';
 import cartsRoute from './cart/cart.route';
+import ordersRoute from './order/order.route';
+import gradeRoute from './grade/grade.route';
 
 import { requireAuth } from '../services/passport';
 
 const router = express.Router();
 router.use('/cart', cartsRoute);
+router.use('/grades', gradeRoute);
 
 router.use('/', userRoute);
 router.use('/brands',brandRoute);
@@ -41,6 +44,7 @@ router.use('/colors',colorRoute);
 router.use('/coupons',couponRoute);
 router.use('/products',productRoute);
 router.use('/supplies',suppliesRoute);
+router.use('/orders',ordersRoute);
 
 router.use('/transactions', transactionsRoute);
 router.use('/funds',fundsRoute);

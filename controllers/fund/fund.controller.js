@@ -135,9 +135,20 @@ export default {
                     }).isNumeric().withMessage((value, { req}) => {
                         return req.__('subSector.numeric', { value});
                     }),
-                    body('educationSystem').optional(),
+                    body('educationSystem').optional()
+                    .custom(async (value, { req }) => {
+                        if (!await EducationSystem.findOne({_id:value,deleted:false}))
+                            throw new Error(req.__('educationSystem.invalid'));
+                        else
+                            return true;
+                    }),
                     body('educationInstitution').optional().isNumeric().withMessage((value) => {
                         return req.__('educationInstitution.numeric', { value});
+                    }).custom(async (value, { req }) => {
+                        if (!await EducationInstitution.findOne({_id:value,deleted:false}))
+                            throw new Error(req.__('educationInstitution.invalid'));
+                        else
+                            return true;
                     }),
                     body('educationInstitutionName').optional(),
                     body('year').not().isEmpty().withMessage((value) => {

@@ -7,6 +7,7 @@ import { body } from "express-validator/check";
 import Product from "../../models/product/product.model";
 import { ValidationError } from "mongoose";
 import { checkValidations ,convertLang} from "../shared/shared.controller";
+import Supplies from "../../models/supplies/supplies.model"
 import ApiError from "../../helpers/ApiError";
 import User from "../../models/user/user.model";
 import Report from "../../models/reports/report.model";
@@ -15,30 +16,15 @@ import Area from "../../models/area/area.model";
 import Cart from "../../models/cart/cart.model";
 import Coupon from "../../models/coupon/coupon.model";
 import i18n from "i18n";
-
-import Setting from "../../models/setting/setting.model"
-import Offer from "../../models/product/offer.model";
 import { transformOrder, transformOrderById } from "../../models/order/transformOrder";
-import moment from 'moment'
 const populateQuery = [
-    {
-        path: 'client', model: 'user',
-    },
+    { path: 'client', model: 'user'},
     { path: 'city', model: 'city' },
     { path: 'area', model: 'area' },
     { path: 'promoCode', model: 'coupon' },
-    {
-        path: 'productOrders.product', model: 'product',
-        populate: { path: 'category', model: 'category' }
-    },
-    {
-        path: 'productOrders.product', model: 'product',
-        populate: { path: 'subCategory', model: 'category' }
-    },
-    {
-        path: 'productOrders.product', model: 'product',
-        populate: { path: 'brand', model: 'brand' }
-    },
+    { path: 'items.product', model: 'product'},
+    { path: 'items.color', model: 'color'},
+    { path: 'supplies', model: 'supplies'},
 ];
 function validatedestination(location) {
     if (!isLng(location[0]))
@@ -164,21 +150,21 @@ export default {
                 return req.__('area.numeric', { value});
             }),
             body('promoCode').optional(),
-            body('productOrders').custom(vals => isArray(vals)).withMessage((value, { req}) => {
-                return req.__('productOrders.array', { value});
+            body('items').custom(vals => isArray(vals)).withMessage((value, { req}) => {
+                return req.__('items.array', { value});
             })
             .isLength({ min: 1 }).withMessage((value, { req}) => {
-                return req.__('productOrders.atLeastOne', { value});
+                return req.__('items.atLeastOne', { value});
             })
-            .custom(async (productOrders, { req }) => {
+            .custom(async (items, { req }) => {
                 // check if it's duplicated product
-                const uniqueValues = new Set(productOrders.map(v => v.product));
-                if (uniqueValues.size < productOrders.length) {
+                const uniqueValues = new Set(items.map(v => v.product));
+                if (uniqueValues.size < items.length) {
                     throw new Error(`Duplicated Product `);
                 }
                     
                 let prevProductId;
-                for (let productOrder of productOrders) {
+                for (let productOrder of items) {
                     
                     prevProductId = productOrder.product;
                     let productDetail = await checkExistThenGet(productOrder.product, Product);
@@ -188,6 +174,11 @@ export default {
                     if (!isNumeric(productOrder.count))
                         throw new Error(`Product: ${productOrder.product} has invalid count: ${productOrder.count}!`);
                     
+                    body('size').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                        return req.__('size.required', { value});
+                    }).isNumeric().withMessage((value, { req}) => {
+                        return req.__('size.numeric', { value});
+                    })
                 }
                 return true;
             }),
@@ -202,23 +193,13 @@ export default {
             let total = 0;
             let delivaryCost =0
             let finalTotal = 0;
-            let freeShipping = false;
-            for (let singleProduct of validatedBody.productOrders) {
-                let productDetail = await checkExistThenGet(singleProduct.product, Product);
-                if(productDetail.freeShipping == true) {
-                    freeShipping = true;
-                }else{
-                    freeShipping = false;
-                }
-                let offer = await Offer.findOne({product:singleProduct.product,deleted:false})
-                if(offer){
-                    total += offer.offerPrice * singleProduct.count;
-                }else{
-                    console.log("No offer found",singleProduct.price)
-                    total += productDetail.price * singleProduct.count;
-                }                
-                console.log(singleProduct.count +""+productDetail.quantity)
-                if(singleProduct.count > productDetail.quantity){
+            for (let item of validatedBody.items) {
+                let productDetail = await checkExistThenGet(item.product, Product);
+                let selectedSize = productDetail.sizes[item.size]?productDetail.sizes[item.size]:productDetail.sizes[0]
+                console.log("size",selectedSize)
+                total += selectedSize.retailPrice * item.count;
+                console.log(item.count +""+productDetail.quantity)
+                if(item.count > productDetail.quantity){
                     return next(new ApiError(500, i18n.__('edit.productCount')));
                 }
  
@@ -242,21 +223,12 @@ export default {
                 }else{
                     return next(new ApiError(500, i18n.__('wrong.promoCode')));
                 }
-            }else{
-                validatedBody.total = total;
             }
             let city = await checkExistThenGet(validatedBody.city, City);
             delivaryCost = city.delivaryCost
             let area = await checkExistThenGet(validatedBody.area, Area);
             if(area.delivaryCost != 0){
                 delivaryCost = area.delivaryCost;
-            }
-            let setting = await Setting.findOne({deleted:false})
-            if(freeShipping == false){
-                if(total >= setting.freeShipping){
-                    delivaryCost = 0
-                    freeShipping = true;
-                }
             }
             finalTotal = total + parseInt(delivaryCost);
             res.send({
@@ -267,7 +239,6 @@ export default {
                 promoCode:promoCode,
                 discountRatio:discountRatio,
                 discount:discount,
-                freeShipping:freeShipping
             });
         } catch (error) {
             next(error)
@@ -281,12 +252,19 @@ export default {
             body('paymentSystem').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('paymentSystem.required', { value});
             }),
-            body('phone').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('phone.required', { value});
-            }),
             
             body('address').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('address.required', { value});
+            }),
+            body('supplies').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('supplies.required', { value});
+            }).isNumeric().isNumeric().withMessage((value, { req}) => {
+                return req.__('supplies.numeric', { value});
+            }).custom(async (val, { req }) => {
+                if (!await Supplies.findOne({_id:val,deleted:false}))
+                    throw new Error(req.__('supplies.invalid'));
+                else
+                    return true;
             }),
             body('city').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('city.required', { value});
@@ -299,20 +277,20 @@ export default {
                 return req.__('area.numeric', { value});
             }),
             body('promoCode').optional(),
-            body('productOrders').custom(vals => isArray(vals)).withMessage((value, { req}) => {
-                return req.__('productOrders.array', { value});
+            body('items').custom(vals => isArray(vals)).withMessage((value, { req}) => {
+                return req.__('items.array', { value});
             })
             .isLength({ min: 1 }).withMessage((value, { req}) => {
-                return req.__('productOrders.atLeastOne', { value});
+                return req.__('items.atLeastOne', { value});
             })
-            .custom(async (productOrders, { req }) => {
+            .custom(async (items, { req }) => {
                 // check if it's duplicated product
-                const uniqueValues = new Set(productOrders.map(v => v.product));
-                if (uniqueValues.size < productOrders.length) {
+                const uniqueValues = new Set(items.map(v => v.product));
+                if (uniqueValues.size < items.length) {
                     throw new Error(`Duplicated Product `);
                 }
                 let prevProductId;
-                for (let productOrder of productOrders) {
+                for (let productOrder of items) {
                     prevProductId = productOrder.product;
                     let productDetail = await checkExistThenGet(productOrder.product, Product);
                     if(productOrder.count > productDetail.quantity)
@@ -321,6 +299,11 @@ export default {
                     if (!isNumeric(productOrder.count))
                         throw new Error(`Product: ${productOrder.product} has invalid count: ${productOrder.count}!`);
                     
+                    body('size').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                        return req.__('size.required', { value});
+                    }).isNumeric().withMessage((value, { req}) => {
+                        return req.__('size.numeric', { value});
+                    })
                 }
                 return true;
             }),
@@ -349,26 +332,18 @@ export default {
                     return next(new ApiError(500, i18n.__('wrong.promoCode'))); 
                 }
             }
-            let freeShipping = false;
             validatedestination(validatedBody.destination);
             validatedBody.destination = { type: 'Point', coordinates: [+req.body.destination[0], +req.body.destination[1]] };
             let total = 0;
-            for (let singleProduct of validatedBody.productOrders) {
-                let productDetail = await checkExistThenGet(singleProduct.product, Product);
-                //check if product has free shipping
-                if(productDetail.freeShipping == true) {
-                    freeShipping = true;
-                }else{
-                    freeShipping = false;
-                }
-                //check offer 
-                let offer = await Offer.findOne({product:singleProduct.product,deleted:false})
-                if(offer){
-                    total += offer.offerPrice * singleProduct.count;
-                } else{
-                    total += productDetail.price * singleProduct.count;
-                }   
-                
+            for (let item of validatedBody.items) {
+                let productDetail = await checkExistThenGet(item.product, Product);
+                let selectedSize = productDetail.sizes[item.size]?productDetail.sizes[item.size]:productDetail.sizes[0]
+                console.log("size",selectedSize)
+                total += selectedSize.retailPrice * item.count;
+
+                let productIndex =  validatedBody.items.findIndex( v => v.product == item.product)
+                console.log("index",productIndex)
+                validatedBody.items[productIndex].unitCost = selectedSize.retailPrice;
             }     
             console.log(total)
             //if coupon exist
@@ -388,11 +363,10 @@ export default {
                     validatedBody.promoCode = promoCode.id
                     validatedBody.hasPromoCode = true
                     validatedBody.discount = promoCode.discount
+                    validatedBody.total
                 }else{
                     return next(new ApiError(500, i18n.__('wrong.promoCode'))); 
                 }
-            }else{
-                validatedBody.total = total;
             }
             //delivery cost
             let city = await checkExistThenGet(validatedBody.city, City);
@@ -401,21 +375,7 @@ export default {
             if(area.delivaryCost != 0){
                 validatedBody.delivaryCost = area.delivaryCost;
             }
-            //check if there is free shipping in any order from admin panel
-            let setting = await Setting.findOne({deleted:false})
-            if(freeShipping ==false){
-                if(total >= setting.freeShipping){
-                    validatedBody.delivaryCost = 0
-                    validatedBody.freeShipping = true;
-                    freeShipping = true;
-                }
-            }
             
-            //freeShipping enable ,reason is (total > freeShippingCost or all product in order has freeShipping)
-            if(freeShipping == true){
-                validatedBody.delivaryCost = 0
-                validatedBody.freeShipping = true;
-            }
             validatedBody.total = total
             validatedBody.finalTotal = total + validatedBody.delivaryCost;
             validatedBody.paymentSystem = validatedBody.paymentSystem;
@@ -452,7 +412,7 @@ export default {
             //send notif to client
             sendNotifiAndPushNotifi({
                 targetUser: req.user._id, 
-                fromUser: 'سله', 
+                fromUser: 'EdHub', 
                 text: 'new notification',
                 subject: createdOrder.id,
                 subjectType: 'your order on progress',
@@ -508,13 +468,13 @@ export default {
             let order = await checkExistThenGet(orderId, Order);
             if (['DELIVERED'].includes(order.status))
                 return next(new ApiError(500, i18n.__('status.notPending')));
-            for (let singleProduct of order.productOrders) {
-                let productDetail = await checkExistThenGet(singleProduct.product, Product);
+            for (let item of order.items) {
+                let productDetail = await checkExistThenGet(item.product, Product);
                 //if product quantity is exist in product
-                if(singleProduct.count <= productDetail.quantity){
-                    let newQuantity = productDetail.quantity - singleProduct.count;
+                if(item.count <= productDetail.quantity){
+                    let newQuantity = productDetail.quantity - item.count;
                     productDetail.quantity = newQuantity;
-                    productDetail.sallCount = productDetail.sallCount + singleProduct.count
+                    productDetail.sallCount = productDetail.sallCount + item.count
                     await productDetail.save();
                     
                 } else{
@@ -528,10 +488,10 @@ export default {
                 fromUser: req.user, 
                 text: 'new notification',
                 subject: order.id,
-                subjectType: 'سله accept your order'
+                subjectType: 'EdHub accept your order'
             });
             let notif = {
-                "description_en":'سله accept your order',
+                "description_en":'EdHub accept your order',
                 "description_ar":'تم قبول طلبك',
                 "title_ar":"جارى توصيل الطلب",
                 "title_en":"Delivery in Progress",
@@ -560,11 +520,11 @@ export default {
                 return next(new ApiError(500, i18n.__('notAllow')));
             order.status = 'CANCELED';  
             order.cancelDateMillSec = Date.parse(new Date())
-            for (let singleProduct of order.productOrders) {
-                let productDetail = await checkExistThenGet(singleProduct.product, Product);
-                let newQuantity = productDetail.quantity + singleProduct.count;
+            for (let item of order.items) {
+                let productDetail = await checkExistThenGet(item.product, Product);
+                let newQuantity = productDetail.quantity + item.count;
                 productDetail.quantity = newQuantity;
-                productDetail.sallCount = productDetail.sallCount - singleProduct.count
+                productDetail.sallCount = productDetail.sallCount - item.count
                 await productDetail.save();
             }     
             await order.save();
@@ -608,11 +568,11 @@ export default {
             order.status = 'REFUSED';
             order.accept = false
             if(req.body.reason) order.reason = req.body.reason
-            for (let singleProduct of order.productOrders) {
-                let productDetail = await checkExistThenGet(singleProduct.product, Product);
-                let newQuantity = productDetail.quantity + singleProduct.count;
+            for (let item of order.items) {
+                let productDetail = await checkExistThenGet(item.product, Product);
+                let newQuantity = productDetail.quantity + item.count;
                 productDetail.quantity = newQuantity;
-                productDetail.sallCount = productDetail.sallCount - singleProduct.count
+                productDetail.sallCount = productDetail.sallCount - item.count
                 await productDetail.save();
             }     
             order.refusedDateMillSec = Date.parse(new Date())
@@ -622,12 +582,12 @@ export default {
                 fromUser: req.user, 
                 text: 'new notification',
                 subject: order.id,
-                subjectType: 'سله refused your order'
+                subjectType: 'EdHub refused your order'
             });
             let notif = {
-                "description_en":'سله refused your order',
+                "description_en":'EdHub refused your order',
                 "description_ar":'تم رفض طلبك',
-                "title_en": 'سله refuse your order because ',
+                "title_en": 'EdHub refuse your order because ',
                 "title_ar":'  تم رفض  طلبك بسبب' ,
                 "type":"ORDER"
             }

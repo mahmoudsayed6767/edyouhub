@@ -17,42 +17,25 @@ export async function transformOrder(e,lang) {
         },
         status:e.status,
         paymentSystem:e.paymentSystem,
-        freeShipping:e.freeShipping,
         hasPromoCode:e.hasPromoCode,
-        accept:e.accept,
-        rated: e.rated,
-        deliveredDateMillSec:e.deliveredDateMillSec,
-        refusedDateMillSec:e.refusedDateMillSec,
-        cancelDateMillSec:e.cancelDateMillSec,
         city:{
             cityName:lang=="ar"?e.city.cityName_ar:e.city.cityName_en,
-            delivaryCost: e.city.delivaryCost,
             id: e.city._id,
         },
         area:{
             areaName:lang=="ar"?e.area.areaName_ar:e.area.areaName_en,
-            delivaryCost: e.area.delivaryCost,
             id: e.area._id,
         },
-        rated: e.rated,
         createdAt:e.createdAt,
         id: e._id,
     }
-    /*productOrders */
-    let productOrders = []
-    for (let val of e.productOrders) {
-        let value ={
-            unitCost:val.unitCost,
-            product:{ 
-                name:lang="ar"?val.product.name_ar:val.product.name_en,
-                img:val.product.img[0],
-                id: val.product._id,
-            },
-            count:val.count,
+    if(e.supplies){
+        index.supplies = {
+            name:lang=="ar"?e.supplies.name_ar:e.supplies.name_en,
+            grade: e.supplies.grade,
+            id: e.supplies._id,
         }
-        productOrders.push(value)
     }
-    index.productOrders = productOrders
     return index
 }
 export async function transformOrderById(e,lang){
@@ -63,7 +46,6 @@ export async function transformOrderById(e,lang){
         discount:e.discount,
         destination:e.destination,
         address:e.address,
-        phone:e.phone,
         client:{
             fullname:e.client.fullname,
             img:e.client.img,
@@ -74,10 +56,8 @@ export async function transformOrderById(e,lang){
         status:e.status,
         paymentSystem:e.paymentSystem,
         hasPromoCode:e.hasPromoCode,
-        freeShipping:e.freeShipping,
         accept:e.accept,
         reason:e.reason,
-        rated: e.rated,
         deliveredDateMillSec:e.deliveredDateMillSec,
         refusedDateMillSec:e.refusedDateMillSec,
         cancelDateMillSec:e.cancelDateMillSec,
@@ -91,7 +71,6 @@ export async function transformOrderById(e,lang){
             delivaryCost: e.area.delivaryCost,
             id: e.area._id,
         },
-        rated: e.rated,
         createdAt:e.createdAt,
         id: e._id,
     }
@@ -103,9 +82,16 @@ export async function transformOrderById(e,lang){
             id:e.promoCode._id,
         }
     }
-    /*productOrders */
-    let productOrders = []
-    for (let val of e.productOrders) {
+    if(e.supplies){
+        index.supplies = {
+            name:lang=="ar"?e.supplies.name_ar:e.supplies.name_en,
+            grade: e.supplies.grade,
+            id: e.supplies._id,
+        }
+    }
+    /*items */
+    let items = []
+    for (let val of e.items) {
         let value ={
             unitCost:val.unitCost,
             product:{ 
@@ -115,8 +101,23 @@ export async function transformOrderById(e,lang){
             },
             count:val.count,
         }
-        productOrders.push(value)
+        if(val.color){
+            value.color={
+                name:lang=="ar"?val.color.name_ar:val.color.name_en,
+                id: val.color._id,
+                img: val.color.img,
+            }
+        }
+        if(val.size){
+            let selectedSize = val.product.sizes[val.size]?val.product.sizes[val.size]:val.product.sizes[0]
+            value.size = {
+                name:lang=="ar"?selectedSize.name_ar:selectedSize.name_en,
+                retailPrice:selectedSize.retailPrice,
+                index:selectedSize.index
+            }
+        }
+        items.push(value)
     }
-    index.productOrders = productOrders
+    index.items = items
     return index
 }
