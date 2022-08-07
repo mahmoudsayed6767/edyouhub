@@ -4,12 +4,23 @@ export async function transformCart(e,lang) {
         id: e._id,
     }
     if(e.supplies){
-        index.supplies = {
+        let supplies = {
             name:lang=="ar"?e.supplies.name_ar:e.supplies.name_en,
-            attachment: e.supplies.attachment,
-            grade: e.supplies.grade,
             id: e.supplies._id,
         }
+        if(e.supplies.educationSystem){
+            supplies.educationSystem = {
+                name:lang=="ar"?e.supplies.educationSystem.name_ar:e.supplies.educationSystem.name_en,
+                id: e.supplies.educationSystem._id,
+            }
+        }
+        if(e.supplies.grade){
+            supplies.grade = {
+                name:lang=="ar"?e.supplies.grade.name_ar:e.supplies.grade.name_en,
+                id: e.supplies.grade._id,
+            }
+        }
+        index.supplies = supplies
     }
     /*iterms */
     let items = []

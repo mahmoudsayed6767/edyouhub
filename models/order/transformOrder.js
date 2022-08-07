@@ -19,22 +19,34 @@ export async function transformOrder(e,lang) {
         paymentSystem:e.paymentSystem,
         hasPromoCode:e.hasPromoCode,
         city:{
-            cityName:lang=="ar"?e.city.cityName_ar:e.city.cityName_en,
+            name:lang=="ar"?e.city.name_ar:e.city.name_en,
             id: e.city._id,
         },
         area:{
-            areaName:lang=="ar"?e.area.areaName_ar:e.area.areaName_en,
+            name:lang=="ar"?e.area.name_ar:e.area.name_en,
             id: e.area._id,
         },
         createdAt:e.createdAt,
         id: e._id,
     }
     if(e.supplies){
-        index.supplies = {
+        let supplies = {
             name:lang=="ar"?e.supplies.name_ar:e.supplies.name_en,
-            grade: e.supplies.grade,
             id: e.supplies._id,
         }
+        if(e.supplies.educationSystem){
+            supplies.educationSystem = {
+                name:lang=="ar"?e.supplies.educationSystem.name_ar:e.supplies.educationSystem.name_en,
+                id: e.supplies.educationSystem._id,
+            }
+        }
+        if(e.supplies.grade){
+            supplies.grade = {
+                name:lang=="ar"?e.supplies.grade.name_ar:e.supplies.grade.name_en,
+                id: e.supplies.grade._id,
+            }
+        }
+        index.supplies = supplies
     }
     return index
 }
@@ -62,12 +74,12 @@ export async function transformOrderById(e,lang){
         refusedDateMillSec:e.refusedDateMillSec,
         cancelDateMillSec:e.cancelDateMillSec,
         city:{
-            cityName:lang=="ar"?e.city.cityName_ar:e.city.cityName_en,
+            name:lang=="ar"?e.city.name_ar:e.city.name_en,
             delivaryCost: e.city.delivaryCost,
             id: e.city._id,
         },
         area:{
-            areaName:lang=="ar"?e.area.areaName_ar:e.area.areaName_en,
+            name:lang=="ar"?e.area.name_ar:e.area.name_en,
             delivaryCost: e.area.delivaryCost,
             id: e.area._id,
         },
@@ -83,11 +95,23 @@ export async function transformOrderById(e,lang){
         }
     }
     if(e.supplies){
-        index.supplies = {
+        let supplies = {
             name:lang=="ar"?e.supplies.name_ar:e.supplies.name_en,
-            grade: e.supplies.grade,
             id: e.supplies._id,
         }
+        if(e.supplies.educationSystem){
+            supplies.educationSystem = {
+                name:lang=="ar"?e.supplies.educationSystem.name_ar:e.supplies.educationSystem.name_en,
+                id: e.supplies.educationSystem._id,
+            }
+        }
+        if(e.supplies.grade){
+            supplies.grade = {
+                name:lang=="ar"?e.supplies.grade.name_ar:e.supplies.grade.name_en,
+                id: e.supplies.grade._id,
+            }
+        }
+        index.supplies = supplies
     }
     /*items */
     let items = []

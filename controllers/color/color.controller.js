@@ -51,6 +51,7 @@ export default {
                     colorName:lang=="ar"?e.name_ar:e.name_en,
                     name_ar:e.name_ar,
                     name_en:e.name_en,
+                    img:e.img,
                     id: e._id,
                     createdAt: e.createdAt,
                 }
@@ -76,6 +77,7 @@ export default {
                     colorName:lang=="ar"?e.name_ar:e.name_en,
                     name_ar:e.name_ar,
                     name_en:e.name_en,
+                    img:e.img,
                     id: e._id,
                     createdAt: e.createdAt,
                 }
@@ -115,6 +117,7 @@ export default {
                     colorName:lang=="ar"?e.name_ar:e.name_en,
                     name_ar:e.name_ar,
                     name_en:e.name_en,
+                    img:e.img,
                     id: e._id,
                     createdAt: e.createdAt,
                 }
@@ -156,6 +159,7 @@ export default {
                         colorName:lang=="ar"?e.name_ar:e.name_en,
                         name_ar:e.name_ar,
                         name_en:e.name_en,
+                        img:e.img,
                         img:e.img,
                         id: e._id,
                         createdAt: e.createdAt,
@@ -199,6 +203,7 @@ export default {
                             colorName:lang=="ar"?e.name_ar:e.name_en,
                             name_ar:e.name_ar,
                             name_en:e.name_en,
+                            img:e.img,
                             img:e.img,
                             id: e._id,
                             createdAt: e.createdAt,

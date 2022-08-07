@@ -144,8 +144,11 @@ export default {
             let sortd = {createdAt: -1}
             await Supplies.findOne(query).populate(populateQuery)
                 .sort(sortd).then(async (e) => {
-                    let index = await transformSuppliesById(e,lang)
-                       
+                    let index = {}
+                    if(e){
+                        index = await transformSuppliesById(e,lang)
+                    }
+                    
                     res.send({success:true,data:index});
                 })
 

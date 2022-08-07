@@ -24,7 +24,14 @@ const populateQuery = [
     { path: 'promoCode', model: 'coupon' },
     { path: 'items.product', model: 'product'},
     { path: 'items.color', model: 'color'},
-    { path: 'supplies', model: 'supplies'},
+    {
+        path: 'supplies', model: 'supplies',
+        populate: { path: 'educationSystem', model: 'educationSystem' },
+    },
+    {
+        path: 'supplies', model: 'supplies',
+        populate: { path: 'grade', model: 'grade' },
+    },
 ];
 function validatedestination(location) {
     if (!isLng(location[0]))

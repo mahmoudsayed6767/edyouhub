@@ -17,7 +17,14 @@ const populateQuery = [
     },
     { path: 'items.color', model: 'color' },
 
-    { path: 'supplies', model: 'supplies'},
+    {
+        path: 'supplies', model: 'supplies',
+        populate: { path: 'educationSystem', model: 'educationSystem' },
+    },
+    {
+        path: 'supplies', model: 'supplies',
+        populate: { path: 'grade', model: 'grade' },
+    },
 ];
 export default {
     async findAll(req, res, next) {
