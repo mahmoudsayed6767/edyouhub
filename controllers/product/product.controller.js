@@ -311,10 +311,11 @@ export default {
                 "user": req.user._id
             };
             await Report.create({...reports});
-            res.status(201).send({
-                success: true,
-                data:await Product.findById(createdProduct.id)
-            });
+            
+            await Product.findById(createdProduct.id).populate(populateQuery).then(async (e) => {
+                let index = await transformProduct(e,lang)
+                res.status(201).send({success: true,data:index});
+            })
             
         } catch (err) {
             next(err);
@@ -390,7 +391,7 @@ export default {
     async update(req, res, next) {
         try {
             convertLang(req)
-            
+            let lang = i18n.getLocale(req)
             let {productId } = req.params;
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth'))); 
@@ -435,7 +436,11 @@ export default {
                 "user": req.user._id
             };
             await Report.create({...reports});
-            res.status(200).send({success: true,data:await Product.findById(productId)});
+
+            await Product.findById(productId).populate(populateQuery).then(async (e) => {
+                let index = await transformProduct(e,lang)
+                res.send({success: true,data:index});
+            })
         }
         catch (err) {
             next(err);

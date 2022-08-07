@@ -337,6 +337,7 @@ export default {
     async create(req, res, next) {
         try {
             convertLang(req)
+            let lang = i18n.getLocale(req)
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth'))); 
             const validatedBody = checkValidations(req);
@@ -376,11 +377,11 @@ export default {
                 "deepId":createdsupplies.id,
                 "user": req.user._id
             };
-            await Report.create({...reports});
-            res.status(201).send({
-                success: true,
-                data:await Supplies.findById(createdsupplies.id)
-            });
+            await Report.create({...reports}); 
+            await Supplies.findById(createdsupplies.id).populate(populateQuery).then(async (e) => {
+                let index = await transformSupplies(e,lang)
+                res.status(201).send({success: true,data:index});
+            })
             
         } catch (err) {
             next(err);
@@ -406,7 +407,7 @@ export default {
     async update(req, res, next) {
         try {
             convertLang(req)
-            
+            let lang = i18n.getLocale(req)
             let {suppliesId } = req.params;
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth'))); 
@@ -431,13 +432,13 @@ export default {
                     console.log("items22",val.items)
                     
                     //
-                    
                     let createdSuppliesItem = await SuppliesItems.create({...val})
                     existItems.push(createdSuppliesItem.id)
                 }));  
                 
                 validatedBody.existItems = existItems
             }
+
             await Supplies.findByIdAndUpdate(suppliesId, {
                 ...validatedBody,
 
@@ -449,7 +450,10 @@ export default {
                 "user": req.user._id
             };
             await Report.create({...reports});
-            res.status(200).send({success: true,data:await Supplies.findById(suppliesId)});
+            await Supplies.findById(suppliesId).populate(populateQuery).then(async (e) => {
+                let index = await transformSupplies(e,lang)
+                res.status(200).send({success: true,data:index});
+            })
         }
         catch (err) {
             next(err);
