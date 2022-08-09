@@ -24,6 +24,11 @@ const suppliesSchema=new Schema({
         ref:'educationInstitution',
         required: true,
     },
+    educationSystem: {
+        type: Number,
+        ref:'educationSystem',
+        default:1,
+    },
     grade: {
         type: Number,
         ref:'grade',

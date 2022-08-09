@@ -365,7 +365,8 @@ export default {
             }
 
             console.log("data",validatedBody.existItems)
-
+            let educationInstitution = await checkExistThenGet(validatedBody.educationInstitution, EducationInstitution)
+            validatedBody.educationSystem = educationInstitution.educationSystem
             let createdsupplies = await Supplies.create({
                 ...validatedBody,
             });
