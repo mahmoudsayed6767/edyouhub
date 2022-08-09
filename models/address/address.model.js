@@ -1,5 +1,4 @@
 import mongoose, { Schema } from "mongoose";
-import { isImgUrl } from "../../helpers/CheckMethods";
 import autoIncrement from 'mongoose-auto-increment';
 const addressSchema=new Schema({
     _id: {
@@ -20,11 +19,6 @@ const addressSchema=new Schema({
         type: Number,
         ref:'area',
     },
-    phone: {
-        type: String,
-        default:'',
-        required: true
-    },
     address: {
         type: String,
         required: true
@@ -34,15 +28,11 @@ const addressSchema=new Schema({
         type: String,
         required: true
     },
-    placeType: {
-        type: String,
-        required: true
-    },
     floor: {
         type: String,
         required: true
     },
-    apartment: {
+    buildingNumber: {
         type: String,
         required: true
     },

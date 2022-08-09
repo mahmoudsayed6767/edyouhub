@@ -118,4 +118,16 @@ router.route('/getAllDevices')
         requireAuth,
         UserController.findAllDevices
     );
+
+router.route('/addAddress')
+    .post(
+        requireAuth,
+        UserController.validateAddAddress(),
+        UserController.addAddress
+    );
+router.route('/getAddresses')
+    .get(
+        requireAuth,
+        UserController.getAddress
+    );
 export default router;

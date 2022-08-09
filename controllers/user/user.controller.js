@@ -18,6 +18,7 @@ import UserDevice from "../../models/user devices/user devices.model";
 import Country from "../../models/country/country.model";
 import City from "../../models/city/city.model";
 import Area from "../../models/area/area.model";
+import Address from "../../models/address/address.model"
 const checkUserExistByPhone = async (phone) => {
     let user = await User.findOne({ phone:phone,deleted:false });
     if (!user)
@@ -1200,6 +1201,70 @@ export default {
                     res.send(new ApiResponse(newdata, page, pageCount, limit, count, req));
                 })
             
+        } catch (err) {
+            next(err);
+        }
+    },
+    validateAddAddress(isUpdate = false) {
+        let validations = [
+            body('address').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('address.required', { value});
+            }),
+            body('street').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('street.required', { value});
+            }),
+            body('floor').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('floor.required', { value});
+            }),
+            body('buildingNumber').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('buildingNumber.required', { value});
+            }),
+            body('city').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('city.required', { value});
+            }).isNumeric().isNumeric().withMessage((value, { req}) => {
+                return req.__('city.numeric', { value});
+            }),
+            body('area').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('area.required', { value});
+            }).isNumeric().isNumeric().withMessage((value, { req}) => {
+                return req.__('area.numeric', { value});
+            }),
+                
+        ];
+        return validations;
+    },
+    async addAddress(req, res, next) {
+        try{
+            convertLang(req)
+            let validatedBody = checkValidations(req);
+            validatedBody.user = req.user
+            await Address.create({
+                ...validatedBody
+            });
+            
+            res.status(201).send({success:true});
+
+        } catch(err){
+            next(err);
+        }
+    },
+    async getAddress(req, res, next){
+        try {
+            convertLang(req)
+            let page = +req.query.page || 1, limit = +req.query.limit || 20;
+            let { userId } = req.user._id;
+            let query = {deleted: false,user:userId};
+ 
+            let userAddress = await Address.find(query)
+                .sort({createdAt: -1})
+                .limit(limit)
+                .skip((page - 1) * limit);
+
+
+            const userCount = await Address.countDocuments(query);
+            const pageCount = Math.ceil(userCount / limit);
+
+            res.send(new ApiResponse(userAddress, page, pageCount, limit, userCount, req));
         } catch (err) {
             next(err);
         }

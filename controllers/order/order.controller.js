@@ -146,14 +146,10 @@ export default {
     
     validateGetPrices() {
         let validations = [
-            body('city').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('city.required', { value});
-            }).isNumeric().isNumeric().withMessage((value, { req}) => {
+            body('city').optional().isNumeric().isNumeric().withMessage((value, { req}) => {
                 return req.__('city.numeric', { value});
             }),
-            body('area').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('area.required', { value});
-            }).isNumeric().isNumeric().withMessage((value, { req}) => {
+            body('area').optional().isNumeric().isNumeric().withMessage((value, { req}) => {
                 return req.__('area.numeric', { value});
             }),
             body('promoCode').optional(),
@@ -231,12 +227,15 @@ export default {
                     return next(new ApiError(500, i18n.__('wrong.promoCode')));
                 }
             }
-            let city = await checkExistThenGet(validatedBody.city, City);
-            delivaryCost = city.delivaryCost
-            let area = await checkExistThenGet(validatedBody.area, Area);
-            if(area.delivaryCost != 0){
-                delivaryCost = area.delivaryCost;
+            if(validatedBody.city){
+                let city = await checkExistThenGet(validatedBody.city, City);
+                delivaryCost = city.delivaryCost
+                let area = await checkExistThenGet(validatedBody.area, Area);
+                if(area.delivaryCost != 0){
+                    delivaryCost = area.delivaryCost;
+                }
             }
+            
             finalTotal = total + parseInt(delivaryCost);
             res.send({
                 success: true,
