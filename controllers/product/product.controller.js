@@ -179,6 +179,7 @@ export default {
     validateCreatedProduct(isUpdate = false) {
         
         let validations = [
+            body('sku').optional(),
             body('name_ar').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('name_ar.required', { value});
             }),
