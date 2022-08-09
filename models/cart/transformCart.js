@@ -1,7 +1,9 @@
 
 export async function transformCart(e,lang) {
     let index ={
+        total:e.total,
         id: e._id,
+
     }
     if(e.supplies){
         let supplies = {

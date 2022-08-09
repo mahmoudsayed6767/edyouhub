@@ -6,6 +6,11 @@ const CartSchema = new Schema({
         type: Number,
         required: true
     },
+    total: {
+        type: Number,
+        required: true,
+        default:0
+    },
     user: {
         type: Number,
         ref: 'user',

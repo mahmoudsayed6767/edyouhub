@@ -33,7 +33,7 @@ export default {
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
             let query = { user: req.user._id,deleted:false };
-            let Carts = await Cart.find(query).populate(populateQuery)
+            await Cart.find(query).populate(populateQuery)
                 .sort({ createdAt: -1 })
                 .limit(limit)
                 .skip((page - 1) * limit)
@@ -54,6 +54,12 @@ export default {
     },
     validateBody() {
         let validations = [
+            body('total').not().isEmpty().withMessage((val, { req}) => {
+                return req.__('total.required', { val});
+            })
+            .isNumeric().isNumeric().withMessage((val, { req}) => {
+                return req.__('total.numeric', { val});
+            }),
             body('items').not().isEmpty().withMessage((val, { req}) => {
                 return req.__('items.required', { val});
             })
