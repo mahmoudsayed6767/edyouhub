@@ -51,6 +51,7 @@ export async function transformCart(e,lang) {
                 quantity:val.product.quantity,
                 img:val.product.img,
                 available:val.product.available,
+                id:val.product._id,
             }
             
             /*colors */
