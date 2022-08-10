@@ -1252,7 +1252,7 @@ export default {
         try {
             convertLang(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
-            let { userId } = req.user._id;
+            let userId  = req.user._id;
             let query = {deleted: false,user:userId};
  
             let userAddress = await Address.find(query)
