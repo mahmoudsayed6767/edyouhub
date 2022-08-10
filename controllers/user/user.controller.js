@@ -42,6 +42,10 @@ const populateQuery = [
     { path: 'affiliate', model: 'user'}
     
 ];
+const populateQuery2 = [
+    { path: 'city', model: 'city' },
+    { path: 'area', model: 'area' },    
+];
 
 export default {
     async addToken(req,res,next){
@@ -1257,7 +1261,7 @@ export default {
             let userId  = req.user._id;
             let query = {deleted: false,user:userId};
  
-            await Address.find(query)
+            await Address.find(query).populate(populateQuery2)
                 .sort({createdAt: -1})
                 .limit(limit)
                 .skip((page - 1) * limit).then(async (data) => {
