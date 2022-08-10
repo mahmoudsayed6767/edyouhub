@@ -34,17 +34,9 @@ const OrderSchema = new Schema({
         coordinates: { type: [Number] }
     },
     address: {
-        type: String,
-        required: true
-    },
-    city: {
         type: Number,
-        ref:'city',
-        required: true
-    },
-    area: {
-        type: Number,
-        ref:'area',
+        ref:'address',
+        default:1,
         required: true
     },
     status: {
@@ -69,37 +61,44 @@ const OrderSchema = new Schema({
         type:Boolean,
         default:false
     },
-    supplies: {
-        type: Number,
-        ref: 'supplies',
-        required: true
-    },
-    items: [
+    
+    suppliesList: [
         new Schema({
-            product: {
+            supplies: {
                 type: Number,
-                ref: 'product',
+                ref: 'supplies',
                 required: true
             },
-            unitCost: {// price of single product
-                type: Number,
-            },
-            color: {
-                type: Number,
-                ref: 'color',
-                //required: true
-            },
-            size: {
-                type: String,
-                required: true
-            },
-            count: {
-                type: Number,
-                default: 1
-            },
+            items: [
+                new Schema({
+                    product: {
+                        type: Number,
+                        ref: 'product',
+                        required: true
+                    },
+                    unitCost: {// price of single product
+                        type: Number,
+                    },
+                    color: {
+                        type: Number,
+                        ref: 'color',
+                        //required: true
+                    },
+                    size: {
+                        type: String,
+                        required: true
+                    },
+                    count: {
+                        type: Number,
+                        default: 1
+                    },
+        
+                }, { _id: false })
+            ],
 
         }, { _id: false })
     ],
+    
     reason:{
         type:String
     },

@@ -8,6 +8,7 @@ import Product from "../../models/product/product.model";
 import { ValidationError } from "mongoose";
 import { checkValidations ,convertLang} from "../shared/shared.controller";
 import Supplies from "../../models/supplies/supplies.model"
+import Address from "../../models/address/address.model"
 import ApiError from "../../helpers/ApiError";
 import User from "../../models/user/user.model";
 import Report from "../../models/reports/report.model";
@@ -19,19 +20,30 @@ import i18n from "i18n";
 import { transformOrder, transformOrderById } from "../../models/order/transformOrder";
 const populateQuery = [
     { path: 'client', model: 'user'},
-    { path: 'city', model: 'city' },
-    { path: 'area', model: 'area' },
     { path: 'promoCode', model: 'coupon' },
-    { path: 'items.product', model: 'product'},
-    { path: 'items.color', model: 'color'},
     {
-        path: 'supplies', model: 'supplies',
+        path: 'address', model: 'address',
+        populate: { path: 'city', model: 'city' },
+    },
+    {
+        path: 'address', model: 'address',
+        populate: { path: 'area', model: 'area' },
+    },
+    {
+        path: 'suppliesList.supplies', model: 'supplies',
         populate: { path: 'educationSystem', model: 'educationSystem' },
     },
     {
-        path: 'supplies', model: 'supplies',
+        path: 'suppliesList.supplies', model: 'supplies',
         populate: { path: 'grade', model: 'grade' },
     },
+    {
+        path: 'suppliesList.items.product', model: 'product',
+    },
+    {
+        path: 'suppliesList.items.color', model: 'color',
+    },
+    
 ];
 function validatedestination(location) {
     if (!isLng(location[0]))
@@ -258,61 +270,68 @@ export default {
             body('paymentSystem').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('paymentSystem.required', { value});
             }),
-            
             body('address').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('address.required', { value});
-            }),
-            body('supplies').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('supplies.required', { value});
             }).isNumeric().isNumeric().withMessage((value, { req}) => {
-                return req.__('supplies.numeric', { value});
+                return req.__('address.numeric', { value});
             }).custom(async (val, { req }) => {
-                if (!await Supplies.findOne({_id:val,deleted:false}))
-                    throw new Error(req.__('supplies.invalid'));
+                if (!await Address.findOne({_id:val,deleted:false}))
+                    throw new Error(req.__('address.invalid'));
                 else
                     return true;
             }),
-            body('city').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('city.required', { value});
-            }).isNumeric().isNumeric().withMessage((value, { req}) => {
-                return req.__('city.numeric', { value});
-            }),
-            body('area').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('area.required', { value});
-            }).isNumeric().isNumeric().withMessage((value, { req}) => {
-                return req.__('area.numeric', { value});
-            }),
             body('promoCode').optional(),
-            body('items').custom(vals => isArray(vals)).withMessage((value, { req}) => {
-                return req.__('items.array', { value});
-            })
-            .isLength({ min: 1 }).withMessage((value, { req}) => {
-                return req.__('items.atLeastOne', { value});
-            })
-            .custom(async (items, { req }) => {
-                // check if it's duplicated product
-                const uniqueValues = new Set(items.map(v => v.product));
-                if (uniqueValues.size < items.length) {
-                    throw new Error(`Duplicated Product `);
-                }
-                let prevProductId;
-                for (let productOrder of items) {
-                    prevProductId = productOrder.product;
-                    let productDetail = await checkExistThenGet(productOrder.product, Product);
-                    if(productOrder.count > productDetail.quantity)
-                            throw new Error(req.__('edit.productCount'));
-                    // check if count is a valid number 
-                    if (!isNumeric(productOrder.count))
-                        throw new Error(`Product: ${productOrder.product} has invalid count: ${productOrder.count}!`);
+            body('suppliesList').trim().escape().optional()
+            .custom(async (suppliesList, { req }) => {
+                convertLang(req)
+                for (let supplies of suppliesList) {
                     
-                    body('size').trim().escape().not().isEmpty().withMessage((value, { req}) => {
-                        return req.__('size.required', { value});
-                    }).isNumeric().withMessage((value, { req}) => {
-                        return req.__('size.numeric', { value});
+                    body('supplies').not().isEmpty().withMessage((value, { req}) => {
+                        return req.__('supplies.required', { value});
+                    }).isNumeric().isNumeric().withMessage((value, { req}) => {
+                        return req.__('supplies.numeric', { value});
+                    }).custom(async (val, { req }) => {
+                        if (!await Supplies.findOne({_id:val,deleted:false}))
+                            throw new Error(req.__('supplies.invalid'));
+                        else
+                            return true;
+                    }),
+                    body('items').custom(vals => isArray(vals)).withMessage((value, { req}) => {
+                        return req.__('items.array', { value});
                     })
+                    .isLength({ min: 1 }).withMessage((value, { req}) => {
+                        return req.__('items.atLeastOne', { value});
+                    })
+                    .custom(async (items, { req }) => {
+                        // check if it's duplicated product
+                        const uniqueValues = new Set(items.map(v => v.product));
+                        if (uniqueValues.size < items.length) {
+                            throw new Error(`Duplicated Product `);
+                        }
+                        let prevProductId;
+                        for (let productOrder of items) {
+                            prevProductId = productOrder.product;
+                            let productDetail = await checkExistThenGet(productOrder.product, Product);
+                            if(productOrder.count > productDetail.quantity)
+                                    throw new Error(req.__('edit.productCount'));
+                            // check if count is a valid number 
+                            if (!isNumeric(productOrder.count))
+                                throw new Error(`Product: ${productOrder.product} has invalid count: ${productOrder.count}!`);
+                            
+                            body('size').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                                return req.__('size.required', { value});
+                            }).isNumeric().withMessage((value, { req}) => {
+                                return req.__('size.numeric', { value});
+                            })
+                        }
+                        return true;
+                    })
+                    return true
+
                 }
                 return true;
             }),
+            
         ];
         return validations;
     }, 
@@ -338,19 +357,22 @@ export default {
                     return next(new ApiError(500, i18n.__('wrong.promoCode'))); 
                 }
             }
+            console.log("body",validatedBody)
             validatedestination(validatedBody.destination);
             validatedBody.destination = { type: 'Point', coordinates: [+req.body.destination[0], +req.body.destination[1]] };
             let total = 0;
-            for (let item of validatedBody.items) {
-                let productDetail = await checkExistThenGet(item.product, Product);
-                let selectedSize = productDetail.sizes[item.size]?productDetail.sizes[item.size]:productDetail.sizes[0]
-                console.log("size",selectedSize)
-                total += selectedSize.retailPrice * item.count;
+            for (let supplies of validatedBody.suppliesList) {
+                for (let item of supplies.items) {
+                    let productDetail = await checkExistThenGet(item.product, Product);
+                    let selectedSize = productDetail.sizes[item.size]?productDetail.sizes[item.size]:productDetail.sizes[0]
+                    console.log("size",selectedSize)
+                    total += selectedSize.retailPrice * item.count;
 
-                let productIndex =  validatedBody.items.findIndex( v => v.product == item.product)
-                console.log("index",productIndex)
-                validatedBody.items[productIndex].unitCost = selectedSize.retailPrice;
-            }     
+                    let productIndex =  supplies.items.findIndex( v => v.product == item.product)
+                    console.log("index",productIndex)
+                    supplies.items[productIndex].unitCost = selectedSize.retailPrice;
+                }    
+            } 
             console.log(total)
             //if coupon exist
             if(validatedBody.promoCode){
@@ -375,9 +397,10 @@ export default {
                 }
             }
             //delivery cost
-            let city = await checkExistThenGet(validatedBody.city, City);
+            let address = await checkExistThenGet(validatedBody.address,Address)
+            let city = await checkExistThenGet(address.city, City);
             validatedBody.delivaryCost = city.delivaryCost
-            let area = await checkExistThenGet(validatedBody.area, Area);
+            let area = await checkExistThenGet(address.area, Area);
             if(area.delivaryCost != 0){
                 validatedBody.delivaryCost = area.delivaryCost;
             }
