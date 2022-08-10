@@ -19,6 +19,7 @@ import Country from "../../models/country/country.model";
 import City from "../../models/city/city.model";
 import Area from "../../models/area/area.model";
 import Address from "../../models/address/address.model"
+import {transformAddress} from "../../models/address/transformAddress"
 const checkUserExistByPhone = async (phone) => {
     let user = await User.findOne({ phone:phone,deleted:false });
     if (!user)
@@ -1251,20 +1252,26 @@ export default {
     async getAddress(req, res, next){
         try {
             convertLang(req)
+            let lang =i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
             let userId  = req.user._id;
             let query = {deleted: false,user:userId};
  
-            let userAddress = await Address.find(query)
+            await Address.find(query)
                 .sort({createdAt: -1})
                 .limit(limit)
-                .skip((page - 1) * limit);
+                .skip((page - 1) * limit).then(async (data) => {
+                    var newdata = [];
+                    await Promise.all(data.map(async(e) =>{
+                        let index = await transformAddress(e,lang)
+                        newdata.push(index);
+                    }))
+                    const count = await Address.countDocuments(query);
+                    const pageCount = Math.ceil(count / limit);
+                    res.send(new ApiResponse(newdata, page, pageCount, limit, count, req));
+                })
 
 
-            const userCount = await Address.countDocuments(query);
-            const pageCount = Math.ceil(userCount / limit);
-
-            res.send(new ApiResponse(userAddress, page, pageCount, limit, userCount, req));
         } catch (err) {
             next(err);
         }
