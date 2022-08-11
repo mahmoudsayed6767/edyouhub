@@ -64,12 +64,6 @@ export default {
             body('promoCode').optional()
             .isNumeric().withMessage((val, { req}) => {
                 return req.__('coupon.numeric', { val});
-            })
-            .custom(async (val, { req }) => {
-                if (!await Coupon.findOne({deleted:false,end:false,couponNumber: { $regex: val, '$options' : 'i'  }}))
-                    throw new Error(req.__('wrong.promoCode'));
-                else
-                    return true;
             }),
             body('items').not().isEmpty().withMessage((val, { req}) => {
                 return req.__('items.required', { val});
@@ -122,6 +116,15 @@ export default {
             const validatedBody = checkValidations(req);
             validatedBody.supplies = suppliesId;
             validatedBody.user = req.user._id;
+            if(validatedBody.promoCode){
+                let coupon = await Coupon.findOne({deleted:false,end:false,couponNumber: { $regex: val, '$options' : 'i'  }})
+                if(coupon){
+                    validatedBody.promoCode = coupon._id
+                }else{
+                    return next(new ApiError(500, i18n.__('wrong.promoCode'))); 
+                }
+            }
+
             await Cart.create({...validatedBody})
             res.status(201).send({
                 success: true,
