@@ -8,7 +8,7 @@ export async function transformOrder(e,lang) {
         total:e.total,
         finalTotal:e.finalTotal,
         delivaryCost:e.delivaryCost,
-        discount:e.discount,
+        totalDiscount:e.totalDiscount,
         client:{
             fullname:e.client.fullname,
             phone:e.client.phone,
@@ -17,7 +17,6 @@ export async function transformOrder(e,lang) {
         },
         status:e.status,
         paymentSystem:e.paymentSystem,
-        hasPromoCode:e.hasPromoCode,
         createdAt:e.createdAt,
         id: e._id,
     }
@@ -51,7 +50,7 @@ export async function transformOrderById(e,lang){
         total:e.total,
         finalTotal:e.finalTotal,
         delivaryCost:e.delivaryCost,
-        discount:e.discount,
+        totalDiscount:e.totalDiscount,
         destination:e.destination,
         client:{
             fullname:e.client.fullname,
@@ -71,19 +70,22 @@ export async function transformOrderById(e,lang){
         createdAt:e.createdAt,
         id: e._id,
     }
-    if(e.promoCode){
-        index.promoCode={
-            couponNumber:e.promoCode.couponNumber,
-            discountType:e.promoCode.discountType,
-            discount:e.promoCode.discount,
-            id:e.promoCode._id,
-        }
-    }
+    
     
     /*suppliesList */
     let suppliesList = []
     for (let v of e.suppliesList) {
-        let list = {}
+        let list = {
+            discount:v.discount
+        }
+        if(v.promoCode){
+            list.promoCode={
+                couponNumber:v.promoCode.couponNumber,
+                discountType:v.promoCode.discountType,
+                discount:v.promoCode.discount,
+                id:v.promoCode._id,
+            }
+        }
         if(v.supplies){
             let supplies = {
                 name:lang=="ar"?v.supplies.name_ar:v.supplies.name_en,

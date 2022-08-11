@@ -20,7 +20,7 @@ import i18n from "i18n";
 import { transformOrder, transformOrderById } from "../../models/order/transformOrder";
 const populateQuery = [
     { path: 'client', model: 'user'},
-    { path: 'promoCode', model: 'coupon' },
+    { path: 'suppliesList.promoCode', model: 'coupon' },
     {
         path: 'address', model: 'address',
         populate: { path: 'city', model: 'city' },
@@ -280,12 +280,12 @@ export default {
                 else
                     return true;
             }),
-            body('promoCode').optional(),
+            
             body('suppliesList').trim().escape().optional()
             .custom(async (suppliesList, { req }) => {
                 convertLang(req)
                 for (let supplies of suppliesList) {
-                    
+                    body('promoCode').optional(),
                     body('supplies').not().isEmpty().withMessage((value, { req}) => {
                         return req.__('supplies.required', { value});
                     }).isNumeric().isNumeric().withMessage((value, { req}) => {
@@ -343,59 +343,69 @@ export default {
             //check if user is block
             if (theUser.block == true)
                 return next(new ApiError(500, i18n.__('user.block')));
-            //check coupon validation
-            if(validatedBody.promoCode){
-                let promoCode = await Coupon.findOne({deleted:false,end:false,couponNumber: { $regex: validatedBody.promoCode, '$options' : 'i'  }})
-                if(promoCode){
-                    console.log("theUser",theUser.usedCoupons)
-                    var found = theUser.usedCoupons.find((e) => e == promoCode._id)
-                    if(found){
-                        if(promoCode.singleTime === true)
-                            return next(new ApiError(500, i18n.__('used.promoCode'))); 
-                    }
-                }else{
-                    return next(new ApiError(500, i18n.__('wrong.promoCode'))); 
-                }
-            }
+            // //check coupon validation
+            // if(validatedBody.promoCode){
+            //     let promoCode = await Coupon.findOne({deleted:false,end:false,couponNumber: { $regex: validatedBody.promoCode, '$options' : 'i'  }})
+            //     if(promoCode){
+            //         console.log("theUser",theUser.usedCoupons)
+            //         var found = theUser.usedCoupons.find((e) => e == promoCode._id)
+            //         if(found){
+            //             if(promoCode.singleTime === true)
+            //                 return next(new ApiError(500, i18n.__('used.promoCode'))); 
+            //         }
+            //     }else{
+            //         return next(new ApiError(500, i18n.__('wrong.promoCode'))); 
+            //     }
+            // }
             console.log("body",validatedBody)
             validatedestination(validatedBody.destination);
             validatedBody.destination = { type: 'Point', coordinates: [+req.body.destination[0], +req.body.destination[1]] };
             let total = 0;
+            let totalDiscount = 0;
             for (let supplies of validatedBody.suppliesList) {
+                let suppliesTotal = 0
+                let suppliesIndex =  validatedBody.suppliesList.findIndex( v => v.supplies == supplies.supplies)
+                console.log("suppliesIndex",suppliesIndex)
+
                 for (let item of supplies.items) {
                     let productDetail = await checkExistThenGet(item.product, Product);
                     let selectedSize = productDetail.sizes[item.size]?productDetail.sizes[item.size]:productDetail.sizes[0]
                     console.log("size",selectedSize)
-                    total += selectedSize.retailPrice * item.count;
-
+                    //total += selectedSize.retailPrice * item.count;
+                    suppliesTotal += selectedSize.retailPrice * item.count;
                     let productIndex =  supplies.items.findIndex( v => v.product == item.product)
                     console.log("index",productIndex)
                     supplies.items[productIndex].unitCost = selectedSize.retailPrice;
                 }    
+                //if coupon exist
+                if(supplies.promoCode){
+                    let promoCode = await Coupon.findOne({deleted:false,end:false,couponNumber: { $regex: supplies.promoCode, '$options' : 'i'  }})
+                    if(promoCode){
+                        console.log("theUser",theUser.usedCoupons)
+                        theUser.usedCoupons.push(promoCode)
+                        await theUser.save();
+                        let discount = 0
+                        if(promoCode.discountType == "RATIO"){
+                            discount = (suppliesTotal * promoCode.discount) / 100;
+                            total = total + (suppliesTotal - discount)
+                        }else{
+                            discount = promoCode.discount
+                            if(discount <= suppliesTotal){
+                                total = total + (suppliesTotal - discount)
+                            }
+                        }
+                        validatedBody.suppliesList[suppliesIndex].discount = discount;
+                        supplies.promoCode = promoCode.id
+                        totalDiscount += discount
+                    }else{
+                        return next(new ApiError(500, i18n.__('wrong.promoCode'))); 
+                    }
+                }else{
+                    total += suppliesTotal
+                }
             } 
             console.log(total)
-            //if coupon exist
-            if(validatedBody.promoCode){
-                let promoCode = await Coupon.findOne({deleted:false,end:false,couponNumber: { $regex: validatedBody.promoCode, '$options' : 'i'  }})
-                if(promoCode){
-                    console.log("theUser",theUser.usedCoupons)
-                    theUser.usedCoupons.push(promoCode)
-                    await theUser.save();
-                    if(promoCode.discountType == "RATIO"){
-                        let discount = (total * promoCode.discount) / 100;
-                        total = total - discount
-                    }else{
-                        let discount = promoCode.discount
-                        total = discount > total? 0 :total - discount
-                    }
-                    validatedBody.promoCode = promoCode.id
-                    validatedBody.hasPromoCode = true
-                    validatedBody.discount = promoCode.discount
-                    validatedBody.total
-                }else{
-                    return next(new ApiError(500, i18n.__('wrong.promoCode'))); 
-                }
-            }
+            
             //delivery cost
             let address = await checkExistThenGet(validatedBody.address,Address)
             let city = await checkExistThenGet(address.city, City);
@@ -406,6 +416,7 @@ export default {
             }
             
             validatedBody.total = total
+            validatedBody.totalDiscount = totalDiscount
             validatedBody.finalTotal = total + validatedBody.delivaryCost;
             validatedBody.paymentSystem = validatedBody.paymentSystem;
             //create order

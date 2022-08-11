@@ -23,7 +23,7 @@ const OrderSchema = new Schema({
         required: true,
         default:0
     },
-    discount:{
+    totalDiscount:{
         type: Number,
         required: true,
         default:0
@@ -49,14 +49,7 @@ const OrderSchema = new Schema({
         enum: ['cash', 'online'],
         default:'cash'
     },
-    promoCode: {
-        type: Number,
-        ref:'coupon',
-    },
-    hasPromoCode:{
-        type:Boolean,
-        default:false
-    },
+    
     accept:{
         type:Boolean,
         default:false
@@ -64,6 +57,15 @@ const OrderSchema = new Schema({
     
     suppliesList: [
         new Schema({
+            promoCode: {
+                type: Number,
+                ref:'coupon',
+            },
+            discount:{
+                type: Number,
+                required: true,
+                default:0
+            },
             supplies: {
                 type: Number,
                 ref: 'supplies',
