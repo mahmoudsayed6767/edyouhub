@@ -168,7 +168,7 @@ export default {
             }),
             body('grade').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('grade.required', { value});
-            }).isNumeric().isNumeric().withMessage((value, { req}) => {
+            }).isNumeric().withMessage((value, { req}) => {
                 return req.__('grade.numeric', { value});
             }).custom(async (value, { req }) => {
                 if (!await Grade.findOne({_id:value,deleted:false}))
@@ -179,7 +179,7 @@ export default {
             body('educationInstitution').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('educationInstitution.required', { value});
             })
-            .isNumeric().isNumeric().withMessage((value, { req}) => {
+            .isNumeric().withMessage((value, { req}) => {
                 return req.__('educationInstitution.numeric', { value});
             }).custom(async (value, { req }) => {
                 if (!await EducationInstitution.findOne({_id:value,deleted:false}))
@@ -207,7 +207,7 @@ export default {
                             body('product').not().isEmpty().withMessage((val, { req}) => {
                                 return req.__('product.required', { val});
                             })
-                            .isNumeric().isNumeric().withMessage((val, { req}) => {
+                            .isNumeric().withMessage((val, { req}) => {
                                 return req.__('product.numeric', { val});
                             }).custom(async (val, { req }) => {
                                 if (!await Product.findOne({_id:val,deleted:false}))
@@ -221,7 +221,7 @@ export default {
                             body('color').not().isEmpty().withMessage((val, { req}) => {
                                 return req.__('color.required', { val});
                             })
-                            .isNumeric().isNumeric().withMessage((val, { req}) => {
+                            .isNumeric().withMessage((val, { req}) => {
                                 return req.__('color.numeric', { val});
                             }).custom(async (val, { req }) => {
                                 if (!await Color.findOne({_id:val,deleted:false}))
@@ -252,7 +252,7 @@ export default {
                                     body('color').not().isEmpty().withMessage((v, { req}) => {
                                         return req.__('color.required', { v});
                                     })
-                                    .isNumeric().isNumeric().withMessage((v, { req}) => {
+                                    .isNumeric().withMessage((v, { req}) => {
                                         return req.__('color.numeric', { v});
                                     }).custom(async (val, { req }) => {
                                         if (!await Color.findOne({_id:v,deleted:false}))

@@ -158,10 +158,10 @@ export default {
     
     validateGetPrices() {
         let validations = [
-            body('city').optional().isNumeric().isNumeric().withMessage((value, { req}) => {
+            body('city').optional().isNumeric().withMessage((value, { req}) => {
                 return req.__('city.numeric', { value});
             }),
-            body('area').optional().isNumeric().isNumeric().withMessage((value, { req}) => {
+            body('area').optional().isNumeric().withMessage((value, { req}) => {
                 return req.__('area.numeric', { value});
             }),
             body('promoCode').optional(),
@@ -272,7 +272,7 @@ export default {
             }),
             body('address').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('address.required', { value});
-            }).isNumeric().isNumeric().withMessage((value, { req}) => {
+            }).isNumeric().withMessage((value, { req}) => {
                 return req.__('address.numeric', { value});
             }).custom(async (val, { req }) => {
                 if (!await Address.findOne({_id:val,deleted:false}))
@@ -288,7 +288,7 @@ export default {
                     body('promoCode').optional(),
                     body('supplies').not().isEmpty().withMessage((value, { req}) => {
                         return req.__('supplies.required', { value});
-                    }).isNumeric().isNumeric().withMessage((value, { req}) => {
+                    }).isNumeric().withMessage((value, { req}) => {
                         return req.__('supplies.numeric', { value});
                     }).custom(async (val, { req }) => {
                         if (!await Supplies.findOne({_id:val,deleted:false}))

@@ -195,7 +195,7 @@ export default {
             body('brand').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('brand.required', { value});
             })
-            .isNumeric().isNumeric().withMessage((value, { req}) => {
+            .isNumeric().withMessage((value, { req}) => {
                 return req.__('brand.numeric', { value});
             }).custom(async (value, { req }) => {
                 if (!await Brand.findOne({_id:value,deleted:false}))
@@ -224,7 +224,7 @@ export default {
             body('category').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('category.required', { value});
             })
-            .isNumeric().isNumeric().withMessage((value, { req}) => {
+            .isNumeric().withMessage((value, { req}) => {
                 return req.__('category.numeric', { value});
             }).custom(async (value, { req }) => {
                 if (!await Category.findOne({_id:value,deleted:false}))
@@ -235,7 +235,7 @@ export default {
             body('subCategory').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('subCategory.required', { value});
             })
-            .isNumeric().isNumeric().withMessage((value, { req}) => {
+            .isNumeric().withMessage((value, { req}) => {
                 return req.__('subCategory.numeric', { value});
             }).custom(async (value, { req }) => {
                 if (!await Category.findOne({_id:value,deleted:false}))

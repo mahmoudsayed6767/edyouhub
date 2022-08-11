@@ -5,6 +5,14 @@ export async function transformCart(e,lang) {
         id: e._id,
 
     }
+    if(e.promoCode){
+        index.promoCode={
+            couponNumber:e.promoCode.couponNumber,
+            discountType:e.promoCode.discountType,
+            discount:e.promoCode.discount,
+            id:e.promoCode._id,
+        }
+    }
     if(e.supplies){
         let supplies = {
             name:lang=="ar"?e.supplies.name_ar:e.supplies.name_en,

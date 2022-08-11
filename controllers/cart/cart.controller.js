@@ -9,7 +9,7 @@ import ApiError from '../../helpers/ApiError';
 import { body } from "express-validator/check";
 import i18n from "i18n";
 import { transformCart } from "../../models/cart/transformCart";
-
+import Coupon from "../../models/coupon/coupon.model";
 const populateQuery = [
     {
         path: 'items.product', model: 'product',
@@ -25,6 +25,7 @@ const populateQuery = [
         path: 'supplies', model: 'supplies',
         populate: { path: 'grade', model: 'grade' },
     },
+    {path: 'promoCode', model: 'coupon'}
 ];
 export default {
     async findAll(req, res, next) {
@@ -57,8 +58,18 @@ export default {
             body('total').not().isEmpty().withMessage((val, { req}) => {
                 return req.__('total.required', { val});
             })
-            .isNumeric().isNumeric().withMessage((val, { req}) => {
+            .isNumeric().withMessage((val, { req}) => {
                 return req.__('total.numeric', { val});
+            }),
+            body('promoCode').optional()
+            .isNumeric().withMessage((val, { req}) => {
+                return req.__('coupon.numeric', { val});
+            })
+            .custom(async (val, { req }) => {
+                if (!await Coupon.findOne({deleted:false,end:false,couponNumber: { $regex: val, '$options' : 'i'  }}))
+                    throw new Error(req.__('wrong.promoCode'));
+                else
+                    return true;
             }),
             body('items').not().isEmpty().withMessage((val, { req}) => {
                 return req.__('items.required', { val});
@@ -69,7 +80,7 @@ export default {
                     body('product').not().isEmpty().withMessage((val, { req}) => {
                         return req.__('product.required', { val});
                     })
-                    .isNumeric().isNumeric().withMessage((val, { req}) => {
+                    .isNumeric().withMessage((val, { req}) => {
                         return req.__('product.numeric', { val});
                     }).custom(async (val, { req }) => {
                         if (!await Product.findOne({_id:val,deleted:false}))
@@ -83,7 +94,7 @@ export default {
                     body('color').not().isEmpty().withMessage((val, { req}) => {
                         return req.__('color.required', { val});
                     })
-                    .isNumeric().isNumeric().withMessage((val, { req}) => {
+                    .isNumeric().withMessage((val, { req}) => {
                         return req.__('color.numeric', { val});
                     }).custom(async (val, { req }) => {
                         if (!await Color.findOne({_id:val,deleted:false}))

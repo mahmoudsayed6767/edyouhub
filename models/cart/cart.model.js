@@ -21,6 +21,10 @@ const CartSchema = new Schema({
         ref: 'supplies',
         required: true
     },
+    promoCode: {
+        type: Number,
+        ref: 'coupon'
+    },
     items: [
         new Schema({
             product: {

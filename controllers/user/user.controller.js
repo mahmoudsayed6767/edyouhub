@@ -1226,12 +1226,12 @@ export default {
             }),
             body('city').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('city.required', { value});
-            }).isNumeric().isNumeric().withMessage((value, { req}) => {
+            }).isNumeric().withMessage((value, { req}) => {
                 return req.__('city.numeric', { value});
             }),
             body('area').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('area.required', { value});
-            }).isNumeric().isNumeric().withMessage((value, { req}) => {
+            }).isNumeric().withMessage((value, { req}) => {
                 return req.__('area.numeric', { value});
             }),
                 
