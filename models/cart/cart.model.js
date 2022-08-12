@@ -25,6 +25,10 @@ const CartSchema = new Schema({
         type: Number,
         ref: 'coupon'
     },
+    hasPromoCode: {
+        type: Boolean,
+        default: false
+    },
     items: [
         new Schema({
             product: {

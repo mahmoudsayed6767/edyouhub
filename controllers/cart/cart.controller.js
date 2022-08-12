@@ -117,9 +117,10 @@ export default {
             validatedBody.supplies = suppliesId;
             validatedBody.user = req.user._id;
             if(validatedBody.promoCode){
-                let coupon = await Coupon.findOne({deleted:false,end:false,couponNumber: { $regex: val, '$options' : 'i'  }})
+                let coupon = await Coupon.findOne({deleted:false,end:false,couponNumber: { $regex: validatedBody.promoCode, '$options' : 'i'  }})
                 if(coupon){
                     validatedBody.promoCode = coupon._id
+                    validatedBody.hasPromoCode =true
                 }else{
                     return next(new ApiError(500, i18n.__('wrong.promoCode'))); 
                 }
