@@ -71,7 +71,7 @@ const ProductSchema=new Schema({
     subCategory: {
         type: Number,
         ref: 'sub-category',
-        required:true
+        //required:true
     },
     img: [{
         type: String,

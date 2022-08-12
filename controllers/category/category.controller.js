@@ -318,7 +318,41 @@ export default {
             next(err);
         }
     },
+    async createMultiCategory(req, res, next) {
+        try {
+            convertLang(req)
+            let data = req.body.data
+            for (let i = 0; i < data.length; i++) {
+                const item = data[i];
+                item.main = true
+                await Category.create({ ...item });
+                
+            }
+            res.status(201).send({success:true});
+        } catch (error) {
+            next(error);
+        }
+    },
+    async createMultiSubCategory(req, res, next) {
+        try {
+            convertLang(req)
+            let data = req.body.data
+            for (let i = 0; i < data.length; i++) {
+                const item = data[i];
+                let parentCategory = await checkExistThenGet(item.parent, Category);
+                parentCategory.hasChild = true;
 
+                let createdItem = await subCategory.create({ ...item });
+                parentCategory.child.push(createdItem._id);
+                await parentCategory.save();
+
+                
+            }
+            res.status(201).send({success:true});
+        } catch (error) {
+            next(error);
+        }
+    },
     //find by id
     async findById(req, res, next) {
         try {

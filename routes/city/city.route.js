@@ -11,6 +11,12 @@ router.route('/')
         CityController.validateCityBody(),
         CityController.create
     )
+
+router.route('/createMulti')
+    .post(
+        requireAuth,
+        CityController.createMulti
+    )
 router.route('/:country/countries')
     .get(CityController.getAllPaginated);
 
@@ -33,6 +39,12 @@ router.route('/:cityId/areas')
         AreaController.create
     )
     .get(AreaController.getAllPaginated);
+
+router.route('/createMultiAreas')
+    .post(
+        requireAuth,
+        AreaController.createMulti
+    )
 
 router.route('/:areaId/areas')
     .put(

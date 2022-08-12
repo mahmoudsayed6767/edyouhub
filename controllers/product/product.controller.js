@@ -232,9 +232,7 @@ export default {
                 else
                     return true;
             }),
-            body('subCategory').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('subCategory.required', { value});
-            })
+            body('subCategory').optional()
             .isNumeric().withMessage((value, { req}) => {
                 return req.__('subCategory.numeric', { value});
             }).custom(async (value, { req }) => {
@@ -318,6 +316,38 @@ export default {
                 let index = await transformProduct(e,lang)
                 res.status(201).send({success: true,data:index});
             })
+            
+        } catch (err) {
+            next(err);
+        }
+    },
+    async createMulti(req, res, next) {
+        try {
+            convertLang(req) 
+            let data = req.body.data
+            for (let i = 0; i < data.length; i++) {
+                const item = data[i];
+                let sizes = [];
+                await Promise.all(item.sizes.map(async(v,i) => {
+                    let size = {
+                        "index": i,
+                        "name_en":v.name_en,
+                        "name_ar":v.name_ar,
+                        "retailPrice":v.retailPrice,
+                        "costPrice":v.costPrice,
+                        "count":v.count,
+                    }
+                    sizes.push(size)
+                })); 
+                item.sizes = sizes;
+                await Product.create({
+                    ...item,
+                });
+            }
+            
+            
+            res.status(201).send({success: true});
+        
             
         } catch (err) {
             next(err);

@@ -33,5 +33,18 @@ router.route('/')
     )
     .get(cache(10),CategoryController.findCategory);
 
+router.route('/createMulti/categories')
+    .post(
+        requireAuth,
+        CategoryController.createMultiCategory
+    )
+
+router.route('/createMulti/subCategories')
+    .post(
+        requireAuth,
+        CategoryController.createMultiSubCategory
+    )
+    
+
 
 export default router;

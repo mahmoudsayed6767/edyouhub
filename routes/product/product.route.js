@@ -16,6 +16,12 @@ router.route('/')
         ProductController.create
     ).get(ProductController.findAll);
 
+router.route('/createMulti')
+    .post(
+        requireAuth,
+        ProductController.createMulti
+    )
+
 router.route('/withoutPagenation/get')
     .get(ProductController.getAll);
 

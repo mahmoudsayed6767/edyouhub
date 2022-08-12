@@ -49,7 +49,21 @@ export default {
             });
         } catch (error) {
             next(error);
-            send(error);
+        }
+    },
+    async createMulti(req, res, next) {
+        try {
+            convertLang(req)
+            let data = req.body.data
+            console.log("ggg")
+            for (let i = 0; i < data.length; i++) {
+                const item = data[i];
+                await Area.create({ ...item });
+                
+            }
+            res.status(201).send({success:true});
+        } catch (error) {
+            next(error);
         }
     },
     //get by id
