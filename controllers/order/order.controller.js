@@ -280,7 +280,7 @@ export default {
                 else
                     return true;
             }),
-            
+            body('cart').trim().escape().optional(),
             body('suppliesList').trim().escape().optional()
             .custom(async (suppliesList, { req }) => {
                 convertLang(req)
@@ -339,7 +339,8 @@ export default {
         try {
             convertLang(req)
             const validatedBody = checkValidations(req);
-            let theUser = await checkExistThenGet(req.user._id, User, { deleted: false })
+            let {userId} = req.params
+            let theUser = await checkExistThenGet(userId, User, { deleted: false })
             //check if user is block
             if (theUser.block == true)
                 return next(new ApiError(500, i18n.__('user.block')));
@@ -419,11 +420,11 @@ export default {
             validatedBody.totalDiscount = totalDiscount
             validatedBody.finalTotal = total + validatedBody.delivaryCost;
             validatedBody.paymentSystem = validatedBody.paymentSystem;
+            validatedBody.client = userId;
             //create order
-            let createdOrder = await Order.create({ ...validatedBody,client: req.user});
-            //remove user cart
-            theUser.carts = [];
-            let carts = await Cart.find({ user: req.user._id });
+            let createdOrder = await Order.create({ ...validatedBody});
+            //remove cart
+            let carts = await Cart.find({ _id: validatedBody.cart});
             for (let cart of carts ) {
                 cart.deleted = true;
                 await cart.save();
