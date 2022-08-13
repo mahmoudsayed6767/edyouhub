@@ -44,6 +44,21 @@ export async function transformProduct(e,lang) {
         colors.push(value)
     }
     index.colors = colors
+    /*sizes */
+    let sizes = []
+    for (let val of e.sizes) {
+        let value ={
+            index:val.index,
+            name:lang=="ar"?val.name_ar:val.name_en,
+            name_ar:val.name_ar,
+            name_en:val.name_en,
+            retailPrice:val.retailPrice,
+            costPrice:val.costPrice,
+            count:val.count,
+        }
+        sizes.push(value)
+    }
+    index.sizes = sizes
  
     return index
 }
