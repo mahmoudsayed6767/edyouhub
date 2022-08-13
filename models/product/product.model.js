@@ -21,7 +21,7 @@ const ProductSchema=new Schema({
     },
     quantity:{
         type:Number,
-        required:true
+        default:10000
     },
     colors: {
         type: [Number],
@@ -51,8 +51,7 @@ const ProductSchema=new Schema({
             },
             count: {
                 type: Number,
-                default:10,
-                required:true
+                default:10000
             },
 
         }, { _id: false })
@@ -60,8 +59,6 @@ const ProductSchema=new Schema({
     brand: {
         type: Number,
         ref: 'brand',
-        default:1,
-        required:true
     },
     category: {
         type: Number,

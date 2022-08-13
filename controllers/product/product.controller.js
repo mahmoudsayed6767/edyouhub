@@ -192,9 +192,7 @@ export default {
             body('description_en').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('description_en.required', { value});
             }),
-            body('brand').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('brand.required', { value});
-            })
+            body('brand').optional()
             .isNumeric().withMessage((value, { req}) => {
                 return req.__('brand.numeric', { value});
             }).custom(async (value, { req }) => {
@@ -216,9 +214,7 @@ export default {
                 }
                 return true;
             }),
-            body('quantity').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('quantity.required', { value});
-            }).withMessage((value, { req}) => {
+            body('quantity').optional().withMessage((value, { req}) => {
                 return req.__('quantity.numeric', { value});
             }),
             body('category').not().isEmpty().withMessage((value, { req}) => {
@@ -261,9 +257,7 @@ export default {
                     }).isLength({ max: 10 }).withMessage((value) => {
                         return req.__('costPrice.invalid', { value});
                     }),
-                    body('count').not().isEmpty().withMessage((value) => {
-                        return req.__('count.required', { value});
-                    }).isLength({ max: 10 }).withMessage((value) => {
+                    body('count').optional().isLength({ max: 10 }).withMessage((value) => {
                         return req.__('count.invalid', { value});
                     })
                     return true
@@ -294,7 +288,7 @@ export default {
                     "name_ar":v.name_ar,
                     "retailPrice":v.retailPrice,
                     "costPrice":v.costPrice,
-                    "count":v.count,
+                    //"count":v.count,
                 }
                 sizes.push(size)
             })); 
@@ -335,7 +329,7 @@ export default {
                         "name_ar":v.name_ar,
                         "retailPrice":v.retailPrice,
                         "costPrice":v.costPrice,
-                        "count":v.count,
+                        //"count":v.count,
                     }
                     sizes.push(size)
                 })); 
@@ -452,7 +446,7 @@ export default {
                     "name_ar":v.name_ar,
                     "retailPrice":v.retailPrice,
                     "costPrice":v.costPrice,
-                    "count":v.count,
+                    //"count":v.count,
                 }
                 sizes.push(size)
             })); 
