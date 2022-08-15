@@ -230,5 +230,7 @@
 	"existItems.required": "existItems is required",
 	"color.required": "color is required",
 	"color.numeric": "color is numeric",
-	"delivaryCost.required": "delivaryCost.required"
+	"delivaryCost.required": "delivary Cost is required",
+	"educationInstitution.required": "Education Institution is required",
+	"attachment.required": "attachment.required"
 }

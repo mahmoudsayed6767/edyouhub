@@ -31,13 +31,14 @@ import brandRoute from './brand/brand.route';
 import cartsRoute from './cart/cart.route';
 import ordersRoute from './order/order.route';
 import gradeRoute from './grade/grade.route';
+import individualSuppliesRoute from './individual supplies/individual supplies.route';
 
 import { requireAuth } from '../services/passport';
 
 const router = express.Router();
 router.use('/cart', cartsRoute);
 router.use('/grades', gradeRoute);
-
+router.use('/individualSupplies', individualSuppliesRoute);
 router.use('/', userRoute);
 router.use('/brands',brandRoute);
 router.use('/colors',colorRoute);

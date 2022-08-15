@@ -227,6 +227,8 @@
 	"grade.invalid":"حقل السنه الدراسيه غير صحيح",
 	"existItems.required":"المنتجات المتواجده الزاميه",
 	"color.required":"حقل اللون الزامي",
-	"color.numeric":"حقل اللون قيمه رقميه"
+	"color.numeric":"حقل اللون قيمه رقميه",
+	"delivaryCost.required": "تكلفه التوصيل مطلوبه",
+	"educationInstitution.required": "المؤسسه التعليميه مطلوبه"
 	
 }
