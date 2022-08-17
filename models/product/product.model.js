@@ -16,7 +16,6 @@ const ProductSchema=new Schema({
     },
     sku: {//barecode
         type: String,
-        required: true,
         default:"#"
     },
     quantity:{
