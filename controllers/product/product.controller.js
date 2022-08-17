@@ -303,7 +303,6 @@ export default {
             validatedBody.sizes = sizes;
             let createdProduct = await Product.create({
                 ...validatedBody,
-                img: img, 
             });
             
             let reports = {
