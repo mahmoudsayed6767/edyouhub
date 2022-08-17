@@ -7,6 +7,7 @@ import { checkExist, checkExistThenGet ,isInArray} from "../../helpers/CheckMeth
 import {  checkValidations ,convertLang} from "../shared/shared.controller";
 import { body } from "express-validator/check";
 import i18n from "i18n";
+import EducationInstitution from "../../models/education institution/education institution.model";
 
 export default {
 //get with pagenation
@@ -129,7 +130,15 @@ export default {
 
                     return true;
                 }),
-            body('singleTime').optional()
+            body('singleTime').optional(),
+            body('educationInstitution').optional().isNumeric().withMessage((value, { req}) => {
+                return req.__('educationInstitution.numeric', { value});
+            }).custom(async (value, { req }) => {
+                if (!await EducationInstitution.findOne({_id:value,deleted:false}))
+                    throw new Error(req.__('educationInstitution.invalid'));
+                else
+                    return true;
+            }),
          
         ];
 

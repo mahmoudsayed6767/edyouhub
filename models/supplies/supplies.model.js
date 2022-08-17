@@ -51,6 +51,7 @@ const suppliesSchema=new Schema({
             },
             count: {
                 type: Number,
+                default:1,
                 required:true
             },
 

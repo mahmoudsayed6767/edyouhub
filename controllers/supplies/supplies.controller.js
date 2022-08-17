@@ -295,9 +295,7 @@ export default {
                     body('name_ar').not().isEmpty().withMessage((value) => {
                         return req.__('name_ar.required', { value});
                     })
-                    body('count').not().isEmpty().withMessage((value) => {
-                        return req.__('count.required', { value});
-                    }).isLength({ max: 10 }).withMessage((value) => {
+                    body('count').optional().isLength({ max: 10 }).withMessage((value) => {
                         return req.__('count.invalid', { value});
                     })
                     return true

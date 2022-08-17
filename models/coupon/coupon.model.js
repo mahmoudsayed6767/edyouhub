@@ -5,6 +5,10 @@ const CouponSchema = new Schema({
         type: Number,
         required: true
     },
+    educationInstitution:{
+        type: Number,
+        ref: 'educationInstitution',
+    },
     couponNumber: {
         type: String,
         required: true,
