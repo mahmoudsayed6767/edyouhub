@@ -1,6 +1,6 @@
 const config = {};
-config.mongoUrl = 'mongodb+srv://edhub:edhub@cluster0.gzdzusy.mongodb.net/?retryWrites=true&w=majority'
-//config.mongoUrl = 'mongodb+srv://eduhub:eduhub1@cluster0.cmabrmv.mongodb.net/?retryWrites=true&w=majority'
+//config.mongoUrl = 'mongodb+srv://edhub:edhub@cluster0.gzdzusy.mongodb.net/?retryWrites=true&w=majority'
+config.mongoUrl = 'mongodb+srv://eduhub:eduhub1@cluster0.cmabrmv.mongodb.net/?retryWrites=true&w=majority'
 
 config.jwtSecret = 'EdHub';
 config.jwt_secret_mail = 'EdHub'

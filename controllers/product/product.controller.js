@@ -165,6 +165,9 @@ export default {
                 .sort(sortd).then(async (data) => {
                     var newdata = [];
                     await Promise.all(data.map(async(e) =>{
+                        let theProduct = await checkExistThenGet(e._id,Product)
+                        theProduct.img ="https://res.cloudinary.com/boody-car/image/upload/v1660681692/er00mcran8jh3zlmbtvf.png"
+                        await theProduct.save();
                         let index = await transformProduct(e,lang)
                         newdata.push(index);
                     }))

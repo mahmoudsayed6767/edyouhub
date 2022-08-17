@@ -271,10 +271,11 @@ export default {
                 theUser.verifycode = code
             }
             console.log(code)
-            theUser.verifycode = "0000" 
+            theUser.verifycode = code
             await theUser.save();
-            let realPhone =  validatedBody.phone;
-            let message =  ' رمز الدخول الخاص ب Edu Hub هو ' + theUser.verifycode
+            let realPhone = "+2"+ validatedBody.phone;
+            let message =  `رمز التحقيق لتطبيق EDYOUHUB هو ${theUser.verifycode} الرجاء استخدامه لتفعيل الحساب الخاص بك.` 
+
             sendSms(realPhone,message)
             let reports = {
                 "action":"User sign Up ",
@@ -654,7 +655,7 @@ export default {
             user.verifycode = generateVerifyCode();
             await user.save();
              //send code
-            let message =  ' رمز الدخول الخاص ب Edu Hub هو ' + user.verifycode
+            let message =  `رمز التحقيق لتطبيق EDYOUHUB هو ${user.verifycode} الرجاء استخدامه لتفعيل الحساب الخاص بك.` 
             sendSms(realPhone,message)
             let reports = {
                 "action":"Send code to phone for forget pass",
