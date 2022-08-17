@@ -275,7 +275,7 @@ export default {
             await theUser.save();
             let realPhone =  validatedBody.phone;
             let message =  ' رمز الدخول الخاص ب Edu Hub هو ' + theUser.verifycode
-            //sendSms(realPhone,message)
+            sendSms(realPhone,message)
             let reports = {
                 "action":"User sign Up ",
                 "type":"USERS",
