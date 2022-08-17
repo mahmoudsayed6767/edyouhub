@@ -9,7 +9,9 @@ const router = express.Router();
 router.route('/')
     .post(
         requireAuth,
-        multerSaveTo('products').array('img',10),
+        multerSaveTo('products').fields([
+            { name: 'img', maxCount: 10, options: false }
+        ]),
         parseStringToArrayOfObjectsMw('colors'),
         parseStringToArrayOfObjectsMw('sizes'),
         ProductController.validateCreatedProduct(),

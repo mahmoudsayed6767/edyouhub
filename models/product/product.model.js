@@ -71,7 +71,7 @@ const ProductSchema=new Schema({
     },
     img: [{
         type: String,
-        required: true,
+        default:'https://res.cloudinary.com/boody-car/image/upload/v1660681692/er00mcran8jh3zlmbtvf.png'
     }],
     description_ar:{
         type:String,

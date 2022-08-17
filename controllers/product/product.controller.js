@@ -279,7 +279,15 @@ export default {
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth'))); 
             const validatedBody = checkValidations(req);
-            let img = await handleImgs(req);
+            if (req.files) {
+                if (req.files['img']) {
+                    let imagesList = [];
+                    for (let imges of req.files['img']) {
+                        imagesList.push(await toImgUrl(imges))
+                    }
+                    validatedBody.img = imagesList;
+                }
+            }
             let sizes = [];
             await Promise.all(validatedBody.sizes.map(async(v,i) => {
                 let size = {
