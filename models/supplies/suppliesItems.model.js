@@ -40,7 +40,7 @@ const suppliesItemsSchema=new Schema({
             color: {
                 type: Number,
                 ref:'color',
-                required:true
+                //required:true
             },
             count: {
                 type: Number,

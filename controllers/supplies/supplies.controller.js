@@ -218,9 +218,7 @@ export default {
                             body('size').not().isEmpty().withMessage((val, { req}) => {
                                 return req.__('size.required', { val});
                             })
-                            body('color').not().isEmpty().withMessage((val, { req}) => {
-                                return req.__('color.required', { val});
-                            })
+                            body('color').optional()
                             .isNumeric().withMessage((val, { req}) => {
                                 return req.__('color.numeric', { val});
                             }).custom(async (val, { req }) => {
@@ -229,19 +227,6 @@ export default {
                                 else
                                     return true;
                             })
-                            // body('alternatives').trim().escape().optional()
-                            // .custom(async (alternatives, { req }) => {
-                            //     convertLang(req)
-                            //     // check if it's duplicated color
-                            //     if(alternatives.some((val, i) => alternatives.indexOf(val) !== i))
-                            //         throw new Error(i18n.__('color.duplicated'));
-
-                            //     for (let alternative of alternatives) {
-                            //         if (!await Product.findOne({_id:alternative,deleted:false}))
-                            //             throw new Error(req.__('alternative.invalid'));
-                            //     }
-                            //     return true;
-                            // }),
                             body('alternatives').trim().escape().optional()
                             .custom(async (alternatives, { req }) => {
                                 convertLang(req)
@@ -249,9 +234,7 @@ export default {
                                     body('size').not().isEmpty().withMessage((v, { req}) => {
                                         return req.__('size.required', { v});
                                     })
-                                    body('color').not().isEmpty().withMessage((v, { req}) => {
-                                        return req.__('color.required', { v});
-                                    })
+                                    body('color').optional()
                                     .isNumeric().withMessage((v, { req}) => {
                                         return req.__('color.numeric', { v});
                                     }).custom(async (val, { req }) => {
