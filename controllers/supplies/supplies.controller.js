@@ -457,7 +457,7 @@ export default {
                 }
             }
             supplies.deleted = true
-            await Supplies.save();
+            await supplies.save();
             let reports = {
                 "action":"Delete supplies",
                 "type":"SUPPLIES",
