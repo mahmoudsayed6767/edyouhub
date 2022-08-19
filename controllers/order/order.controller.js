@@ -173,10 +173,10 @@ export default {
             })
             .custom(async (items, { req }) => {
                 // check if it's duplicated product
-                const uniqueValues = new Set(items.map(v => v.product));
-                if (uniqueValues.size < items.length) {
-                    throw new Error(`Duplicated Product `);
-                }
+                // const uniqueValues = new Set(items.map(v => v.product));
+                // if (uniqueValues.size < items.length) {
+                //     throw new Error(`Duplicated Product `);
+                // }
                     
                 let prevProductId;
                 for (let productOrder of items) {
@@ -304,10 +304,10 @@ export default {
                     })
                     .custom(async (items, { req }) => {
                         // check if it's duplicated product
-                        const uniqueValues = new Set(items.map(v => v.product));
-                        if (uniqueValues.size < items.length) {
-                            throw new Error(`Duplicated Product `);
-                        }
+                        // const uniqueValues = new Set(items.map(v => v.product));
+                        // if (uniqueValues.size < items.length) {
+                        //     throw new Error(`Duplicated Product `);
+                        // }
                         let prevProductId;
                         for (let productOrder of items) {
                             prevProductId = productOrder.product;
