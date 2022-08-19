@@ -205,6 +205,7 @@ export default {
             convertLang(req)
             
             const validatedBody = checkValidations(req);
+            console.log("validatedBody",validatedBody)
             let total = 0;
             let delivaryCost =0
             let finalTotal = 0;
