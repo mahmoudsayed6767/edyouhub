@@ -23,6 +23,10 @@ const populateQuery = [
     },
     {
         path: 'supplies', model: 'supplies',
+        populate: { path: 'educationInstitution', model: 'educationInstitution' },
+    },
+    {
+        path: 'supplies', model: 'supplies',
         populate: { path: 'grade', model: 'grade' },
     },
     {path: 'promoCode', model: 'coupon'}

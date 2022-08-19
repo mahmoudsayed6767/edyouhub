@@ -25,6 +25,12 @@ export async function transformCart(e,lang) {
                 id: e.supplies.educationSystem._id,
             }
         }
+        if(e.supplies.educationInstitution){
+            supplies.educationInstitution = {
+                name:lang=="ar"?e.supplies.educationInstitution.name_ar:e.supplies.educationInstitution.name_en,
+                id: e.supplies.educationInstitution._id,
+            }
+        }
         if(e.supplies.grade){
             supplies.grade = {
                 name:lang=="ar"?e.supplies.grade.name_ar:e.supplies.grade.name_en,
