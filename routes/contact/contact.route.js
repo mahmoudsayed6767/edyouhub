@@ -2,12 +2,16 @@ import express from 'express';
 import ContactController from '../../controllers/contact/contact.controller';
 import { requireAuth } from '../../services/passport';
 import { cache } from '../../services/caching'
+import { multerSaveTo } from '../../services/multer-service';
 
 const router = express.Router();
 
 
 router.route('/')
     .post(
+        multerSaveTo('attachment').fields([
+            { name: 'attachment', maxCount: 6, options: false },
+        ]),
         ContactController.validateContactCreateBody(),
         ContactController.createContactMessage
     )

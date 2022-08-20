@@ -23,7 +23,7 @@ function deleteTempImages(req) {
 export const localeFn = (localeName) => (value, { req }) => req.__(localeName);
 
 export function checkValidations(req) {
-  console.log("h")
+  console.log("req")
   const validationErrors = validationResult(req).array({ onlyFirstError: true });
   if (validationErrors.length > 0) {
     //deleteTempImages(req);

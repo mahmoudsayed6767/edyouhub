@@ -225,8 +225,8 @@ export default {
             let discount = 0;
             let discountRatio = 0
             if(validatedBody.promoCode){
-                if(await Coupon.findOne({deleted:false,end:false,couponNumber: { $regex: validatedBody.promoCode, '$options' : 'i'  },expireDateMillSec:{$gte:Date.parse(new Date())}})){
-                    let coupon = await Coupon.findOne({deleted:false,end:false,couponNumber: { $regex: validatedBody.promoCode, '$options' : 'i'  }})
+                if(await Coupon.findOne({deleted:false,end:false,couponNumber: validatedBody.promoCode,expireDateMillSec:{$gte:Date.parse(new Date())}})){
+                    let coupon = await Coupon.findOne({deleted:false,end:false,couponNumber: validatedBody.promoCode})
                     if(coupon.discountType == "RATIO"){
                         discount = (total * coupon.discount) / 100;
                         discountRatio = coupon.discount
@@ -381,7 +381,7 @@ export default {
                 }    
                 //if coupon exist
                 if(supplies.promoCode){
-                    let promoCode = await Coupon.findOne({deleted:false,end:false,couponNumber: { $regex: supplies.promoCode, '$options' : 'i'  }})
+                    let promoCode = await Coupon.findOne({deleted:false,end:false,couponNumber: supplies.promoCode})
                     if(promoCode){
                         console.log("theUser",theUser.usedCoupons)
                         theUser.usedCoupons.push(promoCode)
@@ -510,19 +510,22 @@ export default {
             let order = await checkExistThenGet(orderId, Order);
             if (['DELIVERED'].includes(order.status))
                 return next(new ApiError(500, i18n.__('status.notPending')));
-            for (let item of order.items) {
-                let productDetail = await checkExistThenGet(item.product, Product);
-                //if product quantity is exist in product
-                if(item.count <= productDetail.quantity){
-                    let newQuantity = productDetail.quantity - item.count;
-                    productDetail.quantity = newQuantity;
-                    productDetail.sallCount = productDetail.sallCount + item.count
-                    await productDetail.save();
-                    
-                } else{
-                    return next(new ApiError(500, i18n.__('edit.productCount')));
-                }
-            }     
+            for (let list of order.suppliesList) {
+                for (let item of list.items) {
+                    let productDetail = await checkExistThenGet(item.product, Product);
+                    //if product quantity is exist in product
+                    if(item.count <= productDetail.quantity){
+                        let newQuantity = productDetail.quantity - item.count;
+                        productDetail.quantity = newQuantity;
+                        productDetail.sallCount = productDetail.sallCount + item.count
+                        await productDetail.save();
+                        
+                    } else{
+                        return next(new ApiError(500, i18n.__('edit.productCount')));
+                    }
+                }      
+            }
+             
             order.status = 'ACCEPTED';
             await order.save();
             sendNotifiAndPushNotifi({
@@ -562,13 +565,15 @@ export default {
                 return next(new ApiError(500, i18n.__('notAllow')));
             order.status = 'CANCELED';  
             order.cancelDateMillSec = Date.parse(new Date())
-            for (let item of order.items) {
-                let productDetail = await checkExistThenGet(item.product, Product);
-                let newQuantity = productDetail.quantity + item.count;
-                productDetail.quantity = newQuantity;
-                productDetail.sallCount = productDetail.sallCount - item.count
-                await productDetail.save();
-            }     
+            for (let list of order.suppliesList) {
+                for (let item of list.items) {
+                    let productDetail = await checkExistThenGet(item.product, Product);
+                    let newQuantity = productDetail.quantity + item.count;
+                    productDetail.quantity = newQuantity;
+                    productDetail.sallCount = productDetail.sallCount - item.count
+                    await productDetail.save();
+                }     
+            }
             await order.save();
             sendNotifiAndPushNotifi({
                 targetUser: order.client, 
@@ -610,13 +615,15 @@ export default {
             order.status = 'REFUSED';
             order.accept = false
             if(req.body.reason) order.reason = req.body.reason
-            for (let item of order.items) {
-                let productDetail = await checkExistThenGet(item.product, Product);
-                let newQuantity = productDetail.quantity + item.count;
-                productDetail.quantity = newQuantity;
-                productDetail.sallCount = productDetail.sallCount - item.count
-                await productDetail.save();
-            }     
+            for (let list of order.suppliesList) {
+                for (let item of list.items) {
+                    let productDetail = await checkExistThenGet(item.product, Product);
+                    let newQuantity = productDetail.quantity + item.count;
+                    productDetail.quantity = newQuantity;
+                    productDetail.sallCount = productDetail.sallCount - item.count
+                    await productDetail.save();
+                }     
+            }    
             order.refusedDateMillSec = Date.parse(new Date())
             await order.save();
             sendNotifiAndPushNotifi({
@@ -637,7 +644,7 @@ export default {
             let reports = {
                 "action":"Refuse Order",
                 "type":"ORDERS",
-                "deepId":orderId,
+                "deepId":order.id,
                 "user": req.user._id
             };
             await Report.create({...reports});
