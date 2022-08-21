@@ -41,9 +41,53 @@ export default {
     //validate body
     validateBody(isUpdate = false) {
         let validations = [
-            body('fullname').trim().escape().not().isEmpty().withMessage((value, { req}) => {
-                return req.__('fullname.required', { value});
+            body('firstName').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('firstName.required', { value});
             }),
+            body('secondName').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('secondName.required', { value});
+            }),
+            body('thirdName').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('thirdName.required', { value});
+            }),
+            body('fourthName').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('fourthName.required', { value});
+            }),
+            body('country').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('country.required', { value});
+            }).isNumeric().withMessage((value, { req}) => {
+                return req.__('country.numeric', { value});
+            }).custom(async (value, { req }) => {
+                if (!await Country.findOne({_id:value,deleted:false}))
+                    throw new Error(req.__('country.invalid'));
+                else
+                    return true;
+            }),
+            body('city').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('city.required', { value});
+            }).isNumeric().withMessage((value, { req}) => {
+                return req.__('city.numeric', { value});
+            }).custom(async (value, { req }) => {
+                if (!await City.findOne({_id:value,deleted:false}))
+                    throw new Error(req.__('city.invalid'));
+                else
+                    return true;
+            }),
+            body('area').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('area.required', { value});
+            }).isNumeric().withMessage((value, { req}) => {
+                return req.__('area.numeric', { value});
+            }).custom(async (value, { req }) => {
+                if (!await Area.findOne({_id:value,deleted:false}))
+                    throw new Error(req.__('area.invalid'));
+                else
+                    return true;
+            }),
+            body('workStartDate').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('workStartDate.required', { value});
+            }).isISO8601().withMessage((value, { req}) => {
+                return req.__('date.invalid', { value});
+            })
             body('address').trim().escape().not().isEmpty().withMessage((value, { req}) => {
                 return req.__('address.required', { value});
             }),
@@ -151,18 +195,11 @@ export default {
                             return true;
                     }),
                     body('educationInstitutionName').optional(),
-                    body('year').not().isEmpty().withMessage((value) => {
-                        return req.__('year.required', { value});
-                    }),
-                    
-                    body('busFees').not().isEmpty().withMessage((value) => {
-                        return req.__('busFees.required', { value});
-                    }).isNumeric().withMessage((value) => {
+                    body('year').optional(),
+                    body('busFees').optional().isNumeric().withMessage((value) => {
                         return req.__('busFees.numeric', { value});
                     }),
-                    body('tuitionFees').not().isEmpty().withMessage((value) => {
-                        return req.__('tuitionFees.required', { value});
-                    }).isNumeric().withMessage((value) => {
+                    body('tuitionFees').optional().isNumeric().withMessage((value) => {
                         return req.__('tuitionFees.numeric', { value});
                     }),
                     body('feesLetter').optional()

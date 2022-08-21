@@ -15,9 +15,40 @@ const fundSchema = new Schema({
         ref: 'user',
         required: true
     },
-    fullname: {
+    firstName: {
         type: String,
+        default:"",
         required: true
+    },
+    secondName: {
+        type: String,
+        default:"",
+        required: true
+    },
+    thirdName: {
+        type: String,
+        default:"",
+        required: true
+    },
+    fourthName: {
+        type: String,
+        default:"",
+        required: true
+    },
+    country: {
+        type: Number,
+        ref: 'country',
+        //required: true,
+    },
+    city: {
+        type: Number,
+        ref: 'city',
+        //required: true,
+    },
+    area: {
+        type: Number,
+        ref: 'area',
+        //required: true,
     },
     address: {
         type: String,
@@ -35,6 +66,9 @@ const fundSchema = new Schema({
         type: String,
         enum:['EMPLOYEE','BUSINESS-OWNER'],
         required: true
+    },
+    workStartDate: {
+        type: Date,
     },
     personalId:{
         type: String,

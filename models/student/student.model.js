@@ -38,19 +38,19 @@ const studentSchema = new Schema({
     },
     year: {
         type: String,
-        required: true
+        //required: true
     },
     busFees:{
         type: Number,
-        required: true
+        //required: true
     },
     tuitionFees:{//مصاريف دراسيه
         type: Number,
-        required: true
+        //required: true
     },
     feesLetter: {//مستند مالى
         type: [String],
-        required: true
+        //required: true
     },
     deleted: {
         type: Boolean,

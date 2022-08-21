@@ -64,6 +64,9 @@ export async function transformSuppliesById(e,lang) {
     for (let val of e.existItems) {
         let value ={
             section:lang=="ar"?val.section_ar:val.section_en,
+            section_en:val.section_en,
+            section_ar:val.section_ar,
+            type:val.type,
             count:val.count,
         }
         /*items */

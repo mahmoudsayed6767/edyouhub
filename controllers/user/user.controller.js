@@ -192,16 +192,31 @@ export default {
                 return req.__('country.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('country.numeric', { value});
+            }).custom(async (value, { req }) => {
+                if (!await Country.findOne({_id:value,deleted:false}))
+                    throw new Error(req.__('country.invalid'));
+                else
+                    return true;
             }),
             body('city').trim().escape().not().isEmpty().withMessage((value, { req}) => {
                 return req.__('city.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('city.numeric', { value});
+            }).custom(async (value, { req }) => {
+                if (!await City.findOne({_id:value,deleted:false}))
+                    throw new Error(req.__('city.invalid'));
+                else
+                    return true;
             }),
             body('area').trim().escape().not().isEmpty().withMessage((value, { req}) => {
                 return req.__('area.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('area.numeric', { value});
+            }).custom(async (value, { req }) => {
+                if (!await Area.findOne({_id:value,deleted:false}))
+                    throw new Error(req.__('area.invalid'));
+                else
+                    return true;
             }),
             body('type').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('type.required', { value});
