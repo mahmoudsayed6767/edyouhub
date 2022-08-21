@@ -93,7 +93,7 @@ export default {
                 return req.__('workStartDate.required', { value});
             }).isISO8601().withMessage((value, { req}) => {
                 return req.__('date.invalid', { value});
-            })
+            }),
             body('address').trim().escape().not().isEmpty().withMessage((value, { req}) => {
                 return req.__('address.required', { value});
             }),
