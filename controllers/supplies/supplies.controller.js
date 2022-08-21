@@ -17,6 +17,7 @@ import { toImgUrl } from "../../utils";
 import Grade from "../../models/grade/grade.model"
 const populateQuery = [
     { path: 'educationInstitution', model: 'educationInstitution' },
+    { path:'educationSystem', model: 'educationSystem'},
     { path: 'grade', model: 'grade' },
     {
         path: 'existItems', model: 'suppliesItems',

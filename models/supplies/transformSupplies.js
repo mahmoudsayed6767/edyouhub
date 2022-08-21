@@ -41,6 +41,13 @@ export async function transformSuppliesById(e,lang) {
             img: e.educationInstitution.img,
         }
     }
+    if(e.educationSystem){
+        index.educationSystem ={
+            name:lang=="ar"?e.educationSystem.name_ar:e.educationSystem.name_en,
+            id: e.educationSystem._id,
+            img: e.educationSystem.img,
+        }
+    }
     /*missingItems */
     let missingItems = []
     for (let val of e.missingItems) {
