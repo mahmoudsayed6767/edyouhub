@@ -237,5 +237,7 @@
 	"firstName.required": " first Name is required",
 	"thirdName.required": " third Name is required",
 	"fourthName.required": " fourth Name is required",
-	"workStartDate.required":"Work Start Date is required"
+	"workStartDate.required": "Work Start Date is required",
+	"feesType.required": "feesType.required",
+	"feesType.invalid": "feesType.invalid"
 }

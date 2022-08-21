@@ -26,6 +26,7 @@ const ContactSchema=new Schema({
     contactFor: {
         type: String,
         enum:['FEES-PAYMENT','FEES-INSTALLMENT','SUPPLIES'],
+        default:"FEES-PAYMENT",
         required: true
     },
     attachment: {//for supplies contact

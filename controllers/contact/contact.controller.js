@@ -6,6 +6,7 @@ import ApiResponse from "../../helpers/ApiResponse";
 import { checkValidations,convertLang } from "../shared/shared.controller";
 import { sendEmail } from "../../services/emailMessage.service";
 import i18n from "i18n";
+import { toImgUrl } from "../../utils";
 
 export default {
     validateContactCreateBody() {
@@ -36,9 +37,8 @@ export default {
                 return req.__('contactFor.invalid', { value});
             }),
             body('educationInstitutionName').trim().escape().optional(),
-            body('feesType').trim().escape().not().isEmpty().withMessage((value, { req}) => {
-                return req.__('feesType.required', { value});
-            }).isIn(['BUS','TUITION','BOTH']).withMessage((value, { req}) => {
+            body('feesType').trim().escape().optional()
+            .isIn(['BUS','TUITION','BOTH']).withMessage((value, { req}) => {
                 return req.__('feesType.invalid', { value});
             }),
             body('numberOfStudent').trim().escape().optional(),
