@@ -232,5 +232,10 @@
 	"color.numeric": "color is numeric",
 	"delivaryCost.required": "delivary Cost is required",
 	"educationInstitution.required": "Education Institution is required",
-	"attachment.required": "attachment.required"
+	"attachment.required": "attachment is required",
+	"secondName.required": "second Name is required",
+	"firstName.required": " first Name is required",
+	"thirdName.required": " third Name is required",
+	"fourthName.required": " fourth Name is required",
+	"workStartDate.required":"Work Start Date is required"
 }

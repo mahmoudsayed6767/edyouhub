@@ -228,7 +228,14 @@
 	"existItems.required":"المنتجات المتواجده الزاميه",
 	"color.required":"حقل اللون الزامي",
 	"color.numeric":"حقل اللون قيمه رقميه",
-	"delivaryCost.required": "تكلفه التوصيل مطلوبه",
-	"educationInstitution.required": "المؤسسه التعليميه مطلوبه"
+	"delivaryCost.required": "تكلفه التوصيل الزاميه",
+	"educationInstitution.required": "المؤسسه التعليميه الزاميه",
+	"attachment.required":"يرجى رفع المرفقات",
+	"firstName.required": "الاسم الاول الزامى",
+	"secondName.required": "الاسم الثانى الزامى",
+	"thirdName.required": "الاسم الثالث الزامى",
+	"fourthName.required": "الاسم الرابع الزامى",
+	"workStartDate.required":"تاريخ بدأ العمل الزامى"
+
 	
 }

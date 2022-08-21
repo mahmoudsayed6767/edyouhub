@@ -1,7 +1,11 @@
 
 export async function transformFund(e,lang) {
     let index = {
-        fullname:e.fullname,
+        firstName:e.firstName,
+        secondName:e.secondName,
+        thirdName:e.thirdName,
+        fourthName:e.fourthName,
+        workStartDate:e.workStartDate,
         address:e.address,
         phone:e.phone,
         job:e.job,
@@ -39,7 +43,11 @@ export async function transformFund(e,lang) {
 export async function transformFundById(e,lang) {
     let index = {
         reason:e.reason,
-        fullname:e.fullname,
+        firstName:e.firstName,
+        secondName:e.secondName,
+        thirdName:e.thirdName,
+        fourthName:e.fourthName,
+        workStartDate:e.workStartDate,
         address:e.address,
         phone:e.phone,
         job:e.job,
@@ -90,10 +98,10 @@ export async function transformFundById(e,lang) {
         let student = {
             studentName:val.studentName,
             type:val.type,
-            year:val.year,
-            busFees:val.busFees,
-            tuitionFees:val.tuitionFees,
-            feesLetter:val.feesLetter,
+            //year:val.year,
+            //busFees:val.busFees,
+            //tuitionFees:val.tuitionFees,
+            //feesLetter:val.feesLetter,
             educationInstitutionName:val.educationInstitutionName,
             id:val._id,                         
         }
