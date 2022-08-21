@@ -18,8 +18,14 @@ import { toImgUrl } from "../../utils";
 import { sendNotifiAndPushNotifi } from "../../services/notification-service";
 import Notif from "../../models/notif/notif.model";
 import User from "../../models/user/user.model";
+import Country from "../../models/country/country.model";
+import City from "../../models/city/city.model";
+import Area from "../../models/area/area.model";
 const populateQuery = [
     { path: 'owner', model: 'user'},
+    { path: 'country', model: 'country'},
+    { path: 'city', model: 'city'},
+    { path: 'area', model: 'area'},
     {
         path: 'students', model: 'student',
         populate: { path: 'sector', model: 'category' },

@@ -57,6 +57,25 @@ export async function transformFundById(e,lang) {
         status:e.status,
         id:e._id
     }
+    if(e.country){
+        index.country = {
+            name:lang=="ar"?e.country.name_ar:e.country.name_en,
+            img: e.country.img,
+            id: e.country._id,
+        }
+    }
+    if(e.city){
+        index.city = {
+            name:lang=="ar"?e.city.name_ar:e.city.name_en,
+            id: e.city._id,
+        }
+    }
+    if(e.area){
+        index.area = {
+            name:lang=="ar"?e.area.name_ar:e.area.name_en,
+            id: e.area._id,
+        }
+    }
     if(e.owner){
         index.owner = {
             phone:e.owner.phone,
