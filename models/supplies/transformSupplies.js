@@ -74,14 +74,40 @@ export async function transformSuppliesById(e,lang) {
         for (let item of val.items) {
             let value2 ={
                 count:item.count,
-                product:{
-                    name:lang=="ar"?item.product.name_ar:item.product.name_en,
-                    img:item.product.img,
-                    price:item.product.sizes[0].retailPrice,
-                    id: item.product._id,
-                },
-                
             }
+            let product = {
+                name:lang=="ar"?item.product.name_ar:item.product.name_en,
+                img:item.product.img,
+                price:item.product.sizes[0].retailPrice,
+                id: item.product._id,
+            }
+            /*colors */
+            let colors = []
+            for (let color of item.product.colors) {
+                console.log(color)
+                let theColor ={
+                    name:lang=="ar"?color.name_ar:color.name_en,
+                    id: color._id,
+                    img: color.img,
+                }
+                colors.push(theColor)
+            }
+            product.colors = colors
+            /*sizes */
+            let sizes = []
+            for (let size of item.product.sizes) {
+                let theSize ={
+                    index:size.index,
+                    name:lang=="ar"?size.name_ar:size.name_en,
+                    retailPrice:size.retailPrice,
+                    costPrice:size.costPrice,
+                    count:size.count,
+                }
+                sizes.push(theSize)
+            }
+            product.sizes = sizes
+            value2.product = product
+
             if(item.color){
                 value2.color = {
                     name:lang=="ar"?item.color.name_ar:item.color.name_en,
@@ -106,12 +132,38 @@ export async function transformSuppliesById(e,lang) {
                     count:alternative.count,
                 }
                 if(alternative.product){
-                    value.product = {
+                    let product = {
                         name:lang=="ar"?alternative.product.name_ar:alternative.product.name_en,
                         img: alternative.product.img,
                         price:item.product.sizes[0].retailPrice,
                         id: alternative.product._id,
                     }
+                    /*colors */
+                    let colors = []
+                    for (let color of alternative.product.colors) {
+                        console.log(color)
+                        let theColor ={
+                            name:lang=="ar"?color.name_ar:color.name_en,
+                            id: color._id,
+                            img: color.img,
+                        }
+                        colors.push(theColor)
+                    }
+                    product.colors = colors
+                    /*sizes */
+                    let sizes = []
+                    for (let size of alternative.product.sizes) {
+                        let theSize ={
+                            index:size.index,
+                            name:lang=="ar"?size.name_ar:size.name_en,
+                            retailPrice:size.retailPrice,
+                            costPrice:size.costPrice,
+                            count:size.count,
+                        }
+                        sizes.push(theSize)
+                    }
+                    product.sizes = sizes
+                    value.product = product
                 }
                 if(alternative.color){
                     value.color = {

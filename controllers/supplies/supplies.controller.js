@@ -19,9 +19,13 @@ const populateQuery = [
     { path: 'educationInstitution', model: 'educationInstitution' },
     { path:'educationSystem', model: 'educationSystem'},
     { path: 'grade', model: 'grade' },
+
     {
         path: 'existItems', model: 'suppliesItems',
-        populate: { path: 'items.product', model: 'product' },
+        populate: { 
+            path: 'items.product', model: 'product' ,
+            populate: { path: 'colors', model: 'color' }
+        },
     },
     {
         path: 'existItems', model: 'suppliesItems',
@@ -32,7 +36,12 @@ const populateQuery = [
         path: 'existItems', model: 'suppliesItems',
         populate: { 
             path: 'items.alternatives', model: 'alternative' ,
-            populate: { path: 'product', model: 'product' }
+            populate: { 
+                path: 'product', model: 'product' ,
+                populate: { 
+                    path: 'colors', model: 'color' 
+                }
+            }
         },
     },
     {
