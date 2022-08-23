@@ -43,10 +43,21 @@ export default {
                 "user": req.user._id
             };
             await Report.create({...reports });
-            return res.status(201).send({
-                success:true,
-                data:area,
-            });
+            await Area.findById(area.id).then( e => {
+                let area = {
+                    name:lang=="ar"?e.name_ar:e.name_en,
+                    name_ar:e.name_ar,
+                    name_en:e.name_en,
+                    delivaryCost:e.delivaryCost,
+                    id: e._id,
+                    createdAt: e.createdAt,
+                }
+                return res.status(201).send({
+                    success:true,
+                    data:area,
+                });
+                
+            })
         } catch (error) {
             next(error);
         }
@@ -116,9 +127,21 @@ export default {
                 "user": req.user._id
             };
             await Report.create({...reports });
-            return res.send({
-                success:true
-            });
+            await Area.findById(areaId).then( e => {
+                let area = {
+                    name:lang=="ar"?e.name_ar:e.name_en,
+                    name_ar:e.name_ar,
+                    name_en:e.name_en,
+                    delivaryCost:e.delivaryCost,
+                    id: e._id,
+                    createdAt: e.createdAt,
+                }
+                return res.send({
+                    success:true,
+                    data:area,
+                });
+                
+            })
         } catch (error) {
             next(error);
         }

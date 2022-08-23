@@ -46,10 +46,20 @@ export default {
                 "user": req.user._id
             };
             await Report.create({...reports });
-            res.status(201).send({
-                success:true,
-                data:city
-            });
+            await City.findById(city.id).then( e => {
+                let city ={
+                    name:lang=="ar"?e.name_ar:e.name_en,
+                    name_ar:e.name_ar,
+                    name_en:e.name_en,
+                    delivaryCost:e.delivaryCost,
+                    id: e._id,
+                    createdAt: e.createdAt,
+                }
+                res.status(201).send({
+                    success:true,
+                    data:city
+                });
+            })
         } catch (error) {
             next(error);
         }
@@ -113,9 +123,20 @@ export default {
                 "user": req.user._id
             };
             await Report.create({...reports});
-            res.send({
-                success:true
-            });
+            await City.findById(cityId).then( e => {
+                let city ={
+                    name:lang=="ar"?e.name_ar:e.name_en,
+                    name_ar:e.name_ar,
+                    name_en:e.name_en,
+                    delivaryCost:e.delivaryCost,
+                    id: e._id,
+                    createdAt: e.createdAt,
+                }
+                res.send({
+                    success:true,
+                    data:city
+                });
+            })
         } catch (error) {
             next(error);
         }

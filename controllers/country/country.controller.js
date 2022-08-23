@@ -75,9 +75,24 @@ export default {
                 "user": req.user._id
             };
             await Report.create({...reports });
-            return res.status(200).send({
-                success:true,data:country
-            });
+            await Country.findById(country.id).then( e => {
+                let country = {
+                    name:lang=="ar"?e.name_ar:e.name_en,
+                    name_en:e.name_en,
+                    name_ar:e.name_ar,
+                    countryCode:e.countryCode,
+                    isoCode:e.isoCode,
+                    numbersCount:e.numbersCount,
+                    hint:e.hint,
+                    img:e.img,
+                    id: e._id,
+                    createdAt: e.createdAt,
+                }
+                return res.status(201).send({
+                    success:true,
+                    data:country,
+                });
+            })
         } catch (error) {
             next(error);
         }
@@ -205,7 +220,24 @@ export default {
                 "user": req.user._id
             };
             await Report.create({...reports });
-            return res.status(200).send({success: true});
+            await Country.findById(countryId).then( e => {
+                let country = {
+                    name:lang=="ar"?e.name_ar:e.name_en,
+                    name_en:e.name_en,
+                    name_ar:e.name_ar,
+                    countryCode:e.countryCode,
+                    isoCode:e.isoCode,
+                    numbersCount:e.numbersCount,
+                    hint:e.hint,
+                    img:e.img,
+                    id: e._id,
+                    createdAt: e.createdAt,
+                }
+                return res.send({
+                    success:true,
+                    data:country,
+                });
+            })
         } catch (error) {
             next(error);
         }
@@ -232,7 +264,7 @@ export default {
                 }
                 return res.send({
                     success:true,
-                    country:country,
+                    data:country,
                 });
             })
         } catch (error) {
