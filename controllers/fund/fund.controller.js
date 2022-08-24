@@ -251,7 +251,16 @@ export default {
                     for (let imges of req.files['proofIncomeImgs']) {
                         imagesList.push(await toImgUrl(imges))
                     }
-                    proofIncomeImgs = imagesList;
+                    if(req.body.type){
+                        let obj = {
+                            "type": req.body.type,
+                            "img": imagesList
+                        };
+                        proofIncomeImgs = obj;
+                    }else{
+
+                        proofIncomeImgs = imagesList;
+                    }
                 }
                 if (req.files['feesLetter']) {
                     let imagesList = [];
