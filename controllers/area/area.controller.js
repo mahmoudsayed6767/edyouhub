@@ -36,6 +36,8 @@ export default {
             const validatedBody = checkValidations(req);
             
             validatedBody.city = cityId;
+            let theCity = await checkExistThenGet(validatedBody.city,City,{ deleted: false })
+            validatedBody.country = theCity.country
             let area = await Area.create({ ...validatedBody });
             let reports = {
                 "action":"Create New Area",
@@ -51,6 +53,7 @@ export default {
                     name_en:e.name_en,
                     delivaryCost:e.delivaryCost,
                     city:e.city,
+                    country:e.country,
                     id: e._id,
                     createdAt: e.createdAt,
                 }
@@ -96,6 +99,7 @@ export default {
                     name_en:e.name_en,
                     delivaryCost:e.delivaryCost,
                     city:e.city,
+                    country:e.country,
                     id: e._id,
                     createdAt: e.createdAt,
                 }
@@ -121,7 +125,8 @@ export default {
              if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
             const validatedBody = checkValidations(req);
-            
+            let theCity = await checkExistThenGet(validatedBody.city,City,{ deleted: false })
+            validatedBody.country = theCity.country
             await Area.findByIdAndUpdate(areaId, { ...validatedBody });
 
             let reports = {
@@ -138,6 +143,7 @@ export default {
                     name_en:e.name_en,
                     delivaryCost:e.delivaryCost,
                     city:e.city,
+                    country: e.country,
                     id: e._id,
                     createdAt: e.createdAt,
                 }
@@ -187,7 +193,7 @@ export default {
                             name_ar:e.name_ar,
                             name_en:e.name_en,
                             delivaryCost:e.delivaryCost,
-                            city:e.city,
+                            country:e.country,
                             city:e.city,
                             id: e._id,
                             createdAt: e.createdAt,
@@ -238,7 +244,7 @@ export default {
                             name:lang=="ar"?e.name_ar:e.name_en,
                             name_en:e.name_en,
                             delivaryCost:e.delivaryCost,
-                            city:e.city,
+                            country:e.country,
                             name_ar:e.name_ar,
                             city:e.city,
                             id: e._id,

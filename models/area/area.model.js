@@ -23,6 +23,12 @@ const areaSchema = new Schema({
         ref: 'city',
         required: true
     },
+    country: {
+        type: Number,
+        ref: 'country',
+        required: true,
+        default: 1
+    },
     delivaryCost:{
         type: Number,
         default:50,
