@@ -74,6 +74,8 @@ export default {
             console.log("ggg")
             for (let i = 0; i < data.length; i++) {
                 const item = data[i];
+                let theCity = await checkExistThenGet(item.city,City,{ deleted: false })
+                item.country = theCity.country
                 await Area.create({ ...item });
                 
             }
