@@ -50,6 +50,7 @@ export default {
                     name_ar:e.name_ar,
                     name_en:e.name_en,
                     delivaryCost:e.delivaryCost,
+                    city:e.city,
                     id: e._id,
                     createdAt: e.createdAt,
                 }
@@ -94,6 +95,7 @@ export default {
                     name_ar:e.name_ar,
                     name_en:e.name_en,
                     delivaryCost:e.delivaryCost,
+                    city:e.city,
                     id: e._id,
                     createdAt: e.createdAt,
                 }
@@ -135,6 +137,7 @@ export default {
                     name_ar:e.name_ar,
                     name_en:e.name_en,
                     delivaryCost:e.delivaryCost,
+                    city:e.city,
                     id: e._id,
                     createdAt: e.createdAt,
                 }
@@ -185,6 +188,7 @@ export default {
                             name_en:e.name_en,
                             delivaryCost:e.delivaryCost,
                             city:e.city,
+                            city:e.city,
                             id: e._id,
                             createdAt: e.createdAt,
                         });
@@ -234,6 +238,7 @@ export default {
                             name:lang=="ar"?e.name_ar:e.name_en,
                             name_en:e.name_en,
                             delivaryCost:e.delivaryCost,
+                            city:e.city,
                             name_ar:e.name_ar,
                             city:e.city,
                             id: e._id,
