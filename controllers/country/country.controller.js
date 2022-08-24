@@ -62,6 +62,7 @@ export default {
     async create(req, res, next) {
         try {
             convertLang(req)
+            let lang = i18n.getLocale(req)
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
 
@@ -200,6 +201,7 @@ export default {
     async update(req, res, next) {
         try {
             convertLang(req)
+            let lang = i18n.getLocale(req)
             let { countryId } = req.params;
 
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))

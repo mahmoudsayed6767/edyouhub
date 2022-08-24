@@ -35,6 +35,7 @@ export default {
     async create(req, res, next) {
         try {
             convertLang(req)
+            let lang = i18n.getLocale(req)
             const validatedBody = checkValidations(req);
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
@@ -110,6 +111,7 @@ export default {
     async update(req, res, next) {
         try {
             convertLang(req)
+            let lang = i18n.getLocale(req)
             let { cityId } = req.params;
             await checkExist(cityId,City, { deleted: false })
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))

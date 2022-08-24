@@ -28,6 +28,7 @@ export default {
     async create(req, res, next) {
         try {
             convertLang(req)
+            let lang = i18n.getLocale(req)
             let { cityId } = req.params;
             await checkExist(cityId, City);
              if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
@@ -111,6 +112,7 @@ export default {
     async update(req, res, next) {
         try {
             convertLang(req)
+            let lang = i18n.getLocale(req)
             let { areaId } = req.params;
             await checkExist(areaId,Area, { deleted: false })
             //check on user type
