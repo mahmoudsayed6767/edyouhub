@@ -1,6 +1,7 @@
 
 export async function transformSupplies(e,lang) {
     let index ={
+        type:e.type,
         name:lang=="ar"?e.name_ar:e.name_en,
         attachment: e.attachment,
         createdAt:e.createdAt,
@@ -23,6 +24,7 @@ export async function transformSupplies(e,lang) {
 }
 export async function transformSuppliesById(e,lang) {
     let index ={
+        type:e.type,
         name:lang=="ar"?e.name_ar:e.name_en,
         attachment: e.attachment,
         createdAt:e.createdAt,

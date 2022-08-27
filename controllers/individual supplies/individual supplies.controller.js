@@ -256,5 +256,30 @@ export default {
             next(err);
         }
     },
+    async confirm(req, res, next) {
+        try {
+            convertLang(req)
+            let {IndividualSuppliesId } = req.params;
+            let individualSupplies = await checkExistThenGet(IndividualSuppliesId, IndividualSupplies,{deleted: false });
+            
+            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
+                if(req.user._id != individualSupplies.user){
+                    return next(new ApiError(403, i18n.__('admin.auth')));
+                }
+            }individualSupplies.status = 'CONFIRMED'
+            await individualSupplies.save();
+            let reports = {
+                "action":"Confirm IndividualSupplies",
+                "type":"INDIVIDUAL-SUPPLIES",
+                "deepId":individualSupplies.id,
+                "user": req.user._id
+            };
+            await Report.create({...reports, user: req.user._id });
+            res.status(200).send({success: true});
+        }
+        catch (err) {
+            next(err);
+        }
+    },
    
 }

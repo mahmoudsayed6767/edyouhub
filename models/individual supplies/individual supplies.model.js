@@ -5,6 +5,15 @@ const individualSuppliesSchema=new Schema({
         type: Number,
         required: true
     },
+    status: {
+        type: String,
+        enum:['REQUESTED','WAITING-COMFIRMATION','CONFIRMED','DONE'],
+        default: 'REQUESTED'
+    },
+    supplies: {
+        type: Number,
+        ref:'supplies',
+    },
     user: {
         type: Number,
         ref:'user',

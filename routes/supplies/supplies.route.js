@@ -18,6 +18,13 @@ router.route('/')
         suppliesController.validateBody(),
         suppliesController.create
     ).get(requireAuth,suppliesController.findAll);
+
+router.route('/:individualSuppliesId/createIndividualSupplies')
+    .post(  
+        requireAuth,
+        suppliesController.validateBody(),
+        suppliesController.createIndividual
+    )
 router.route('/withoutPagenation/get')
     .get(requireAuth,suppliesController.getAll);
 router.route('/suppliesMobile')

@@ -375,9 +375,9 @@ export default {
                     console.log("size",selectedSize)
                     //total += selectedSize.retailPrice * item.count;
                     suppliesTotal += selectedSize.retailPrice * item.count;
-                    let productIndex =  supplies.items.findIndex( v => v.product == item.product)
-                    console.log("index",productIndex)
-                    supplies.items[productIndex].unitCost = selectedSize.retailPrice;
+                    //let productIndex =  supplies.items.findIndex( v => v.product == item.product)
+                    //console.log("index",productIndex)
+                    //supplies.items[productIndex].unitCost = selectedSize.retailPrice;
                 }    
                 //if coupon exist
                 if(supplies.promoCode){

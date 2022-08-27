@@ -9,6 +9,7 @@ import Report from "../../models/reports/report.model";
 import ApiError from '../../helpers/ApiError';
 import Cart from "../../models/cart/cart.model";
 import i18n from "i18n";
+import IndividualSupplies from "../../models/individual supplies/individual supplies.model";
 import { transformSupplies,transformSuppliesById } from "../../models/supplies/transformSupplies";
 import EducationInstitution from "../../models/education institution/education institution.model";
 import Product from "../../models/product/product.model";
@@ -60,8 +61,8 @@ export default {
             convertLang(req)
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20,
-            {educationInstitution,subCategory,category,grade,search} = req.query;
-            let query = {deleted: false };
+            {educationInstitution,subCategory,category,grade,search,type} = req.query;
+            let query = {deleted: false ,type:'NORMAL'};
             
             if(search) {
                 query = {
@@ -72,10 +73,12 @@ export default {
                           
                           ] 
                         },
+                        {type:'NORMAL'},
                         {deleted: false},
                     ]
                 };
             }
+            if (type) query.type = type
             if (grade) query.grade = grade
             if (category) query.category = category
             if (subCategory) query.subCategory = subCategory
@@ -87,12 +90,16 @@ export default {
                 .skip((page - 1) * limit).then(async (data) => {
                     var newdata = [];
                     await Promise.all(data.map(async(e) =>{
+                        let theSupplies =  await checkExistThenGet(e._id,Supplies)
+                        if(theSupplies.type != 'INDIVIDUAL')
+                            theSupplies.type = 'NORMAL'
+                        await theSupplies.save()
                         let index = await transformSupplies(e,lang)
                         newdata.push(index);
                     }))
-                    const SUPPLIESCount = await Supplies.countDocuments(query);
-                    const pageCount = Math.ceil(SUPPLIESCount / limit);
-                    res.send(new ApiResponse(newdata, page, pageCount, limit, SUPPLIESCount, req));
+                    const count = await Supplies.countDocuments(query);
+                    const pageCount = Math.ceil(count / limit);
+                    res.send(new ApiResponse(newdata, page, pageCount, limit, count, req));
                 })
 
             
@@ -105,8 +112,8 @@ export default {
         try {
             convertLang(req)
             let lang = i18n.getLocale(req)
-            let {educationInstitution,subCategory,category,grade,search} = req.query;
-            let query = {deleted: false };
+            let {educationInstitution,subCategory,category,grade,search,type} = req.query;
+            let query = {deleted: false ,type:'NORMAL'};
             
             if(search) {
                 query = {
@@ -117,10 +124,12 @@ export default {
                           
                           ] 
                         },
+                        {type: 'NORMAL'},
                         {deleted: false},
                     ]
                 };
             }
+            if (type) query.type = type
             if (grade) query.grade = grade
             if (category) query.category = category
             if (subCategory) query.subCategory = subCategory
@@ -146,9 +155,9 @@ export default {
         try {
             convertLang(req)
             let lang = i18n.getLocale(req)
-            let {educationInstitution,grade} = req.query;
-            let query = {deleted: false };
-
+            let {educationInstitution,grade,type} = req.query;
+            let query = {deleted: false,type:'NORMAL' };
+            if (type) query.type = type;
             if (grade) query.grade = grade
             if (educationInstitution) query.educationInstitution = educationInstitution
             let sortd = {createdAt: -1}
@@ -365,6 +374,66 @@ export default {
             
             let reports = {
                 "action":"Create supplies",
+                "type":"SUPPLIES",
+                "deepId":createdsupplies.id,
+                "user": req.user._id
+            };
+            await Report.create({...reports}); 
+            await Supplies.findById(createdsupplies.id).populate(populateQuery).then(async (e) => {
+                let index = await transformSupplies(e,lang)
+                res.status(201).send({success: true,data:index});
+            })
+            
+        } catch (err) {
+            next(err);
+        }
+    },
+    async createIndividual(req, res, next) {
+        try {
+            convertLang(req)
+            let lang = i18n.getLocale(req)
+            let {individualSuppliesId} = req.params
+            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
+                return next(new ApiError(403, i18n.__('admin.auth'))); 
+            const validatedBody = checkValidations(req);
+            if(validatedBody.existItems){
+                let existItems = []
+                await Promise.all(validatedBody.existItems.map(async(val) => {
+                    //
+                    await Promise.all(val.items.map(async(item) => {
+                        console.log("theItem",item)
+                        let alternatives = []
+                        await Promise.all(item.alternatives.map(async(v) => {
+                            let createdAlternative = await Alternative.create({...v})
+                            alternatives.push(createdAlternative.id)
+                        }));  
+                        item.alternatives = alternatives
+                    }))
+                    console.log("items22",val.items)
+                    
+                    //
+                    let createdSuppliesItem = await SuppliesItems.create({...val})
+                    existItems.push(createdSuppliesItem.id)
+                }));  
+                
+                validatedBody.existItems = existItems
+            }
+
+            console.log("data",validatedBody.existItems)
+            let educationInstitution = await checkExistThenGet(validatedBody.educationInstitution, EducationInstitution)
+            validatedBody.educationSystem = educationInstitution.educationSystem
+            validatedBody.type = 'INDIVIDUAL'
+            
+            let createdsupplies = await Supplies.create({
+                ...validatedBody,
+            });
+            let individualSupplies = await checkExistThenGet(individualSuppliesId,IndividualSupplies)
+            individualSupplies.status = 'WAITING-COMFIRMATION'
+            individualSupplies.supplies = createdsupplies.id
+            await individualSupplies.save();
+            
+            let reports = {
+                "action":"Create Individual Supplies",
                 "type":"SUPPLIES",
                 "deepId":createdsupplies.id,
                 "user": req.user._id

@@ -107,10 +107,11 @@ export async function transformOrderById(e,lang){
             /*items */
             let items = []
             for (let val of v.items) {
+                console.log("lang",val.product.name_en)
                 let value ={
                     unitCost:val.unitCost,
                     product:{ 
-                        name:lang="ar"?val.product.name_ar:val.product.name_en,
+                        name:lang=="ar"?val.product.name_ar:val.product.name_en,
                         img:val.product.img[0],
                         id: val.product._id,
                     },

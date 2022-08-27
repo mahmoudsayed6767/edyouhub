@@ -7,6 +7,8 @@ export async function transformIndividualSupplies(e) {
         educationInstitution: e.educationInstitution,
         grade: e.grade,
         attachment: e.attachment,
+        status:e.status,
+        supplies: e.supplies,
         createdAt:e.createdAt,
         id: e._id,
     }

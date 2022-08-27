@@ -14,6 +14,11 @@ const suppliesSchema=new Schema({
         type: String,
         required:true
     },
+    type: {
+        type: String,
+        enum:['INDIVIDUAL','NORMAL'],
+        default: 'NORMAL'
+    },
     attachment:{
         type: String,
         default:"",

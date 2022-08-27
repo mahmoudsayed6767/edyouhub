@@ -19,9 +19,9 @@ config.SENDGRID_API_KEY = 'SG.i1-8T2IVQGWZtV5S-4y0-g.BBeuxb-JZ6kteDGfTnE4gnIKUUA
 
 config.confirmMessage = 'verify code: ';
 config.cloudinary = {
-  cloud_name: 'boody-car',
-  api_key: '874358384852174',
-  api_secret: 'Y4U-OtSiSwGW_IAuXW6WhNT-SNc'
+  cloud_name: 'eduhub2022',
+  api_key: '779686592997438',
+  api_secret: 'MkQUEuSwvhDoAR_kD-afOrnpgr4'
 };
 config.LIMIT =  20 ;
 config.PAGE = 1;

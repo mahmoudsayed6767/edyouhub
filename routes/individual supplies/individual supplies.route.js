@@ -28,4 +28,10 @@ router.route('/:IndividualSuppliesId')
     .get(requireAuth,IndividualSuppliesController.findById)
     .delete(requireAuth,IndividualSuppliesController.delete);
 
+router.route('/:IndividualSuppliesId/confirm')
+    .put(
+        requireAuth,
+        IndividualSuppliesController.confirm
+    )
+
 export default router;
