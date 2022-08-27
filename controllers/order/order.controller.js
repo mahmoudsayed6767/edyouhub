@@ -737,13 +737,18 @@ export default {
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth'))); 
             let { orderId } = req.params;
+            
             let order = await checkExistThenGet(orderId, Order);
             order.deleted = true;
             await order.save();
+            
             let reports = {
-                "action":"Delete Order",
+                "action":"delete order",
+                "type":"ORDERS",
+                "deepId":orderId,
+                "user": req.user._id
             };
-            await Report.create({...reports, user: req.user });
+            await Report.create({...reports });
             res.status(200).send({success: true});
         } catch (error) {
             next(error)
