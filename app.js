@@ -66,7 +66,7 @@ app.use(morganLogger('dev'));
 //   stream: fs.createWriteStream(path.join(__dirname, `./log/api ${new Date(Date.now()).toDateString()}.log`), { flags: 'a' })
 // }))
 app.use((req, res, next) => {
-  logger.info(`${req.originalUrl} - ${req.method} - ${req.ip} || `);
+  logger.info(`${req.originalUrl} - ${req.method} - ${req.header('x-forwarded-for') || req.connection.remoteAddress} || `);
   next();
 });
 app.use(express.json({ limit: '100mb' }));
@@ -103,10 +103,10 @@ app.use((req, res, next) => {
   next(new ApiError(404, req.__('notFound')));
 });
 
-
+app.set('trust proxy', true)
 //ERROR Handler
 app.use((err, req, res, next) => {
-  errorsLog.error(`${err.status} || ${res.statusMessage} - ${req.originalUrl} - ${req.method} - ${req.ip} || `,err.message);
+  errorsLog.error(`${err.status} || ${res.statusMessage} - ${req.originalUrl} - ${req.method} - ${req.header('x-forwarded-for') || req.connection.remoteAddress} || `,err.message);
   if (err instanceof mongoose.CastError)
       err = new ApiError.NotFound(err);
 

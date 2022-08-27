@@ -1,4 +1,4 @@
-import { checkExistThenGet, isLng, isLat, isArray, isNumeric,isInArray } from "../../helpers/CheckMethods";
+import { checkExistThenGet, isLng, isLat, isArray, isNumeric,isInArray,checkExist } from "../../helpers/CheckMethods";
 import ApiResponse from "../../helpers/ApiResponse";
 import Order from "../../models/order/order.model";
 import { sendNotifiAndPushNotifi } from "../../services/notification-service";
@@ -488,6 +488,7 @@ export default {
             convertLang(req)
             let lang = i18n.getLocale(req)
             let {orderId } = req.params;
+            await checkExist(orderId,Order)
             await Order.findById(orderId).populate(populateQuery)
                 .sort({ createdAt: -1 }).then(async (e) =>{
                     let index = await transformOrderById(e,lang)
