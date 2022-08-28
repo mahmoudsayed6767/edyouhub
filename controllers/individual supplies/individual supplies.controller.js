@@ -136,8 +136,6 @@ export default {
         try {
             convertLang(req)
             let lang = i18n.getLocale(req)
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth'))); 
             const validatedBody = checkValidations(req);
             validatedBody.user = req.user
             if (req.files) {
