@@ -36,11 +36,13 @@ const individualSuppliesSchema=new Schema({
         required:true
     },
     educationInstitution: {
-        type: String,
+        type: Number,
+        ref:'educationInstitution',
         required: true,
     },
     grade: {
-        type: String,
+        type: Number,
+        ref:'grade',
         required: true
     },
     deleted:{

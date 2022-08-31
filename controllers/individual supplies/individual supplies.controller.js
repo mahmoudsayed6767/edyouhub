@@ -10,7 +10,8 @@ import { transformIndividualSupplies } from "../../models/individual supplies/tr
 import { toImgUrl } from "../../utils";
 const populateQuery = [
     { path: 'user', model: 'user' },
-
+    { path: 'grade', model: 'grade' },
+    { path: 'educationInstitution', model: 'educationInstitution' },
 ];
 
 export default {
