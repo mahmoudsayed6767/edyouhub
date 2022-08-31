@@ -1,5 +1,5 @@
 
-export async function transformIndividualSupplies(e) {
+export async function transformIndividualSupplies(e,lang){
     let index ={
         fullname:e.fullname,
         email:e.email,
