@@ -97,10 +97,10 @@ export async function transformOrderById(e,lang){
                     id: v.supplies.educationSystem._id,
                 }
             }
-            if(e.supplies.educationInstitution){
+            if(v.supplies.educationInstitution){
                 supplies.educationInstitution = {
-                    name:lang=="ar"?e.supplies.educationInstitution.name_ar:e.supplies.educationInstitution.name_en,
-                    id: e.supplies.educationInstitution._id,
+                    name:lang=="ar"?v.supplies.educationInstitution.name_ar:v.supplies.educationInstitution.name_en,
+                    id: v.supplies.educationInstitution._id,
                 }
             }
             if(v.supplies.grade){
