@@ -3,6 +3,7 @@ import ContactController from '../../controllers/contact/contact.controller';
 import { requireAuth } from '../../services/passport';
 import { cache } from '../../services/caching'
 import { multerSaveTo } from '../../services/multer-service';
+import { parseStringToArrayOfObjectsMwv2 } from '../../utils';
 
 const router = express.Router();
 
@@ -12,6 +13,7 @@ router.route('/')
         multerSaveTo('attachment').fields([
             { name: 'attachment', maxCount: 6, options: false },
         ]),
+        parseStringToArrayOfObjectsMwv2('contactFor'),
         ContactController.validateContactCreateBody(),
         ContactController.createContactMessage
     )

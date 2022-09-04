@@ -4,7 +4,6 @@ import { checkExistThenGet,isInArray } from "../../helpers/CheckMethods";
 import ApiError from "../../helpers/ApiError";
 import ApiResponse from "../../helpers/ApiResponse";
 import { checkValidations,convertLang } from "../shared/shared.controller";
-import { sendEmail } from "../../services/emailMessage.service";
 import i18n from "i18n";
 import { toImgUrl } from "../../utils";
 import { sendEmail } from "../../services/sendGrid";
@@ -48,6 +47,7 @@ export default {
     async createContactMessage(req, res, next) {
         try {
             const validatedBody = checkValidations(req);
+            
             if (req.files) {
                 if (req.files['attachment']) {
                     let imagesList = [];
