@@ -8,6 +8,7 @@ export async function transformTransaction(e,lang) {
         cost:e.cost,
         tax:e.tax,
         totalCost:e.totalCost,
+        paymentMethod:e.paymentMethod,
         billUrl:e.billUrl,
         id: e._id,
     }
@@ -60,6 +61,17 @@ export async function transformTransaction(e,lang) {
             id:e.offer._id,
             type:e.offer.type,
             coins:e.offer.coins,
+        }
+    }
+    if(e.order){
+        index.order ={
+            total:e.order.total,
+            finalTotal:e.order.finalTotal,
+            delivaryCost:e.order.delivaryCost,
+            totalDiscount:e.order.totalDiscount,
+            status:e.order.status,
+            paymentSystem:e.order.paymentSystem,
+            id: e.order._id,
         }
     }
     return index

@@ -9,6 +9,7 @@ import User from "../../models/user/user.model";
 import Fund from "../../models/fund/fund.model";
 import Package from "../../models/package/package.model";
 import Fees from "../../models/fees/fees.model";
+import Order from "../../models/order/order.model"
 import i18n from "i18n";
 import Setting from "../../models/setting/setting.model";
 import {encryptedData,decryptedData} from "../shared/shared.controller"
@@ -23,6 +24,7 @@ import Premium from "../../models/premium/premium.model";
 
 const populateQuery2 = [
     {path: 'package', model: 'package'},
+    {path: 'order', model: 'order'},
     {path: 'fund', model: 'fund'},
     {path: 'premium', model: 'premium'},
     {path: 'offer', model: 'offer'},
@@ -172,9 +174,6 @@ export default {
                 return next(new ApiError(400, i18n.__('transaction exist')))
 
             const validatedBody = data
-            console.log("paymentObject",JSON.stringify(data))
-            let userId = data.client
-            let user = await checkExistThenGet(userId, User, { deleted: false })
             let transactionData={
                 "cost":validatedBody.cost,
                 "tax":validatedBody.tax,
@@ -185,64 +184,23 @@ export default {
                 "paymentObject":JSON.stringify(data)
             }
             if(validatedBody.type =="PACKAGE"){
-                let packages = await checkExistThenGet(validatedBody.package, Package, { deleted: false });
-                user.balance  = user.balance + packages.coins
-                await user.save();
                 transactionData.package = validatedBody.package
             }
             if(validatedBody.type =="OFFER"){
                 transactionData.offer = validatedBody.offer
-                let offer = await checkExistThenGet(validatedBody.offer, Offer, { deleted: false });
-                if(user.balance < offer.coins)
-                    return next(new ApiError(500, i18n.__('balance.notEnough')));
-                let arr = offer.bookedUsers;
-                var found = arr.find(e => e == userId)
-                if(!found){
-                    offer.bookedUsers.push(userId);
-                    offer.bookedUsersCount = offer.bookedUsersCount + 1
-                    await offer.save();
-                    let offerCode = generateCode(8)
-                    //get coins from user balance 
-                    user.balance = user.balance - offer.coins
-                    await user.save();
-                    await Bill.create({
-                        client:userId,
-                        offer:validatedBody.offer,
-                        place:offer.place,
-                        offerCode:offerCode
-                    })
-                    let reports = {
-                        "action":"User Book Offer",
-                        "type":"OFFERS",
-                        "deepId":validatedBody.offer,
-                        "user": userId
-                    };
-                    await Report.create({...reports});
-                }
             }
             if(validatedBody.type =="PREMIUM"){
                 transactionData.premiums = validatedBody.premiums
-                await payPremium(validatedBody.premiums,userId)
             }
             if(validatedBody.type =="FUND-FIRSTPAID"){
                 transactionData.fund = validatedBody.fund
-               await payFirstPaid(validatedBody.fund,userId)
             }
-            
+            if(validatedBody.type =="ORDER"){
+                transactionData.order = validatedBody.order
+            }
             let createdTransaction = await Transaction.create({... transactionData})
-            console.log("transactionData",transactionData)
-            let transactionId = createdTransaction.id;
-            let encryptedId = await encryptedData(transactionId.toString(),config.Securitykey)
-            //console.log(req.originalUrl)
-            let url = req.protocol + '://edhub.heroku.com/tax-invoice/'+encryptedId;
-            let text = 'رابط الفاتوره الضريبيه الخاصه بك هو : '
-            //sendEmail(user.email,url, text)
-            let theTransaction = await checkExistThenGet(createdTransaction._id,Transaction)
-            theTransaction.billUrl = url;
-            await theTransaction.save();
-            console.log("url",url)
             let reports = {
-                "action":"Payment Process",
+                "action":"Payment Process 1",
                 "type":"PAYMENT",
                 "deepId":createdTransaction._id,
                 "user": validatedBody.client
@@ -346,6 +304,92 @@ export default {
             
         } catch (err) {
             next(err);
+        }
+    },
+    async fawryCallBack(req, res, next) {
+        try{
+            let data = req.body
+            console.log("data",data)
+            let theTransaction = await Transaction.findOne({transactionId:data.merchantRefNumber})
+
+            if(!theTransaction)
+                return next(new ApiError(400, i18n.__('transaction not exist')))
+
+            if(data.orderStatus == "PAID"){
+                console.log("paymentObject",JSON.stringify(data))
+                theTransaction.paymentMethod = data.paymentMethod
+                theTransaction.paymentObject = JSON.stringify(data)
+                let userId = theTransaction.user
+                let user = await checkExistThenGet(userId, User, { deleted: false })
+                if(theTransaction.type =="PACKAGE"){
+                    let packages = await checkExistThenGet(theTransaction.package, Package, { deleted: false });
+                    user.balance  = user.balance + packages.coins
+                    await user.save();
+                }
+                if(theTransaction.type =="OFFER"){
+                    let offer = await checkExistThenGet(theTransaction.offer, Offer, { deleted: false });
+                    if(user.balance < offer.coins)
+                        return next(new ApiError(500, i18n.__('balance.notEnough')));
+                    let arr = offer.bookedUsers;
+                    var found = arr.find(e => e == userId)
+                    if(!found){
+                        offer.bookedUsers.push(userId);
+                        offer.bookedUsersCount = offer.bookedUsersCount + 1
+                        await offer.save();
+                        let offerCode = generateCode(8)
+                        //get coins from user balance 
+                        user.balance = user.balance - offer.coins
+                        await user.save();
+                        await Bill.create({
+                            client:userId,
+                            offer:theTransaction.offer,
+                            place:offer.place,
+                            offerCode:offerCode
+                        })
+                        let reports = {
+                            "action":"User Book Offer",
+                            "type":"OFFERS",
+                            "deepId":theTransaction.offer,
+                            "user": userId
+                        };
+                        await Report.create({...reports});
+                    }
+                }
+                if(theTransaction.type =="PREMIUM"){
+                    await payPremium(theTransaction.premiums,userId)
+                }
+                if(theTransaction.type =="FUND-FIRSTPAID"){
+                    await payFirstPaid(theTransaction.fund,userId)
+                }
+                if(theTransaction.type =="ORDER"){
+                    let order = await checkExistThenGet(theTransaction.order, Order, { deleted: false });
+                    order.status  = 'ACCEPTED'
+                    await order.save();
+                }
+                
+                let transactionId = theTransaction.id;
+                let encryptedId = await encryptedData(transactionId.toString(),config.Securitykey)
+                //console.log(req.originalUrl)
+                let url = req.protocol + '://edyouhub.com/tax-invoice/'+encryptedId;
+                let text = 'رابط الفاتوره الضريبيه الخاصه بك هو : '
+                //sendEmail(user.email,url, text)
+                theTransaction.billUrl = url;
+                await theTransaction.save();
+                console.log("url",url)
+                let reports = {
+                    "action":"Payment Process 2",
+                    "type":"PAYMENT",
+                    "deepId":theTransaction._id,
+                    "user": theTransaction.user
+                };
+                await Report.create({...reports });
+            }
+            
+            res.send({
+                success: true,
+            });
+        }catch(error){
+            next(error)
         }
     },
 };

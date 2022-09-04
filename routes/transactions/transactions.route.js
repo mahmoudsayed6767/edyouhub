@@ -4,8 +4,8 @@ import TransactionController from '../../controllers/transactions/transactions.c
 
 const router = express.Router();
 
-router.post('/payment',
-    TransactionController.payment);
+router.post('/payment',requireAuth,TransactionController.payment);
+router.post('/fawryCallBack',TransactionController.fawryCallBack);
 
 router.get('/',
     requireAuth,

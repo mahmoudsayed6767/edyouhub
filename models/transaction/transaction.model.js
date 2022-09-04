@@ -33,17 +33,21 @@ const transactionSchema = new Schema({
         type:Number,
         ref:'offer',
     },
+    order:{
+        type:Number,
+        ref:'order',
+    },
     type:{
         type:String,
         required:true,
-        enum:["PACKAGE","PREMIUM","FUND-FIRSTPAID","OFFER"]
+        enum:["PACKAGE","PREMIUM","FUND-FIRSTPAID","OFFER","ORDER"]
     },
 
     status:{
         type:String,
         required:true,
-        enum:["FAILED", "SUCCESS"],
-        default:"FAILED"
+        enum:["PENDING","FAILED", "SUCCESS"],
+        default:"PENDING"
     },
     dateMillSec:{
         type:Number,
@@ -66,6 +70,9 @@ const transactionSchema = new Schema({
         default:0
     },
     paymentObject:{
+        type:String,
+    },
+    paymentMethod:{
         type:String,
     },
     billUrl:{

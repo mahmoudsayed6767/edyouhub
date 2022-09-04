@@ -426,6 +426,7 @@ export default {
             validatedBody.finalTotal = total + validatedBody.delivaryCost;
             validatedBody.paymentSystem = validatedBody.paymentSystem;
             validatedBody.client = userId;
+            if(validatedBody.paymentSystem =="cash") validatedBody.status = "ACCEPTED"
             //create order
             let createdOrder = await Order.create({ ...validatedBody});
             //remove cart
