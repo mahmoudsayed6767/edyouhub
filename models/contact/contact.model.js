@@ -24,9 +24,9 @@ const ContactSchema=new Schema({
         type: String,
     },
     contactFor: {
-        type: String,
-        enum:['FEES-PAYMENT','FEES-INSTALLMENT','SUPPLIES'],
-        default:"FEES-PAYMENT",
+        type: [String],
+        enum:['FEES-PAYMENT','FEES-INSTALLMENT','SUPPLIES','NORMAL'],
+        default:"NORMAL",
         required: true
     },
     attachment: {//for supplies contact
@@ -34,7 +34,7 @@ const ContactSchema=new Schema({
     },
     feesType: {
         type: String,
-        enum:['BUS','TUITION','BOTH']
+        enum:['SCHOOL','UNIVERSITY']
     },
     numberOfStudent: {
         type: Number,

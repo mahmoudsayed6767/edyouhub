@@ -7,6 +7,7 @@ import { checkValidations,convertLang } from "../shared/shared.controller";
 import { sendEmail } from "../../services/emailMessage.service";
 import i18n from "i18n";
 import { toImgUrl } from "../../utils";
+import { sendEmail } from "../../services/sendGrid";
 
 export default {
     validateContactCreateBody() {
@@ -31,18 +32,17 @@ export default {
                 return true;
                 
             }),
-            body('contactFor').trim().escape().not().isEmpty().withMessage((value, { req}) => {
-                return req.__('contactFor.required', { value});
-            }).isIn(['FEES-PAYMENT','FEES-INSTALLMENT','SUPPLIES']).withMessage((value, { req}) => {
+            body('contactFor').optional().isIn(['FEES-PAYMENT','FEES-INSTALLMENT','SUPPLIES','NORMAL']).withMessage((value, { req}) => {
                 return req.__('contactFor.invalid', { value});
             }),
             body('educationInstitutionName').trim().escape().optional(),
             body('feesType').trim().escape().optional()
-            .isIn(['BUS','TUITION','BOTH']).withMessage((value, { req}) => {
+            .isIn(['SCHOOL','UNIVERSITY']).withMessage((value, { req}) => {
                 return req.__('feesType.invalid', { value});
             }),
             body('numberOfStudent').trim().escape().optional(),
             body('totalFees').trim().escape().optional(),
+            body('message').trim().escape().optional(),
         ]
     },
     async createContactMessage(req, res, next) {
@@ -57,7 +57,10 @@ export default {
                     validatedBody.attachment = imagesList;
                 }
             }
-            await Contact.create({ ...validatedBody });
+            let data = await Contact.create({ ...validatedBody });
+            if(data.contactFor == "NORMAL"){
+                sendEmail('info@edyouhub.com','New Message',validatedBody.message)
+            }
             res.status(200).send({success:true});
         } catch (error) {
             next(error);

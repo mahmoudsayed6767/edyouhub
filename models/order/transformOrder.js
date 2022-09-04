@@ -97,6 +97,12 @@ export async function transformOrderById(e,lang){
                     id: v.supplies.educationSystem._id,
                 }
             }
+            if(e.supplies.educationInstitution){
+                supplies.educationInstitution = {
+                    name:lang=="ar"?e.supplies.educationInstitution.name_ar:e.supplies.educationInstitution.name_en,
+                    id: e.supplies.educationInstitution._id,
+                }
+            }
             if(v.supplies.grade){
                 supplies.grade = {
                     name:lang=="ar"?v.supplies.grade.name_ar:v.supplies.grade.name_en,
