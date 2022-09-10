@@ -56,7 +56,7 @@ export async function transformCart(e,lang) {
             let selectedSize = val.product.sizes[val.size]?val.product.sizes[val.size]:val.product.sizes[0]
             item.size = {
                 name:lang=="ar"?selectedSize.name_ar:selectedSize.name_en,
-                retailPrice:parseFloat(selectedSize.retailPrice).toFixed(2),
+                retailPrice:Number(selectedSize.retailPrice.toFixed(2)),
                 costPrice:selectedSize.costPrice,
                 count:selectedSize.count,
                 index:selectedSize.index
@@ -89,7 +89,7 @@ export async function transformCart(e,lang) {
                 let theSize ={
                     index:size.index,
                     name:lang=="ar"?size.name_ar:size.name_en,
-                    retailPrice:parseFloat(size.retailPrice).toFixed(2),
+                    retailPrice:Number(size.retailPrice.toFixed(2)),
                     costPrice:size.costPrice,
                     count:size.count,
                 }

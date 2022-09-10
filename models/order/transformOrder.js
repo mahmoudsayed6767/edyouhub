@@ -129,7 +129,7 @@ export async function transformOrderById(e,lang){
                     let selectedSize = val.product.sizes[val.size]?val.product.sizes[val.size]:val.product.sizes[0]
                     value.size = {
                         name:lang=="ar"?selectedSize.name_ar:selectedSize.name_en,
-                        retailPrice:parseFloat(selectedSize.retailPrice).toFixed(2),
+                        retailPrice:Number(selectedSize.retailPrice.toFixed(2)),
                         index:selectedSize.index
                     }
                 }
