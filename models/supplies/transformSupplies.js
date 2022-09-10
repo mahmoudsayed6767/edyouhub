@@ -80,7 +80,7 @@ export async function transformSuppliesById(e,lang) {
             let product = {
                 name:lang=="ar"?item.product.name_ar:item.product.name_en,
                 img:item.product.img,
-                price:item.product.sizes[0].retailPrice,
+                price:parseFloat(item.product.sizes[0].retailPrice).toFixed(2),
                 id: item.product._id,
             }
             /*colors */
@@ -101,7 +101,7 @@ export async function transformSuppliesById(e,lang) {
                 let theSize ={
                     index:size.index,
                     name:lang=="ar"?size.name_ar:size.name_en,
-                    retailPrice:size.retailPrice,
+                    retailPrice:parseFloat(size.retailPrice).toFixed(2),
                     costPrice:size.costPrice,
                     count:size.count,
                 }
@@ -123,7 +123,7 @@ export async function transformSuppliesById(e,lang) {
                 value2.size = {
                     index:selectedSize.index,
                     name:lang=="ar"?selectedSize.name_ar:selectedSize.name_en,
-                    retailPrice:selectedSize.retailPrice,
+                    retailPrice:parseFloat(selectedSize.retailPrice).toFixed(2),
                     costPrice:selectedSize.costPrice,
                 }
             }
@@ -137,7 +137,7 @@ export async function transformSuppliesById(e,lang) {
                     let product = {
                         name:lang=="ar"?alternative.product.name_ar:alternative.product.name_en,
                         img: alternative.product.img,
-                        price:item.product.sizes[0].retailPrice,
+                        price:parseFloat(item.product.sizes[0].retailPrice).toFixed(2),
                         id: alternative.product._id,
                     }
                     /*colors */
@@ -158,7 +158,7 @@ export async function transformSuppliesById(e,lang) {
                         let theSize ={
                             index:size.index,
                             name:lang=="ar"?size.name_ar:size.name_en,
-                            retailPrice:size.retailPrice,
+                            retailPrice:parseFloat(size.retailPrice).toFixed(2),
                             costPrice:size.costPrice,
                             count:size.count,
                         }
@@ -180,7 +180,7 @@ export async function transformSuppliesById(e,lang) {
                     value.size = {
                         index:selectedSize.index,
                         name:lang=="ar"?selectedSize.name_ar:selectedSize.name_en,
-                        retailPrice:selectedSize.retailPrice,
+                        retailPrice:parseFloat(selectedSize.retailPrice).toFixed(2),
                         costPrice:selectedSize.costPrice,
                     }
                 }
