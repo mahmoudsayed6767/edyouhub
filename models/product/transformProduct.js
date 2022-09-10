@@ -52,7 +52,7 @@ export async function transformProduct(e,lang) {
             name:lang=="ar"?val.name_ar:val.name_en,
             name_ar:val.name_ar,
             name_en:val.name_en,
-            retailPrice:val.retailPrice,
+            retailPrice:parseFloat(val.retailPrice).toFixed(2),
             costPrice:val.costPrice,
             count:val.count,
         }
@@ -120,7 +120,7 @@ export async function transformProductById(e,lang,myUser,userId){
             name:lang=="ar"?val.name_ar:val.name_en,
             name_ar:val.name_ar,
             name_en:val.name_en,
-            retailPrice:val.retailPrice,
+            retailPrice:parseFloat(val.retailPrice).toFixed(2),
             costPrice:val.costPrice,
             count:val.count,
         }
