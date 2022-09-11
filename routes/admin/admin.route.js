@@ -6,8 +6,8 @@ const router = express.Router();
 router.route('/lastUsers')
     .get(adminController.getLastUser);
 
-router.route('/lastBills')
-    .get(adminController.getLastBills);
+router.route('/lastOrders')
+    .get(adminController.getLastOrders);
 
 router.route('/lastOffers')
     .get(adminController.getLastOffers);
@@ -15,6 +15,4 @@ router.route('/lastOffers')
 router.route('/count')
     .get(adminController.count);
 
-router.route('/getGraph')
-    .get(adminController.graph);
 export default router;

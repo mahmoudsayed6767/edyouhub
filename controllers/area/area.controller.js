@@ -267,7 +267,7 @@ export default {
         try {
             convertLang(req)
             let { areaId } = req.params;
-             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
+            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                return next(new ApiError(403, i18n.__('admin.auth')));
             let area = await checkExistThenGet(areaId, Area);
             

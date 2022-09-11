@@ -62,7 +62,9 @@ export async function transformSuppliesById(e,lang) {
     index.missingItems = missingItems
     /*missingItems */
     let stationeries = []
+    let stationeriesTotal = 0;
     let health = []
+    let healthTotal = 0
     for (let val of e.existItems) {
         let value ={
             section:lang=="ar"?val.section_ar:val.section_en,
@@ -72,6 +74,7 @@ export async function transformSuppliesById(e,lang) {
             count:val.count,
         }
         /*items */
+        let sectionTotal = 0;
         let items = []
         for (let item of val.items) {
             let value2 ={
@@ -83,6 +86,7 @@ export async function transformSuppliesById(e,lang) {
                 price:Number(item.product.sizes[0].retailPrice.toFixed(2)),
                 id: item.product._id,
             }
+            sectionTotal = sectionTotal + Number(item.product.sizes[0].retailPrice.toFixed(2))
             /*colors */
             let colors = []
             for (let color of item.product.colors) {
@@ -192,10 +196,14 @@ export async function transformSuppliesById(e,lang) {
         value.items = items
         if(val.type=="HEALTH"){
             health.push(value)
+            stationeriesTotal = stationeriesTotal + sectionTotal
         }else{
             stationeries.push(value)
+            healthTotal = healthTotal + sectionTotal
         }
     }
+    index.healthTotal = healthTotal
+    index.stationeriesTotal = stationeriesTotal
     index.stationeries = stationeries
     index.health = health
     return index
