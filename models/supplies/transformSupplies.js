@@ -196,10 +196,10 @@ export async function transformSuppliesById(e,lang) {
         value.items = items
         if(val.type=="HEALTH"){
             health.push(value)
-            stationeriesTotal = stationeriesTotal + sectionTotal
+            healthTotal = healthTotal + sectionTotal
         }else{
             stationeries.push(value)
-            healthTotal = healthTotal + sectionTotal
+            stationeriesTotal = stationeriesTotal + sectionTotal
         }
     }
     index.healthTotal = healthTotal
