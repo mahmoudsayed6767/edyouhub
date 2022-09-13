@@ -89,7 +89,7 @@ export default {
                     var newdata = [];
                     await Promise.all(data.map(async(e) =>{
                         let index = await transformProduct(e,lang)
-                        
+                        newdata.push(index)
                     }))
                     const productsCount = await Product.countDocuments(query);
                     const pageCount = Math.ceil(productsCount / limit);
