@@ -42,10 +42,23 @@ const ContactSchema=new Schema({
     totalFees: {
         type: Number,
     },
-    reply:{
-        type:Boolean,
-        default:false
-    },
+    comments: [
+        new Schema({
+            user: {
+                type: Number,
+                ref:'user',
+                required: true,
+            },
+            comment: {
+                type: String,
+                required: true,
+            },
+            date: {
+                type: Number,
+                default: Date.now
+            },
+        }, { _id: false })
+    ],
     replyText:{
         type:String,
     },

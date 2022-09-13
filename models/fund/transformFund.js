@@ -9,6 +9,7 @@ export async function transformFund(e,lang) {
         address:e.address,
         phone:e.phone,
         job:e.job,
+        jobAddress:e.jobAddress,
         reason:e.reason,
         totalFees:e.totalFees,
         endDate:e.endDate,
@@ -51,6 +52,7 @@ export async function transformFundById(e,lang) {
         address:e.address,
         phone:e.phone,
         job:e.job,
+        jobAddress:e.jobAddress,
         workPosition:e.workPosition,
         firstPaid:e.firstPaid,
         personalId:e.personalId,
@@ -98,22 +100,18 @@ export async function transformFundById(e,lang) {
         let student = {
             studentName:val.studentName,
             type:val.type,
-            //year:val.year,
-            //busFees:val.busFees,
-            //tuitionFees:val.tuitionFees,
-            //feesLetter:val.feesLetter,
             educationInstitutionName:val.educationInstitutionName,
             id:val._id,                         
         }
         if(e.sector){
-            index.sector = {
+            student.sector = {
                 name:lang=="ar"?e.sector.name_ar:e.sector.name_en,
                 img: e.sector.img,
                 id: e.sector._id,
             }
         }
         if(e.subSector){
-            index.subSector = {
+            student.subSector = {
                 name:lang=="ar"?e.subSector.name_ar:e.subSector.name_en,
                 img: e.subSector.img,
                 id: e.subSector._id,

@@ -49,7 +49,11 @@ const OrderSchema = new Schema({
         enum: ['cash', 'online'],
         default:'cash'
     },
-    
+    gender: {
+        type: String,
+        enum: ['MALE','FEMALE','OTHER'],
+        default: 'MALE'
+    },
     accept:{
         type:Boolean,
         default:false

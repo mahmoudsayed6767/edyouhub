@@ -62,6 +62,9 @@ const fundSchema = new Schema({
         type: String,
         required: true
     },
+    jobAddress : {
+        type: String,
+    },
     workPosition: {
         type: String,
         enum:['EMPLOYEE','BUSINESS-OWNER'],

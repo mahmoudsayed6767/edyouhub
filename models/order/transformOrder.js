@@ -1,6 +1,7 @@
 
 export async function transformOrder(e,lang) {
     let index ={
+        gender:e.gender,
         total:e.total,
         finalTotal:e.finalTotal,
         delivaryCost:e.delivaryCost,
@@ -43,6 +44,7 @@ export async function transformOrder(e,lang) {
 }
 export async function transformOrderById(e,lang){
     let index ={
+        gender:e.gender,
         total:e.total,
         finalTotal:e.finalTotal,
         delivaryCost:e.delivaryCost,

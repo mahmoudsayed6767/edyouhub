@@ -269,6 +269,9 @@ export default {
     }, 
     validateCreatedOrders() {
         let validations = [
+            body('gender').optional().isIn(['MALE','FEMALE','OTHER']).withMessage((value, { req}) => {
+                return req.__('gender.invalid', { value});
+            }),
             body('destination').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('destination.required', { value});
             }),

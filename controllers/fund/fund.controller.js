@@ -104,6 +104,7 @@ export default {
             body('job').trim().escape().not().isEmpty().withMessage((value, { req}) => {
                 return req.__('job.required', { value});
             }),
+            body('jobAddress').trim().escape().optional(),
             body('workPosition').trim().escape().not().isEmpty().withMessage((value, { req}) => {
                 return req.__('workPosition.required', { value});
             }),
