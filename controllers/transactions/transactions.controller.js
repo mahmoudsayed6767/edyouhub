@@ -317,6 +317,7 @@ export default {
 
             if(data.orderStatus == "PAID"){
                 console.log("paymentObject",JSON.stringify(data))
+                theTransaction.status = "SUCCESS"
                 theTransaction.paymentMethod = data.paymentMethod
                 theTransaction.paymentObject = JSON.stringify(data)
                 let userId = theTransaction.user
