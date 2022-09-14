@@ -20,6 +20,22 @@ export async function transformSupplies(e,lang) {
             img: e.educationInstitution.img,
         }
     }
+    /*missingItems */
+    let stationeriesTotal = 0;
+    let healthTotal = 0
+    for (let val of e.existItems) {
+        let sectionTotal = 0;
+        for (let item of val.items) {
+            sectionTotal = sectionTotal + Number(item.product.sizes[0].retailPrice.toFixed(2))
+        }
+        if(val.type=="HEALTH"){
+            healthTotal = healthTotal + sectionTotal
+        }else{
+            stationeriesTotal = stationeriesTotal + sectionTotal
+        }
+    }
+    index.healthTotal = Number(healthTotal.toFixed(2))
+    index.stationeriesTotal = Number(stationeriesTotal.toFixed(2))
     return index
 }
 export async function transformSuppliesById(e,lang) {

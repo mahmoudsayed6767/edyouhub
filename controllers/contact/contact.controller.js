@@ -122,10 +122,24 @@ export default {
                 date:Date.parse(new Date())
             })
             contact.reply = true
+            contact.status = "CONTACTED"
             await contact.save();
             let description = 'Edu Hub Reply on your message';
             //sendEmail(contact.email, validatedBody.reply,description)
 
+            res.status(200).send({success:true});
+        } catch (err) {
+            next(err);
+        }
+    },
+    async checked(req, res, next) {
+        try {
+            let { contactId } = req.params;
+            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
+                return next(new ApiError(403, i18n.__('admin.auth')));
+            let contact = await checkExistThenGet(contactId, Contact);
+            contact.status = "CHECKED";
+            await contact.save();
             res.status(200).send({success:true});
         } catch (err) {
             next(err);

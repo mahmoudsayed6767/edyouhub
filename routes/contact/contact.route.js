@@ -20,7 +20,7 @@ router.route('/')
     .get(cache(10),requireAuth,ContactController.findAll);
 
 router.route('/:contactId')
-    .get(cache(10),requireAuth,ContactController.findById)
+    .get(requireAuth,ContactController.findById)
     .delete(requireAuth,ContactController.delete)
 
 router.route('/:contactId/reply')
@@ -28,6 +28,11 @@ router.route('/:contactId/reply')
         requireAuth,
         ContactController.validateContactReplyBody(),
         ContactController.reply
+    );
+router.route('/:contactId/checked')
+    .put(
+        requireAuth,
+        ContactController.checked
     );
 
 

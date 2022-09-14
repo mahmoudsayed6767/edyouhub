@@ -36,6 +36,11 @@ const ContactSchema=new Schema({
         type: String,
         enum:['SCHOOL','UNIVERSITY']
     },
+    status: {
+        type: String,
+        enum:['NEW','CHECKED','CONTACTED'],
+        default:'NEW'
+    },
     numberOfStudent: {
         type: Number,
     },
