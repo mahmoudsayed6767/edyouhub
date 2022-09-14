@@ -21,6 +21,11 @@ const CartSchema = new Schema({
         ref: 'supplies',
         required: true
     },
+    gender: {
+        type: String,
+        enum: ['MALE','FEMALE','OTHER'],
+        default: 'MALE'
+    },
     promoCode: {
         type: Number,
         ref: 'coupon'

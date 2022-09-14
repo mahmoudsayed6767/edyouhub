@@ -59,6 +59,9 @@ export default {
     },
     validateBody() {
         let validations = [
+            body('gender').optional().isIn(['MALE','FEMALE','OTHER']).withMessage((value, { req}) => {
+                return req.__('gender.invalid', { value});
+            }),
             body('total').not().isEmpty().withMessage((val, { req}) => {
                 return req.__('total.required', { val});
             })

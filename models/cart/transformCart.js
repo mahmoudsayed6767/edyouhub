@@ -2,6 +2,7 @@
 export async function transformCart(e,lang) {
     let index ={
         total:e.total,
+        gender:e.gender,
         hasPromoCode:e.hasPromoCode,
         id: e._id,
 

@@ -70,9 +70,10 @@ export default {
         try {
             convertLang(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
-            let {contactFor} = req.query
+            let {contactFor,status} = req.query
             let query = { deleted: false };
             if(contactFor) query.contactFor = contactFor
+            if(status) query.status = status
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
             let contacts = await Contact.find(query)
