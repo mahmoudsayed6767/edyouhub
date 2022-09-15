@@ -131,7 +131,7 @@ export default {
     async count(req,res, next) {
         try {
             let query = { deleted: false };
-            const usersCount = await User.countDocuments({deleted: false,type:'USER'});
+            const usersCount = await User.countDocuments({deleted: false,type:'USER',accountType:'ACTIVE'});
             const placesCount = await Place.countDocuments({deleted: false});
             const doneBills = await Bill.countDocuments({deleted: false,status:'DONE'});
             const pendingBills = await Bill.countDocuments({deleted: false,status:'PENDING'});

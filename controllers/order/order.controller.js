@@ -269,9 +269,6 @@ export default {
     }, 
     validateCreatedOrders() {
         let validations = [
-            body('gender').optional().isIn(['MALE','FEMALE','OTHER']).withMessage((value, { req}) => {
-                return req.__('gender.invalid', { value});
-            }),
             body('destination').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('destination.required', { value});
             }),
@@ -294,6 +291,19 @@ export default {
                 convertLang(req)
                 for (let supplies of suppliesList) {
                     body('promoCode').optional(),
+                    body('gender').optional().isIn(['MALE','FEMALE','OTHER']).withMessage((value, { req}) => {
+                        return req.__('gender.invalid', { value});
+                    }),
+                    body('stationeriesCost').not().isEmpty().withMessage((value, { req}) => {
+                        return req.__('stationeriesCost.required', { value});
+                    }).isNumeric().withMessage((value, { req}) => {
+                        return req.__('stationeriesCost.numeric', { value});
+                    })
+                    body('healthCost').not().isEmpty().withMessage((value, { req}) => {
+                        return req.__('healthCost.required', { value});
+                    }).isNumeric().withMessage((value, { req}) => {
+                        return req.__('healthCost.numeric', { value});
+                    })
                     body('supplies').not().isEmpty().withMessage((value, { req}) => {
                         return req.__('supplies.required', { value});
                     }).isNumeric().withMessage((value, { req}) => {
@@ -352,20 +362,7 @@ export default {
             //check if user is block
             if (theUser.block == true)
                 return next(new ApiError(500, i18n.__('user.block')));
-            // //check coupon validation
-            // if(validatedBody.promoCode){
-            //     let promoCode = await Coupon.findOne({deleted:false,end:false,couponNumber: { $regex: validatedBody.promoCode, '$options' : 'i'  }})
-            //     if(promoCode){
-            //         console.log("theUser",theUser.usedCoupons)
-            //         var found = theUser.usedCoupons.find((e) => e == promoCode._id)
-            //         if(found){
-            //             if(promoCode.singleTime === true)
-            //                 return next(new ApiError(500, i18n.__('used.promoCode'))); 
-            //         }
-            //     }else{
-            //         return next(new ApiError(500, i18n.__('wrong.promoCode'))); 
-            //     }
-            // }
+
             console.log("body",validatedBody)
             validatedestination(validatedBody.destination);
             validatedBody.destination = { type: 'Point', coordinates: [+req.body.destination[0], +req.body.destination[1]] };
@@ -380,11 +377,7 @@ export default {
                     let productDetail = await checkExistThenGet(item.product, Product);
                     let selectedSize = productDetail.sizes[item.size]?productDetail.sizes[item.size]:productDetail.sizes[0]
                     console.log("size",selectedSize)
-                    //total += selectedSize.retailPrice * item.count;
                     suppliesTotal += selectedSize.retailPrice * item.count;
-                    //let productIndex =  supplies.items.findIndex( v => v.product == item.product)
-                    //console.log("index",productIndex)
-                    //supplies.items[productIndex].unitCost = selectedSize.retailPrice;
                 }    
                 //if coupon exist
                 if(supplies.promoCode){

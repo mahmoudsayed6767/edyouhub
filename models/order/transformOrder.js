@@ -74,7 +74,10 @@ export async function transformOrderById(e,lang){
     let suppliesList = []
     for (let v of e.suppliesList) {
         let list = {
-            discount:v.discount
+            discount:v.discount,
+            stationeriesCost:v.stationeriesCost,
+            healthCost:v.healthCost,
+            gender:v.gender,
         }
         if(v.promoCode){
             list.promoCode={

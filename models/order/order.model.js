@@ -49,11 +49,7 @@ const OrderSchema = new Schema({
         enum: ['cash', 'online'],
         default:'cash'
     },
-    gender: {
-        type: String,
-        enum: ['MALE','FEMALE','OTHER'],
-        default: 'MALE'
-    },
+    
     accept:{
         type:Boolean,
         default:false
@@ -61,6 +57,11 @@ const OrderSchema = new Schema({
     
     suppliesList: [
         new Schema({
+            gender: {
+                type: String,
+                enum: ['MALE','FEMALE','OTHER'],
+                default: 'MALE'
+            },
             promoCode: {
                 type: Number,
                 ref:'coupon',
@@ -74,6 +75,16 @@ const OrderSchema = new Schema({
                 type: Number,
                 ref: 'supplies',
                 required: true
+            },
+            stationeriesCost:{
+                type: Number,
+                required: true,
+                default:0
+            },
+            healthCost:{
+                type: Number,
+                required: true,
+                default:0
             },
             items: [
                 new Schema({
