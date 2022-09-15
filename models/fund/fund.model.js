@@ -112,7 +112,7 @@ const fundSchema = new Schema({
                 enum:['WORK-ID','HR-LETTER','WORK-CONTRACT','BANK-ACCOUNT','COMMERCIAL-REGISTRATION','TAX-ID'],
             },
             img: {
-                type: String,
+                type: [String],
                 required: true,
             },
         }, { _id: false })
