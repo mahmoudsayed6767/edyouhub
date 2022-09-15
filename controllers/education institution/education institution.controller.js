@@ -9,6 +9,8 @@ import { checkExistThenGet } from "../../helpers/CheckMethods";
 import i18n from "i18n";
 import Category from "../../models/category/category.model"
 import EducationSystem from "../../models/education system/education system.model";
+import Order from "../../models/order/order.model";
+import Supplies from "../../models/supplies/supplies.model";
 import { transformEducationInstitution } from "../../models/education institution/transformEducationInstitution";
 const populateQuery = [
     { path: 'educationSystem', model: 'educationSystem' },
@@ -258,6 +260,36 @@ export default {
             });
         } catch (err) {
             next(err);
+        }
+    },
+    //get supplies total
+    async getSuppliesTotal(req, res, next) {
+        try {
+            convertLang(req)
+             //get lang
+            let lang = i18n.getLocale(req)
+            let { educationInstitutionId } = req.params;
+            await checkExist(educationInstitutionId, EducationInstitution, { deleted: false });
+            let newdata = []
+            let allSupplies = await Supplies.find({deleted: false,educationInstitution: educationInstitutionId}).select('_id name_ar name_en');
+            for (const list of allSupplies) {
+                let stationeriesCost = 0
+                let orders = await Order.find({deleted: false,'suppliesList.supplies':list._id})
+                for (const order of orders) {
+                    let theIndex = order.suppliesList.findIndex( v => v.supplies == list._id)
+                    stationeriesCost = stationeriesCost + order.suppliesList[theIndex].stationeriesCost
+                }
+                newdata.push({
+                    supplies:{
+                        name:lang=="ar"?list.name_ar:list.name_en,
+                        id:list._id
+                    },
+                    stationeriesCost:stationeriesCost
+                })
+            }
+            res.send({success: true,data:newdata})
+        } catch (error) {
+            next(error);
         }
     },
 

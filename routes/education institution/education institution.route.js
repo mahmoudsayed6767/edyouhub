@@ -19,7 +19,8 @@ router.route('/')
 
 router.route('/withoutPagenation/get')
     .get(EducationInstitutionController.getAll);
-
+router.route('/:educationInstitutionId/getSuppliesTotal')
+    .get(EducationInstitutionController.getSuppliesTotal);
 router.route('/:educationInstitutionId')
     .put(
         requireAuth,
