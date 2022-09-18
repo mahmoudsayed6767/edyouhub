@@ -294,14 +294,10 @@ export default {
                     body('gender').optional().isIn(['MALE','FEMALE','OTHER']).withMessage((value, { req}) => {
                         return req.__('gender.invalid', { value});
                     }),
-                    body('stationeriesCost').not().isEmpty().withMessage((value, { req}) => {
-                        return req.__('stationeriesCost.required', { value});
-                    }).isNumeric().withMessage((value, { req}) => {
+                    body('stationeriesCost').optional().isNumeric().withMessage((value, { req}) => {
                         return req.__('stationeriesCost.numeric', { value});
                     })
-                    body('healthCost').not().isEmpty().withMessage((value, { req}) => {
-                        return req.__('healthCost.required', { value});
-                    }).isNumeric().withMessage((value, { req}) => {
+                    body('healthCost').optional().isNumeric().withMessage((value, { req}) => {
                         return req.__('healthCost.numeric', { value});
                     })
                     body('supplies').not().isEmpty().withMessage((value, { req}) => {

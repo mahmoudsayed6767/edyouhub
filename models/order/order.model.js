@@ -78,12 +78,12 @@ const OrderSchema = new Schema({
             },
             stationeriesCost:{
                 type: Number,
-                required: true,
+                //required: true,
                 default:0
             },
             healthCost:{
                 type: Number,
-                required: true,
+                //required: true,
                 default:0
             },
             items: [
