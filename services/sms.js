@@ -2,16 +2,17 @@ const axios = require('axios')
 import config from '../config';
 
 export function sendSms(phone,msg) {
+  console.log(phone)
   axios.post('https://smsmisr.com/api/v2/?', {
-      Username : '',
-      password: '',
+      Username : 'qdLK74qA',
+      password: '7i9FJAK5dq',
       language : '2',
-      sender: ' ',
+      sender: 'Codin Agncy',
       Mobile :phone,
       message :msg
     })
     .then(res => {
-      console.log("done")
+      console.log("done : " + res)
     })
     .catch(error => {
       console.error(error)
