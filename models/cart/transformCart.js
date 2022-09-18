@@ -45,6 +45,7 @@ export async function transformCart(e,lang) {
     for (let val of e.items) {
         let item ={
             count: val.count,
+            type:val.type,
         }
         if(val.color){
             item.color={

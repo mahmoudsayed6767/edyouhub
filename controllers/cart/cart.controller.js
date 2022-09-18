@@ -78,6 +78,9 @@ export default {
             .custom(async (items, { req }) => {
                 convertLang(req)
                 for (let item of items) {
+                    body('type').optional().isIn(['STATIONERIES','HEALTH']).withMessage((value, { req}) => {
+                        return req.__('type.invalid', { value});
+                    }),
                     body('product').not().isEmpty().withMessage((val, { req}) => {
                         return req.__('product.required', { val});
                     })

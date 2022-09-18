@@ -41,6 +41,11 @@ const CartSchema = new Schema({
                 ref: 'product',
                 required: true
             },
+            type:{
+                type: String,
+                enum: ['STATIONERIES','HEALTH'],
+                default:'STATIONERIES',
+            },
             color: {
                 type: Number,
                 ref: 'color',
