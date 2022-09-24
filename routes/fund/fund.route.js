@@ -38,27 +38,48 @@ router.route('/:fundId/reviewing')
         requireAuth,
         fundController.reviewing
     )
-router.route('/:fundId/accept')
-    .put(
-        requireAuth,
-        fundController.validateTakeActionBody(),
-        fundController.accept
-    )
-router.route('/:fundId/payFirstPaid')
-    .put(
-        requireAuth,
-        fundController.payFirstPaid
-    )
+
 router.route('/:fundId/needAction')
     .put(
         requireAuth,
         fundController.validateTakeActionBody(),
         fundController.needAction
     )
+router.route('/:fundId/actionReply')
+    .put(
+        requireAuth,
+        multerSaveTo('fund').single('actionFile'),
+        fundController.validateActionReplyBody(),
+        fundController.actionReply
+    )
 router.route('/:fundId/reject')
     .put(
         requireAuth,
         fundController.validateTakeActionBody(),
         fundController.reject
+    )
+router.route('/:fundId/partialAcceptance')
+    .put(
+        requireAuth,
+        fundController.validatePartialAcceptBody(),
+        fundController.partialAcceptance
+    )
+router.route('/:fundId/accept')
+    .put(
+        requireAuth,
+        fundController.validateTakeActionBody(),
+        fundController.accept
+    )
+router.route('/:fundId/active')
+    .put(
+        requireAuth,
+        multerSaveTo('fund').single('educationFile'),
+        fundController.validateActiveBody(),
+        fundController.active
+    )
+router.route('/:fundId/payFirstPaid')
+    .put(
+        requireAuth,
+        fundController.payFirstPaid
     )
 export default router;

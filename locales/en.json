@@ -240,5 +240,6 @@
 	"workStartDate.required": "Work Start Date is required",
 	"feesType.required": "feesType.required",
 	"feesType.invalid": "feesType.invalid",
-	"contactFor.invalid": "contactFor.invalid"
+	"contactFor.invalid": "contactFor.invalid",
+	"educationFile.required": "educationFile.required"
 }

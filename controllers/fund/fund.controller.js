@@ -4,7 +4,7 @@ import Student from "../../models/student/student.model";
 import Premium from "../../models/premium/premium.model";
 import Report from "../../models/reports/report.model";
 import { body } from "express-validator/check";
-import { checkValidations,convertLang} from "../shared/shared.controller";
+import { checkValidations,convertLang,handleImg} from "../shared/shared.controller";
 import ApiError from "../../helpers/ApiError";
 import { checkExist,isInArray } from "../../helpers/CheckMethods";
 import ApiResponse from "../../helpers/ApiResponse";
@@ -462,7 +462,10 @@ export default {
             body('firstPaid').trim().escape().optional().isNumeric().withMessage((value) => {
                 return req.__('firstPaid.numeric', { value});
             }),
-            body('reason').trim().escape().optional()
+            body('reason').trim().escape().optional(),
+            body('actionType').optional().isIn(['WORK-ID','CLUB-ID','HR-LETTER','WORK-CONTRACT','BANK-ACCOUNT','BANK DEPOSIT','COMMERCIAL-REGISTRATION','TAX-ID']).withMessage((value, { req}) => {
+                return req.__('actionType.invalid', { value});
+            }),
         ]
     },
     async reviewing(req, res, next) {
@@ -513,13 +516,14 @@ export default {
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
             let fund = await checkExistThenGet(fundId, Fund);
-            if(fund.status != "PENDING")
+            if(isInArray(["PENDING","NEED-ACTION"],fund.status))
                 return next(new ApiError(500, i18n.__('fund.pending')));
             fund.status = 'ACCEPTED';
-            if(req.body.startDate) fund.startDate = req.body.startDate
+            const validatedBody = checkValidations(req);
+            if(validatedBody.startDate) fund.startDate = validatedBody.startDate
             let setting = await Setting.findOne({deleted: false})
-            if(req.body.firstPaid) {
-                fund.firstPaid = req.body.firstPaid
+            if(validatedBody.firstPaid) {
+                fund.firstPaid = validatedBody.firstPaid
             }else{
                 fund.firstPaid = (fund.totalFees * setting.expensesRatio) / 100
             }
@@ -543,6 +547,237 @@ export default {
             await Notif.create({...notif,resource:req.user,target:fund.owner,fund:fund.id});
             let reports = {
                 "action":"Accept Fund Request",
+                "type":"FUND",
+                "deepId":fundId,
+                "user": req.user._id
+            };
+            await Report.create({...reports});
+            res.send({
+                success:true
+            });
+        } catch (err) {
+            next(err);
+        }
+    },
+    async needAction(req, res, next) {
+        try {
+            convertLang(req)
+            let { fundId } = req.params;
+            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
+                return next(new ApiError(403, i18n.__('admin.auth')));
+            let fund = await checkExistThenGet(fundId, Fund);
+            if(fund.status != "PENDING")
+                return next(new ApiError(500, i18n.__('fund.pending')));
+
+            const validatedBody = checkValidations(req);
+            fund.status = 'NEED-ACTION';
+            fund.actionType  = validatedBody.actionType
+            await fund.save();
+            sendNotifiAndPushNotifi({
+                targetUser: fund.owner, 
+                fromUser: fund.owner, 
+                text: ' EdHub',
+                subject: fund.id,
+                subjectType: 'fund Status',
+                info:'FUND'
+            });
+            let notif = {
+                "description_en":'Your Fund Request Need Some Fix ',
+                "description_ar":'  طلب التمويل الخاص بك يحتاج بعض التعديلات',
+                "title_en":'Your Fund Request Need Some Fix ',
+                "title_ar":'  طلب التمويل الخاص بك يحتاج بعض التعديلات',
+                "type":'FUND'
+            }
+            await Notif.create({...notif,resource:req.user,target:fund.owner,fund:fund.id});
+            let reports = {
+                "action":"Fund Request need to fix",
+                "type":"FUND",
+                "deepId":fundId,
+                "user": req.user._id
+            };
+            await Report.create({...reports});
+            res.send({
+                success:true
+            });
+        } catch (err) {
+            next(err);
+        }
+    },
+    //partial accept 
+    validateActionReplyBody() {
+        return [
+            body('actionReply').trim().escape().not().isEmpty().withMessage((value) => {
+                return req.__('actionReply.required', { value});
+            }),
+        ]
+    },
+    async actionReply(req, res, next) {
+        
+        try {
+            convertLang(req)
+            let { fundId } = req.params;
+            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
+                return next(new ApiError(403, i18n.__('admin.auth')));
+            let fund = await checkExistThenGet(fundId, Fund);
+            if(fund.status != "NEED-ACTION")
+                return next(new ApiError(500, i18n.__('fund.pending')));
+            const validatedBody = checkValidations(req);
+            fund.actionReply = validatedBody.actionReply
+            if (req.file) {
+                let actionFile = await handleImg(req, { attributeName: 'actionFile', isUpdate: true });
+                fund.actionFile = actionFile;
+            }else{
+                if(validatedBody.actionReply == true){
+                    return next(new ApiError(422, i18n.__('actionFile.required')));
+                }
+            }
+            await fund.save();
+            
+            let reports = {
+                "action":"Fund Request has an action reply",
+                "type":"FUND",
+                "deepId":fundId,
+                "user": req.user._id
+            };
+            await Report.create({...reports});
+            res.send({
+                success:true
+            });
+        } catch (err) {
+            next(err);
+        }
+    },
+    //partial accept 
+    validatePartialAcceptBody() {
+        return [
+            body('totalFees').trim().escape().not().isEmpty().withMessage((value) => {
+                return req.__('totalFees.required', { value});
+            }),
+        ]
+    },
+    async partialAcceptance(req, res, next) {
+        
+        try {
+            convertLang(req)
+            let { fundId } = req.params;
+            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
+                return next(new ApiError(403, i18n.__('admin.auth')));
+            let fund = await checkExistThenGet(fundId, Fund);
+            // if(fund.status != "PENDING")
+            //     return next(new ApiError(500, i18n.__('fund.pending')));
+
+            const validatedBody = checkValidations(req);
+            fund.status = 'PARTIAL-ACCEPTANCE';
+            fund.oldTotalFees = fund.totalFees
+            fund.totalFees  = validatedBody.totalFees
+            await fund.save();
+            sendNotifiAndPushNotifi({
+                targetUser: fund.owner, 
+                fromUser: fund.owner, 
+                text: ' EdHub',
+                subject: fund.id,
+                subjectType: 'fund Status',
+                info:'FUND'
+            });
+            let notif = {
+                "description_en":'Your Fund Request has an partial acceptance',
+                "description_ar":'  طلب التمويل الخاص بك حاز على موافقه مبدأيه',
+                "title_en":'Your Fund Request has an partial acceptance',
+                "title_ar":' طلب التمويل الخاص بك حاز على موافقه مبدأيه',
+                "type":'FUND'
+            }
+            await Notif.create({...notif,resource:req.user,target:fund.owner,fund:fund.id});
+            let reports = {
+                "action":"Fund Request has an partial acceptance",
+                "type":"FUND",
+                "deepId":fundId,
+                "user": req.user._id
+            };
+            await Report.create({...reports});
+            res.send({
+                success:true
+            });
+        } catch (err) {
+            next(err);
+        }
+    },
+    //reject
+    async reject(req, res, next) {
+        
+        try {
+            convertLang(req)
+            let { fundId } = req.params;
+            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
+                return next(new ApiError(403, i18n.__('admin.auth')));
+            let fund = await checkExistThenGet(fundId, Fund);
+            if(fund.status != "PENDING")
+                return next(new ApiError(500, i18n.__('fund.pending')));
+            fund.status = 'REJECTED';
+            fund.reason  = req.body.reason
+            await fund.save();
+            sendNotifiAndPushNotifi({
+                targetUser: fund.owner, 
+                fromUser: fund.owner, 
+                text: ' EdHub',
+                subject: fund.id,
+                subjectType: 'fund Status',
+                info:'FUND'
+            });
+            let notif = {
+                "description_en":'Your Fund Request Has Been Rejected ',
+                "description_ar":'   تم رفض  طلب التمويل الخاص بك',
+                "title_en":'Your Fund Request Has Been Rejected ',
+                "title_ar":' تم رفض على طلب التمويل الخاص بك',
+                "type":'FUND'
+            }
+            await Notif.create({...notif,resource:req.user,target:fund.owner,fund:fund.id});
+            let reports = {
+                "action":"Reject Fund Request",
+                "type":"FUND",
+                "deepId":fundId,
+                "user": req.user._id
+            };
+            await Report.create({...reports});
+            res.send({
+                success:true
+            });
+        } catch (err) {
+            next(err);
+        }
+    },
+    //active fund
+    validateActiveBody() {
+        return [
+            body('startDate').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('startDate.required', { value});
+            })
+            .isISO8601().withMessage((value) => {
+                return req.__('startDate.invalid', { value});
+            }),
+        ]
+    },
+    async active(req, res, next) {
+        try {
+            convertLang(req)
+            let { fundId } = req.params;
+            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
+                return next(new ApiError(403, i18n.__('admin.auth')));
+            let fund = await checkExistThenGet(fundId, Fund);
+            if(fund.status != "ACCEPTED")
+                return next(new ApiError(500, i18n.__('fund.accepted')));
+            const validatedBody = checkValidations(req);
+            fund.startDate = validatedBody.startDate
+            fund.active = true
+            if (req.file) {
+                let educationFile = await handleImg(req, { attributeName: 'educationFile', isUpdate: true });
+                fund.educationFile = educationFile;
+            }else{
+                return next(new ApiError(422, i18n.__('educationFile.required')));
+            }
+            
+            await fund.save();
+            let reports = {
+                "action":"Active Fund Request",
                 "type":"FUND",
                 "deepId":fundId,
                 "user": req.user._id
@@ -624,94 +859,4 @@ export default {
             next(err);
         }
     },
-    async needAction(req, res, next) {
-        
-        try {
-            convertLang(req)
-            let { fundId } = req.params;
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
-            let fund = await checkExistThenGet(fundId, Fund);
-            if(fund.status != "PENDING")
-                return next(new ApiError(500, i18n.__('fund.pending')));
-            fund.status = 'NEED-ACTION';
-            fund.reason  = req.body.reason
-            await fund.save();
-            sendNotifiAndPushNotifi({
-                targetUser: fund.owner, 
-                fromUser: fund.owner, 
-                text: ' EdHub',
-                subject: fund.id,
-                subjectType: 'fund Status',
-                info:'FUND'
-            });
-            let notif = {
-                "description_en":'Your Fund Request Need Some Fix ',
-                "description_ar":'  طلب التمويل الخاص بك يحتاج بعض التعديلات',
-                "title_en":'Your Fund Request Need Some Fix ',
-                "title_ar":'  طلب التمويل الخاص بك يحتاج بعض التعديلات',
-                "type":'FUND'
-            }
-            await Notif.create({...notif,resource:req.user,target:fund.owner,fund:fund.id});
-            let reports = {
-                "action":"Fund Request need to fix",
-                "type":"FUND",
-                "deepId":fundId,
-                "user": req.user._id
-            };
-            await Report.create({...reports});
-            res.send({
-                success:true
-            });
-        } catch (err) {
-            next(err);
-        }
-    },
-    async reject(req, res, next) {
-        
-        try {
-            convertLang(req)
-            let { fundId } = req.params;
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
-            let fund = await checkExistThenGet(fundId, Fund);
-            if(fund.status != "PENDING")
-                return next(new ApiError(500, i18n.__('fund.pending')));
-            fund.status = 'REJECTED';
-            fund.reason  = req.body.reason
-            await fund.save();
-            sendNotifiAndPushNotifi({
-                targetUser: fund.owner, 
-                fromUser: fund.owner, 
-                text: ' EdHub',
-                subject: fund.id,
-                subjectType: 'fund Status',
-                info:'FUND'
-            });
-            let notif = {
-                "description_en":'Your Fund Request Has Been Rejected ',
-                "description_ar":'   تم رفض  طلب التمويل الخاص بك',
-                "title_en":'Your Fund Request Has Been Rejected ',
-                "title_ar":' تم رفض على طلب التمويل الخاص بك',
-                "type":'FUND'
-            }
-            await Notif.create({...notif,resource:req.user,target:fund.owner,fund:fund.id});
-            let reports = {
-                "action":"Reject Fund Request",
-                "type":"FUND",
-                "deepId":fundId,
-                "user": req.user._id
-            };
-            await Report.create({...reports});
-            res.send({
-                success:true
-            });
-        } catch (err) {
-            next(err);
-        }
-    },
-
-
-   
-
 }

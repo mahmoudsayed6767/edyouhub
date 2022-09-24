@@ -12,9 +12,11 @@ export async function transformFund(e,lang) {
         jobAddress:e.jobAddress,
         reason:e.reason,
         totalFees:e.totalFees,
+        oldTotalFees:e.oldTotalFees,
         endDate:e.endDate,
         status:e.status,
         firstPaid:e.firstPaid,
+        active: e.active,
         createdAt: e.createdAt, 
         id:e._id
     }
@@ -63,6 +65,12 @@ export async function transformFundById(e,lang) {
         proofIncome:e.proofIncome,
         proofIncomeImgs:e.proofIncomeImgs,
         totalFees:e.totalFees,
+        oldTotalFees:e.oldTotalFees,
+        actionType:e.actionType,
+        actionFile:e.actionFile,
+        actionReply:e.actionReply,
+        educationFile:e.educationFile,
+        active:e.active,
         endDate:e.endDate,
         status:e.status,
         id:e._id

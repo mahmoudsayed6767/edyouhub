@@ -7,7 +7,7 @@ const fundSchema = new Schema({
     },
     status:{
         type: String,
-        enum:['NEW','PENDING','ACCEPTED','NEED-ACTION','REJECTED','STARTED','COMPLETED'],
+        enum:['NEW','PENDING','PARTIAL-ACCEPTANCE','ACCEPTED','NEED-ACTION','REJECTED','STARTED','COMPLETED'],
         default:'NEW'
     },
     owner: {
@@ -17,38 +17,31 @@ const fundSchema = new Schema({
     },
     firstName: {
         type: String,
-        default:"",
         required: true
     },
     secondName: {
         type: String,
-        default:"",
         required: true
     },
     thirdName: {
         type: String,
-        default:"",
         required: true
     },
     fourthName: {
         type: String,
-        default:"",
         required: true
     },
     country: {
         type: Number,
         ref: 'country',
-        //required: true,
     },
     city: {
         type: Number,
         ref: 'city',
-        //required: true,
     },
     area: {
         type: Number,
         ref: 'area',
-        //required: true,
     },
     address: {
         type: String,
@@ -101,10 +94,6 @@ const fundSchema = new Schema({
         enum:['EMPLOYEE','BUSINESS-OWNER'],
         default: 'EMPLOYEE'
     },
-    // proofIncomeImgs: {
-    //     type: [String],
-    //     required: true
-    // },
     proofIncomeImgs: [
         new Schema({
             type: {
@@ -132,6 +121,9 @@ const fundSchema = new Schema({
         type: Number,
         required: true
     },
+    oldTotalFees:{
+        type: Number,
+    },
     //if accept
     firstPaid:{
         type: Number,
@@ -145,6 +137,25 @@ const fundSchema = new Schema({
     //if reject
     reason:{
         type: String,
+    },
+    //if action need
+    actionType: {
+        type: String,
+        enum:['WORK-ID','CLUB-ID','HR-LETTER','WORK-CONTRACT','BANK-ACCOUNT','BANK DEPOSIT','COMMERCIAL-REGISTRATION','TAX-ID']
+    },
+    actionFile:{
+        type: String,
+    },
+    actionReply:{
+        type: Boolean,
+        default: false
+    },
+    educationFile:{
+        type: String,
+    },
+    active:{
+        type: Boolean,
+        default: false
     },
     deleted: {
         type: Boolean,
