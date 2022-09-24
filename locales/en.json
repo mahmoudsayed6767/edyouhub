@@ -238,8 +238,11 @@
 	"thirdName.required": " third Name is required",
 	"fourthName.required": " fourth Name is required",
 	"workStartDate.required": "Work Start Date is required",
-	"feesType.required": "feesType.required",
-	"feesType.invalid": "feesType.invalid",
-	"contactFor.invalid": "contactFor.invalid",
-	"educationFile.required": "educationFile.required"
+	"feesType.required": "feesType is required",
+	"feesType.invalid": "feesType is invalid",
+	"contactFor.invalid": "contactFor is invalid",
+	"actionReply.required":" actionReply is required",
+	"educationFile.required":" educationFile is required",
+	"actionFile.required":" actionFile is required",
+	"actionType.invalid":" actionType is invalid"
 }

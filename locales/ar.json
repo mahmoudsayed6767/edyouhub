@@ -235,7 +235,14 @@
 	"secondName.required": "الاسم الثانى الزامى",
 	"thirdName.required": "الاسم الثالث الزامى",
 	"fourthName.required": "الاسم الرابع الزامى",
-	"workStartDate.required":"تاريخ بدأ العمل الزامى"
+	"workStartDate.required":"تاريخ بدأ العمل الزامى",
+	"feesType.required": "نوع المصاريف مطلوبه",
+	"feesType.invalid": "نوع المصاريف غير صحيح",
+	"contactFor.invalid": "نوع التواصل غير صحيح",
+	"actionReply.required":"الرد مطلوب",
+	"educationFile.required":"الملف الدراسى مطلوب",
+	"actionFile.required":"الملف مطلوب",
+	"actionType.invalid":"نوع الملف مطلوب"
 
 	
 }
