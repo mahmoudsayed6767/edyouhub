@@ -213,6 +213,14 @@ export default {
                 }
                 return true;
             }),
+            body('owner').trim().escape().optional().isNumeric().withMessage((value, { req}) => {
+                return req.__('owner.numeric', { value});
+            }).custom(async (value, { req }) => {
+                if (!await User.findOne({_id:value,deleted:false}))
+                    throw new Error(req.__('owner.invalid'));
+                else
+                    return true;
+            }),
             
         ];
         return validations;
@@ -286,7 +294,10 @@ export default {
         try {
             convertLang(req)
             const validatedBody = checkValidations(req);
-            validatedBody.owner = req.user._id;
+            
+            if(!validatedBody.owner){
+                validatedBody.owner = req.user._id;
+            }
             let fund = await Fund.create({ ...validatedBody });
             let educationInstitutions = []
             if(validatedBody.theStudents){
@@ -436,6 +447,8 @@ export default {
             let { fundId } = req.params;
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
+            
+        
             let fund = await checkExistThenGet(fundId, Fund);
             fund.deleted = true;
             await fund.save();
