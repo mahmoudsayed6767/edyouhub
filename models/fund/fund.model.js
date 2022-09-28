@@ -83,7 +83,7 @@ const fundSchema = new Schema({
     },
     billType:{
         type: String,
-        enum: ["WATER","GAS","TELEPHONE","ELECTRICITY"]
+        enum: ["WATER","GAS","TELEPHONE","ELECTRICITY","RENT-CONTRACT"]
     },
     utilityBillsImgs: {
         type: [String],

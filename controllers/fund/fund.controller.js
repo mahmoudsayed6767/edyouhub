@@ -124,7 +124,7 @@ export default {
             }),
             body('billType').trim().escape().not().isEmpty().withMessage((value, { req}) => {
                 return req.__('billType.required', { value});
-            }).isIn(["WATER","GAS","TELEPHONE","ELECTRICITY"]).withMessage((value, { req}) => {
+            }).isIn(["WATER","GAS","TELEPHONE","ELECTRICITY","RENT-CONTRACT"]).withMessage((value, { req}) => {
                 return req.__('billType.invalid', { value});
             }),
             body('utilityBillsImgs').not().isEmpty().withMessage((value) => {
