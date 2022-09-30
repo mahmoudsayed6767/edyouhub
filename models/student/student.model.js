@@ -9,6 +9,9 @@ const studentSchema = new Schema({
         type: String,
         required: true
     },
+    studentId: {
+        type: String,
+    },
     type:{
         type: String,//مؤسسه دراسيه مسجله- مؤسسه خارجيه غير مسجله
         enum:['INSIDE-INSTITUTION','OUTSIDE-INSTITUTION'],
