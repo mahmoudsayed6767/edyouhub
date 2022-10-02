@@ -241,8 +241,9 @@
 	"feesType.required": "feesType is required",
 	"feesType.invalid": "feesType is invalid",
 	"contactFor.invalid": "contactFor is invalid",
-	"actionReply.required":" actionReply is required",
-	"educationFile.required":" educationFile is required",
-	"actionFile.required":" actionFile is required",
-	"actionType.invalid":" actionType is invalid"
+	"actionReply.required": " actionReply is required",
+	"educationFile.required": " educationFile is required",
+	"actionFile.required": " actionFile is required",
+	"actionType.invalid": " actionType is invalid",
+	"fund.accepted": "fund.accepted"
 }

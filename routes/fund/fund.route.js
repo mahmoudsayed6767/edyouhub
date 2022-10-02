@@ -14,6 +14,7 @@ router.route('/uploads')
             { name: 'utilityBillsImgs', maxCount: 4, options: false },
             { name: 'proofIncomeImgs', maxCount: 4, options: false },
             { name: 'feesLetter', maxCount: 4, options: false },
+            { name: 'files', maxCount: 10, options: false },
         ]),
         fundController.uploadImgs
     )
@@ -48,7 +49,6 @@ router.route('/:fundId/needAction')
 router.route('/:fundId/actionReply')
     .put(
         requireAuth,
-        multerSaveTo('fund').single('actionFile'),
         fundController.validateActionReplyBody(),
         fundController.actionReply
     )
@@ -73,7 +73,6 @@ router.route('/:fundId/accept')
 router.route('/:fundId/active')
     .put(
         requireAuth,
-        multerSaveTo('fund').single('educationFile'),
         fundController.validateActiveBody(),
         fundController.active
     )

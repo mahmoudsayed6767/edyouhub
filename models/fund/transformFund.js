@@ -63,6 +63,7 @@ export async function transformFundById(e,lang) {
         billType:e.billType,
         utilityBillsImgs:e.utilityBillsImgs,
         proofIncome:e.proofIncome,
+        proofIncomeCost:e.proofIncomeCost,
         proofIncomeImgs:e.proofIncomeImgs,
         totalFees:e.totalFees,
         oldTotalFees:e.oldTotalFees,

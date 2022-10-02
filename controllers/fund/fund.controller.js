@@ -136,7 +136,7 @@ export default {
             }).isIn(['EMPLOYEE','BUSINESS-OWNER']).withMessage((value, { req}) => {
                 return req.__('proofIncome.invalid', { value});
             }),
-            //student
+            body('proofIncomeCost').trim().escape().optional(),
             body('proofIncomeImgs').trim().escape().not().isEmpty().withMessage((value) => {
                 return req.__('proofIncomeImgs.required', { value});
             })
@@ -233,6 +233,7 @@ export default {
             let utilityBillsImgs=[]
             let proofIncomeImgs=[]
             let feesLetter=[];
+            let files =[];
             if (req.files) {
                 if (req.files['personalIdImgs']) {
                     let imagesList = [];
@@ -271,6 +272,22 @@ export default {
                         proofIncomeImgs = imagesList;
                     }
                 }
+                if (req.files['files']) {
+                    let imagesList = [];
+                    for (let imges of req.files['files']) {
+                        imagesList.push(await toImgUrl(imges))
+                    }
+                    if(req.body.type){
+                        let obj = {
+                            "type": req.body.type,
+                            "img": imagesList
+                        };
+                        files = obj;
+                    }else{
+
+                        files = imagesList;
+                    }
+                }
                 if (req.files['feesLetter']) {
                     let imagesList = [];
                     for (let imges of req.files['feesLetter']) {
@@ -285,6 +302,7 @@ export default {
                 utilityBillsImgs:utilityBillsImgs,
                 proofIncomeImgs:proofIncomeImgs,
                 feesLetter:feesLetter,
+                files:files,
             });
         } catch (error) {
             next(error);
@@ -529,7 +547,7 @@ export default {
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
             let fund = await checkExistThenGet(fundId, Fund);
-            if(isInArray(["PENDING","NEED-ACTION"],fund.status))
+            if(!isInArray(["PENDING","NEED-ACTION"],fund.status))
                 return next(new ApiError(500, i18n.__('fund.pending')));
             fund.status = 'ACCEPTED';
             const validatedBody = checkValidations(req);
@@ -622,6 +640,21 @@ export default {
             body('actionReply').trim().escape().not().isEmpty().withMessage((value) => {
                 return req.__('actionReply.required', { value});
             }),
+            body('actionFile').trim().escape().optional()
+            .custom(async (actionFile, { req }) => {
+                convertLang(req)
+                for (let file of actionFile) {
+                    body('file').not().isEmpty().withMessage((value) => {
+                        return req.__('file.required', { value});
+                    }),
+                    body('type').not().isEmpty().withMessage((value) => {
+                        return req.__('type.required', { value});
+                    }).isIn(['WORK-ID','CLUB-ID','HR-LETTER','WORK-CONTRACT','BANK-ACCOUNT','BANK DEPOSIT','COMMERCIAL-REGISTRATION','TAX-ID']).withMessage((value, { req}) => {
+                        return req.__('type.invalid', { value});
+                    })
+                }
+                return true;
+            }),
         ]
     },
     async actionReply(req, res, next) {
@@ -635,17 +668,12 @@ export default {
             if(fund.status != "NEED-ACTION")
                 return next(new ApiError(500, i18n.__('fund.pending')));
             const validatedBody = checkValidations(req);
-            fund.actionReply = validatedBody.actionReply
-            if (req.file) {
-                let actionFile = await handleImg(req, { attributeName: 'actionFile', isUpdate: true });
-                fund.actionFile = actionFile;
-            }else{
-                if(validatedBody.actionReply == true){
-                    return next(new ApiError(422, i18n.__('actionFile.required')));
-                }
+            validatedBody.status = "PENDING";
+            if(validatedBody.actionReply == true && !validatedBody.actionFile){
+                return next(new ApiError(422, i18n.__('actionFile.required')));
             }
-            await fund.save();
-            
+            await Fund.findByIdAndUpdate(fundId, { ...validatedBody });
+
             let reports = {
                 "action":"Fund Request has an action reply",
                 "type":"FUND",
@@ -767,6 +795,23 @@ export default {
             .isISO8601().withMessage((value) => {
                 return req.__('startDate.invalid', { value});
             }),
+            body('educationFile').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('educationFile.required', { value});
+            })
+            .custom(async (educationFile, { req }) => {
+                convertLang(req)
+                for (let file of educationFile) {
+                    body('file').not().isEmpty().withMessage((value) => {
+                        return req.__('file.required', { value});
+                    }),
+                    body('type').not().isEmpty().withMessage((value) => {
+                        return req.__('type.required', { value});
+                    }).isIn(['BIRTH-CERTIFICATE','EDUCATION-LETTER']).withMessage((value, { req}) => {
+                        return req.__('type.invalid', { value});
+                    })
+                }
+                return true;
+            }),
         ]
     },
     async active(req, res, next) {
@@ -779,16 +824,8 @@ export default {
             if(fund.status != "ACCEPTED")
                 return next(new ApiError(500, i18n.__('fund.accepted')));
             const validatedBody = checkValidations(req);
-            fund.startDate = validatedBody.startDate
-            fund.active = true
-            if (req.file) {
-                let educationFile = await handleImg(req, { attributeName: 'educationFile', isUpdate: true });
-                fund.educationFile = educationFile;
-            }else{
-                return next(new ApiError(422, i18n.__('educationFile.required')));
-            }
-            
-            await fund.save();
+            validatedBody.active = true
+            await Fund.findByIdAndUpdate(fundId, { ...validatedBody });
             let reports = {
                 "action":"Active Fund Request",
                 "type":"FUND",

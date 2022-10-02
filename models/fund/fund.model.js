@@ -94,6 +94,9 @@ const fundSchema = new Schema({
         enum:['EMPLOYEE','BUSINESS-OWNER'],
         default: 'EMPLOYEE'
     },
+    proofIncomeCost:{
+        type: String
+    },
     proofIncomeImgs: [
         new Schema({
             type: {
@@ -140,19 +143,39 @@ const fundSchema = new Schema({
     },
     //if action need
     actionType: {
-        type: String,
+        type: [String],
         enum:['WORK-ID','CLUB-ID','HR-LETTER','WORK-CONTRACT','BANK-ACCOUNT','BANK DEPOSIT','COMMERCIAL-REGISTRATION','TAX-ID']
     },
-    actionFile:{
-        type: String,
-    },
+    actionFile: [
+        new Schema({
+            type: {
+                type: String,
+                enum:['WORK-ID','CLUB-ID','HR-LETTER','WORK-CONTRACT','BANK-ACCOUNT','BANK DEPOSIT','COMMERCIAL-REGISTRATION','TAX-ID'],
+            },
+            file: {
+                type: [String],
+                required: true,
+            },
+        }, { _id: false })
+        
+    ],
     actionReply:{
         type: Boolean,
         default: false
     },
-    educationFile:{
-        type: String,
-    },
+    educationFile: [
+        new Schema({
+            type: {
+                type: String,
+                enum:['BIRTH-CERTIFICATE','EDUCATION-LETTER'],
+            },
+            file: {
+                type: [String],
+                required: true,
+            },
+        }, { _id: false })
+        
+    ],
     active:{
         type: Boolean,
         default: false
