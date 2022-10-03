@@ -704,7 +704,7 @@ export default {
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
             let fund = await checkExistThenGet(fundId, Fund);
-            if(isInArray(["PENDING","NEED-ACTION"],fund.status))
+            if(!isInArray(["PENDING","NEED-ACTION"],fund.status))
                 return next(new ApiError(500, i18n.__('fund.pending')));
                 
             const validatedBody = checkValidations(req);
