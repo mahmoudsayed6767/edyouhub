@@ -39,6 +39,11 @@ router.route('/:fundId/reviewing')
         requireAuth,
         fundController.reviewing
     )
+router.route('/:fundId/cancel')
+    .put(
+        requireAuth,
+        fundController.cancel
+    )
 
 router.route('/:fundId/needAction')
     .put(

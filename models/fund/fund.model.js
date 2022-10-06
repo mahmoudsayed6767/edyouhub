@@ -7,7 +7,7 @@ const fundSchema = new Schema({
     },
     status:{
         type: String,
-        enum:['NEW','PENDING','PARTIAL-ACCEPTANCE','ACCEPTED','NEED-ACTION','REJECTED','STARTED','COMPLETED'],
+        enum:['NEW','PENDING','PARTIAL-ACCEPTANCE','ACCEPTED','CANCELED','NEED-ACTION','REJECTED','STARTED','COMPLETED'],
         default:'NEW'
     },
     owner: {

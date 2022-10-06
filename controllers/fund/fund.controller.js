@@ -662,7 +662,7 @@ export default {
         try {
             convertLang(req)
             let { fundId } = req.params;
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
+            if(!isInArray(["ADMIN","SUB-ADMIN","USER"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
             let fund = await checkExistThenGet(fundId, Fund);
             if(fund.status != "NEED-ACTION")
@@ -711,6 +711,8 @@ export default {
             fund.status = 'PARTIAL-ACCEPTANCE';
             fund.oldTotalFees = fund.totalFees
             fund.totalFees  = validatedBody.totalFees
+            let setting = await Setting.findOne({deleted: false})
+            fund.firstPaid = (fund.totalFees * setting.expensesRatio) / 100
             await fund.save();
             sendNotifiAndPushNotifi({
                 targetUser: fund.owner, 
@@ -818,7 +820,7 @@ export default {
         try {
             convertLang(req)
             let { fundId } = req.params;
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
+            if(!isInArray(["ADMIN","SUB-ADMIN","USER"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
             let fund = await checkExistThenGet(fundId, Fund);
             if(fund.status != "ACCEPTED")
@@ -828,6 +830,31 @@ export default {
             await Fund.findByIdAndUpdate(fundId, { ...validatedBody });
             let reports = {
                 "action":"Active Fund Request",
+                "type":"FUND",
+                "deepId":fundId,
+                "user": req.user._id
+            };
+            await Report.create({...reports});
+            res.send({
+                success:true
+            });
+        } catch (err) {
+            next(err);
+        }
+    },
+    async cancel(req, res, next) {
+        try {
+            convertLang(req)
+            let { fundId } = req.params;
+            if(!isInArray(["ADMIN","SUB-ADMIN","USER"],req.user.type))
+                return next(new ApiError(403, i18n.__('admin.auth')));
+            let fund = await checkExistThenGet(fundId, Fund);
+            if(isInArray(["STARTED","COMPLETED"],fund.status))
+                return next(new ApiError(500, i18n.__('notAllow')));
+            fund.status = 'CANCELED';
+            await fund.save();
+            let reports = {
+                "action":"canceling Fund Request",
                 "type":"FUND",
                 "deepId":fundId,
                 "user": req.user._id
