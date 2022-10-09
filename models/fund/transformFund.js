@@ -71,6 +71,7 @@ export async function transformFundById(e,lang) {
         actionFile:e.actionFile,
         actionReply:e.actionReply,
         educationFile:e.educationFile,
+        partialAcceptReason:e.partialAcceptReason,
         active:e.active,
         endDate:e.endDate,
         status:e.status,

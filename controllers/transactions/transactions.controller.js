@@ -194,6 +194,9 @@ export default {
             }
             if(validatedBody.type =="FUND-FIRSTPAID"){
                 transactionData.fund = validatedBody.fund
+                let fund = await checkExistThenGet(fundId, Fund);
+                fund.active = true;
+                await fund.save();
             }
             if(validatedBody.type =="ORDER"){
                 transactionData.order = validatedBody.order

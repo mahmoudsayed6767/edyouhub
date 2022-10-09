@@ -694,6 +694,7 @@ export default {
             body('totalFees').trim().escape().not().isEmpty().withMessage((value) => {
                 return req.__('totalFees.required', { value});
             }),
+            body('partialAcceptReason').trim().escape().optional()
         ]
     },
     async partialAcceptance(req, res, next) {
@@ -711,6 +712,7 @@ export default {
             fund.status = 'PARTIAL-ACCEPTANCE';
             fund.oldTotalFees = fund.totalFees
             fund.totalFees  = validatedBody.totalFees
+            fund.partialAcceptReason = validatedBody.partialAcceptReason
             let setting = await Setting.findOne({deleted: false})
             fund.firstPaid = (fund.totalFees * setting.expensesRatio) / 100
             await fund.save();
@@ -823,10 +825,7 @@ export default {
             if(!isInArray(["ADMIN","SUB-ADMIN","USER"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
             let fund = await checkExistThenGet(fundId, Fund);
-            if(fund.status != "ACCEPTED")
-                return next(new ApiError(500, i18n.__('fund.accepted')));
             const validatedBody = checkValidations(req);
-            validatedBody.active = true
             await Fund.findByIdAndUpdate(fundId, { ...validatedBody });
             let reports = {
                 "action":"Active Fund Request",

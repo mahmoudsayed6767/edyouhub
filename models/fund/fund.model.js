@@ -141,6 +141,9 @@ const fundSchema = new Schema({
     reason:{
         type: String,
     },
+    partialAcceptReason:{
+        type: String,
+    },
     //if action need
     actionType: {
         type: [String],
