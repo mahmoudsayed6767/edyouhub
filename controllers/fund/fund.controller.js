@@ -137,9 +137,7 @@ export default {
                 return req.__('proofIncome.invalid', { value});
             }),
             body('proofIncomeCost').trim().escape().optional(),
-            body('proofIncomeImgs').trim().escape().not().isEmpty().withMessage((value) => {
-                return req.__('proofIncomeImgs.required', { value});
-            })
+            body('proofIncomeImgs').trim().escape().optional()
             .custom(async (proofIncomeImgs, { req }) => {
                 convertLang(req)
                 for (let img of proofIncomeImgs) {
