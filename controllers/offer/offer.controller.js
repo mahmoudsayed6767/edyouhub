@@ -32,7 +32,7 @@ export default {
              //get lang
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20,
-            { all,end,place,type,startDate,endDate,bookedUser,gotUser} = req.query;
+            { category,all,end,place,type,startDate,endDate,bookedUser,gotUser} = req.query;
             
             let query = { deleted: false,end:false};
             
@@ -48,6 +48,7 @@ export default {
             if (bookedUser) query.bookedUsers = bookedUser;
             if (gotUser) query.gotUsers = gotUser;
             if (type) query.type = type;
+            if (category) query.category = category;
             if(all) query.end = {$in:[true, false]};
             if (end == "true") query.end = true;
             if (end == "false") query.end = false;
@@ -76,7 +77,7 @@ export default {
             convertLang(req)
              //get lang
             let lang = i18n.getLocale(req)
-            let{all, end,place,type,startDate,endDate,bookedUser,gotUser} = req.query;
+            let{category,all, end,place,type,startDate,endDate,bookedUser,gotUser} = req.query;
             
             let query = { deleted: false,end:false};
             if(startDate && endDate) {
@@ -94,7 +95,7 @@ export default {
             if(all) query.end = {$in:[true, false]};
             if (end == "true") query.end = true;
             if (end == "false") query.end = false;
-            
+            if (category) query.category = category;
             if(all) query.end = {$in:[true, false]};
             await Offer.find(query).populate(populateQuery)
                 .sort({ _id: 1 })
