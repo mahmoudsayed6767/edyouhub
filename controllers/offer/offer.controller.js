@@ -32,7 +32,7 @@ export default {
              //get lang
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20,
-            { category,all,end,place,type,startDate,endDate,bookedUser,gotUser} = req.query;
+            {userId,category,all,end,place,type,startDate,endDate,bookedUser,gotUser} = req.query;
             
             let query = { deleted: false,end:false};
             
@@ -52,14 +52,17 @@ export default {
             if(all) query.end = {$in:[true, false]};
             if (end == "true") query.end = true;
             if (end == "false") query.end = false;
-            
+            let myUser
+            if(userId){
+                myUser= await checkExistThenGet(userId, User)
+            }
             await Offer.find(query).populate(populateQuery)
                 .sort({createdAt: -1})
                 .limit(limit)
                 .skip((page - 1) * limit).then(async (data) => {
                     var newdata = [];
                     await Promise.all(data.map(async(e) =>{
-                        let index = await transformOffer(e,lang)
+                        let index = await transformOffer(e,lang,myUser,userId)
                         newdata.push(index)
                     }))
                     const count = await Offer.countDocuments(query);
@@ -77,7 +80,7 @@ export default {
             convertLang(req)
              //get lang
             let lang = i18n.getLocale(req)
-            let{category,all, end,place,type,startDate,endDate,bookedUser,gotUser} = req.query;
+            let{userId,category,all, end,place,type,startDate,endDate,bookedUser,gotUser} = req.query;
             
             let query = { deleted: false,end:false};
             if(startDate && endDate) {
@@ -97,12 +100,16 @@ export default {
             if (end == "false") query.end = false;
             if (category) query.category = category;
             if(all) query.end = {$in:[true, false]};
+            let myUser
+            if(userId){
+                myUser= await checkExistThenGet(userId, User)
+            }
             await Offer.find(query).populate(populateQuery)
                 .sort({ _id: 1 })
                 .then( async(data) => {
                     var newdata = [];
                     await Promise.all(data.map(async(e) =>{
-                        let index = await transformOffer(e,lang)
+                        let index = await transformOffer(e,lang,myUser,userId)
                         newdata.push(index)
                     }))
                     res.send({
@@ -215,9 +222,14 @@ export default {
             //get lang
             let lang = i18n.getLocale(req)
             let { offerId } = req.params;
+            let {userId} = req.query;
             await checkExist(offerId, Offer, { deleted: false });
+            let myUser
+            if(userId){
+                myUser= await checkExistThenGet(userId, User)
+            }
             await Offer.findById(offerId).populate(populateQuery).then(async(e) => {
-                let offer = await transformOfferById(e,lang)
+                let offer = await transformOfferById(e,lang,myUser,userId)
                 res.send({
                     success:true,
                     data:offer

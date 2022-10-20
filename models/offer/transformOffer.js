@@ -1,7 +1,7 @@
 import { isInArray } from "../../helpers/CheckMethods";
 import i18n from "i18n";
 import moment from 'moment';
-export async function transformOffer(e,lang) {
+export async function transformOffer(e,lang,myUser,userId) {
     let index = {
         title:lang=="ar"?e.title_ar:e.title_en,
         description:lang=="ar"?e.description_ar:e.description_en,
@@ -15,6 +15,7 @@ export async function transformOffer(e,lang) {
         newPrice:e.newPrice,
         coins:e.coins,
         createdAt:e.createdAt,
+        isFavourite:userId?isInArray(myUser.favourite,e._id):false,
     }
     if(e.place){
         index.place = {
@@ -26,7 +27,7 @@ export async function transformOffer(e,lang) {
     }
     return index;
 }
-export async function transformOfferById(e,lang) {
+export async function transformOfferById(e,lang,myUser,userId) {
     let index = {
         title:lang=="ar"?e.title_ar:e.title_en,
         description:lang=="ar"?e.description_ar:e.description_en,
@@ -49,6 +50,7 @@ export async function transformOfferById(e,lang) {
         gotUsers:e.gotUsers,
         gotUsersCount:e.gotUsersCount,
         createdAt:e.createdAt,
+        isFavourite:userId?isInArray(myUser.favourite,e._id):false,
     }
     if(e.place){
         index.place = {
