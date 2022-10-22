@@ -8,11 +8,12 @@ const router = express.Router();
 router.route('/')
     .post(
         requireAuth,
-        multerSaveTo('users').fields([
+        multerSaveTo('places').fields([
             { name: 'logo', maxCount: 1, options: false },
         ]),
         parseStringToArrayOfObjectsMw('categories'),
         parseStringToArrayOfObjectsMw('subCategories'),
+        parseStringToArrayOfObjectsMw('location'),
         PlaceController.validateBody(),
         PlaceController.create
     )
@@ -24,11 +25,12 @@ router.route('/:placeId')
     .get(PlaceController.findById)
     .put(
         requireAuth,
-        multerSaveTo('users').fields([
+        multerSaveTo('places').fields([
             { name: 'logo', maxCount: 1, options: false },
         ]),
         parseStringToArrayOfObjectsMw('categories'),
         parseStringToArrayOfObjectsMw('subCategories'),
+        parseStringToArrayOfObjectsMw('location'),
         PlaceController.validateBody(true),
         PlaceController.update
     )

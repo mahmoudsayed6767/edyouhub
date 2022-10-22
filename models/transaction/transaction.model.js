@@ -29,9 +29,13 @@ const transactionSchema = new Schema({
         type:Number,
         ref:'package',
     },
-    offer:{
+    offer:{//
         type:Number,
         ref:'offer',
+    },
+    offerBooking:{
+        type:Number,
+        ref:'offerBooking',
     },
     order:{
         type:Number,

@@ -32,11 +32,16 @@ import cartsRoute from './cart/cart.route';
 import ordersRoute from './order/order.route';
 import gradeRoute from './grade/grade.route';
 import individualSuppliesRoute from './individual supplies/individual supplies.route';
+import branchRoute  from './branch/branch.route';
+import offerCartRoute  from './offerCart/offerCart.route';
 
 import { requireAuth } from '../services/passport';
 
 const router = express.Router();
 router.use('/cart', cartsRoute);
+router.use('/offerCart', offerCartRoute);
+
+router.use('/branches',branchRoute);
 router.use('/grades', gradeRoute);
 router.use('/individualSupplies', individualSuppliesRoute);
 router.use('/', userRoute);

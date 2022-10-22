@@ -15,7 +15,7 @@ router.route('/')
         AboutController.validateBody(),
         AboutController.create
     )
-    .get(cache(10),AboutController.findAll);
+    .get(AboutController.findAll);
     
 router.route('/:aboutId')
     .put(

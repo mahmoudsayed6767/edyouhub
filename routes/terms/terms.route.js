@@ -13,7 +13,7 @@ router.route('/')
         TermsController.validateTermsBody(),
         TermsController.create
     )
-    .get(cache(10),TermsController.getAll);
+    .get(TermsController.getAll);
 
 router.route('/:TermsId')
     .put(
@@ -21,7 +21,7 @@ router.route('/:TermsId')
         TermsController.validateTermsBody(true),
         TermsController.update
     )
-    .get(cache(10),TermsController.getById)
+    .get(TermsController.getById)
     .delete(requireAuth,TermsController.delete);
 
 

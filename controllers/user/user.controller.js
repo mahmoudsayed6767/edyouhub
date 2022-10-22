@@ -20,6 +20,7 @@ import City from "../../models/city/city.model";
 import Area from "../../models/area/area.model";
 import Address from "../../models/address/address.model"
 import {transformAddress} from "../../models/address/transformAddress"
+import Fund from "../../models/fund/fund.model";
 const checkUserExistByPhone = async (phone) => {
     let user = await User.findOne({ phone:phone,deleted:false });
     if (!user)
@@ -838,6 +839,12 @@ export default {
             await User.findById(id).populate(populateQuery)
             .then(async(e)=>{
                 let index = await transformUserById(e,lang,myUser,userId)
+                let funds = await Fund.find({deleted: false,status:{$in:['ACCEPTED','STARTED','COMPLETED']},owner:id}).distinct('totalFees')
+                let totalFunds = 0;
+                funds.forEach(element => {
+                    totalFunds += element
+                });
+                index.totalFunds = totalFunds
                 res.send({success:true,data:index});
             })
             

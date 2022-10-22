@@ -8,11 +8,11 @@ import { cache } from '../../services/caching'
 const router = express.Router();
 
 //find sub category under category without pagenation
-router.get('/:categoryId/sub-categories', cache(10),CategoryController.findsubCategory);
+router.get('/:categoryId/sub-categories', CategoryController.findsubCategory);
 //find sub category under category with pagenation
-router.get('/:categoryId/pagenation-subCategories', cache(10),CategoryController.findsubCategoryPagenation);
+router.get('/:categoryId/pagenation-subCategories', CategoryController.findsubCategoryPagenation);
 //find category under category with pagenation
-router.get('/pagenation-categories', cache(10),CategoryController.findCategoryPagenation);
+router.get('/pagenation-categories', CategoryController.findCategoryPagenation);
 
 router.route('/:categoryId')
     .put(
@@ -21,7 +21,7 @@ router.route('/:categoryId')
         CategoryController.validateBody(true),
         CategoryController.update
     )
-    .get(cache(10),CategoryController.findById)
+    .get(CategoryController.findById)
     .delete(requireAuth,CategoryController.delete);
 
 router.route('/')
@@ -31,7 +31,7 @@ router.route('/')
         CategoryController.validateBody(),
         CategoryController.create
     )
-    .get(cache(10),CategoryController.findCategory);
+    .get(CategoryController.findCategory);
 
 router.route('/createMulti/categories')
     .post(

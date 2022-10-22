@@ -11,9 +11,9 @@ router.route('/')
         PackageController.validateBody(),
         PackageController.create
     )
-    .get(cache(10),PackageController.findAll);
+    .get(PackageController.findAll);
 router.route('/withoutPagenation/get')
-    .get(cache(10),PackageController.findAllWithoutPagenation);
+    .get(PackageController.findAllWithoutPagenation);
  
 router.route('/:packageId')
     .put(
@@ -21,7 +21,7 @@ router.route('/:packageId')
         PackageController.validateBody(true),
         PackageController.update
     )
-    .get(cache(10),PackageController.findById)
+    .get(PackageController.findById)
     .delete( requireAuth,PackageController.delete);
 
 router.route('/:packageId/buyPackage')

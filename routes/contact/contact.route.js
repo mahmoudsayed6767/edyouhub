@@ -17,7 +17,7 @@ router.route('/')
         ContactController.validateContactCreateBody(),
         ContactController.createContactMessage
     )
-    .get(cache(10),requireAuth,ContactController.findAll);
+    .get(requireAuth,ContactController.findAll);
 
 router.route('/:contactId')
     .get(requireAuth,ContactController.findById)

@@ -13,11 +13,21 @@ import { body } from "express-validator/check";
 import i18n from "i18n";
 import { toImgUrl } from "../../utils";
 import {transformPlace,transformPlaceById} from "../../models/place/transformPlace"
+import Branch from "../../models/branch/branch.model";
 
 const populateQuery = [
     { path: 'categories', model: 'category'},
     { path: 'subCategories', model: 'category'},
     { path: 'owner', model: 'user'},
+    { path: 'branches', model: 'branch'},
+    {
+        path: 'branches', model: 'branch',
+        populate: { path: 'city', model: 'city' },
+    },
+    {
+        path: 'branches', model: 'branch',
+        populate: { path: 'area', model: 'area' },
+    },
 ];
 export default {
 
@@ -175,6 +185,7 @@ export default {
                 }
                 return true;
             }),
+
            
         ];
         if(!isUpdate){
@@ -212,6 +223,37 @@ export default {
                         return true;
                     
                 }),
+
+                /////////////////////////////add branch///////////////////////////////
+                body('address_ar').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                    return req.__('address_ar.required', { value});
+                }),
+                body('address_en').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                    return req.__('address_en.required', { value});
+                }),
+                body('country').not().isEmpty().withMessage((value, { req}) => {
+                    return req.__('country.required', { value});
+                }),
+                body('city').not().isEmpty().withMessage((value, { req}) => {
+                    return req.__('city.required', { value});
+                }),
+                body('area').not().isEmpty().withMessage((value, { req}) => {
+                    return req.__('area.required', { value});
+                }),
+                
+                body('branchPhone').not().isEmpty().withMessage((value, { req}) => {
+                    return req.__('branchPhone.required', { value});
+                })
+                .custom(async (value, { req }) => {
+                    var exp = /^[+]*[(]{0,1}[0-9]{1,3}[)]{0,1}[s/./0-9]*$/g
+                    if(!exp.test(value))
+                        throw new Error(req.__('branchPhone.syntax'));
+                    else
+                        return true;
+                }),
+                body('location').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                    return req.__('location.required', { value});
+                }),
                 
             ])
         }
@@ -225,6 +267,8 @@ export default {
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
             const validatedBody = checkValidations(req);
+            validatedLocation(validatedBody.location);
+            validatedBody.location = { type: 'Point', coordinates: [+req.body.location[0], +req.body.location[1]] };
             
             if (req.files) {
                 if (req.files['logo']) {
@@ -245,10 +289,28 @@ export default {
                 accountType :'ACTIVE',
                 phoneVerify:true,
                 phone:validatedBody.phone,
+                country:validatedBody.country,
+                city:validatedBody.city,
+                area:validatedBody.area,
                 password:validatedBody.password
             })
             validatedBody.owner = theOwner._id
+            
             let thePlace = await Place.create({ ...validatedBody});
+            ///
+            let theBranch = await Branch.create({
+                city:validatedBody.city,
+                area:validatedBody.area,
+                address_ar:validatedBody.address_ar,
+                address_en:validatedBody.address_en,
+                phone:validatedBody.branchPhone,
+                place:thePlace.id,
+                location:validatedBody.location,
+
+            });
+            //// 
+            thePlace.branches = theBranch.id;
+            await thePlace.save();
             theOwner.place = thePlace._id
             await theOwner.save();
             let reports = {
@@ -310,6 +372,11 @@ export default {
             place.deleted = true;
             let offers = await Offer.find({ place: placeId });
             for (let id of offers) {
+                id.deleted = true;
+                await id.save();
+            }
+            let branches = await Branch.find({ place: placeId });
+            for (let id of branches) {
                 id.deleted = true;
                 await id.save();
             }

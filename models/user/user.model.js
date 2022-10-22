@@ -110,6 +110,10 @@ const userSchema = new Schema({
         type:[Number],
         ref:'offer'
     },
+    offerCarts:{
+        type:[Number],
+        ref:'offer'
+    },
     balance: {
         type: Number,
         default: 0

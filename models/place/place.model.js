@@ -36,9 +36,21 @@ const placeSchema = new Schema({
         type: [Number],
         ref:'categories',
     },
+    city: {
+        type: [Number],
+        ref:'city',
+    },
+    area: {
+        type: [Number],
+        ref:'area',
+    },
     logo: {
         type: String,
         required: true,
+    },
+    branches: {//shop
+        type: [Number],
+        ref:'branch',
     },
     deleted:{
         type:Boolean,

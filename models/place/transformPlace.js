@@ -57,5 +57,34 @@ export async function transformPlaceById(e,lang,myUser,userId) {
     }
     index.categories = categories;
     index.subCategories = subCategories;
+    /* branches*/
+    if(e.branches.length > 0){
+        let branches = []
+        let arr= [...e.branches.slice(0,1)]
+        for (let val of arr) {
+            let branch = {
+                address:lang=="ar"?val.address_ar:val.address_en,
+                phone:val.phone,
+                img:val.img,
+                location:val.location,
+                id:val._id,                         
+            }
+            if(val.city){
+                console.log(val.city)
+                branch.city = {
+                    name:lang=="ar"?val.city.name_ar:val.city.name_en,
+                    id:val.city._id
+                }
+            }
+            if(val.area){
+                branch.area = {
+                    name:lang=="ar"?val.area.name_ar:val.area.name_en,
+                    id:val.area._id
+                }
+            }
+            branches.push(branch)
+        }
+        index.branches = branches[0]
+    }
     return index;
 }

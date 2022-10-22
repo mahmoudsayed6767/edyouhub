@@ -245,5 +245,6 @@
 	"educationFile.required": " educationFile is required",
 	"actionFile.required": " actionFile is required",
 	"actionType.invalid": " actionType is invalid",
-	"fund.accepted": "fund.accepted"
+	"fund.accepted": "fund.accepted",
+	"address_ar.required": "address_ar.required"
 }

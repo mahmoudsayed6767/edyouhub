@@ -74,5 +74,12 @@ export async function transformTransaction(e,lang) {
             id: e.order._id,
         }
     }
+    if(e.offerBooking){
+        index.offerBooking ={
+            user:e.offerBooking.user,
+            offers:e.offerBooking.offers,
+            id: e.offerBooking._id,
+        }
+    }
     return index
 }

@@ -21,7 +21,8 @@ import Bill from "../../models/bill/bill.model";
 import { sendNotifiAndPushNotifi } from "../../services/notification-service";
 import Notif from "../../models/notif/notif.model";
 import Premium from "../../models/premium/premium.model";
-
+import OfferBooking from "../../models/offerBooking/offerBooking.model"
+import OfferCart from "../../models/offerCart/OfferCart.model";
 const populateQuery2 = [
     {path: 'package', model: 'package'},
     {path: 'order', model: 'order'},
@@ -29,6 +30,7 @@ const populateQuery2 = [
     {path: 'premium', model: 'premium'},
     {path: 'offer', model: 'offer'},
     {path: 'user', model: 'user'},
+    {path: 'offerBooking', model: 'offerBooking'},
 ];
 const payPremium = async (premiums,client) => {
     for (let thePremium of premiums) {
@@ -163,10 +165,63 @@ const payFirstPaid = async (theFund,client) => {
     };
     await Report.create({...reports});
 };
+const payOfferBooking = async (theOfferBooking,client) => {
+    let offerBooking = await checkExistThenGet(theOfferBooking, OfferBooking, { deleted: false})
+    console.log(offerBooking)
+    let user = await checkExistThenGet(client, User, { deleted: false})
+    for (let theOffer of offerBooking.offers) {
+        console.log(theOffer.offer)
+        let offerId = theOffer.offer;
+        console.log(`Offer ${offerId}`)
+        let offer = await checkExistThenGet(offerId, Offer, { deleted: false });
+        if(user.balance < offer.coins)
+            return next(new ApiError(500, i18n.__('balance.notEnough')));
+        let arr = offer.bookedUsers;
+        var found = arr.find(e => e == client)
+        if(!found){
+            offer.bookedUsers.push(client);
+            offer.bookedUsersCount = offer.bookedUsersCount + 1
+            await offer.save();
+            //get coins from user balance 
+            user.balance = user.balance - offer.coins
+            await Bill.create({
+                client:client,
+                offer:offerId,
+                place:offer.place,
+                offerCode:theOffer.code
+            })
+            let reports = {
+                "action":"User Book Offer",
+                "type":"OFFERS",
+                "deepId":offerId,
+                "user": client
+            };
+            await Report.create({...reports});
+
+        }
+        //remove offer from offer cart
+        let offerCarts = await OfferCart.find({deleted: false,user:client,offer:offerId})
+        for (let offerCart of offerCarts ) {
+            offerCart.deleted = true;
+            await offerCart.save();
+        }
+        let arr2 = user.offerCarts;
+        console.log(arr2);
+        for(let i = 0;i<= arr.length;i=i+1){
+            if(arr[i] == offerId){
+                arr.splice(i, 1);
+            }
+        }
+        user.offerCarts = arr2;
+        await user.save();
+    }
+    return true;
+};
 export default {
     
     async payment(req,res,next){
         try{
+            let lang = i18n.getLocale(req)
             let data = req.body
             console.log("data",data)
             console.log(await Transaction.findOne({transactionId:data.id}))
@@ -187,7 +242,17 @@ export default {
                 transactionData.package = validatedBody.package
             }
             if(validatedBody.type =="OFFER"){
-                transactionData.offer = validatedBody.offer
+                let offers = []
+                await Promise.all(validatedBody.offers.map(async(offer) => {
+                    offer.code = generateCode(8);
+                    offers.push(offer)
+                }));
+                let offerBooking = await OfferBooking.create({
+                    user:validatedBody.client,
+                    offers:offers,
+                })
+                transactionData.offerBooking = offerBooking.id
+                
             }
             if(validatedBody.type =="PREMIUM"){
                 transactionData.premiums = validatedBody.premiums
@@ -209,9 +274,14 @@ export default {
                 "user": validatedBody.client
             };
             await Report.create({...reports });
-            res.send({
-                success: true,
-            });
+            await Transaction.findById(createdTransaction.id).populate(populateQuery2)
+            .then(async(e)=>{
+                let index = await transformTransaction(e,lang)
+                res.send({
+                    success:true,
+                    data:index
+                });
+            })
         }catch(error){
             next(error)
         }
@@ -331,33 +401,8 @@ export default {
                     await user.save();
                 }
                 if(theTransaction.type =="OFFER"){
-                    let offer = await checkExistThenGet(theTransaction.offer, Offer, { deleted: false });
-                    if(user.balance < offer.coins)
-                        return next(new ApiError(500, i18n.__('balance.notEnough')));
-                    let arr = offer.bookedUsers;
-                    var found = arr.find(e => e == userId)
-                    if(!found){
-                        offer.bookedUsers.push(userId);
-                        offer.bookedUsersCount = offer.bookedUsersCount + 1
-                        await offer.save();
-                        let offerCode = generateCode(8)
-                        //get coins from user balance 
-                        user.balance = user.balance - offer.coins
-                        await user.save();
-                        await Bill.create({
-                            client:userId,
-                            offer:theTransaction.offer,
-                            place:offer.place,
-                            offerCode:offerCode
-                        })
-                        let reports = {
-                            "action":"User Book Offer",
-                            "type":"OFFERS",
-                            "deepId":theTransaction.offer,
-                            "user": userId
-                        };
-                        await Report.create({...reports});
-                    }
+                    await payOfferBooking(theTransaction.offerBooking,userId)
+
                 }
                 if(theTransaction.type =="PREMIUM"){
                     await payPremium(theTransaction.premiums,userId)

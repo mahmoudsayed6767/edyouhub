@@ -15,7 +15,7 @@ import {transformOffer, transformOfferById} from "../../models/offer/transformOf
 import ApiError from '../../helpers/ApiError';
 import { sendNotifiAndPushNotifi } from "../../services/notification-service";
 import Notif from "../../models/notif/notif.model";
-
+import OfferBooking from "../../models/offerBooking/offerBooking.model"
 const populateQuery = [ 
     
     {
@@ -214,8 +214,6 @@ export default {
             next(err);
         }
     },
-
-
     async findById(req, res, next) {
         try {
             convertLang(req)
@@ -342,6 +340,108 @@ export default {
             }else{
                 return next(new ApiError(400,  i18n.__('you.takeOffer')));
             }
+
+        }
+        catch (err) {
+            next(err);
+        }
+    },
+    validateBookOffers(isUpdate = false) {
+        let validations = [
+            body('theOffers').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('theOffers.required', { value});
+            })
+            .custom(async (offers, { req }) => {
+                convertLang(req)
+                for (let offer of offers) {
+                    body('offer').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                        return req.__('offer.required', { value});
+                    }).isNumeric().withMessage((value, { req}) => {
+                        return req.__('offer.numeric', { value});
+                    }).custom(async (value, { req }) => {
+                        if (!await Offer.findOne({_id:value,deleted:false}))
+                            throw new Error(req.__('offer.invalid'));
+                        else
+                            return true;
+                    }),
+                    body('place').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                        return req.__('place.required', { value});
+                    }).isNumeric().withMessage((value, { req}) => {
+                        return req.__('place.numeric', { value});
+                    }).custom(async (value, { req }) => {
+                        if (!await Place.findOne({_id:value,deleted:false}))
+                            throw new Error(req.__('place.invalid'));
+                        else
+                            return true;
+                    }),
+                    body('count').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                        return req.__('count.required', { value});
+                    }).isNumeric().withMessage((value) => {
+                        return req.__('count.numeric', { value});
+                    })
+                }
+                return true;
+            }),
+            
+        ];
+        return validations;
+    },
+    async bookOffers(req, res, next) {
+        try {
+            convertLang(req)
+            if(!isInArray(["ADMIN","SUB-ADMIN","USER"],req.user.type))
+                return next(new ApiError(403, i18n.__('admin.auth')));
+
+            let user = await checkExistThenGet(req.user._id, User, { deleted: false})
+
+            if(validatedBody.theOffers){
+                let offers = []
+                await Promise.all(validatedBody.theOffers.map(async(thrOffer) => {
+                    let offerCode = generateCode(8)
+                    thrOffer.code = offerCode;
+                    offers.push(thrOffer)
+                    let { offerId } = thrOffer.id;
+                    let offer = await checkExistThenGet(offerId, Offer, { deleted: false });
+                    if(user.balance < offer.coins)
+                        return next(new ApiError(500, i18n.__('balance.notEnough')));
+                    let arr = offer.bookedUsers;
+                    var found = arr.find(e => e == req.user._id)
+                    if(!found){
+                        offer.bookedUsers.push(req.user._id);
+                        offer.bookedUsersCount = offer.bookedUsersCount + 1
+                        await offer.save();
+                        //get coins from user balance 
+                        user.balance = user.balance - offer.coins
+                        await user.save();
+                        await Bill.create({
+                            client:req.user._id,
+                            offer:offerId,
+                            place:offer.place,
+                            offerCode:offerCode
+                        })
+                        let reports = {
+                            "action":"User Book Offer",
+                            "type":"OFFERS",
+                            "deepId":offerId,
+                            "user": req.user._id
+                        };
+                        await Report.create({...reports});
+                        res.status(200).send({
+                            success: true,
+                            offerCode:offerCode,
+                        });
+                    }else{
+                        return next(new ApiError(400,  i18n.__('you.takeOffer')));
+                    }
+                }));
+                let offerBooking = await OfferBooking.create({
+                    user:validatedBody.client,
+                    offers:offers,
+                })
+                res.send({success: true,data:offerBooking}) 
+                
+            }
+            
 
         }
         catch (err) {

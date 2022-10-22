@@ -11,7 +11,7 @@ router.route('/')
         SettingController.validateBody(),
         SettingController.create
     )
-    .get(cache(10),SettingController.findAll);
+    .get(SettingController.findAll);
     
 router.route('/:SettingId')
     .put(
@@ -19,7 +19,7 @@ router.route('/:SettingId')
         SettingController.validateBody(true),
         SettingController.update
     )
-    .get(cache(10),SettingController.findById)
+    .get(SettingController.findById)
     .delete( requireAuth,SettingController.delete);
 
 export default router;
