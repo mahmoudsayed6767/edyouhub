@@ -19,6 +19,10 @@ const offerCartSchema=new Schema({
         type: Number,
         default:1
     },
+    paymentProgress:{
+        type:Boolean,
+        default:false
+    },
     deleted:{
         type:Boolean,
         default:false

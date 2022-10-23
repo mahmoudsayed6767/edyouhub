@@ -246,6 +246,11 @@ export default {
                 await Promise.all(validatedBody.offers.map(async(offer) => {
                     offer.code = generateCode(8);
                     offers.push(offer)
+                    let offerCarts = await OfferCart.find({deleted: false,user:validatedBody.client,offer:offer.offer})
+                    for (let offerCart of offerCarts ) {
+                        offerCart.paymentProgress = true;
+                        await offerCart.save();
+                    }
                 }));
                 let offerBooking = await OfferBooking.create({
                     user:validatedBody.client,
