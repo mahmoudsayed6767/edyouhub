@@ -4,7 +4,7 @@ import User from "../../models/user/user.model";
 import Offer from "../../models/offer/offer.model";
 import { checkValidations,convertLang } from "../shared/shared.controller";
 
-import OfferCart from "../../models/offerCart/OfferCart.model";
+import OfferCart from "../../models/offerCart/offerCart.model";
 import ApiError from '../../helpers/ApiError';
 import Notif from "../../models/notif/notif.model";
 import { sendNotifiAndPushNotifi } from "../../services/notification-service";
