@@ -5,7 +5,7 @@ export function sendSms(phone,msg) {
   console.log(phone)
   axios.post('https://smsmisr.com/api/v2/?', {
       Username : 'qdLK74qA',
-      password: '7i9FJAK5dq',
+      password: '7i9FJAK5dqA101d',
       language : '2',
       sender: 'Codin Agncy',
       Mobile :phone,
