@@ -22,7 +22,7 @@ import { sendNotifiAndPushNotifi } from "../../services/notification-service";
 import Notif from "../../models/notif/notif.model";
 import Premium from "../../models/premium/premium.model";
 import OfferBooking from "../../models/offerBooking/offerBooking.model"
-import OfferCart from "../../models/offerCart/OfferCart.model";
+import OfferCart from "../../models/offerCart/offerCart.model";
 const populateQuery2 = [
     {path: 'package', model: 'package'},
     {path: 'order', model: 'order'},
