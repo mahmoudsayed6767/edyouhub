@@ -22,6 +22,7 @@ export async function transformOfferCart(e,lang) {
             name:lang=="ar"?e.offer.place.name_ar:e.offer.place.name_en,
             id:e.offer.place._id,
             logo:e.offer.place.logo,
+            cover:e.offer.place.cover
         }
     }
     index.offer = offer

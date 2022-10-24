@@ -7,6 +7,7 @@ export async function transformPlace(e,lang,myUser,userId) {
         phone:e.phone,
         id:e._id,
         logo:e.logo,
+        cover:e.cover,
         createdAt:e.createdAt,
     }
     if(e.owner){
@@ -26,6 +27,7 @@ export async function transformPlaceById(e,lang,myUser,userId) {
         id:e._id,
         type:e.type,
         logo:e.logo,
+        cover:e.cover,
         createdAt:e.createdAt,
     }
     

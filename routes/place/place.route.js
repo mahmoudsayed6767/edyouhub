@@ -10,6 +10,7 @@ router.route('/')
         requireAuth,
         multerSaveTo('places').fields([
             { name: 'logo', maxCount: 1, options: false },
+            { name: 'cover', maxCount: 1, options: false },
         ]),
         parseStringToArrayOfObjectsMw('categories'),
         parseStringToArrayOfObjectsMw('subCategories'),
@@ -27,6 +28,7 @@ router.route('/:placeId')
         requireAuth,
         multerSaveTo('places').fields([
             { name: 'logo', maxCount: 1, options: false },
+            { name: 'cover', maxCount: 1, options: false },
         ]),
         parseStringToArrayOfObjectsMw('categories'),
         parseStringToArrayOfObjectsMw('subCategories'),

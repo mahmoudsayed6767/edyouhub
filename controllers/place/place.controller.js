@@ -278,7 +278,16 @@ export default {
                     }
                     validatedBody.logo = imagesList[0];
                 }else{
-                    return next(new ApiError(500, i18n.__('img.required')));
+                    return next(new ApiError(500, i18n.__('logo.required')));
+                }
+                if (req.files['cover']) {
+                    let imagesList = [];
+                    for (let imges of req.files['cover']) {
+                        imagesList.push(await toImgUrl(imges))
+                    }
+                    validatedBody.cover = imagesList[0];
+                }else{
+                    return next(new ApiError(500, i18n.__('cover.required')));
                 }
             }else{
                 return next(new ApiError(500, i18n.__('imgs.required')))
@@ -342,6 +351,13 @@ export default {
                         imagesList.push(await toImgUrl(imges))
                     }
                     validatedBody.logo = imagesList[0];
+                }
+                if (req.files['cover']) {
+                    let imagesList = [];
+                    for (let imges of req.files['cover']) {
+                        imagesList.push(await toImgUrl(imges))
+                    }
+                    validatedBody.cover = imagesList[0];
                 }
             }
             await Place.findByIdAndUpdate(placeId, {

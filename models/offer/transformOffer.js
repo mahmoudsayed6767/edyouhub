@@ -23,6 +23,7 @@ export async function transformOffer(e,lang,myUser,userId) {
             id:e.place._id,
             type:e.place.type,
             logo:e.place.logo,
+            cover:e.place.cover
         }
     }
     return index;
@@ -58,6 +59,7 @@ export async function transformOfferById(e,lang,myUser,userId) {
             id:e.place._id,
             type:e.place.type,
             logo:e.place.logo,
+            cover:e.place.cover
         }
     }
     

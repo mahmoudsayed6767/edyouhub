@@ -48,6 +48,10 @@ const placeSchema = new Schema({
         type: String,
         required: true,
     },
+    cover: {
+        type: String,
+        required: true,
+    },
     branches: {//shop
         type: [Number],
         ref:'branch',
