@@ -18,7 +18,7 @@ function validatedLocation(location) {
         throw new ValidationError.UnprocessableEntity({ keyword: 'location', message: i18n.__("lat.validate") });
 }
 const populateQuery = [
-
+    { path: 'country', model: 'country'},
     { path: 'city', model: 'city'},
     { path: 'area', model: 'area'},
 ];
