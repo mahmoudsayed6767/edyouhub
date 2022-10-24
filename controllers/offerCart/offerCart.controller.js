@@ -22,6 +22,7 @@ export default {
     async findAll(req, res, next) {
         try {
             convertLang(req)
+            let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
             let query = { user: req.user._id,deleted:false };
             await OfferCart.find(query).populate(populateQuery)
