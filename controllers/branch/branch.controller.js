@@ -44,6 +44,12 @@ export default {
                         id: e._id,
                         createdAt: e.createdAt,
                     }
+                    if(e.country){
+                        index.country = {
+                            name:lang=="ar"?e.country.name_ar:e.country.name_en,
+                            id:e.country._id
+                        }
+                    }
                     if(e.city){
                         index.city = {
                             name:lang=="ar"?e.city.name_ar:e.city.name_en,
@@ -89,6 +95,12 @@ export default {
                         id: e._id,
                         createdAt: e.createdAt,
                     }
+                    if(e.country){
+                        index.country = {
+                            name:lang=="ar"?e.country.name_ar:e.country.name_en,
+                            id:e.country._id
+                        }
+                    }
                     if(e.city){
                         index.city = {
                             name:lang=="ar"?e.city.name_ar:e.city.name_en,
@@ -121,7 +133,7 @@ export default {
             let { branchId } = req.params;
             await checkExist(branchId, Branch, { deleted: false });
 
-            await Branch.findById(branchId).then(async(e) => {
+            await Branch.findById(branchId).populate(populateQuery).then(async(e) => {
                 let index ={
                     address:lang=="ar"?e.address_ar:e.address_en,
                     address_ar:e.address_ar,
@@ -131,6 +143,12 @@ export default {
                     phone: e.phone,
                     id: e._id,
                     createdAt: e.createdAt,
+                }
+                if(e.country){
+                    index.country = {
+                        name:lang=="ar"?e.country.name_ar:e.country.name_en,
+                        id:e.country._id
+                    }
                 }
                 if(e.city){
                     index.city = {
@@ -163,6 +181,9 @@ export default {
             }),
             body('address_en').trim().escape().not().isEmpty().withMessage((value, { req}) => {
                 return req.__('address_en.required', { value});
+            }),
+            body('country').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('country.required', { value});
             }),
             body('city').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('city.required', { value});

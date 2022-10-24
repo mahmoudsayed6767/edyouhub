@@ -7,13 +7,14 @@ import Bill from "../../models/bill/bill.model";
 import Category from "../../models/category/category.model";
 import Report from "../../models/reports/report.model";
 import ApiError from '../../helpers/ApiError';
-import { checkExist, checkExistThenGet,isInArray} from "../../helpers/CheckMethods";
+import { checkExist, checkExistThenGet,isInArray,isLat,isLng} from "../../helpers/CheckMethods";
 import { checkValidations,convertLang } from "../shared/shared.controller";
 import { body } from "express-validator/check";
 import i18n from "i18n";
 import { toImgUrl } from "../../utils";
 import {transformPlace,transformPlaceById} from "../../models/place/transformPlace"
 import Branch from "../../models/branch/branch.model";
+import { ValidationError } from "mongoose";
 
 const populateQuery = [
     { path: 'categories', model: 'category'},
@@ -29,6 +30,13 @@ const populateQuery = [
         populate: { path: 'area', model: 'area' },
     },
 ];
+//validate location
+function validatedLocation(location) {
+    if (!isLng(location[0]))
+        throw new ValidationError.UnprocessableEntity({ keyword: 'location', message: i18n.__("lng.validate") });
+    if (!isLat(location[1]))
+        throw new ValidationError.UnprocessableEntity({ keyword: 'location', message: i18n.__("lat.validate") });
+}
 export default {
 
     async findAll(req, res, next) {
@@ -310,6 +318,7 @@ export default {
             let theBranch = await Branch.create({
                 city:validatedBody.city,
                 area:validatedBody.area,
+                country:validatedBody.country,
                 address_ar:validatedBody.address_ar,
                 address_en:validatedBody.address_en,
                 phone:validatedBody.branchPhone,

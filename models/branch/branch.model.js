@@ -17,6 +17,12 @@ const branchSchema = new Schema({
         type: String,
         //required: true,
     },
+    country: {
+        type: Number,
+        ref:'country',
+        required: true,
+        default:1
+    },
     city: {
         type: Number,
         ref:'city',
