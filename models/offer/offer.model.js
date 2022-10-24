@@ -34,6 +34,11 @@ const OfferSchema=new Schema({
         required: true,
         ref:'place'
     },
+    category: {
+        type: Number,
+        ref:'category',
+        default:59
+    },
     type: {
         type: String,
         enum: ['NEW-PRICE','VOUCHER'],

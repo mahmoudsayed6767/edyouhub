@@ -140,6 +140,11 @@ export default {
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('price.numeric', { value});
             }),
+            body('category').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('category.required', { value});
+            }).isNumeric().withMessage((value, { req}) => {
+                return req.__('category.numeric', { value});
+            }),
             body('type').trim().escape().not().isEmpty().withMessage((value, { req}) => {
                 return req.__('type.required', { value});
             }).isIn(['NEW-PRICE','VOUCHER']).withMessage((value, { req}) => {

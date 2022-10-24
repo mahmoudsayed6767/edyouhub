@@ -10,10 +10,12 @@ import Notif from "../../models/notif/notif.model";
 import { sendNotifiAndPushNotifi } from "../../services/notification-service";
 import { body } from "express-validator/check";
 import i18n from "i18n";
+import {transformOfferCart} from "../../models/offerCart/transformOfferCart"
 
 const populateQuery = [
     {
-        path: 'offer', model: 'offer' ,       
+        path: 'offer', model: 'offer' , 
+        populate: { path: 'place', model: 'place' },      
     },
 ];
 export default {
@@ -22,16 +24,22 @@ export default {
             convertLang(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
             let query = { user: req.user._id,deleted:false };
-            let offerCarts = await OfferCart.find(query).populate(populateQuery)
+            await OfferCart.find(query).populate(populateQuery)
                 .sort({ createdAt: -1 })
                 .limit(limit)
                 .skip((page - 1) * limit)
+                .skip((page - 1) * limit).then(async (data) => {
+                    var newdata = [];
+                    await Promise.all(data.map(async(e) =>{
+                        let index = await transformOfferCart(e,lang)
+                        newdata.push(index)
+                    }))
+                    const count = await OfferCart.countDocuments(query);
+                    const pageCount = Math.ceil(count / limit);
 
+                    res.send(new ApiResponse(newdata, page, pageCount, limit, count, req));
+                })
 
-            const offerCartsCount = await OfferCart.countDocuments(query);
-            const pageCount = Math.ceil(offerCartsCount / limit);
-
-            res.send(new ApiResponse(offerCarts, page, pageCount, limit, offerCartsCount, req));
         } catch (err) {
             next(err);
         }
