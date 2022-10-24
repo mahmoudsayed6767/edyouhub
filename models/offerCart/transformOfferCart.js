@@ -6,22 +6,22 @@ export async function transformOfferCart(e,lang) {
         id:e._id
     }
     let offer = {
-        title:lang=="ar"?e.title_ar:e.title_en,
-        end:e.end,
-        id:e._id,
-        imgs:e.imgs,
-        type:e.type,
-        fromDate:e.fromDate,
-        toDate:e.toDate,
-        oldPrice:e.oldPrice,
-        newPrice:e.newPrice,
-        coins:e.coins,
+        title:lang=="ar"?e.offer.title_ar:e.offer.title_en,
+        end:e.offer.end,
+        id:e.offer._id,
+        imgs:e.offer.imgs,
+        type:e.offer.type,
+        fromDate:e.offer.fromDate,
+        toDate:e.offer.toDate,
+        oldPrice:e.offer.oldPrice,
+        newPrice:e.offer.newPrice,
+        coins:e.offer.coins,
     }
     if(e.offer.place){
         offer.place = {
-            name:lang=="ar"?e.place.name_ar:e.place.name_en,
-            id:e.place._id,
-            logo:e.place.logo,
+            name:lang=="ar"?e.offer.place.name_ar:e.offer.place.name_en,
+            id:e.offer.place._id,
+            logo:e.offer.place.logo,
         }
     }
     index.offer = offer
