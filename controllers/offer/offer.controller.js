@@ -21,6 +21,9 @@ const populateQuery = [
     {
         path: 'place', model: 'place',
     },
+    {
+        path: 'category', model: 'category',
+    },
 ];
 
 export default {

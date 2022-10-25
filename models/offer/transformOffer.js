@@ -62,6 +62,13 @@ export async function transformOfferById(e,lang,myUser,userId) {
             cover:e.place.cover
         }
     }
+    if(e.category){
+        index.category ={
+            name:lang=="ar"?e.category.name_ar:e.category.name_en,
+            id:e.category._id,                         
+            
+        }
+    }
     
     return index;
 }
