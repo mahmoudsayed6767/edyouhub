@@ -30,7 +30,14 @@ const populateQuery2 = [
     {path: 'premium', model: 'premium'},
     {path: 'offer', model: 'offer'},
     {path: 'user', model: 'user'},
-    {path: 'offerBooking', model: 'offerBooking'},
+    {
+        path: 'offerBooking', model: 'offerBooking',
+        populate: { path: 'offers.offer', model: 'offer' },
+    },
+    {
+        path: 'offerBooking', model: 'offerBooking',
+        populate: { path: 'offers.place', model: 'place' },
+    },
 ];
 const payPremium = async (premiums,client) => {
     for (let thePremium of premiums) {

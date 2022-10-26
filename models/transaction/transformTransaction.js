@@ -55,14 +55,6 @@ export async function transformTransaction(e,lang) {
             id: e.package._id,
         }
     }
-    if(e.offer){
-        index.offer = {
-            title:lang=="ar"?e.offer.title_ar:e.offer.title_en,
-            id:e.offer._id,
-            type:e.offer.type,
-            coins:e.offer.coins,
-        }
-    }
     if(e.order){
         index.order ={
             total:e.order.total,
@@ -75,11 +67,41 @@ export async function transformTransaction(e,lang) {
         }
     }
     if(e.offerBooking){
-        index.offerBooking ={
+        let offerBooking ={
             user:e.offerBooking.user,
             offers:e.offerBooking.offers,
             id: e.offerBooking._id,
         }
+        let offers=[]
+        for (let val of e.offerBooking.offers) {
+            let obj  = {
+                count:val.count,
+                code:val.code,
+                 
+            }
+            if(val.offer){
+                obj.offer = {
+                    title:lang=="ar"?val.offer.title_ar:val.offer.title_en,
+                    description:lang=="ar"?val.offer.description_ar:val.offer.description_en,
+                    end:val.offer.end,
+                    id:val.offer._id,
+                    oldPrice:val.offer.oldPrice,
+                    newPrice:val.offer.newPrice,
+                    coins:val.offer.coins,
+                }
+            }
+            if(val.place){
+                obj.place = {
+                    name:lang=="ar"?val.place.name_ar:val.place.name_en,
+                    id:val.place._id,
+                    logo:val.place.logo,
+                    cover:val.place.cover
+                }
+            }
+            offers.push(obj)  
+        }
+        offerBooking.offers = offers
+        index.offerBooking = offerBooking
     }
     return index
 }

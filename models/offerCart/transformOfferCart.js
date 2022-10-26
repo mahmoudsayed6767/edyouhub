@@ -7,6 +7,7 @@ export async function transformOfferCart(e,lang) {
     }
     let offer = {
         title:lang=="ar"?e.offer.title_ar:e.offer.title_en,
+        description:lang=="ar"?e.offer.description_ar:e.offer.description_en,
         end:e.offer.end,
         id:e.offer._id,
         imgs:e.offer.imgs,
