@@ -311,6 +311,7 @@ export default {
             let query = {deleted: false };
            
             if (type) query.type = type;
+            if (type =="CASHBACK") query.type = {$in:['PACKAGE','OFFER']}
             if (fund) query.fund = fund;
             if (fees) query.fees = fees;
             if (thePackage) query.package = thePackage
@@ -349,6 +350,7 @@ export default {
             let query = {deleted: false };
            
             if (type) query.type = type;
+            if (type =="CASHBACK") query.type = {$in:['PACKAGE','OFFER']}
             if (fund) query.fund = fund;
             if (fees) query.fees = fees;
             if (thePackage) query.package = thePackage
