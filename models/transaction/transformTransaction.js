@@ -7,6 +7,7 @@ export async function transformTransaction(e,lang) {
         dateMillSec:e.dateMillSec,
         cost:e.cost,
         tax:e.tax,
+        coins:e.coins,
         totalCost:e.totalCost,
         paymentMethod:e.paymentMethod,
         billUrl:e.billUrl,
