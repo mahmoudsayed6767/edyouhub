@@ -250,9 +250,12 @@ export default {
             }
             if(validatedBody.type =="OFFER"){
                 let offers = []
+                let coins = 0
                 await Promise.all(validatedBody.offers.map(async(offer) => {
                     offer.code = generateCode(8);
                     offers.push(offer)
+                    let theOffer = await checkExistThenGet(offer.offer,Offer, { deleted: false })
+                    coins = coins + theOffer.coins
                     let offerCarts = await OfferCart.find({deleted: false,user:validatedBody.client,offer:offer.offer})
                     for (let offerCart of offerCarts ) {
                         offerCart.paymentProgress = true;
@@ -264,7 +267,7 @@ export default {
                     offers:offers,
                 })
                 transactionData.offerBooking = offerBooking.id
-                
+                transactionData.coins = coins
             }
             if(validatedBody.type =="PREMIUM"){
                 transactionData.premiums = validatedBody.premiums

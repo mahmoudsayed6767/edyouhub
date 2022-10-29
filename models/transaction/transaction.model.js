@@ -73,6 +73,10 @@ const transactionSchema = new Schema({
         required:true,
         default:0
     },
+    coins:{
+        type:Number,
+        default:50
+    },
     paymentObject:{
         type:String,
     },
