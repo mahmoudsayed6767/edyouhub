@@ -78,6 +78,7 @@ const payPremium = async (premiums,client) => {
             console.log("cashBack",cashBack)
             let fundOwner = await checkExistThenGet(client, User)
             fundOwner.balance = fundOwner.balance + cashBack
+            fundOwner.cashBack = true
             await fundOwner.save();
             if(premium.lastMonth == true){
                 fees.status = "COMPLETED"
@@ -127,6 +128,7 @@ const payFirstPaid = async (theFund,client) => {
     //add cashBack to fund owner
     let fundOwner = await checkExistThenGet(fund.owner, User)
     fundOwner.balance = fundOwner.balance + cashBack
+    fundOwner.cashBack = true
     await fundOwner.save();
     //add cashBack to affiliate
     if(fundOwner.affiliate){
