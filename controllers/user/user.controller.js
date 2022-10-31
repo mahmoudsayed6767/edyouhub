@@ -859,7 +859,7 @@ export default {
             if(!isInArray(["ADMIN","SUB-ADMIN","PLACE"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth'))); 
             let page = +req.query.page || 1, limit = +req.query.limit || 20,
-            {phoneVerify,search,accountType,type, active,place} = req.query;
+            {cashBack,phoneVerify,search,accountType,type, active,place} = req.query;
             
             let query = {deleted: false };
             if (place) query.place = place
@@ -869,6 +869,8 @@ export default {
             if (accountType) query.accountType = accountType;
             if (active=="true") query.active = true;
             if (active=="false") query.active = false;
+            if (cashBack=="true") query.cashBack = true;
+            if (cashBack=="false") query.cashBack = false;
             if(search) {
                 Object.assign(query ,{
                     $and: [
@@ -890,6 +892,11 @@ export default {
                 let newdata = []
                 await Promise.all(data.map(async(e)=>{
                     let index = await transformUser(e,lang)
+                    let theUser = await checkExistThenGet(e._id, User)
+                    if(e.coins > 0){
+                        theUser.cashBack = true
+                    }
+                    await theUser.save();
                     newdata.push(index)
                 }))
                 
@@ -908,7 +915,7 @@ export default {
             let lang = i18n.getLocale(req)
             if(!isInArray(["ADMIN","SUB-ADMIN","PLACE"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth'))); 
-            let {phoneVerify,search,accountType,type, active,place} = req.query;
+            let {cashBack,phoneVerify,search,accountType,type, active,place} = req.query;
             
             let query = {deleted: false };
             if (phoneVerify=="true") query.phoneVerify = true;
@@ -918,6 +925,8 @@ export default {
             if (accountType) query.accountType = accountType;
             if (active=="true") query.active = true;
             if (active=="false") query.active = false;
+            if (cashBack=="true") query.cashBack = true;
+            if (cashBack=="false") query.cashBack = false;
             if(search) {
                 Object.assign(query ,{
                     $and: [

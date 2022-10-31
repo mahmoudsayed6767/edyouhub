@@ -15,6 +15,7 @@ export async function transformUser(e,lang,myUser,userId) {
         img:e.img,
         block:e.block,
         affiliateCode:e.affiliateCode,
+        cashBack:e.cashBack,
         createdAt: e.createdAt,
         updatedAt: e.updatedAt,
     }
@@ -36,6 +37,7 @@ export async function transformUserById(e,lang,myUser,userId) {
         img:e.img,
         block:e.block,
         balance:e.balance,
+        cashBack:e.cashBack,
         createdAt: e.createdAt,
         updatedAt: e.updatedAt,
         

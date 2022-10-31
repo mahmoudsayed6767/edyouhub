@@ -122,6 +122,10 @@ const userSchema = new Schema({
         type:[Number],
         ref:'coupons'
     },
+    cashBack: {
+        type: Boolean,
+        default: false
+    },
     deleted: {
         type: Boolean,
         default: false
