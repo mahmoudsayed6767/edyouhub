@@ -892,11 +892,6 @@ export default {
                 let newdata = []
                 await Promise.all(data.map(async(e)=>{
                     let index = await transformUser(e,lang)
-                    let theUser = await checkExistThenGet(e._id, User)
-                    if(e.coins > 0){
-                        theUser.cashBack = true
-                    }
-                    await theUser.save();
                     newdata.push(index)
                 }))
                 

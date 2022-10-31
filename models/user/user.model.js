@@ -38,17 +38,17 @@ const userSchema = new Schema({
     country: {
         type: Number,
         ref: 'country',
-        required: true,
+        //required: true,
     },
     city: {
         type: Number,
         ref: 'city',
-        required: true,
+        //required: true,
     },
     area: {
         type: Number,
         ref: 'area',
-        required: true,
+        //required: true,
     },
     affiliateCode: {//for affiliate
         type: String,
