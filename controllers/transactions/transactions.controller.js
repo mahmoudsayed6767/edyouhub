@@ -125,6 +125,7 @@ const payFirstPaid = async (theFund,client) => {
     console.log("total",total)
     let cashBack = (total * setting.cashBackRatio) / 100 
     console.log("cashBack",cashBack)
+    
     //add cashBack to fund owner
     let fundOwner = await checkExistThenGet(fund.owner, User)
     fundOwner.balance = fundOwner.balance + cashBack
