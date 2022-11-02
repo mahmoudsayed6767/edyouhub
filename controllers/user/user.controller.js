@@ -10,7 +10,7 @@ import bcrypt from 'bcryptjs';
 import { generateVerifyCode,generateCode ,generateMaxCode} from '../../services/generator-code-service';
 import DeviceDetector from "device-detector-js";
 import { sendEmail } from "../../services/sendGrid";
-import {sendSms} from "../../services/sms"
+import {sendSms} from "../../services/message-service"
 import { sendNotifiAndPushNotifi } from "../../services/notification-service";
 import i18n from "i18n";
 import {transformUser,transformUserById } from '../../models/user/transformUser';
