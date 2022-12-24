@@ -26,7 +26,9 @@ export default {
             body('requirements').trim().escape().not().isEmpty().withMessage((value, { req}) => {
                 return req.__('requirements.required', { value});
             }),
-            body('business').trim().escape().isNumeric().withMessage((value, { req}) => {
+            body('business').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('business.required', { value});
+            }).isNumeric().withMessage((value, { req}) => {
                 return req.__('business.numeric', { value});
             }),
             
