@@ -7,7 +7,6 @@ const router = express.Router();
 router.route('/:toId')
     .post(  
         requireAuth,
-        connectionController.validateBody(),
         connectionController.create
     )
 router.route('/')

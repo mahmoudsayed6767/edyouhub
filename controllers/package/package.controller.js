@@ -3,7 +3,7 @@ import Report from "../../models/reports/report.model";
 import ApiError from '../../helpers/ApiError';
 import { checkExist, checkExistThenGet,isInArray} from "../../helpers/CheckMethods";
 import { checkValidations,convertLang } from "../shared/shared.controller";
-import { body } from "express-validator/check";
+import { body } from "express-validator";
 import Package from "../../models/package/package.model";
 import {transformPackage} from "../../models/package/transformPackage"
 import i18n from "i18n";

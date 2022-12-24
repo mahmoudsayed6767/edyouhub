@@ -1,7 +1,7 @@
 import fs from 'fs';
 import ApiError from '../../helpers/ApiError';
-import { validationResult } from 'express-validator/check';
-import { matchedData } from 'express-validator/filter';
+import { validationResult } from 'express-validator';
+import { matchedData } from 'express-validator';
 import { toImgUrl } from '../../utils';
 import User from '../../models/user/user.model'
 import i18n from 'i18n';

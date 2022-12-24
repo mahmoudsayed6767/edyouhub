@@ -5,7 +5,7 @@ import ApiError from '../../helpers/ApiError';
 
 import { checkExist, checkExistThenGet, isImgUrl,isInArray } from "../../helpers/CheckMethods";
 import { handleImg, checkValidations,convertLang } from "../shared/shared.controller";
-import { body } from "express-validator/check";
+import { body } from "express-validator";
 import i18n from "i18n";
 
 export default {

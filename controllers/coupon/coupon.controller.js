@@ -5,7 +5,7 @@ import ApiError from '../../helpers/ApiError';
 import User from "../../models/user/user.model";
 import { checkExist, checkExistThenGet ,isInArray} from "../../helpers/CheckMethods";
 import {  checkValidations ,convertLang} from "../shared/shared.controller";
-import { body } from "express-validator/check";
+import { body } from "express-validator";
 import i18n from "i18n";
 import EducationInstitution from "../../models/education institution/education institution.model";
 

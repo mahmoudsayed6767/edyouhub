@@ -1,6 +1,6 @@
 import Vacancy from "../../models/vacancy/vacancy.model";
 import Report from "../../models/reports/report.model";
-import { body } from "express-validator/check";
+import { body } from "express-validator";
 import { checkValidations,convertLang} from "../shared/shared.controller";
 import { checkExist } from "../../helpers/CheckMethods";
 import ApiResponse from "../../helpers/ApiResponse";

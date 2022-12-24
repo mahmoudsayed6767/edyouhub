@@ -1,6 +1,6 @@
 import EducationSystem from "../../models/education system/education system.model";
 import Report from "../../models/reports/report.model";
-import { body } from "express-validator/check";
+import { body } from "express-validator";
 import { checkValidations,convertLang,handleImg} from "../shared/shared.controller";
 import ApiError from "../../helpers/ApiError";
 import { checkExist,isInArray,isImgUrl } from "../../helpers/CheckMethods";

@@ -1,5 +1,5 @@
 import { checkExistThenGet, checkExist ,isInArray} from '../../helpers/CheckMethods';
-import { body } from 'express-validator/check';
+import { body } from 'express-validator';
 import { checkValidations, handleImg,convertLang } from '../shared/shared.controller';
 import { generateToken } from '../../utils/token';
 import ApiResponse from "../../helpers/ApiResponse";

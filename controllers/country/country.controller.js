@@ -3,7 +3,7 @@ import City from "../../models/city/city.model";
 
 import ApiError from "../../helpers/ApiError";
 import ApiResponse from "../../helpers/ApiResponse";
-import { body } from "express-validator/check";
+import { body } from "express-validator";
 import { checkExistThenGet ,isInArray,checkExist} from "../../helpers/CheckMethods";
 import { handleImg, checkValidations,convertLang } from "../shared/shared.controller";
 import Area from "../../models/area/area.model";

@@ -3,7 +3,7 @@ import Bill from "../../models/bill/bill.model";
 import {transformBill, transformBillById} from "../../models/bill/transformBill";
 import User from "../../models/user/user.model";
 import Report from "../../models/reports/report.model";
-import { body } from "express-validator/check";
+import { body } from "express-validator";
 import { checkValidations,convertLang} from "../shared/shared.controller";
 import ApiError from "../../helpers/ApiError";
 import { checkExist,isInArray } from "../../helpers/CheckMethods";

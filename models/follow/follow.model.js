@@ -31,7 +31,6 @@ followSchema.set('toJSON', {
         delete ret.deleted;
     }
 });
-autoIncrement.initialize(mongoose.follow);
 followSchema.plugin(autoIncrement.plugin, { model: 'follow', startAt: 1 });
 
 export default mongoose.model('follow', followSchema);

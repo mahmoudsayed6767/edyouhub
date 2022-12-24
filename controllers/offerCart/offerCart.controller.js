@@ -8,7 +8,7 @@ import OfferCart from "../../models/offerCart/offerCart.model";
 import ApiError from '../../helpers/ApiError';
 import Notif from "../../models/notif/notif.model";
 import { sendNotifiAndPushNotifi } from "../../services/notification-service";
-import { body } from "express-validator/check";
+import { body } from "express-validator";
 import i18n from "i18n";
 import {transformOfferCart} from "../../models/offerCart/transformOfferCart"
 

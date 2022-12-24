@@ -4,7 +4,7 @@ import Alternative from "../../models/supplies/alternatives.model";
 import ApiResponse from "../../helpers/ApiResponse";
 import {  checkValidations ,convertLang} from "../shared/shared.controller";
 import { checkExistThenGet, checkExist,isInArray } from "../../helpers/CheckMethods";
-import { body } from "express-validator/check";
+import { body } from "express-validator";
 import Report from "../../models/reports/report.model";
 import ApiError from '../../helpers/ApiError';
 import Cart from "../../models/cart/cart.model";

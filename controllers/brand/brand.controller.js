@@ -1,5 +1,5 @@
 import Brand from "../../models/brand/brand.model";
-import { body } from "express-validator/check";
+import { body } from "express-validator";
 import { checkValidations,convertLang ,handleImg} from "../shared/shared.controller";
 import ApiError from "../../helpers/ApiError";
 import Report from "../../models/reports/report.model";

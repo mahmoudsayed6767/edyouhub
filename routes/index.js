@@ -41,10 +41,15 @@ import VacancyRoute from "./vacancy/vacancy.route";
 import AdmissionRequestRoute from "./admissionRequest/admissionRequest.route"
 import VacancyRequest from "./vacancyRequest/vacancyRequest.route"
 import HigherEducation from "./higherEducation/higherEducation.route"
-
+import FollowRoute from "./follow/follow.route"
+import MessageRoute from "./message/message.route"
+import connectionRoute from "./connection/connection.route"
 const router = express.Router();
+router.use('/offerCart', offerCartRoute);
 router.use('/HigherEducations', HigherEducation);
-
+router.use('/follow', FollowRoute);
+router.use('/messages', MessageRoute);
+router.use('/connections', connectionRoute);
 router.use('/admissions', AdmissionRoute);
 router.use('/vacancies', VacancyRoute);
 router.use('/admissionRequests', AdmissionRequestRoute);

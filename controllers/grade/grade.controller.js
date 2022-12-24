@@ -1,6 +1,6 @@
 import Grade from "../../models/grade/grade.model";
 import Report from "../../models/reports/report.model";
-import { body } from "express-validator/check";
+import { body } from "express-validator";
 import { checkValidations,convertLang} from "../shared/shared.controller";
 import EducationInstitution from "../../models/education institution/education institution.model";
 import { checkExist } from "../../helpers/CheckMethods";

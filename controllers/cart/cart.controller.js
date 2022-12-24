@@ -6,7 +6,7 @@ import { checkValidations,convertLang } from "../shared/shared.controller";
 import Color from "../../models/color/color.model";
 import Cart from "../../models/cart/cart.model";
 import ApiError from '../../helpers/ApiError';
-import { body } from "express-validator/check";
+import { body } from "express-validator";
 import i18n from "i18n";
 import { transformCart } from "../../models/cart/transformCart";
 import Coupon from "../../models/coupon/coupon.model";

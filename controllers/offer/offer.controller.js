@@ -1,7 +1,7 @@
 import ApiResponse from "../../helpers/ApiResponse";
 import { checkExist, checkExistThenGet, isInArray } from "../../helpers/CheckMethods";
 import { checkValidations,convertLang } from "../shared/shared.controller";
-import { body } from "express-validator/check";
+import { body } from "express-validator";
 import Offer from "../../models/offer/offer.model";
 import User from "../../models/user/user.model";
 import Report from "../../models/reports/report.model";

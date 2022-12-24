@@ -5,7 +5,7 @@ import Report from "../../models/reports/report.model";
 import ApiError from '../../helpers/ApiError';
 import { checkExist, checkExistThenGet,isInArray} from "../../helpers/CheckMethods";
 import { checkValidations,convertLang } from "../shared/shared.controller";
-import { body } from "express-validator/check";
+import { body } from "express-validator";
 import i18n from "i18n";
 import {transformFees} from "../../models/fees/transformFees"
 import EducationInstitution from "../../models/education institution/education institution.model";

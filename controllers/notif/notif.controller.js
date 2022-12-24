@@ -5,7 +5,7 @@ import ApiResponse from "../../helpers/ApiResponse";
 import Report from "../../models/reports/report.model";
 import i18n from "i18n";
 import {convertLang,checkValidations} from "../shared/shared.controller";
-import { body } from "express-validator/check";
+import { body } from "express-validator";
 import { sendNotifiAndPushNotifi } from "../../services/notification-service";
 
 const populateQuery = [
@@ -169,7 +169,7 @@ export default {
     },
     validateNotif() {
         let validations = [
-            body('description').withMessage((value, { req}) => {
+            body('description').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('description.required', { value});
             }),
             body('title').not().isEmpty().withMessage((value, { req}) => {

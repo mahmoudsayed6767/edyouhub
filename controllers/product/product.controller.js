@@ -3,7 +3,7 @@ import ApiResponse from "../../helpers/ApiResponse";
 import Category from "../../models/category/category.model";
 import { handleImgs, checkValidations ,convertLang} from "../shared/shared.controller";
 import { checkExistThenGet, checkExist,isInArray } from "../../helpers/CheckMethods";
-import { body } from "express-validator/check";
+import { body } from "express-validator";
 import Report from "../../models/reports/report.model";
 import { toImgUrl } from "../../utils";
 import ApiError from '../../helpers/ApiError';
@@ -214,7 +214,7 @@ export default {
                 }
                 return true;
             }),
-            body('quantity').optional().withMessage((value, { req}) => {
+            body('quantity').optional().isNumeric().withMessage((value, { req}) => {
                 return req.__('quantity.numeric', { value});
             }),
             body('category').not().isEmpty().withMessage((value, { req}) => {

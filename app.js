@@ -74,7 +74,7 @@ app.use(express.urlencoded({ limit: '100mb', extended: true, parameterLimit: 500
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'docs')));
 app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
-app.use(expressValidator());
+//app.use(expressValidator());
 
 // make the file publically accessable 
 app.use('/uploads',express.static('uploads'));

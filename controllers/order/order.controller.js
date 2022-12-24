@@ -3,7 +3,7 @@ import ApiResponse from "../../helpers/ApiResponse";
 import Order from "../../models/order/order.model";
 import { sendNotifiAndPushNotifi } from "../../services/notification-service";
 import Notif from "../../models/notif/notif.model"
-import { body } from "express-validator/check";
+import { body } from "express-validator";
 import Product from "../../models/product/product.model";
 import { ValidationError } from "mongoose";
 import { checkValidations ,convertLang} from "../shared/shared.controller";

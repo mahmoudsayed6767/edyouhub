@@ -1,6 +1,5 @@
 var Message = require('../../models/message/message.model');
 import Notif from "../../models/notif/notif.model";
-import Reservation from "../../models/reservation/reservation.model";
 import { checkExistThenGet,isInArray } from "../../helpers/CheckMethods";
 import { sendNotifiAndPushNotifi } from "../../services/notification-service";
 import {handleImg} from "../shared/shared.controller";
@@ -13,7 +12,6 @@ const logger = new Logger('message '+ new Date(Date.now()).toDateString())
 const populateQuery = [
     { path: 'from', model: 'user'},
     { path: 'to', model: 'user'},
-    { path: 'reservation', model: 'reservation'},
 ];
 
 var messageController = {
@@ -42,9 +40,6 @@ var messageController = {
         if (data.dataType != null) {
             messData.content = data.content;
             messData.dataType = data.dataType;
-        }
-        if(data.reservation != null) {
-            messData.reservation = data.reservation;
         }
         if(data.duration != null) {
             messData.duration = data.duration;
@@ -87,11 +82,10 @@ var messageController = {
                             dataType: theMessage.dataType?theMessage.dataType:"",
                             createdAt: theMessage.incommingDate,
                             duration: theMessage.duration,
-                            reservation:theMessage.reservation,
                             user: {
                                 id: theMessage.from._id,
-                                firstname:theMessage.from.firstname,
-                                lastname:theMessage.from.lastname,
+                                fullname:theMessage.from.fullname,
+                                username:theMessage.from.username,
                                 type:theMessage.from.type,
                                 img: theMessage.from.img
                             },
@@ -108,7 +102,7 @@ var messageController = {
                         sendNotifiAndPushNotifi({
                             targetUser: data.toId, 
                             fromUser: data.fromId, 
-                            text: 'vTor',
+                            text: 'edyouhub',
                             subject: result2._id,
                             subjectType: 'you have a new message',
                             info:'MESSAGE'
@@ -166,12 +160,11 @@ var messageController = {
                         content: element.content,
                         dataType:element.dataType,
                         createdAt: element.incommingDate,
-                        reservation: element.reservation,
                         duration:element.duration,
                         user: {
                             id: element.from._id,
-                            firstname:element.from.firstname,
-                            lastname:element.from.lastname,
+                            fullname:element.from.fullname,
+                            username:element.from.username,
                             img: element.from.img,
                             type:element.from.type
                         },
@@ -293,25 +286,13 @@ var messageController = {
                             queryCount.from = element.from._id;
                         }
                         unseenCount = await Message.countDocuments(queryCount);
-                        let endChat = false;
-                        if(element.reservation != null){
-                            let reservation = await checkExistThenGet(element.reservation._id,Reservation)
-                            logger.info(`reservation.status ${reservation.status}`);
-                            if(isInArray(["PAID","STARTED"],reservation.status)){
-                                endChat = false
-                            }else{
-                                endChat = true
-                            }
-
-                        }
+                        
                         element = {
-                            endChat: endChat,
                             seen: element.seen,
                             incommingDate: element.incommingDate,
                             lastMessage: element.lastMessage,
-                            reservation: element.reservation,
                             duration:element.duration,
-                            id: element.id,
+                            id: element._id,
                             to: element.to,
                             from: element.from,
                             content: element.content,
@@ -334,7 +315,7 @@ var messageController = {
             deleted:false,
             _id: { $in : data.users } 
         };
-        User.find(query).select('firstename lastname img')
+        User.find(query).select('firstename username img')
         .then((data1)=>{
             nsp.to(myRoom).emit('onlineUsers', {data: data1});
         })

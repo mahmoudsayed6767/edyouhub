@@ -5,7 +5,7 @@ import Report from "../../models/reports/report.model";
 import ApiError from '../../helpers/ApiError';
 import { checkExist, checkExistThenGet,isInArray} from "../../helpers/CheckMethods";
 import { checkValidations,convertLang } from "../shared/shared.controller";
-import { body } from "express-validator/check";
+import { body } from "express-validator";
 import i18n from "i18n";
 import {transformPremium} from "../../models/premium/transformPremium"
 import { sendNotifiAndPushNotifi } from "../../services/notification-service";

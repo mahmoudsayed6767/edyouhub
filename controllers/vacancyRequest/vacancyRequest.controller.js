@@ -1,6 +1,6 @@
 import VacancyRequest from "../../models/vacancyRequest/vacancyRequest.model";
 import Report from "../../models/reports/report.model";
-import { body } from "express-validator/check";
+import { body } from "express-validator";
 import { checkValidations,convertLang,handleImg} from "../shared/shared.controller";
 import { checkExist,checkExistThenGet,isInArray } from "../../helpers/CheckMethods";
 import ApiResponse from "../../helpers/ApiResponse";

@@ -1,5 +1,5 @@
 import { checkExistThenGet, checkExist } from '../../helpers/CheckMethods';
-import { body } from 'express-validator/check';
+import { body } from 'express-validator';
 import { checkValidations } from '../shared/shared.controller';
 import User from "../../models/user/user.model";
 import Report from "../../models/reports/report.model";

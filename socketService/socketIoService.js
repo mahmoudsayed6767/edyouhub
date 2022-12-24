@@ -1,6 +1,5 @@
 
 import User from "../models/user/user.model";
-import BookingController from "../controllers/booking/booking.controller";
 var Message = require('../models/message/message.model');
 var MessageController = require('../controllers/message/messageController');
 
@@ -35,22 +34,6 @@ module.exports = {
             MessageController.getOnlineUsers(nsp,onlineData);
             await User.findByIdAndUpdate(myId, {lastSeen:Date.parse(new Date()),online:true}, { new: true });
             
-            socket.on('AddBooking', function (data) { 
-                console.log(data);
-                BookingController.AddBooking(socket,data,nsp);
-            });
-            socket.on('CancelBooking', function (data) { 
-                console.log(data);
-                BookingController.CancelBooking(socket,nsp,data);
-            });
-            socket.on('RejectBooking', function (data) { 
-                console.log(data);
-                BookingController.rejectBooking(socket,nsp,data);
-            });
-            socket.on('AcceptBooking', function (data) { 
-                console.log(data);
-                BookingController.acceptBooking(socket,nsp,data);
-            });
             socket.on('newMessage', function (data) { 
                 console.log(data);
                 MessageController.addnewMessage(io,nsp,data);

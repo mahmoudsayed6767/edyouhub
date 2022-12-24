@@ -3,7 +3,7 @@ import {transformFund,transformFundById} from "../../models/fund/transformFund";
 import Student from "../../models/student/student.model";
 import Premium from "../../models/premium/premium.model";
 import Report from "../../models/reports/report.model";
-import { body } from "express-validator/check";
+import { body } from "express-validator";
 import { checkValidations,convertLang,handleImg} from "../shared/shared.controller";
 import ApiError from "../../helpers/ApiError";
 import { checkExist,isInArray } from "../../helpers/CheckMethods";

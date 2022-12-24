@@ -1,7 +1,7 @@
 import ApiResponse from "../../helpers/ApiResponse";
 import { checkExist, checkExistThenGet, isImgUrl,isInArray } from "../../helpers/CheckMethods";
 import { handleImg, checkValidations ,convertLang} from "../shared/shared.controller";
-import { body } from "express-validator/check";
+import { body } from "express-validator";
 import Category from "../../models/category/category.model";
 import subCategory from "../../models/category/sub-category.model";
 import User from "../../models/user/user.model";

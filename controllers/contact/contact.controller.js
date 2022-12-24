@@ -1,4 +1,4 @@
-import { body } from "express-validator/check";
+import { body } from "express-validator";
 import Contact from "../../models/contact/contact.model";
 import { checkExistThenGet,isInArray } from "../../helpers/CheckMethods";
 import ApiError from "../../helpers/ApiError";
