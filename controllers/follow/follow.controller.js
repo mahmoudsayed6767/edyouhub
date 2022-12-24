@@ -61,7 +61,7 @@ export default {
                         let index = await transformBusiness(e,lang,myUser,req.user._id)
                         newdata.push(index);
                     }))
-                    const count = await business.countDocuments(query2);
+                    const count = await Business.countDocuments(query2);
                     const pageCount = Math.ceil(count / limit);
 
                     res.send(new ApiResponse(newdata, page, pageCount, limit, count, req));
@@ -130,7 +130,7 @@ export default {
             }
             user.following = arr;
             await user.save();
-            await Follow.save();
+            await follow.save();
             let reports = {
                 "action":"Remove From business List",
                 "type":"FOLLOW",

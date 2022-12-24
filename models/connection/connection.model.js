@@ -7,7 +7,8 @@ const connectionSchema = new Schema({
     },
     status:{
         type: String,
-        enum:['PENDING','ACCEPTED','REJECTED']
+        enum:['PENDING','ACCEPTED','REJECTED'],
+        default: 'PENDING'
     },
     from: {
         type: Number,

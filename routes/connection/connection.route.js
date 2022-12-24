@@ -4,7 +4,7 @@ import connectionController from '../../controllers/connection/connection.contro
 
 const router = express.Router();
 
-router.route('/:toId')
+router.route('/:toId/add')
     .post(  
         requireAuth,
         connectionController.create

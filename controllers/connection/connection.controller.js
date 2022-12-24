@@ -8,6 +8,11 @@ import { checkExistThenGet,isInArray } from "../../helpers/CheckMethods";
 import i18n from "i18n";
 import { sendNotifiAndPushNotifi } from "../../services/notification-service";
 import Notif from "../../models/notif/notif.model";
+import User from "../../models/user/user.model";
+const populateQuery = [
+    { path: 'to', model: 'user' },
+    { path: 'from', model: 'user' },
+];
 export default {
     async create(req, res, next) {
         try {
@@ -16,8 +21,15 @@ export default {
             let query = {
                 $and: [
                     { $or: [
-                        {to: req.user._id}, 
-                        {from: req.user._id}, 
+                        {$and: [
+                            {to: toId}, 
+                            {from: req.user._id}, 
+                        ]},
+                        {$and: [
+                            
+                            {to: req.user._id}, 
+                            {from: toId}, 
+                        ]},
                       ] 
                     },
                     {deleted: false},
@@ -31,6 +43,7 @@ export default {
                 from:req.user._id,
                 to: toId
             });
+            let user = await checkExistThenGet(req.user._id,User)
             var found = user.pendingConnections.find(e => e == toId)
             if(!found) user.pendingConnections.push(toId)
             await user.save();
@@ -52,7 +65,7 @@ export default {
             await Notif.create({...notif,resource:req.user,target:connection.to,connection:connection.id});
             let reports = {
                 "action":"Create New connection",
-                "type":"CONNECTionION",
+                "type":"CONNECTION",
                 "deepId":connection.id,
                 "user": req.user._id
             };
@@ -83,7 +96,7 @@ export default {
                 }
             }
             if(status) query.status = status
-            await Connection.find(query)
+            await Connection.find(query).populate(populateQuery)
             .then(async (data) => {
                 var newdata = [];
                 await Promise.all(data.map(async(e) =>{
@@ -119,7 +132,7 @@ export default {
                 }
             }
             if(status) query.status = status
-            await Connection.find(query)
+            await Connection.find(query).populate(populateQuery)
                 .limit(limit)
                 .skip((page - 1) * limit).sort({ _id: -1 })
                 .then(async (data) => {
@@ -152,7 +165,7 @@ export default {
             let user =  await checkExistThenGet(req.user._id,User)
             //remove from  connection list
             let arr1 = user.connections;
-            for(let i = 0;i<= arr.length;i=i+1){
+            for(let i = 0;i<= arr1.length;i=i+1){
                 if(arr1[i] == connection.to){
                     arr1.splice(i, 1);
                 }
@@ -169,7 +182,7 @@ export default {
             await user.save();
             let reports = {
                 "action":"Delete connection",
-                "type":"CONNECTionION",
+                "type":"CONNECTION",
                 "deepId":connectionId,
                 "user": req.user._id
             };
@@ -190,6 +203,9 @@ export default {
                     return next(new ApiError(403, i18n.__('notAllow')));
             }
             let connection = await checkExistThenGet(connectionId, Connection);
+            if(connection.status != "PENDING"){
+                return next(new ApiError(403, i18n.__('notAllow')));
+            }
             connection.status = 'ACCEPTED';
             await connection.save();
 
@@ -224,7 +240,7 @@ export default {
             await Notif.create({...notif,resource:req.user,target:connection.from,connection:connection.id});
             let reports = {
                 "action":"Reject Connection Request",
-                "type":"connect",
+                "type":"CONNECTION",
                 "deepId":connectionId,
                 "user": req.user._id
             };
@@ -246,6 +262,9 @@ export default {
                     return next(new ApiError(403, i18n.__('notAllow')));
             }
             let connection = await checkExistThenGet(connectionId, Connection);
+            if(connection.status != "PENDING"){
+                return next(new ApiError(403, i18n.__('notAllow')));
+            }
             connection.status = 'REJECTED';
             await connection.save();
             let user =  await checkExistThenGet(req.user._id,User)
@@ -276,7 +295,7 @@ export default {
             await Notif.create({...notif,resource:req.user,target:connection.from,connection:connection.id});
             let reports = {
                 "action":"Reject Connection Request",
-                "type":"connect",
+                "type":"CONNECTION",
                 "deepId":connectionId,
                 "user": req.user._id
             };

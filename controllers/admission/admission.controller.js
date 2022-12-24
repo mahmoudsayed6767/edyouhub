@@ -62,7 +62,7 @@ export default {
                 convertLang(req)
                 for (let value of grades) {
                     if (!await Grade.findOne({_id:value,deleted:false}))
-                        throw new Error(req.__('grades.invalid'));
+                        throw new Error(req.__('grade.invalid'));
                     else
                         return true;
                 }

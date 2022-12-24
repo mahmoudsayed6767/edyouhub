@@ -40,7 +40,9 @@ export default {
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('age.numeric', { value});
             }),
-            body('grade').trim().escape().isNumeric().withMessage((value, { req}) => {
+            body('grade').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('grade.required', { value});
+            }).isNumeric().withMessage((value, { req}) => {
                 return req.__('grade.numeric', { value});
             }).custom(async (value, { req }) => {
                 if (!await Grade.findOne({_id:value,deleted:false}))
@@ -48,7 +50,9 @@ export default {
                 else
                     return true;
             }),
-            body('country').trim().escape().isNumeric().withMessage((value, { req}) => {
+            body('country').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('country.required', { value});
+            }).isNumeric().withMessage((value, { req}) => {
                 return req.__('country.numeric', { value});
             }).custom(async (value, { req }) => {
                 if (!await Country.findOne({_id:value,deleted:false}))
@@ -56,7 +60,9 @@ export default {
                 else
                     return true;
             }),
-            body('city').trim().escape().isNumeric().withMessage((value, { req}) => {
+            body('city').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('city.required', { value});
+            }).isNumeric().withMessage((value, { req}) => {
                 return req.__('city.numeric', { value});
             }).custom(async (value, { req }) => {
                 if (!await City.findOne({_id:value,deleted:false}))
@@ -64,7 +70,9 @@ export default {
                 else
                     return true;
             }),
-            body('area').trim().escape().isNumeric().withMessage((value, { req}) => {
+            body('area').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('area.required', { value});
+            }).isNumeric().withMessage((value, { req}) => {
                 return req.__('area.numeric', { value});
             }).custom(async (value, { req }) => {
                 if (!await Area.findOne({_id:value,deleted:false}))
