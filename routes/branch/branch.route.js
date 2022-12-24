@@ -6,7 +6,7 @@ import { parseStringToArrayOfObjectsMwv2 } from '../../utils';
 
 const router = express.Router();
 
-router.route('/:placeId/createBranch')
+router.route('/:id/createBranch')
     .post(
         requireAuth,
         multerSaveTo('branch').single('img'),
@@ -14,9 +14,9 @@ router.route('/:placeId/createBranch')
         BranchController.validateBody(),
         BranchController.create
     )
-router.route('/:placeId/getBranches')
+router.route('/:id/getBranches')
     .get(BranchController.findAllPagenation)
-router.route('/:placeId/withoutPagenation/get')
+router.route('/:id/withoutPagenation/get')
     .get(BranchController.findAll);
     
 router.route('/:branchId')

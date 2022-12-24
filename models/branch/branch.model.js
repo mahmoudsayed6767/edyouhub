@@ -8,14 +8,23 @@ const branchSchema = new Schema({
         type: Number,
         required: true
     },
+    type:{
+        type: String,
+        enum:['PLACE','BUSINESS'],
+        default:'PLACE'
+    },
     place: {
         type: Number,
         ref:'user',
-        required: true
+        //required: true
+    },
+    business: {
+        type: Number,
+        ref:'business',
+        //required: true
     },
     img: {
         type: String,
-        //required: true,
     },
     country: {
         type: Number,
@@ -44,9 +53,12 @@ const branchSchema = new Schema({
         required: true,
     },
     phone: {
-        type: String,
+        type: [String],
         trim: true,
         required: true,
+    },
+    email: {
+        type: String,
     },
     location: {
         type: { type: String, enum: ['Point'] },

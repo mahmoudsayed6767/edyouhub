@@ -38,6 +38,11 @@ export async function transformUserById(e,lang,myUser,userId) {
         block:e.block,
         balance:e.balance,
         cashBack:e.cashBack,
+        maritalStatus:e.maritalStatus,
+        educationPhase:e.educationPhase,
+        schoolInfo:e.schoolInfo,
+        universityInfo:e.universityInfo,
+        job:e.job,
         createdAt: e.createdAt,
         updatedAt: e.updatedAt,
         
@@ -83,5 +88,58 @@ export async function transformUserById(e,lang,myUser,userId) {
         }
         
     }
+    /*kids*/
+    let kids=[]
+    for (let val of e.kids) {
+        let kid = {
+            fullname:val.fullname,
+            year:val.year,
+            educationInstitutionName:val.educationInstitutionName,
+            age:val.age,
+        }
+        if(val.educationSystem){
+            kid.educationSystem = {
+                name:lang=="ar"?val.educationSystem.name_ar:val.educationSystem.name_en,
+                id:val.educationSystem._id
+            }
+        }
+        kids.push(kid)
+    }
+    index.kids = kids;
+
+    //education
+    /*higherEducation*/
+    let higherEducation=[]
+    for (let val of e.higherEducation) {
+        higherEducation.push({
+            higherEducation:{
+                name:lang=="ar"?val.higherEducation.name_ar:val.higherEducation.name_en,
+                id:e.higherEducation._id
+            },
+            faculty:val.faculty,                        
+        })
+    }
+    index.higherEducation = higherEducation;
+
+    /*courses*/
+    let courses=[]
+    for (let val of e.courses) {
+        courses.push({
+            courseName:val.courseName,
+            organization:val.organization,                        
+        })
+    }
+    index.courses = courses;
+    /*workExperiences*/
+    let workExperiences=[]
+    for (let val of e.workExperiences) {
+        workExperiences.push({
+            jobTitle:val.jobTitle,
+            organization:val.organization,  
+            startDate:val.startDate,
+            endDate:val.endDate                      
+        })
+    }
+    index.workExperiences = workExperiences;
     return index;
 }

@@ -9,9 +9,11 @@ import { checkExistThenGet } from "../../helpers/CheckMethods";
 import i18n from "i18n";
 import EducationSystem from "../../models/education system/education system.model";
 import { transformGrade } from "../../models/grade/transformGrade";
+import Business from "../../models/business/business.model";
 const populateQuery = [
     { path: 'educationSystem', model: 'educationSystem' },
     { path: 'educationInstitution', model: 'educationInstitution' },
+    { path: 'business', model: 'business' },
 ];
 export default {
     //validate body
@@ -33,13 +35,19 @@ export default {
                 else
                     return true;
             }),
-            body('educationInstitution').trim().escape().not().isEmpty().withMessage((value, { req}) => {
-                return req.__('educationInstitution.required', { value});
-            }).isNumeric().withMessage((value, { req}) => {
+            body('educationInstitution').trim().escape().isNumeric().withMessage((value, { req}) => {
                 return req.__('educationInstitution.numeric', { value});
             }).custom(async (value, { req }) => {
                 if (!await EducationInstitution.findOne({_id:value,deleted:false}))
                     throw new Error(req.__('educationInstitution.invalid'));
+                else
+                    return true;
+            }),
+            body('business').trim().escape().isNumeric().withMessage((value, { req}) => {
+                return req.__('business.numeric', { value});
+            }).custom(async (value, { req }) => {
+                if (!await Business.findOne({_id:value,deleted:false}))
+                    throw new Error(req.__('business.invalid'));
                 else
                     return true;
             }),

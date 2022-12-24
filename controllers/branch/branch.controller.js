@@ -1,7 +1,7 @@
 import ApiResponse from "../../helpers/ApiResponse";
 import Branch from "../../models/branch/branch.model";
 import Place from "../../models/place/place.model";
-
+import Business from "../../models/business/business.model";
 import Report from "../../models/reports/report.model";
 import ApiError from '../../helpers/ApiError';
 import { checkExist, checkExistThenGet,isInArray ,isLat,isLng} from "../../helpers/CheckMethods";
@@ -9,6 +9,7 @@ import { handleImg, checkValidations,convertLang } from "../shared/shared.contro
 import { body } from "express-validator/check";
 import i18n from "i18n";
 import { ValidationError } from "mongoose";
+import { transformBranch } from "../../models/branch/transformBranch";
 
 //validate location
 function validatedLocation(location) {
@@ -28,43 +29,21 @@ export default {
         try {
             convertLang(req)
             let lang = i18n.getLocale(req) 
-            let {placeId} = req.params
-            let query = {deleted: false,place:placeId };
+            let {id} = req.params;
+            let {type} = req.query
+            let query = {deleted: false};
+            if(type == "BUSINESS"){ 
+                query.business = id
+            }else{
+                query.place = id
+            }
             await Branch.find(query).populate(populateQuery)
             .then( async(data) => {
                 var newdata = [];
-                data.map(async(e) =>{
-                    let index ={
-                        address:lang=="ar"?e.address_ar:e.address_en,
-                        address_ar:e.address_ar,
-                        address_en:e.address_en,
-                        location:e.location,
-                        place: e.place,
-                        img:e.img,
-                        phone: e.phone,
-                        id: e._id,
-                        createdAt: e.createdAt,
-                    }
-                    if(e.country){
-                        index.country = {
-                            name:lang=="ar"?e.country.name_ar:e.country.name_en,
-                            id:e.country._id
-                        }
-                    }
-                    if(e.city){
-                        index.city = {
-                            name:lang=="ar"?e.city.name_ar:e.city.name_en,
-                            id:e.city._id
-                        }
-                    }
-                    if(e.area){
-                        index.area = {
-                            name:lang=="ar"?e.area.name_ar:e.area.name_en,
-                            id:e.area._id
-                        }
-                    }
+                await Promise.all(data.map(async(e) =>{
+                    let index = await transformBranch(e,lang)
                     newdata.push(index)
-                })
+                }))
                 res.send({
                     success:true,
                     data:newdata
@@ -80,41 +59,19 @@ export default {
             convertLang(req)
             let lang = i18n.getLocale(req) 
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
-            let {placeId} = req.params
-            let query = {deleted: false,place:placeId };
+            let {id} = req.params;
+            let {type} = req.query
+            let query = {deleted: false};
+            if(type == "BUSINESS"){ 
+                query.business = id
+            }else{
+                query.place = id
+            }
             await Branch.find(query).populate(populateQuery)
             .then( async(data) => {
                 var newdata = [];
                 await Promise.all(data.map(async(e) =>{
-                    let index ={
-                        address:lang=="ar"?e.address_ar:e.address_en,
-                        address_ar:e.address_ar,
-                        address_en:e.address_en,
-                        location:e.location,
-                        place: e.place,
-                        img:e.img,
-                        phone: e.phone,
-                        id: e._id,
-                        createdAt: e.createdAt,
-                    }
-                    if(e.country){
-                        index.country = {
-                            name:lang=="ar"?e.country.name_ar:e.country.name_en,
-                            id:e.country._id
-                        }
-                    }
-                    if(e.city){
-                        index.city = {
-                            name:lang=="ar"?e.city.name_ar:e.city.name_en,
-                            id:e.city._id
-                        }
-                    }
-                    if(e.area){
-                        index.area = {
-                            name:lang=="ar"?e.area.name_ar:e.area.name_en,
-                            id:e.area._id
-                        }
-                    }
+                    let index = await transformBranch(e,lang)
                     newdata.push(index)
                 }))
                 const count = await Branch.countDocuments(query);
@@ -135,36 +92,9 @@ export default {
             let { branchId } = req.params;
             await checkExist(branchId, Branch, { deleted: false });
 
-            await Branch.findById(branchId).populate(populateQuery).then(async(e) => {
-                let index ={
-                    address:lang=="ar"?e.address_ar:e.address_en,
-                    address_ar:e.address_ar,
-                    address_en:e.address_en,
-                    location:e.location,
-                    place: e.place,
-                    img:e.img,
-                    phone: e.phone,
-                    id: e._id,
-                    createdAt: e.createdAt,
-                }
-                if(e.country){
-                    index.country = {
-                        name:lang=="ar"?e.country.name_ar:e.country.name_en,
-                        id:e.country._id
-                    }
-                }
-                if(e.city){
-                    index.city = {
-                        name:lang=="ar"?e.city.name_ar:e.city.name_en,
-                        id:e.city._id
-                    }
-                }
-                if(e.area){
-                    index.area = {
-                        name:lang=="ar"?e.area.name_ar:e.area.name_en,
-                        id:e.area._id
-                    }
-                }
+            await Branch.findById(branchId).populate(populateQuery)
+            .then(async(e) => {
+                let index = await transformBranch(e,lang)
                 return res.send({
                     success:true,
                     data:index,
@@ -208,6 +138,9 @@ export default {
             body('location').trim().escape().not().isEmpty().withMessage((value, { req}) => {
                 return req.__('location.required', { value});
             }),
+            body('type').optional().isIn(['BUSINESS','PLACE']).withMessage((value, { req}) => {
+                return req.__('type.invalid', { value});
+            }),
         ];
         return validations;
     },
@@ -216,12 +149,8 @@ export default {
 
         try {
             convertLang(req)
-            if(!isInArray(["ADMIN","SUB-ADMIN","PLACE"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
-            let {placeId} = req.params
+            let {id} = req.params
             const validatedBody = checkValidations(req);
-            validatedBody.place = placeId
-            console.log(validatedBody)
             validatedLocation(validatedBody.location);
             validatedBody.location = { type: 'Point', coordinates: [+req.body.location[0], +req.body.location[1]] };
             //upload img
@@ -229,24 +158,33 @@ export default {
                 let image = await handleImg(req, { attributeName: 'img', isUpdate: true });
                 validatedBody.img = image;
             }
+            let model = Place
+            if(validatedBody.type == "BUSINESS"){
+                validatedBody.business = id
+                model = Business
+            }else{
+                validatedBody.place = id
+            }
+            
+           
             let thebranch = await Branch.create({ ...validatedBody});
-            let thePlace = await checkExistThenGet(placeId,Place,{deleted: false})
-            thePlace.branches.push(thebranch._id);
-            ///add city place cities
-            let arr = thePlace.city;
+            let branchOwner = await checkExistThenGet(id,model,{deleted: false})
+            branchOwner.branches.push(thebranch._id);
+            ///add city business cities
+            let arr = branchOwner.city;
             var found = arr.find(e => e == validatedBody.city)
             if(!found){
-                thePlace.city.push(validatedBody.city);
+                branchOwner.city.push(validatedBody.city);
             }
             ///add area place areas
-            let arr2 = thePlace.area;
+            let arr2 = branchOwner.area;
             var found2 = arr2.find(e => e == validatedBody.area)
             if(!found2){
-                thePlace.area.push(validatedBody.area);
+                branchOwner.area.push(validatedBody.area);
             }
-            await thePlace.save();
+            await branchOwner.save();
             let reports = {
-                "action":"Create branch Us",
+                "action":"Create branch",
                 "type":"BRANCH",
                 "deepId":thebranch.id,
                 "user": req.user._id
@@ -262,15 +200,13 @@ export default {
 
         try {
             convertLang(req)
-            if(!isInArray(["ADMIN","SUB-ADMIN","PLACE"],req.user.type))
+            if(!isInArray(["ADMIN","SUB-ADMIN","PLACE","USER"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
 
                 
             let { branchId } = req.params;
             let theBranch = await checkExistThenGet(branchId, Branch, { deleted: false });
-            if(req.user.type == "PLACE" && theBranch.place != req.user.place) 
-                 return next(new ApiError(403, i18n.__('admin.auth')));
-                 
+
             const validatedBody = checkValidations(req);
             validatedLocation(validatedBody.location);
             validatedBody.location = { type: 'Point', coordinates: [+req.body.location[0], +req.body.location[1]] };
@@ -281,22 +217,28 @@ export default {
             let branch = await Branch.findByIdAndUpdate(branchId, {
                 ...validatedBody,
             }, { new: true });
-            let thePlace = await checkExistThenGet(branch.place,Place,{deleted: false})
+            let model = Place
+            let id = branch.place
+            if(branch.type == "BUSINESS"){
+                model = Business
+                id = branch.business
+            }
+            let theOwner = await checkExistThenGet(id,model,{deleted: false})
             ///add city place cities
-            let arr = thePlace.city;
+            let arr = theOwner.city;
             var found = arr.find(e => e == validatedBody.city)
             if(!found){
-                thePlace.city.push(validatedBody.city);
+                theOwner.city.push(validatedBody.city);
             }
             ///add area place areas
-            let arr2 = thePlace.area;
+            let arr2 = theOwner.area;
             var found2 = arr2.find(e => e == validatedBody.area)
             if(!found2){
-                thePlace.area.push(validatedBody.area);
+                theOwner.area.push(validatedBody.area);
             }
-            await thePlace.save();
+            await theOwner.save();
             let reports = {
-                "action":"Update branch Us",
+                "action":"Update branch",
                 "type":"BRANCH",
                 "deepId":branchId,
                 "user": req.user._id
@@ -312,43 +254,45 @@ export default {
     async delete(req, res, next) {
         try {
             convertLang(req)
-            if(!isInArray(["ADMIN","SUB-ADMIN","PLACE"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
-                
             let { branchId } = req.params;
             let branch = await checkExistThenGet(branchId, Branch, { deleted: false });
-            if(req.user.type == "PLACE" && branch.place != req.user.place) 
-                 return next(new ApiError(403, i18n.__('admin.auth')));
             branch.deleted = true;
-            await branch.save();
-            let thePlace = await checkExistThenGet(branch.place,Place,{deleted: false})
-            let arr = thePlace.branches;
-            console.log("before",arr);
+
+            let model = Place
+            let id = branch.place
+            if(branch.type == "BUSINESS"){
+                model = Business
+                id = branch.business
+            }
+            let theOwner = await checkExistThenGet(id,model,{deleted: false})
+            let arr = theOwner.branches;
             for(let i = 0;i<= arr.length;i=i+1){
                 if(arr[i] == branchId){
                     arr.splice(i, 1);
                 }
             }
-            thePlace.branches = arr;
+            theOwner.branches = arr;
             //remove branch city from the place cities
-            let arr1 = thePlace.city;
+            let arr1 = theOwner.city;
             for(let i = 0;i<= arr1.length;i=i+1){
                 if(arr1[i] == branch.city){
                     arr1.splice(i, 1);
                 }
             }
-            thePlace.city = arr1;
+            theOwner.city = arr1;
             //remove branch area from the place areas
-            let arr2 = thePlace.area;
+            let arr2 = theOwner.area;
             for(let i = 0;i<= arr2.length;i=i+1){
                 if(arr2[i] == branch.area){
                     arr2.splice(i, 1);
                 }
             }
-            thePlace.area = arr2;
-            await thePlace.save();
+            theOwner.area = arr2;
+            await theOwner.save();
+            await branch.save();
+
             let reports = {
-                "action":"Delete branch Us",
+                "action":"Delete branch",
                 "type":"BRANCH",
                 "deepId":branchId,
                 "user": req.user._id

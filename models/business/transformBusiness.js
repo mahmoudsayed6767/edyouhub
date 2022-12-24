@@ -1,89 +1,141 @@
-
-export async function transformBusiness(e,lang) {
+export async function transformBusiness(e, lang) {
     let index = {
-        businessName:lang=="ar"?e.name_ar:e.name_en,
-        webSite:e.webSite,
-        phones:e.phones,
-        email:e.email,
-        img:e.img,
-        reason:e.reason,
-        status:e.status,
-        createdAt: e.createdAt, 
-        id:e._id
+        businessName: lang == "ar" ? e.name_ar : e.name_en,
+        webSite: e.webSite,
+        phones: e.phones,
+        email: e.email,
+        img: e.img,
+        reason: e.reason,
+        status: e.status,
+        createdAt: e.createdAt,
+        id: e._id
     }
-    if(e.owner){
+    if (e.owner) {
         index.owner = {
-            phone:e.owner.phone,
-            fullname:e.owner.fullname,
-            type:e.owner.type,
-            id:e.owner._id
+            phone: e.owner.phone,
+            fullname: e.owner.fullname,
+            type: e.owner.type,
+            id: e.owner._id
         }
     }
     return index
 }
-export async function transformBusinessById(e,lang) {
+export async function transformBusinessById(e, lang) {
     let index = {
-        businessName:lang=="ar"?e.name_ar:e.name_en,
-        name_en:e.name_en,
-        name_ar:e.name_ar,
-        webSite:e.webSite,
-        phones:e.phones,
-        email:e.email,
-        img:e.img,
-        reason:e.reason,
-        status:e.status,
-        createdAt: e.createdAt, 
-        id:e._id
+        businessName: lang == "ar" ? e.name_ar : e.name_en,
+        name_en: e.name_en,
+        name_ar: e.name_ar,
+        bio: lang == "ar" ? e.bio_ar : e.bio_en,
+        bio_en: e.bio_en,
+        bio_ar: e.bio_ar,
+        webSite: e.webSite,
+        facebook:e.facebook,
+        twitter:e.twitter,
+        gallery:e.gallery,
+        phones: e.phones,
+        studyType:e.studyType,
+        email: e.email,
+        img: e.img,
+        reason: e.reason,
+        status: e.status,
+        createdAt: e.createdAt,
+        id: e._id
     }
-    if(e.owner){
+    if (e.owner) {
         index.owner = {
-            phone:e.owner.phone,
-            fullname:e.owner.fullname,
-            type:e.owner.type,
-            id:e.owner._id
+            phone: e.owner.phone,
+            fullname: e.owner.fullname,
+            type: e.owner.type,
+            id: e.owner._id
         }
     }
-    if(e.educationSystem){
+    if (e.educationSystem) {
         index.educationSystem = {
-            name:lang=="ar"?e.educationSystem.name_ar:e.educationSystem.name_en,
+            name: lang == "ar" ? e.educationSystem.name_ar : e.educationSystem.name_en,
             img: e.educationSystem.img,
             id: e.educationSystem._id,
         }
     }
-    if(e.sector){
+    if (e.sector) {
         index.sector = {
-            name:lang=="ar"?e.sector.name_ar:e.sector.name_en,
+            name: lang == "ar" ? e.sector.name_ar : e.sector.name_en,
             img: e.sector.img,
             id: e.sector._id,
         }
     }
-    if(e.subSector){
+    if (e.subSector) {
         index.subSector = {
-            name:lang=="ar"?e.subSector.name_ar:e.subSector.name_en,
+            name: lang == "ar" ? e.subSector.name_ar : e.subSector.name_en,
             img: e.subSector.img,
             id: e.subSector._id,
         }
     }
-    if(e.country){
-        index.country = {
-            name:lang=="ar"?e.country.name_ar:e.country.name_en,
-            img: e.country.img,
-            id: e.country._id,
+    /* branches*/
+    if(e.branches.length > 0){
+        let branches = []
+        let arr= [...e.branches.slice(0,3)]
+        for (let val of arr) {
+            let branch = {
+                address:lang=="ar"?val.address_ar:val.address_en,
+                phone:val.phone,
+                img:val.img,
+                location:val.location,
+                id:val._id,                         
+            }
+            if(val.country){
+                branch.country = {
+                    name:lang=="ar"?val.country.name_ar:val.country.name_en,
+                    id:val.country._id
+                }
+            }
+            if(val.city){
+                console.log(val.city)
+                branch.city = {
+                    name:lang=="ar"?val.city.name_ar:val.city.name_en,
+                    id:val.city._id
+                }
+            }
+            if(val.area){
+                branch.area = {
+                    name:lang=="ar"?val.area.name_ar:val.area.name_en,
+                    id:val.area._id
+                }
+            }
+            branches.push(branch)
         }
+        index.branches = branches[0]
     }
-    if(e.city){
-        index.city = {
-            name:lang=="ar"?e.city.name_ar:e.city.name_en,
-            id: e.city._id,
+    if(e.faculties.length == 0){
+        /*grades*/
+        let grades=[]
+        for (let val of e.grades) {
+            grades.push({
+                name:lang=="ar"?val.name_ar:val.name_en,
+                cost: val.cost,
+                id:val._id,                         
+            })
         }
+        index.grades = grades;
     }
-    if(e.area){
-        index.area = {
-            name:lang=="ar"?e.area.name_ar:e.area.name_en,
-            id: e.area._id,
-        }
-    }
-
     
+    /*faculties*/
+    let faculties=[]
+    for (let val of e.faculties) {
+        let faculty = {
+            name:lang=="ar"?val.name_ar:val.name_en,
+            id:val._id,  
+        }
+        let grades = [];
+        for (let value of val.grades) {
+            grades.push({
+                name:lang=="ar"?value.name_ar:value.name_en,
+                cost: value.cost,
+                id:value._id,                         
+            })
+        }
+        faculty.grades = grades
+        faculties.push(faculty)
+    }
+    index.faculties = faculties;
     return index
 }

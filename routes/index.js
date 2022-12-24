@@ -34,13 +34,24 @@ import gradeRoute from './grade/grade.route';
 import individualSuppliesRoute from './individual supplies/individual supplies.route';
 import branchRoute  from './branch/branch.route';
 import offerCartRoute  from './offerCart/offerCart.route';
-
+import specializationRoute from './specialization/specialization.route'
 import { requireAuth } from '../services/passport';
+import AdmissionRoute from "./admission/admission.route";
+import VacancyRoute from "./vacancy/vacancy.route";
+import AdmissionRequestRoute from "./admissionRequest/admissionRequest.route"
+import VacancyRequest from "./vacancyRequest/vacancyRequest.route"
+import HigherEducation from "./higherEducation/higherEducation.route"
 
 const router = express.Router();
-router.use('/cart', cartsRoute);
-router.use('/offerCart', offerCartRoute);
+router.use('/HigherEducations', HigherEducation);
 
+router.use('/admissions', AdmissionRoute);
+router.use('/vacancies', VacancyRoute);
+router.use('/admissionRequests', AdmissionRequestRoute);
+router.use('/vacancyRequests', VacancyRequest);
+router.use('/cart', cartsRoute);
+router.use('/specializations', specializationRoute);
+router.use('/branches',branchRoute);
 router.use('/branches',branchRoute);
 router.use('/grades', gradeRoute);
 router.use('/individualSupplies', individualSuppliesRoute);

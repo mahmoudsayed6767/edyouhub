@@ -21,6 +21,8 @@ import Area from "../../models/area/area.model";
 import Address from "../../models/address/address.model"
 import {transformAddress} from "../../models/address/transformAddress"
 import Fund from "../../models/fund/fund.model";
+import HigherEducation from "../../models/higherEducation/higherEducation.model"
+import EducationSystem from "../../models/education system/education system.model"
 const checkUserExistByPhone = async (phone) => {
     let user = await User.findOne({ phone:phone,deleted:false });
     if (!user)
@@ -40,7 +42,9 @@ const populateQuery = [
     { path: 'country', model: 'country' },
     { path: 'city', model: 'city' },
     { path: 'area', model: 'area' },
-    { path: 'affiliate', model: 'user'}
+    { path: 'affiliate', model: 'user'},
+    { path: 'higherEducation.higherEducation', model: 'higherEducation'},
+    { path: 'kids.educationSystem', model: 'educationSystem'}
     
 ];
 const populateQuery2 = [
@@ -255,38 +259,12 @@ export default {
             });
             //send code
             let theUser = await checkExistThenGet(createdUser.id, User,{deleted: false });
-            if(validatedBody.token != null && validatedBody.token !=""){
-                let arr2 = theUser.tokens; 
-                if(!validatedBody.osType || validatedBody.osType == ""){
-                    const deviceDetector = new DeviceDetector();
-                    if(deviceDetector.parse(req.headers['user-agent']).os){
-                        let osType = deviceDetector.parse(req.headers['user-agent']).os.name
-                        if(isInArray(["Mac","iOS"],osType)){
-                            validatedBody.osType = "IOS"
-                        }else{
-                            validatedBody.osType = "ANDROID"
-                        }
-                    }else{
-                        validatedBody.osType = "WEB"
-                    }
-                }
-                var found2 = arr2.find(x => x.token == validatedBody.token)
-                
-                if(!found2){
-                    let theToken = {
-                        token: validatedBody.token,
-                        osType:validatedBody.osType
-                    }
-                    theUser.tokens.push(theToken);
-                }
-            }
             let code =  generateVerifyCode();
             if(code.toString().length < 4){
                 code = generateVerifyCode(); 
             }else{
                 theUser.verifycode = code
             }
-            console.log(code)
             theUser.verifycode = code
             await theUser.save();
             let realPhone = "+2"+ validatedBody.phone;
@@ -786,16 +764,6 @@ export default {
                 users.tokens.push(theToken);
             }
             await users.save();
-            
-            /*let oldtoken = req.body.oldToken;
-            console.log(arr);
-            for(let i = 0;i<= arr.length;i=i+1){
-                if(arr[i] == oldtoken){
-                    arr.splice(arr[i], 1);
-                }
-            }
-            users.token = arr;*/
-            await users.save();
             res.status(200).send({
                 success:true,
                 user:await checkExistThenGet(req.user._id, User)
@@ -956,13 +924,9 @@ export default {
             let {userId } = req.params;
             let user = await checkExistThenGet(userId, User,{deleted: false });
             //place delete SUBERVISOR
-            console.log(req.user.place)
-            console.log(user)
             if(req.user.type=="PLACE" && req.user.place != user.place){
                 return next(new ApiError(403, i18n.__('admin.auth'))); 
             }
-            
-            
             user.deleted = true
             await user.save();
             let reports = {
@@ -1045,6 +1009,7 @@ export default {
             body('type').optional().isIn(['PLACE','SUBERVISOR','ADMIN','USER','AGENCY','AFFILIATE']).withMessage((value, { req}) => {
                 return req.__('wrong.type', { value});
             }),
+           
         ];
         if (isUpdate)
             validation.push([
@@ -1060,6 +1025,7 @@ export default {
             convertLang(req)
             let lang = i18n.getLocale(req)
             const validatedBody = checkValidations(req);
+
             let {userId} = req.params;
             let user = await checkExistThenGet(userId, User);
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
@@ -1076,47 +1042,14 @@ export default {
             if(user.affiliateCode){
                 let affiliate = await User.findOne({deleted: false,affiliateCode:user.affiliateCode})
                 if(affiliate)
-                    user.affiliate = affiliate
+                    validatedBody.affiliate = affiliate
             }
             if (req.file) {
                 let image = await handleImg(req, { attributeName: 'img', isUpdate: true });
-                user.img = image;
+                validatedBody.img = image;
             }
-            if(validatedBody.country){
-                user.country = validatedBody.country;
-            }
-            if(validatedBody.city){
-                user.city = validatedBody.city;
-            }
-            if(validatedBody.area){
-                user.area = validatedBody.area;
-            }
-            if(validatedBody.phone){
-                user.phone = validatedBody.phone;
-            }
-            if(validatedBody.fullname){
-                user.fullname = validatedBody.fullname;
-            }
-            if(validatedBody.age){
-                user.age = validatedBody.age;
-            }
-            if(validatedBody.city){
-                user.city = validatedBody.city;
-            }
-            if(validatedBody.area){
-                user.area = validatedBody.area;
-            }
-            if(validatedBody.email){
-                user.email = validatedBody.email;
-            }
-            if(validatedBody.type){
-                user.type = validatedBody.type;
-            }
-            if(validatedBody.gender){
-                user.gender = validatedBody.gender;
-            }
+            await User.findByIdAndUpdate(userId, { ...validatedBody }, { new: true });
            
-            await user.save();
             let reports = {
                 "action":"Update User",
                 "type":"USERS",
@@ -1139,84 +1072,154 @@ export default {
             next(error);
         }
     },
-    validateAddDevice(isUpdate = false) {
-        let validations = [
-            body('deviceType').trim().escape().not().isEmpty().withMessage((value, { req}) => {
-                return req.__('deviceType.required', { value});
-            }),
-            body('deviceModel').trim().escape().not().isEmpty().withMessage((value, { req}) => {
-                return req.__('deviceModel.required', { value});
-            }),
-            body('deviceVersion').trim().escape().not().isEmpty().withMessage((value, { req}) => {
-                return req.__('deviceVersion.required', { value});
-            }),
-            body('appVersion').trim().escape().not().isEmpty().withMessage((value, { req}) => {
-                return req.__('appVersion.required', { value});
-            }),
-                
-        ];
-        return validations;
-    },
-    async addNewDevice(req, res, next) {
-        try{
-            convertLang(req)
-            let validatedBody = checkValidations(req);
-            validatedBody.user = req.user
-            await UserDevice.create({
-                ...validatedBody
-            });
+    validateCompleteProfile(isUpdate = true) {
+        let validation = [
             
-            res.status(201).send({success:true});
+            //additional info 
+            body('educationPhase').optional().isIn( ['STUDENT','GRADUATED']).withMessage((value, { req}) => {
+                return req.__('wrong.educationPhase', { value});
+            }),
+            body('schoolInfo.schoolName').optional(),
+            body('schoolInfo.year').optional(),
+            body('schoolInfo.graduated').optional(),
+            body('schoolInfo.graduationDate').optional(),
 
-        } catch(err){
-            next(err);
-        }
+            body('universityInfo.universityName').optional(),
+            body('universityInfo.facultyName').optional(),
+            body('universityInfo.year').optional(),
+            body('universityInfo.graduated').optional(),
+            body('universityInfo.graduationDate').optional(),
+            
+            body('higherEducation').trim().escape().optional()
+            .custom(async (higherEducation, { req }) => {
+                convertLang(req)
+                for (let val of higherEducation) {
+                    body('higherEducation').not().isEmpty().withMessage((value) => {
+                        return req.__('higherEducation.required', { value});
+                    }).isNumeric().withMessage((value, { req}) => {
+                        return req.__('higherEducation.numeric', { value});
+                    }).custom(async (value, { req }) => {
+                        if (!await HigherEducation.findOne({_id:value,deleted:false}))
+                            throw new Error(req.__('higherEducation.invalid'));
+                        else
+                            return true;
+                    }),
+                    body('faculty').not().isEmpty().withMessage((value) => {
+                        return req.__('faculty.required', { value});
+                    })
+                }
+                return true;
+            }),
+            body('courses').trim().escape().optional()
+            .custom(async (courses, { req }) => {
+                convertLang(req)
+                for (let course of courses) {
+                    body('organization').not().isEmpty().withMessage((value) => {
+                        return req.__('organization.required', { value});
+                    }),
+                    body('courseName').not().isEmpty().withMessage((value) => {
+                        return req.__('courseName.required', { value});
+                    })
+                }
+                return true;
+            }),
+            body('job.workType').optional().isIn(['EDUCATION','OTHER']).withMessage((value, { req}) => {
+                return req.__('wrong.type', { value});
+            }),
+            body('job.organization').optional(),
+            body('job.jobTitle').optional(),
+            body('workExperiences').trim().escape().optional()
+            .custom(async (workExperiences, { req }) => {
+                convertLang(req)
+                for (let val of workExperiences) {
+                    body('organization').not().isEmpty().withMessage((value) => {
+                        return req.__('organization.required', { value});
+                    }),
+                    body('jobTitle').not().isEmpty().withMessage((value) => {
+                        return req.__('jobTitle.required', { value});
+                    }),
+                    body('startDate').not().isEmpty().withMessage((value) => {
+                        return req.__('startDate.required', { value});
+                    }),
+                    body('endDate').optional()
+                }
+                return true;
+            }),
+            body('kids').trim().escape().optional()
+            .custom(async (kids, { req }) => {
+                convertLang(req)
+                for (let kid of kids) {
+                    body('fullname').not().isEmpty().withMessage((value) => {
+                        return req.__('fullname.required', { value});
+                    }),
+                    body('age').not().isEmpty().withMessage((value) => {
+                        return req.__('age.required', { value});
+                    }),
+                    body('educationSystem').not().isEmpty().withMessage((value) => {
+                        return req.__('educationSystem.required', { value});
+                    }).isNumeric().withMessage((value, { req}) => {
+                        return req.__('educationSystem.numeric', { value});
+                    }).custom(async (value, { req }) => {
+                        if (!await EducationSystem.findOne({_id:value,deleted:false}))
+                            throw new Error(req.__('educationSystem.invalid'));
+                        else
+                            return true;
+                    }),
+                    body('educationInstitutionName').optional(),
+                    body('year').optional()
+                }
+                return true;
+            }),
+        ];
+        if (isUpdate)
+            validation.push([
+                body('img').optional().custom(val => isImgUrl(val)).withMessage((value, { req}) => {
+                    return req.__('image.invalid', { value});
+                })
+            ]);
+
+        return validation;
     },
-    async findAllDevices(req, res, next) {
+    async completeProfile(req, res, next) {
         try {
             convertLang(req)
-            //get the language selected
             let lang = i18n.getLocale(req)
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth'))); 
-            let page = +req.query.page || 1, limit = +req.query.limit || 20;
-            let query = {deleted: false };
-            let {deviceType,user,appVersion,deviceVersion,deviceModel} = req.query
-            if(user) query.user = user;
-            if(appVersion) query.appVersion = { $regex: '.*' + appVersion + '.*' , '$options' : 'i'  };
-            if(deviceVersion) query.deviceVersion = { $regex: '.*' + deviceVersion + '.*' , '$options' : 'i'  };
-            if(deviceModel) query.deviceModel = { $regex: '.*' + deviceModel + '.*' , '$options' : 'i'  };
-            if(deviceType) query.deviceType = { $regex: '.*' + deviceType + '.*' , '$options' : 'i'  };
-            await UserDevice.find(query).populate('user')
-                .sort({ createdAt: -1 })
-                .limit(limit)
-                .skip((page - 1) * limit)
-                .then(async (data) => {
-                    var newdata = [];
-                    await Promise.all(data.map(async(e) =>{
-                        newdata.push({
-                            deviceType:e.deviceType,
-                            deviceModel: e.deviceModel,
-                            deviceVersion:e.deviceVersion,
-                            appVersion:e.appVersion,
-                            user:{
-                                fullname:e.user.fullname?e.user.fullname:"",
-                                phone:e.user.phone,
-                                img:e.user.img,
-                                id:e.user._id
-                            },
-                            id: e._id,
-                            createdAt: e.createdAt,
-                        });
-                    }))
-                    const count = await UserDevice.countDocuments(query);
-                    const pageCount = Math.ceil(count / limit);
+            const validatedBody = checkValidations(req);
 
-                    res.send(new ApiResponse(newdata, page, pageCount, limit, count, req));
-                })
-            
-        } catch (err) {
-            next(err);
+            let {userId} = req.params;
+            let user = await checkExistThenGet(userId, User);
+            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
+                if(user.type =="SUBERVISOR" && req.user.type =="PLACE"){
+                    if(user.place != req.user.place)
+                        return next(new ApiError(403,  i18n.__('notAllow')));
+                }else{
+                    if (userId!= req.user._id)
+                        return next(new ApiError(403,  i18n.__('notAllow')));
+                    
+                }
+                
+            }
+            await User.findByIdAndUpdate(userId, { ...validatedBody }, { new: true });
+           
+            let reports = {
+                "action":"complete User profile",
+                "type":"USERS",
+                "deepId":user.id,
+                "user": req.user._id
+            };
+            await Report.create({...reports });
+            await User.findById(userId).populate(populateQuery)
+            .then(async(e)=>{
+                let index = await transformUserById(e,lang)
+                res.send({
+                    success:true,
+                    data:index
+                });
+            })
+
+
+        } catch (error) {
+            next(error);
         }
     },
     validateAddAddress(isUpdate = false) {
@@ -1289,5 +1292,4 @@ export default {
             next(err);
         }
     },
-
 };

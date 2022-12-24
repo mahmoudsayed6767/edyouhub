@@ -38,17 +38,14 @@ const userSchema = new Schema({
     country: {
         type: Number,
         ref: 'country',
-        //required: true,
     },
     city: {
         type: Number,
         ref: 'city',
-        //required: true,
     },
     area: {
         type: Number,
         ref: 'area',
-        //required: true,
     },
     affiliateCode: {//for affiliate
         type: String,
@@ -114,6 +111,18 @@ const userSchema = new Schema({
         type:[Number],
         ref:'offer'
     },
+    following: {
+        type:[Number],
+        ref:'business'
+    },
+    pendingConnections: {
+        type:[Number],
+        ref:'user'
+    },
+    connections: {
+        type:[Number],
+        ref:'user'
+    },
     balance: {
         type: Number,
         default: 0
@@ -126,6 +135,134 @@ const userSchema = new Schema({
         type: Boolean,
         default: false
     },
+    //additional info
+    maritalStatus:{
+        type: String, 
+    },
+    kids: [
+        new Schema({
+            fullname: {
+                type: String,
+                required: true
+            },
+            age: {
+                type: Number,
+                required: true
+            },
+            educationSystem: {
+                type: Number,
+                ref:'educationSystem',
+                required: true,
+            },
+            educationInstitutionName:{
+                type: String,
+            },
+            year: {
+                type: String,
+            },
+            
+        }, { _id: false })
+        
+    ],
+    //education info
+    educationPhase:{
+        type: String, 
+        enum: ['STUDENT','GRADUATED'],
+    },
+    schoolInfo:{
+        schoolName:{
+            type: String, 
+        },
+        year:{
+            type: String, 
+        },
+        graduated:{
+            type: Boolean, 
+        },
+        graduationDate:{
+            type: Date, 
+        },
+    },
+    universityInfo:{
+        universityName:{
+            type: String, 
+        },
+        facultyName:{
+            type: String, 
+        },
+        year:{
+            type: String, 
+        },
+        graduated:{
+            type: Boolean, 
+            default:true
+        },
+        graduationDate:{
+            type: Date, 
+        },
+    },
+    //after graduated education
+    higherEducation: [
+        new Schema({
+            higherEducation :{
+                type: Number, 
+                ref:'higherEducation',
+                required: true,
+            },
+            faculty:{
+                type: String, 
+                required: true,
+            },
+            
+        }, { _id: false })
+    ],
+    courses: [
+        new Schema({
+            courseName:{
+                type: String, 
+                required: true,
+            },
+            organization:{
+                type: String,
+                required: true, 
+            },
+            
+        }, { _id: false })
+    ],
+    //work experience
+    job:{
+        workType:{
+            type: String, 
+            enum: ['EDUCATION','OTHER'],
+        },
+        jobTitle:{
+            type: String,
+        },
+        organization:{
+            type: String,
+        },
+    },
+    workExperiences: [
+        new Schema({
+            jobTitle:{
+                type: String, 
+                required: true,
+            },
+            organization:{
+                type: String,
+                required: true, 
+            },
+            startDate:{
+                type: Date, 
+                required: true,
+            },
+            endDate:{
+                type: Date, 
+            },
+            
+        }, { _id: false })
+    ],
+    
     deleted: {
         type: Boolean,
         default: false

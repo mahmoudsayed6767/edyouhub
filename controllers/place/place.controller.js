@@ -20,7 +20,10 @@ const populateQuery = [
     { path: 'categories', model: 'category'},
     { path: 'subCategories', model: 'category'},
     { path: 'owner', model: 'user'},
-    { path: 'branches', model: 'branch'},
+    {
+        path: 'branches', model: 'branch',
+        populate: { path: 'country', model: 'country' },
+    },
     {
         path: 'branches', model: 'branch',
         populate: { path: 'city', model: 'city' },

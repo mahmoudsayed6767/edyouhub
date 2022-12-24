@@ -27,7 +27,22 @@ const gradeSchema = new Schema({
     educationInstitution:{
         type: Number,
         ref: 'educationInstitution',
+        //required: true,
+    },
+    business: {
+        type: Number,
+        ref:'business',
+        //required: true,
+    },
+    faculty: {
+        type: Number,
+        ref:'faculty',
+        //required: true,
+    },
+    cost: {
+        type: Number,
         required: true,
+        default:0
     },
     deleted:{
         type:Boolean,

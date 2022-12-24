@@ -19,5 +19,12 @@ export async function transformGrade(e,lang) {
             id: e.educationInstitution._id,
         }
     }
+    if(e.business){
+        index.business = {
+            name:lang=="ar"?e.business.name_ar:e.business.name_en,
+            img:e.business.img,
+            id: e.business._id,
+        }
+    }
     return index
 }

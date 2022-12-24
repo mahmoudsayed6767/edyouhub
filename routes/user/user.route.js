@@ -2,6 +2,8 @@ import express from 'express';
 import { requireSignIn, requireAuth } from '../../services/passport';
 import UserController from '../../controllers/user/user.controller';
 import { multerSaveTo } from '../../services/multer-service';
+import { parseStringToArrayOfObjectsMw } from '../../utils';
+
 import Logger from "../../services/logger";
 const logger = new Logger('login')
 const router = express.Router();
@@ -76,6 +78,10 @@ router.put('/user/:userId/updateInfo',
     multerSaveTo('users').single('img'),
     UserController.validateUpdatedUser(true),
     UserController.updateUser);
+router.put('/user/:userId/completeProfile',
+    requireAuth,
+    UserController.validateCompleteProfile(true),
+    UserController.completeProfile);
 //update password
 router.put('/user/updatePassword',
     requireAuth,
@@ -106,18 +112,6 @@ router.post('/confirm-code-phone',
 router.post('/reset-password-phone',
     UserController.validateResetPasswordPhone(),
     UserController.resetPasswordPhone);
-
-router.route('/addDevice')
-    .post(
-        requireAuth,
-        UserController.validateAddDevice(),
-        UserController.addNewDevice
-    );
-router.route('/getAllDevices')
-    .get(
-        requireAuth,
-        UserController.findAllDevices
-    );
 
 router.route('/addAddress')
     .post(

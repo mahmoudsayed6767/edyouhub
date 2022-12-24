@@ -28,6 +28,16 @@ const businessSchema = new Schema({
         trim: true,
         required: true,
     },
+    bio_en: {
+        type: String,
+        required: true,
+        trim: true,
+    },
+    bio_ar: {
+        type: String,
+        trim: true,
+        required: true,
+    },
     phones: {
         type: [String],
         trim: true,
@@ -38,23 +48,9 @@ const businessSchema = new Schema({
         trim: true,
         required: true,
     },
-    webSite: {
-        type: String,
-        trim: true,
-        required: true,
-    },
     img: {
         type: String,
         required: true,
-    },
-    educationSystem: {
-        type: Number,
-        ref:'educationSystem',
-        required: true,
-    },
-    educationInstitution: {//if accepted
-        type: Number,
-        ref: 'educationInstitution',
     },
     sector: {
         type: Number,
@@ -66,20 +62,48 @@ const businessSchema = new Schema({
         ref:'category',
         required: true,
     },
-    country: {
+    educationSystem: {
         type: Number,
-        ref: 'country',
+        ref:'educationSystem',
         required: true,
     },
-    city: {
+    educationInstitution: {//if accepted
         type: Number,
-        ref: 'city',
-        required: true,
+        ref: 'educationInstitution',
     },
-    area: {
-        type: Number,
-        ref: 'area',
-        required: true,
+    facebook: {
+        type: String,
+    },
+    twitter: {
+        type: String,
+    },
+    webSite: {
+        type: String,
+    },
+    studyType:{
+        type: String,
+        enum:['LOCAL','ABROAD'],
+        default:'LOCAL'
+    },
+    gallery: {
+        type: [String]
+    },
+    branches: {
+        type: [Number],
+        ref: 'branche',
+    },
+    faculties: {
+        type: [Number],
+        ref: 'faculty',
+    },
+    grades: {
+        type: [Number],
+        ref: 'grade',
+    },
+    //for academy
+    specializations: {
+        type: [Number],
+        ref: 'specialization',
     },
     deleted:{
         type:Boolean,
