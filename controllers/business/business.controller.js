@@ -417,7 +417,7 @@ export default {
             convertLang(req)
             //get lang
             let lang = i18n.getLocale(req)
-            let {owner,name,sector,subSector,educationSystem,status} = req.query;
+            let {educationType,owner,name,sector,subSector,educationSystem,status} = req.query;
 
             let query = {deleted: false }
             /*search by name */
@@ -467,7 +467,7 @@ export default {
             //get lang
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
-            let {owner,name,sector,subSector,educationSystem,status} = req.query;
+            let {educationType,owner,name,sector,subSector,educationSystem,status} = req.query;
 
             let query = {deleted: false }
             /*search by name */
