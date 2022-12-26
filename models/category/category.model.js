@@ -22,6 +22,12 @@ const CategorySchema = new Schema({
         enum:['PLACES','EDUCATION','PRODUCTS'],
         default:'PLACES'
     },
+    educationType: {
+        type: String,
+        required: true,
+        enum:['SCHOOL','UNIVERSITY','HIGH-ACADEMY','NURSERY','CENTER','INSTITUTE','BASIC-ACADEMY','HIGH','BASIC'],
+        default:'SCHOOL'
+    },
     priority:{
         type:Number,
         default:0,

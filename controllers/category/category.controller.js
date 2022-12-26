@@ -259,6 +259,10 @@ export default {
             }).isIn(['PLACES','EDUCATION','PRODUCTS']).withMessage((value, { req}) => {
                 return req.__('type.invalid', { value});
             }),
+            body('educationType').optional()
+            .isIn(['SCHOOL','UNIVERSITY','HIGTH-ACADEMY','NURSERY','CENTER','INSTITUTE','BASIC-ACADEMY']).withMessage((value, { req}) => {
+                return req.__('educationType.invalid', { value});
+            }),
             
         ];
         if (isUpdate)

@@ -439,6 +439,10 @@ export default {
             if(subSector) query.subSector = subSector
             if(educationSystem) query.educationSystem = educationSystem
             if(status) query.status = status
+            if(educationType){
+                let catIds = await Category.find({deleted:false,educationType:educationType}).distinct('_id')
+                query.subSector = {$in: catIds}
+            }
             await Business.find(query).populate(populateQuery)
                 .sort({ _id: 1 })
                 .then( async(data) => {
@@ -485,6 +489,10 @@ export default {
             if(subSector) query.subSector = subSector
             if(educationSystem) query.educationSystem = educationSystem
             if(status) query.status = status
+            if(educationType){
+                let catIds = await Category.find({deleted:false,educationType:educationType}).distinct('_id')
+                query.subSector = {$in: catIds}
+            }
             await Business.find(query).populate(populateQuery)
                 .sort({ _id: 1 })
                 .limit(limit)
