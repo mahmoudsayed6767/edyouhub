@@ -105,15 +105,15 @@ export default {
     },
     validateBody(isUpdate = false) {
         let validations = [
-            body('fund').trim().escape().optional(),
-            body('fees').trim().escape().optional(),
-            body('student').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('fund').optional(),
+            body('fees').optional(),
+            body('student').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('student.required', { value});
             }),
-            body('cost').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('cost').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('cost.required', { value});
             }),
-            body('installmentDate').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('installmentDate').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('installmentDate.required', { value});
             }),
            

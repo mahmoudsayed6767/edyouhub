@@ -110,7 +110,7 @@ export default {
             body('email').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('email.required', { value});
             }).isEmail().withMessage('email.syntax'),
-            body('phone').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('phone').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('phone.required', { value});
             })
             .custom(async (value, { req }) => {

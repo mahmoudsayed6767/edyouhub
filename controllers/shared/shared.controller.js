@@ -1,9 +1,8 @@
 import fs from 'fs';
 import ApiError from '../../helpers/ApiError';
-import { validationResult } from 'express-validator';
-import { matchedData } from 'express-validator';
+import { validationResult,matchedData } from 'express-validator';
+
 import { toImgUrl } from '../../utils';
-import User from '../../models/user/user.model'
 import i18n from 'i18n';
 import crypto from 'crypto';
 import config from '../../config'
@@ -23,7 +22,6 @@ function deleteTempImages(req) {
 export const localeFn = (localeName) => (value, { req }) => req.__(localeName);
 
 export function checkValidations(req) {
-  console.log("req")
   const validationErrors = validationResult(req).array({ onlyFirstError: true });
   if (validationErrors.length > 0) {
     //deleteTempImages(req);
@@ -37,7 +35,6 @@ export function checkValidations(req) {
     }
     throw new ApiError(422, msg);
   }
-
   return matchedData(req);
 }
 

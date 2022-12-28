@@ -23,7 +23,7 @@ export default {
     //validate body
     validateBody(isUpdate = false) {
         let validations = [
-            body('educationInstitution').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('educationInstitution').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('educationInstitution.required', { value});
             }).custom(async (value, { req }) => {
                 if (!await EducationInstitution.findOne({_id:value,deleted:false}))
@@ -34,7 +34,7 @@ export default {
             body('studentName').not().isEmpty().withMessage((value) => {
                 return req.__('studentName.required', { value});
             }),
-            body('sector').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('sector').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('sector.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('sector.numeric', { value});
@@ -44,7 +44,7 @@ export default {
                 else
                     return true;
             }),
-            body('subSector').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('subSector').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('subSector.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('subSector.numeric', { value});
@@ -54,7 +54,7 @@ export default {
                 else
                     return true;
             }),
-            body('educationSystem').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('educationSystem').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('educationSystem.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('educationSystem.numeric', { value});

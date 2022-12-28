@@ -23,24 +23,24 @@ export default {
     //validate body
     validateBody(isUpdate = false) {
         let validations = [
-            body('firstName').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('firstName').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('firstName.required', { value});
             }),
-            body('secondName').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('secondName').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('secondName.required', { value});
             }),
-            body('familyName').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('familyName').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('familyName.required', { value});
             }),
-            body('birthday').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('birthday').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('birthday.required', { value});
             }),
-            body('age').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('age').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('age.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('age.numeric', { value});
             }),
-            body('grade').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('grade').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('grade.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('grade.numeric', { value});
@@ -50,7 +50,7 @@ export default {
                 else
                     return true;
             }),
-            body('country').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('country').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('country.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('country.numeric', { value});
@@ -60,7 +60,7 @@ export default {
                 else
                     return true;
             }),
-            body('city').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('city').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('city.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('city.numeric', { value});
@@ -70,7 +70,7 @@ export default {
                 else
                     return true;
             }),
-            body('area').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('area').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('area.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('area.numeric', { value});
@@ -80,53 +80,53 @@ export default {
                 else
                     return true;
             }),
-            body('fatherInfo.firstName').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('fatherInfo.firstName').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('fatherInfoFirstName.required', { value});
             }),
-            body('fatherInfo.secondName').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('fatherInfo.secondName').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('fatherInfoSecondName.required', { value});
             }),
-            body('fatherInfo.familyName').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('fatherInfo.familyName').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('fatherInfoFamilyName.required', { value});
             }),
-            body('fatherInfo.age').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('fatherInfo.age').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('fatherInfoAge.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('fatherInfoAge.numeric', { value});
             }),
-            body('fatherInfo.profession').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('fatherInfo.profession').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('fatherInfoProfession.required', { value});
             }),
-            body('fatherInfo.phone').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('fatherInfo.phone').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('fatherInfoPhone.required', { value});
             }),
-            body('fatherInfo.email').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('fatherInfo.email').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('fatherInfoEmail.required', { value});
             }),
-            body('motherInfo.firstName').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('motherInfo.firstName').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('motherInfoFirstName.required', { value});
             }),
-            body('motherInfo.secondName').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('motherInfo.secondName').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('motherInfoSecondName.required', { value});
             }),
-            body('motherInfo.familyName').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('motherInfo.familyName').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('motherInfoFamilyName.required', { value});
             }),
-            body('motherInfo.age').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('motherInfo.age').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('motherInfoAge.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('motherInfoAge.numeric', { value});
             }),
-            body('motherInfo.profession').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('motherInfo.profession').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('motherInfoProfession.required', { value});
             }),
-            body('motherInfo.phone').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('motherInfo.phone').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('motherInfoPhone.required', { value});
             }),
-            body('motherInfo.email').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('motherInfo.email').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('motherInfoEmail.required', { value});
             }),
-            body('haveSibling').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('haveSibling').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('haveSibling.required', { value});
             }),
             

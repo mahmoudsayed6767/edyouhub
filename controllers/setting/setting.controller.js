@@ -24,34 +24,34 @@ export default {
 
     validateBody(isUpdate = false) {
         let validations = [
-            body('androidAppVersion').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('androidAppVersion').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('androidAppVersion.required', { value});
             }),
-            body('iosAppVersion').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('iosAppVersion').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('iosAppVersion.required', { value});
             }),
             
-            body('feesCashBackRatio').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('feesCashBackRatio').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('feesCashBackRatio.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('feesCashBackRatio.numeric', { value});
             }),
-            body('affiliateRatio').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('affiliateRatio').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('affiliateRatio.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('affiliateRatio.numeric', { value});
             }),
-            body('monthCount').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('monthCount').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('monthCount.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('monthCount.numeric', { value});
             }),
-            body('cashBackRatio').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('cashBackRatio').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('cashBackRatio.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('cashBackRatio.numeric', { value});
             }),
-            body('expensesRatio').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('expensesRatio').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('expensesRatio.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('expensesRatio.numeric', { value});

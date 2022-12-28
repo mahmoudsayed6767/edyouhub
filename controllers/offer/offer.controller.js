@@ -126,55 +126,55 @@ export default {
     },
     validateBody(isUpdate = false) {
         let validations = [
-            body('title_en').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('title_en').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('title_en.required', { value});
             }),
-            body('title_ar').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('title_ar').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('title_ar.required', { value});
             }),
-            body('description_en').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('description_en').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('description_en.required', { value});
             }),
-            body('description_ar').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('description_ar').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('description_ar.required', { value});
             }),
-            body('place').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('place').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('place.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('price.numeric', { value});
             }),
-            body('category').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('category').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('category.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('category.numeric', { value});
             }),
-            body('type').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('type').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('type.required', { value});
             }).isIn(['NEW-PRICE','VOUCHER']).withMessage((value, { req}) => {
                 return req.__('type.invalid', { value});
             }),
-            body('fromDate').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('fromDate').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('fromDate.required', { value});
             }).isISO8601().withMessage((value, { req}) => {
                 return req.__('invalid.date', { value});
             }),
-            body('toDate').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('toDate').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('toDate.required', { value});
             }).isISO8601().withMessage((value, { req}) => {
                 return req.__('invalid.date', { value});
             }),
-            body('withNotif').trim().escape().optional(),
-            body('oldPrice').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('withNotif').optional(),
+            body('oldPrice').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('oldPrice.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('oldPrice.numeric', { value});
             }),
-            body('newPrice').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('newPrice').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('newPrice.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('newPrice.numeric', { value});
             }),
-            body('coins').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('coins').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('coins.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('coins.numeric', { value});
@@ -356,13 +356,13 @@ export default {
     },
     validateBookOffers(isUpdate = false) {
         let validations = [
-            body('theOffers').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('theOffers').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('theOffers.required', { value});
             })
             .custom(async (offers, { req }) => {
                 convertLang(req)
                 for (let offer of offers) {
-                    body('offer').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                    body('offer').not().isEmpty().withMessage((value, { req}) => {
                         return req.__('offer.required', { value});
                     }).isNumeric().withMessage((value, { req}) => {
                         return req.__('offer.numeric', { value});
@@ -372,7 +372,7 @@ export default {
                         else
                             return true;
                     }),
-                    body('place').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                    body('place').not().isEmpty().withMessage((value, { req}) => {
                         return req.__('place.required', { value});
                     }).isNumeric().withMessage((value, { req}) => {
                         return req.__('place.numeric', { value});
@@ -382,7 +382,7 @@ export default {
                         else
                             return true;
                     }),
-                    body('count').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                    body('count').not().isEmpty().withMessage((value, { req}) => {
                         return req.__('count.required', { value});
                     }).isNumeric().withMessage((value) => {
                         return req.__('count.numeric', { value});
@@ -458,7 +458,7 @@ export default {
     },
     validateConfirmBody() {
         return [
-            body('offerCode').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('offerCode').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('offerCode.required', { value});
             }),
             

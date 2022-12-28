@@ -10,16 +10,16 @@ import Report from "../../models/reports/report.model";
 export default {
     validateTermsBody() {
         return [
-            body('terms_ar').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('terms_ar').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('terms_ar.required', { value});
             }),
-            body('terms_en').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('terms_en').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('terms_en.required', { value});
             }),
-            body('privacy_ar').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('privacy_ar').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('privacy_ar.required', { value});
             }),
-            body('privacy_en').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('privacy_en').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('privacy_en.required', { value});
             }),
         ];

@@ -221,7 +221,7 @@ export default {
     },
     validateBody(isUpdate = false) {
         let validations = [
-            body('name_en').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('name_en').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('name_en.required', { value});
             }).custom(async (val, { req }) => {
                     let query = { name_en: val, deleted: false };
@@ -236,7 +236,7 @@ export default {
 
                     return true;
                 }),
-            body('name_ar').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('name_ar').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('name_ar.required', { value});
             }).custom(async (val, { req }) => {
                     let query = { name_en: val, deleted: false };
@@ -250,17 +250,17 @@ export default {
 
                     return true;
                 }),
-            body('parent').trim().escape().optional(),
-            body('details').trim().escape().optional(),
-            body('main').trim().escape().optional(),
-            body('priority').trim().escape().optional(),
+            body('parent').optional(),
+            body('details').optional(),
+            body('main').optional(),
+            body('priority').optional(),
             body('type').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('type.required', { value});
             }).isIn(['PLACES','EDUCATION','PRODUCTS']).withMessage((value, { req}) => {
                 return req.__('type.invalid', { value});
             }),
             body('educationType').optional()
-            .isIn(['SCHOOL','UNIVERSITY','HIGTH-ACADEMY','NURSERY','CENTER','INSTITUTE','BASIC-ACADEMY']).withMessage((value, { req}) => {
+            .isIn(['SCHOOL','UNIVERSITY','HIGH-ACADEMY','NURSERY','HIGH-CENTER','BASIC-CENTER','INSTITUTE','BASIC-ACADEMY','HIGH','BASIC']).withMessage((value, { req}) => {
                 return req.__('educationType.invalid', { value});
             }),
             

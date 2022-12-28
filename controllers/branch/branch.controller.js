@@ -109,10 +109,10 @@ export default {
 
     validateBody(isUpdate = false) {
         let validations = [
-            body('address_ar').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('address_ar').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('address_ar.required', { value});
             }),
-            body('address_en').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('address_en').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('address_en.required', { value});
             }),
             body('country').not().isEmpty().withMessage((value, { req}) => {
@@ -135,7 +135,7 @@ export default {
                 else
                     return true;
             }),
-            body('location').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('location').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('location.required', { value});
             }),
             body('type').optional().isIn(['BUSINESS','PLACE']).withMessage((value, { req}) => {

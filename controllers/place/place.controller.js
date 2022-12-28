@@ -167,13 +167,13 @@ export default {
     },
     validateBody(isUpdate = false) {
         let validations = [
-            body('name_ar').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('name_ar').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('name_ar.required', { value});
             }),
-            body('name_en').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('name_en').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('name_en.required', { value});
             }),
-            body('categories').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('categories').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('categories.required', { value});
             }).custom(async (categories, { req }) => {
                 //category is duplicated
@@ -185,7 +185,7 @@ export default {
                 }
                 return true;
             }),
-            body('subCategories').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('subCategories').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('subCategories.required', { value});
             }).custom(async (categories, { req }) => {
                 if(categories.some((val, i) => categories.indexOf(val) !== i))
@@ -236,10 +236,10 @@ export default {
                 }),
 
                 /////////////////////////////add branch///////////////////////////////
-                body('address_ar').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                body('address_ar').not().isEmpty().withMessage((value, { req}) => {
                     return req.__('address_ar.required', { value});
                 }),
-                body('address_en').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                body('address_en').not().isEmpty().withMessage((value, { req}) => {
                     return req.__('address_en.required', { value});
                 }),
                 body('country').not().isEmpty().withMessage((value, { req}) => {
@@ -262,7 +262,7 @@ export default {
                     else
                         return true;
                 }),
-                body('location').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                body('location').not().isEmpty().withMessage((value, { req}) => {
                     return req.__('location.required', { value});
                 }),
                 

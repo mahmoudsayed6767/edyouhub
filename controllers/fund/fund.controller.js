@@ -47,19 +47,19 @@ export default {
     //validate body
     validateBody(isUpdate = false) {
         let validations = [
-            body('firstName').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('firstName').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('firstName.required', { value});
             }),
-            body('secondName').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('secondName').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('secondName.required', { value});
             }),
-            body('thirdName').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('thirdName').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('thirdName.required', { value});
             }),
-            body('fourthName').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('fourthName').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('fourthName.required', { value});
             }),
-            body('country').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('country').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('country.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('country.numeric', { value});
@@ -69,7 +69,7 @@ export default {
                 else
                     return true;
             }),
-            body('city').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('city').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('city.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('city.numeric', { value});
@@ -79,7 +79,7 @@ export default {
                 else
                     return true;
             }),
-            body('area').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('area').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('area.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('area.numeric', { value});
@@ -89,26 +89,26 @@ export default {
                 else
                     return true;
             }),
-            body('workStartDate').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('workStartDate').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('workStartDate.required', { value});
             }).isISO8601().withMessage((value, { req}) => {
                 return req.__('date.invalid', { value});
             }),
-            body('address').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('address').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('address.required', { value});
             }),
 
-            body('phone').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('phone').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('phone.required', { value});
             }),
-            body('job').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('job').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('job.required', { value});
             }),
-            body('jobAddress').trim().escape().optional(),
-            body('workPosition').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('jobAddress').optional(),
+            body('workPosition').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('workPosition.required', { value});
             }),
-            body('personalId').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('personalId').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('personalId.required', { value});
             }).isIn(['EGYPTIAN','NON-EGYPTIAN']).withMessage((value, { req}) => {
                 return req.__('personalId.invalid', { value});
@@ -117,12 +117,12 @@ export default {
                 return req.__('personalIdImgs.required', { value});
             }),
 
-            body('utilityBills').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('utilityBills').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('utilityBills.required', { value});
             }).isIn(['OWNER','RENTER']).withMessage((value, { req}) => {
                 return req.__('utilityBills.invalid', { value});
             }),
-            body('billType').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('billType').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('billType.required', { value});
             }).isIn(["WATER","GAS","TELEPHONE","ELECTRICITY","RENT-CONTRACT"]).withMessage((value, { req}) => {
                 return req.__('billType.invalid', { value});
@@ -131,13 +131,13 @@ export default {
                 return req.__('utilityBillsImgs.required', { value});
             }),
 
-            body('proofIncome').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('proofIncome').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('proofIncome.required', { value});
             }).isIn(['EMPLOYEE','BUSINESS-OWNER']).withMessage((value, { req}) => {
                 return req.__('proofIncome.invalid', { value});
             }),
-            body('proofIncomeCost').trim().escape().optional(),
-            body('proofIncomeImgs').trim().escape().optional()
+            body('proofIncomeCost').optional(),
+            body('proofIncomeImgs').optional()
             .custom(async (proofIncomeImgs, { req }) => {
                 convertLang(req)
                 for (let img of proofIncomeImgs) {
@@ -154,16 +154,14 @@ export default {
             }),
             
 
-            body('totalFees').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('totalFees').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('totalFees.required', { value});
             }),
             //student
-            body('theStudents').trim().escape().optional()
+            body('theStudents').optional()
             .custom(async (students, { req }) => {
                 convertLang(req)
                 for (let student of students) {
-                    await checkExist(student.sector, Category,{ deleted: false});
-                    await checkExist(student.subSector, Category,{ deleted: false});
                     //await checkExistThenGet(student.educationInstitution, EducationInstitution);
                     body('studentId').optional()
                     body('studentName').not().isEmpty().withMessage((value) => {
@@ -174,12 +172,12 @@ export default {
                     }).isIn(['INSIDE-INSTITUTION','OUTSIDE-INSTITUTION']).withMessage((value, { req}) => {
                         return req.__('type.invalid', { value});
                     }),
-                    body('sector').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                    body('sector').not().isEmpty().withMessage((value, { req}) => {
                         return req.__('sector.required', { value});
                     }).isNumeric().withMessage((value, { req}) => {
                         return req.__('sector.numeric', { value});
                     }),
-                    body('subSector').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                    body('subSector').not().isEmpty().withMessage((value, { req}) => {
                         return req.__('subSector.required', { value});
                     }).isNumeric().withMessage((value, { req}) => {
                         return req.__('subSector.numeric', { value});
@@ -211,7 +209,7 @@ export default {
                 }
                 return true;
             }),
-            body('owner').trim().escape().optional().isNumeric().withMessage((value, { req}) => {
+            body('owner').optional().isNumeric().withMessage((value, { req}) => {
                 return req.__('owner.numeric', { value});
             }).custom(async (value, { req }) => {
                 if (!await User.findOne({_id:value,deleted:false}))
@@ -485,13 +483,13 @@ export default {
     //accept 
     validateTakeActionBody() {
         return [
-            body('startDate').trim().escape().optional().isISO8601().withMessage((value) => {
+            body('startDate').optional().isISO8601().withMessage((value) => {
                 return req.__('startDate.invalid', { value});
             }),
-            body('firstPaid').trim().escape().optional().isNumeric().withMessage((value) => {
+            body('firstPaid').optional().isNumeric().withMessage((value) => {
                 return req.__('firstPaid.numeric', { value});
             }),
-            body('reason').trim().escape().optional(),
+            body('reason').optional(),
             body('actionType').optional().isIn(['WORK-ID','CLUB-ID','HR-LETTER','WORK-CONTRACT','BANK-ACCOUNT','BANK DEPOSIT','COMMERCIAL-REGISTRATION','TAX-ID']).withMessage((value, { req}) => {
                 return req.__('actionType.invalid', { value});
             }),
@@ -635,10 +633,10 @@ export default {
     //partial accept 
     validateActionReplyBody() {
         return [
-            body('actionReply').trim().escape().not().isEmpty().withMessage((value) => {
+            body('actionReply').not().isEmpty().withMessage((value) => {
                 return req.__('actionReply.required', { value});
             }),
-            body('actionFile').trim().escape().optional()
+            body('actionFile').optional()
             .custom(async (actionFile, { req }) => {
                 convertLang(req)
                 for (let file of actionFile) {
@@ -689,10 +687,10 @@ export default {
     //partial accept 
     validatePartialAcceptBody() {
         return [
-            body('totalFees').trim().escape().not().isEmpty().withMessage((value) => {
+            body('totalFees').not().isEmpty().withMessage((value) => {
                 return req.__('totalFees.required', { value});
             }),
-            body('partialAcceptReason').trim().escape().optional()
+            body('partialAcceptReason').optional()
         ]
     },
     async partialAcceptance(req, res, next) {
@@ -791,13 +789,13 @@ export default {
     //active fund
     validateActiveBody() {
         return [
-            body('startDate').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('startDate').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('startDate.required', { value});
             })
             .isISO8601().withMessage((value) => {
                 return req.__('startDate.invalid', { value});
             }),
-            body('educationFile').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('educationFile').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('educationFile.required', { value});
             })
             .custom(async (educationFile, { req }) => {

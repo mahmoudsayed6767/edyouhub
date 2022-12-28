@@ -29,7 +29,7 @@ export default {
     //validate body
     validateBillBody(isUpdate = false) {
         let validations = [
-            body('offer').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('offer').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('offer.required', { value});
             }),
         ];

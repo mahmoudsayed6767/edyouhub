@@ -66,18 +66,18 @@ export default {
    //validate body
     validateBody(isUpdate = false) {
         return [
-            body('title_ar').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('title_ar').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('title_ar.required', { value});
             }),
-            body('title_en').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('title_en').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('title_en.required', { value});
             }),
-            body('cost').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('cost').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('cost.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('cost.numeric', { value});
             }),
-            body('coins').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('coins').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('coins.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('coins.numeric', { value});

@@ -1,9 +1,9 @@
 import Business from "../../models/business/business.model";
 import Report from "../../models/reports/report.model";
 import { body } from "express-validator";
-import { checkValidations,convertLang,handleImg} from "../shared/shared.controller";
+import { checkValidations,convertLang} from "../shared/shared.controller";
 import ApiError from "../../helpers/ApiError";
-import { checkExist,isInArray,isImgUrl } from "../../helpers/CheckMethods";
+import { checkExist,isInArray } from "../../helpers/CheckMethods";
 import ApiResponse from "../../helpers/ApiResponse";
 import { checkExistThenGet } from "../../helpers/CheckMethods";
 import i18n from "i18n";
@@ -48,21 +48,22 @@ const populateQuery = [
 ];
 export default {
     //validate body
+    
     validateBody(isUpdate = false) {
         let validations = [
-            body('name_en').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('name_en').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('name_en.required', { value});
             }),
-            body('name_ar').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('name_ar').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('name_ar.required', { value});
             }),
-            body('bio_en').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('bio_en').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('bio_en.required', { value});
             }),
-            body('bio_ar').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('bio_ar').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('bio_ar.required', { value});
             }),
-            body('educationSystem').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('educationSystem').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('educationSystem.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('educationSystem.numeric', { value});
@@ -72,36 +73,40 @@ export default {
                 else
                     return true;
             }),
-            body('webSite').trim().optional(),
-            body('facebook').trim().optional(),
-            body('twitter').trim().optional(),
-            body('email').trim().not().isEmpty().withMessage((value, { req}) => {
+            body('webSite').optional(),
+            body('facebook').optional(),
+            body('twitter').optional(),
+            body('email').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('email.required', { value});
             }),
-            body('phones').trim().not().isEmpty().withMessage((value, { req}) => {
+            body('phones').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('phones.required', { value});
             }),
-            body('sector').trim().escape().not().isEmpty().withMessage((value, { req}) => {
-                return req.__('sector.required', { value});
-            }).isNumeric().withMessage((value, { req}) => {
+            body('sector').optional().isNumeric().withMessage((value, { req}) => {
                 return req.__('sector.numeric', { value});
             }).custom(async (value, { req }) => {
+                if(!req.body.educationType && !value)
+                    throw new Error(req.__('sector.required'))
                 if (!await Category.findOne({_id:value,deleted:false}))
                     throw new Error(req.__('sector.invalid'));
                 else
                     return true;
             }),
-            body('subSector').trim().escape().not().isEmpty().withMessage((value, { req}) => {
-                return req.__('subSector.required', { value});
-            }).isNumeric().withMessage((value, { req}) => {
+            body('subSector').optional().isNumeric().withMessage((value, { req}) => {
                 return req.__('subSector.numeric', { value});
             }).custom(async (value, { req }) => {
+                if(!req.body.educationType && !value)
+                    throw new Error(req.__('subSector.required'))
                 if (!await Category.findOne({_id:value,deleted:false}))
                     throw new Error(req.__('subSector.invalid'));
                 else
                     return true;
             }),
-            body('owner').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('educationType').optional().isIn(['SCHOOL','UNIVERSITY','HIGH-ACADEMY','NURSERY','HIGH-CENTER','BASIC-CENTER','INSTITUTE','BASIC-ACADEMY','HIGH','BASIC'])
+            .withMessage((value, { req}) => {
+                return req.__('educationType.invalid', { value});
+            }),
+            body('owner').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('owner.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('owner.numeric', { value});
@@ -114,7 +119,7 @@ export default {
             body('studyType').optional().isIn(['LOCAL','ABROAD']).withMessage((value, { req}) => {
                 return req.__('studyType.invalid', { value});
             }),
-            body('specializations').trim().escape().optional()
+            body('specializations').optional()
             .custom(async (specializations, { req }) => {
                 convertLang(req)
                 for (let value of specializations) {
@@ -126,7 +131,7 @@ export default {
                 return true;
             }),
             
-            body('theGrades').trim().escape().optional()
+            body('theGrades').optional()
             .custom(async (grades, { req }) => {
                 convertLang(req)
                 for (let grade of grades) {
@@ -139,11 +144,11 @@ export default {
                     body('cost').not().isEmpty().withMessage((value) => {
                         return req.__('cost.required', { value});
                     }),
-                    body('gradeId').trim().optional()
+                    body('gradeId').optional()
                 }
                 return true;
             }),
-            body('theFaculties').trim().escape().optional()
+            body('theFaculties').optional()
             .custom(async (faculties, { req }) => {
                 convertLang(req)
                 for (let faculty of faculties) {
@@ -153,7 +158,7 @@ export default {
                     body('name_ar').not().isEmpty().withMessage((value) => {
                         return req.__('name_ar.required', { value});
                     }),
-                    body('theGrades').trim().escape().optional()
+                    body('theGrades').optional()
                     .custom(async (grades, { req }) => {
                         convertLang(req)
                         for (let grade of grades) {
@@ -166,22 +171,22 @@ export default {
                             body('cost').not().isEmpty().withMessage((value) => {
                                 return req.__('cost.required', { value});
                             }),
-                            body('gradeId').trim().optional()
+                            body('gradeId').optional()
                         }
                         return true;
                     }),
-                    body('facultyId').trim().optional()
+                    body('facultyId').optional()
                 }
                 return true;
             }),
-            body('theBranches').trim().escape().optional()
+            body('theBranches').optional()
             .custom(async (branches, { req }) => {
                 convertLang(req)
                 for (let branche of branches) {
-                    body('address_ar').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                    body('address_ar').not().isEmpty().withMessage((value, { req}) => {
                         return req.__('address_ar.required', { value});
                     }),
-                    body('address_en').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                    body('address_en').not().isEmpty().withMessage((value, { req}) => {
                         return req.__('address_en.required', { value});
                     }),
                     body('country').not().isEmpty().withMessage((value, { req}) => {
@@ -219,19 +224,19 @@ export default {
                         else
                             return true;
                     }),
-                    body('location').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                    body('location').not().isEmpty().withMessage((value, { req}) => {
                         return req.__('location.required', { value});
                     }).custom(async (value, { req }) => {
                         validatedLocation(value)
                             return true;
                     }),
-                    body('branchId').trim().optional()
+                    body('branchId').optional()
                 }
                 return true;
             }),
-            body('specializations').trim().optional(),
-            body('gallery').trim().optional(),
-            body('img').trim().optional(),
+            body('specializations').optional(),
+            body('gallery').optional(),
+            body('img').optional(),
         ];
         return validations;
     },
@@ -240,7 +245,13 @@ export default {
         try {
             convertLang(req)
             const validatedBody = checkValidations(req);
-            let business = await Business.create({ ...validatedBody });
+            if(validatedBody.educationType){
+                let subSector = await Category.findOne({deleted:false,educationType:validatedBody.educationType})
+                validatedBody.subSector = subSector._id
+                validatedBody.sector = subSector.parent
+
+            }
+            //let business = await Business.create({ ...validatedBody });
             let branches = []
             if(validatedBody.theBranches){
                 await Promise.all(validatedBody.theBranches.map(async(val) => {

@@ -21,16 +21,16 @@ export default {
     //validate body
     validateBody(isUpdate = false) {
         let validations = [
-            body('name_en').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('name_en').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('name_en.required', { value});
             }),
-            body('name_ar').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('name_ar').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('name_ar.required', { value});
             }),
-            body('services').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('services').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('services.required', { value});
             }),
-            body('educationSystem').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('educationSystem').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('educationSystem.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('educationSystem.numeric', { value});
@@ -40,7 +40,7 @@ export default {
                 else
                     return true;
             }),
-            body('sector').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('sector').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('sector.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('sector.numeric', { value});
@@ -50,7 +50,7 @@ export default {
                 else
                     return true;
             }),
-            body('subSector').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('subSector').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('subSector.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('subSector.numeric', { value});

@@ -1,9 +1,8 @@
-import createError  from 'http-errors';
 import cookieParser from 'cookie-parser';
 import morganLogger from'morgan';
 import express from 'express';
 import path from 'path';
-import bodyparser from 'body-parser';
+import bodyParser from 'body-parser'
 import expressValidator from 'express-validator';
 import mongoose from 'mongoose';
 import url from 'url';
@@ -16,19 +15,16 @@ import config from './config';
 import router from './routes'; 
 import ApiError from './helpers/ApiError';
 import compression from 'compression'
-import {cronJop} from './services/cronJop'
-import fs from 'fs'
-//require('dotenv').config()
 import Logger from "./services/logger";
+import fs from 'fs'
+import {cronJop} from './services/cronJop'
+
 const logger = new Logger('log '+ new Date(Date.now()).toDateString())
 const errorsLog = new Logger('errorsLog '+ new Date(Date.now()).toDateString())
-
-
 var app = express();
 
-
 mongoose.Promise = global.Promise;
-
+//mongoose.set('strictQuery', false);
 autoIncrement.initialize(mongoose.connection);
 //connect to mongodb
 mongoose.connect(config.mongoUrl, { 
@@ -38,8 +34,8 @@ mongoose.connect(config.mongoUrl, {
   useFindAndModify:false
 });
 mongoose.connection.on('connected', () => {
-  //cronJop();
-  console.log('\x1b[32m%s\x1b[0m', '[DB] Connected...');
+    //cronJop();
+    console.log('\x1b[32m%s\x1b[0m', '[DB] Connected...');
  
 });
 mongoose.connection.on('error', err => console.log('\x1b[31m%s\x1b[0m', '[DB] Error : ' + err));
@@ -61,29 +57,28 @@ i18n.configure({
 });
 
 app.use(i18n.init);
-app.use(morganLogger('dev'));
-// app.use(morganLogger('short', {
-//   stream: fs.createWriteStream(path.join(__dirname, `./log/api ${new Date(Date.now()).toDateString()}.log`), { flags: 'a' })
-// }))
-app.use((req, res, next) => {
-  logger.info(`${req.originalUrl} - ${req.method} - ${req.header('x-forwarded-for') || req.connection.remoteAddress} || `);
-  next();
-});
+
 app.use(express.json({ limit: '100mb' }));
 app.use(express.urlencoded({ limit: '100mb', extended: true, parameterLimit: 50000 }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'docs')));
 app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 //app.use(expressValidator());
-
+app.use(morganLogger('dev'));
+app.use((req, res, next) => {
+  logger.info(`${req.originalUrl} - ${req.method} - ${req.ip} || `);
+  next();
+});
 // make the file publically accessable 
 app.use('/uploads',express.static('uploads'));
 
 //Routes
 app.use('/api/v1', router);
+app.use(bodyParser.json())
 
 // Ensure Content Type
-app.use('/', (req, res, next) => {
+app.use('/',(req, res, next) => {
+  
     // check content type
     let contype = req.headers['content-type'];
     if (contype && !((contype.includes('application/json') || contype.includes('multipart/form-data'))))
@@ -95,6 +90,7 @@ app.use('/', (req, res, next) => {
         protocol: req.protocol,
         host: req.get('host')
     });
+    
 
     next();
 });
@@ -103,23 +99,23 @@ app.use((req, res, next) => {
   next(new ApiError(404, req.__('notFound')));
 });
 
-app.set('trust proxy', true)
-//ERROR Handler
-app.use((err, req, res, next) => {
-  errorsLog.error(`${err.status} || ${res.statusMessage} - ${req.originalUrl} - ${req.method} - ${req.header('x-forwarded-for') || req.connection.remoteAddress} || `,err.message);
-  if (err instanceof mongoose.CastError)
+
+
+  //ERROR Handler
+  app.use((err, req, res, next) => {
+    errorsLog.error(`\x1b[31m ${err.status} || ${res.statusMessage} - ${req.originalUrl} - ${req.method} - ${req.ip} || `,JSON.stringify(err.message));
+    if (err instanceof mongoose.CastError)
       err = new ApiError.NotFound(err);
-
-  res.status(err.status || 500).json({
-    errors: {
-        success:false,
-        msg:Array.isArray(err.message)?err.message:[{msg:err.message}]
-    }
+    res.status(err.status || 500).json({
+      errors: {
+          success:false,
+          msg:Array.isArray(err.message)?err.message:[{msg:err.message}]
+      }
+    });
+  
+    // console.log(err);
+    // console.log(JSON.stringify(err));
   });
-
-  // console.log(err);
-  // console.log(JSON.stringify(err));
-});
 
 
 module.exports = app;

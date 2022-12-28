@@ -11,16 +11,16 @@ import { sendEmail } from "../../services/sendGrid";
 export default {
     validateContactCreateBody() {
         return [
-            body('name').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('name').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('name.required', { value});
             }),
-            body('email').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('email').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('email.required', { value});
             })
             .isEmail().withMessage((value, { req}) => {
                 return req.__('email.syntax', { value});
             }),
-            body('phone').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('phone').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('phone.required', { value});
             })//.isLength({ min: 9,max:14 })
             .custom(async (value, { req }) => {
@@ -34,14 +34,14 @@ export default {
             body('contactFor').optional().isIn(['FEES-PAYMENT','FEES-INSTALLMENT','SUPPLIES','NORMAL']).withMessage((value, { req}) => {
                 return req.__('contactFor.invalid', { value});
             }),
-            body('educationInstitutionName').trim().escape().optional(),
-            body('feesType').trim().escape().optional()
+            body('educationInstitutionName').optional(),
+            body('feesType').optional()
             .isIn(['SCHOOL','UNIVERSITY']).withMessage((value, { req}) => {
                 return req.__('feesType.invalid', { value});
             }),
-            body('numberOfStudent').trim().escape().optional(),
-            body('totalFees').trim().escape().optional(),
-            body('message').trim().escape().optional(),
+            body('numberOfStudent').optional(),
+            body('totalFees').optional(),
+            body('message').optional(),
         ]
     },
     async createContactMessage(req, res, next) {

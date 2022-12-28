@@ -246,7 +246,7 @@ export default {
                                 else
                                     return true;
                             })
-                            body('alternatives').trim().escape().optional()
+                            body('alternatives').optional()
                             .custom(async (alternatives, { req }) => {
                                 convertLang(req)
                                 for (let alternative of alternatives) {
@@ -287,7 +287,7 @@ export default {
                 }
                 return true;
             }),
-            body('missingItems').trim().escape().optional()
+            body('missingItems').optional()
             .custom(async (missingItems, { req }) => {
                 convertLang(req)
                 for (let item of missingItems) {

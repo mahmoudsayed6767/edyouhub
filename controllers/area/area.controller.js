@@ -12,10 +12,10 @@ export default {
     //body validate
     validateAreaBody() {
         return [
-            body('name_en').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('name_en').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('name_en.required', { value});
             }),
-            body('name_ar').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('name_ar').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('name_ar.required', { value});
             }),
             body('delivaryCost').not().isEmpty().withMessage((value, { req}) => {

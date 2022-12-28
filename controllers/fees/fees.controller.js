@@ -108,7 +108,7 @@ export default {
     },
     validateBody(isUpdate = false) {
         let validations = [
-            body('educationInstitution').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('educationInstitution').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('educationInstitution.required', { value});
             }).custom(async (value, { req }) => {
                 if (!await EducationInstitution.findOne({_id:value,deleted:false}))
@@ -119,7 +119,7 @@ export default {
             body('studentName').not().isEmpty().withMessage((value) => {
                 return req.__('studentName.required', { value});
             }),
-            body('sector').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('sector').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('sector.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('sector.numeric', { value});
@@ -129,7 +129,7 @@ export default {
                 else
                     return true;
             }),
-            body('subSector').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('subSector').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('subSector.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('subSector.numeric', { value});
@@ -139,7 +139,7 @@ export default {
                 else
                     return true;
             }),
-            body('educationSystem').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('educationSystem').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('educationSystem.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('educationSystem.numeric', { value});
@@ -164,7 +164,7 @@ export default {
                 return req.__('tuitionFees.numeric', { value});
             }),
             //payments
-            body('payments').trim().escape().optional()
+            body('payments').optional()
             .custom(async (payments, { req }) => {
                 convertLang(req)
                 for (let payment of payments) {
@@ -173,7 +173,7 @@ export default {
                     }).isNumeric().withMessage((value) => {
                         return req.__('cost.numeric', { value});
                     }),
-                    body('feesType').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                    body('feesType').not().isEmpty().withMessage((value, { req}) => {
                         return req.__('feesType.required', { value});
                     }).isIn(['BUS','TUITION']).withMessage((value, { req}) => {
                         return req.__('feesType.invalid', { value});
@@ -260,22 +260,22 @@ export default {
     },
     validateAddMany(isUpdate = false) {
         let validations = [
-            body('fees').trim().escape().optional()
+            body('fees').optional()
             .custom(async (fees, { req }) => {
                 convertLang(req)
                 for (let feesId of fees) {
-                    body('educationInstitution').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                    body('educationInstitution').not().isEmpty().withMessage((value, { req}) => {
                         return req.__('educationInstitution.required', { value});
                     }),
                     body('studentName').not().isEmpty().withMessage((value) => {
                         return req.__('studentName.required', { value});
                     }),
-                    body('sector').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                    body('sector').not().isEmpty().withMessage((value, { req}) => {
                         return req.__('sector.required', { value});
                     }).isNumeric().withMessage((value, { req}) => {
                         return req.__('sector.numeric', { value});
                     }),
-                    body('subSector').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                    body('subSector').not().isEmpty().withMessage((value, { req}) => {
                         return req.__('subSector.required', { value});
                     }).isNumeric().withMessage((value, { req}) => {
                         return req.__('subSector.numeric', { value});
@@ -299,7 +299,7 @@ export default {
                         return req.__('tuitionFees.numeric', { value});
                     }),
                     //payments
-                    body('payments').trim().escape().optional()
+                    body('payments').optional()
                     .custom(async (payments, { req }) => {
                         convertLang(req)
                         for (let payment of payments) {
@@ -399,13 +399,13 @@ export default {
     },
     validateAddManyExistStudents(isUpdate = false) {
         let validations = [
-            body('fees').trim().escape().optional()
+            body('fees').optional()
             .custom(async (fees, { req }) => {
                 convertLang(req)
                 for (let feesId of fees) {
                     await checkExist(feesId.educationInstitution,EducationInstitution, { deleted: false })
                     await checkExist(feesId.student, Student,{ deleted: false})
-                    body('educationInstitution').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                    body('educationInstitution').not().isEmpty().withMessage((value, { req}) => {
                         return req.__('educationInstitution.required', { value});
                     }),
                     body('student').not().isEmpty().withMessage((value) => {
@@ -414,7 +414,7 @@ export default {
                         return req.__('student.numeric', { value});
                     }),
                     //payments
-                    body('payments').trim().escape().optional()
+                    body('payments').optional()
                     .custom(async (payments, { req }) => {
                         convertLang(req)
                         for (let payment of payments) {

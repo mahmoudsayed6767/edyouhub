@@ -17,16 +17,16 @@ export default {
     //validate body
     validateBody(isUpdate = false) {
         let validations = [
-            body('profession').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('profession').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('profession.required', { value});
             }),
-            body('description').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('description').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('description.required', { value});
             }),
-            body('requirements').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('requirements').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('requirements.required', { value});
             }),
-            body('business').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('business').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('business.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('business.numeric', { value});

@@ -19,33 +19,33 @@ export default {
     //validate body
     validateBody(isUpdate = false) {
         let validations = [
-            body('title').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('title').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('title.required', { value});
             }),
-            body('description').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('description').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('description.required', { value});
             }),
-            body('fromDate').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('fromDate').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('fromDate.required', { value});
             }).isISO8601().withMessage((value, { req})=>{
                 return req.__('date.invalid', { value});
             }),
-            body('toDate').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('toDate').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('toDate.required', { value});
             }).isISO8601().withMessage((value, { req})=>{
                 return req.__('date.invalid', { value});
             }),
-            body('maxApplications').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('maxApplications').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('maxApplications.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('maxApplications.numeric', { value});
             }),
-            body('maxAcceptance').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('maxAcceptance').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('maxAcceptance.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('maxAcceptance.numeric', { value});
             }),
-            body('business').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('business').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('business.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('business.numeric', { value});
@@ -55,7 +55,7 @@ export default {
                 else
                     return true;
             }),
-            body('grades').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('grades').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('grades.required', { value});
             })
             .custom(async (grades, { req }) => {

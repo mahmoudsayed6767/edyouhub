@@ -163,7 +163,7 @@ export default {
                     return true;
                 
             }),
-            body('phone').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('phone').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('phone.required', { value});
             })//.isLength({ min: 9,max:14 })
             .custom(async (value, { req }) => {
@@ -193,7 +193,7 @@ export default {
                     return true;
                 
             }),
-            body('country').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('country').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('country.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('country.numeric', { value});
@@ -203,7 +203,7 @@ export default {
                 else
                     return true;
             }),
-            body('city').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('city').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('city.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('city.numeric', { value});
@@ -213,7 +213,7 @@ export default {
                 else
                     return true;
             }),
-            body('area').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('area').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('area.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('area.numeric', { value});
@@ -976,7 +976,7 @@ export default {
                     else
                         return true;
             }),
-            body('country').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('country').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('country.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('country.numeric', { value});
@@ -986,7 +986,7 @@ export default {
                 else
                     return true;
             }),
-            body('city').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('city').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('city.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('city.numeric', { value});
@@ -996,7 +996,7 @@ export default {
                 else
                     return true;
             }),
-            body('area').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('area').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('area.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('area.numeric', { value});
@@ -1090,7 +1090,7 @@ export default {
             body('universityInfo.graduated').optional(),
             body('universityInfo.graduationDate').optional(),
             
-            body('higherEducation').trim().escape().optional()
+            body('higherEducation').optional()
             .custom(async (higherEducation, { req }) => {
                 convertLang(req)
                 for (let val of higherEducation) {
@@ -1110,7 +1110,7 @@ export default {
                 }
                 return true;
             }),
-            body('courses').trim().escape().optional()
+            body('courses').optional()
             .custom(async (courses, { req }) => {
                 convertLang(req)
                 for (let course of courses) {
@@ -1128,7 +1128,7 @@ export default {
             }),
             body('job.organization').optional(),
             body('job.jobTitle').optional(),
-            body('workExperiences').trim().escape().optional()
+            body('workExperiences').optional()
             .custom(async (workExperiences, { req }) => {
                 convertLang(req)
                 for (let val of workExperiences) {
@@ -1145,7 +1145,7 @@ export default {
                 }
                 return true;
             }),
-            body('kids').trim().escape().optional()
+            body('kids').optional()
             .custom(async (kids, { req }) => {
                 convertLang(req)
                 for (let kid of kids) {
@@ -1224,16 +1224,16 @@ export default {
     },
     validateAddAddress(isUpdate = false) {
         let validations = [
-            body('address').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('address').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('address.required', { value});
             }),
-            body('street').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('street').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('street.required', { value});
             }),
-            body('floor').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('floor').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('floor.required', { value});
             }),
-            body('buildingNumber').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('buildingNumber').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('buildingNumber.required', { value});
             }),
             body('city').not().isEmpty().withMessage((value, { req}) => {

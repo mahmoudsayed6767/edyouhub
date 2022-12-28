@@ -56,22 +56,22 @@ export default {
 
     validateBody(isUpdate = false) {
         let validations = [
-            body('aboutUs_ar').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('aboutUs_ar').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('aboutUs_ar.required', { value});
             }),
-            body('aboutUs_en').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('aboutUs_en').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('aboutUs_en.required', { value});
             }),
-            body('phone').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('phone').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('phone.required', { value});
             }),
-            body('address_ar').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('address_ar').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('address_ar.required', { value});
             }),
-            body('address_en').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('address_en').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('address_en.required', { value});
             }),
-            body('location').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('location').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('location.required', { value});
             }),
             body('email').not().isEmpty().withMessage((value, { req}) => {

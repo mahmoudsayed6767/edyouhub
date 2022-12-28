@@ -13,13 +13,13 @@ export default {
     //validate body
     validateCityBody(isUpdate = false) {
         let validations = [
-            body('name_en').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('name_en').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('name_en.required', { value});
             }),
-            body('name_ar').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('name_ar').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('name_ar.required', { value});
             }),
-            body('country').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('country').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('country.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('country.numeric', { value});

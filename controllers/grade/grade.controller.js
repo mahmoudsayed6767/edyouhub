@@ -19,13 +19,13 @@ export default {
     //validate body
     validateBody(isUpdate = false) {
         let validations = [
-            body('name_en').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('name_en').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('name_en.required', { value});
             }),
-            body('name_ar').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('name_ar').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('name_ar.required', { value});
             }),
-            body('educationSystem').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('educationSystem').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('educationSystem.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('educationSystem.numeric', { value});
@@ -35,7 +35,7 @@ export default {
                 else
                     return true;
             }),
-            body('educationInstitution').trim().escape().isNumeric().withMessage((value, { req}) => {
+            body('educationInstitution').isNumeric().withMessage((value, { req}) => {
                 return req.__('educationInstitution.numeric', { value});
             }).custom(async (value, { req }) => {
                 if (!await EducationInstitution.findOne({_id:value,deleted:false}))
@@ -43,7 +43,7 @@ export default {
                 else
                     return true;
             }),
-            body('business').trim().escape().isNumeric().withMessage((value, { req}) => {
+            body('business').isNumeric().withMessage((value, { req}) => {
                 return req.__('business.numeric', { value});
             }).custom(async (value, { req }) => {
                 if (!await Business.findOne({_id:value,deleted:false}))

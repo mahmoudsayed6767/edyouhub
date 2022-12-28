@@ -193,7 +193,7 @@ export default {
                     if (!isNumeric(productOrder.count))
                         throw new Error(`Product: ${productOrder.product} has invalid count: ${productOrder.count}!`);
                     
-                    body('size').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                    body('size').not().isEmpty().withMessage((value, { req}) => {
                         return req.__('size.required', { value});
                     }).isNumeric().withMessage((value, { req}) => {
                         return req.__('size.numeric', { value});
@@ -285,8 +285,8 @@ export default {
                 else
                     return true;
             }),
-            body('cart').trim().escape().optional(),
-            body('suppliesList').trim().escape().optional()
+            body('cart').optional(),
+            body('suppliesList').optional()
             .custom(async (suppliesList, { req }) => {
                 convertLang(req)
                 for (let supplies of suppliesList) {
@@ -332,7 +332,7 @@ export default {
                             if (!isNumeric(productOrder.count))
                                 throw new Error(`Product: ${productOrder.product} has invalid count: ${productOrder.count}!`);
                             
-                            body('size').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+                            body('size').not().isEmpty().withMessage((value, { req}) => {
                                 return req.__('size.required', { value});
                             }).isNumeric().withMessage((value, { req}) => {
                                 return req.__('size.numeric', { value});

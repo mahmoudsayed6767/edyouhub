@@ -15,13 +15,13 @@ export default {
     //validate body
     validateBody(isUpdate = false) {
         let validations = [
-            body('fullname').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('fullname').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('fullname.required', { value});
             }),
-            body('phone').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('phone').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('phone.required', { value});
             }),
-            body('age').trim().escape().not().isEmpty().withMessage((value, { req}) => {
+            body('age').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('age.required', { value});
             }),
             

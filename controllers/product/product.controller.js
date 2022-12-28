@@ -201,7 +201,7 @@ export default {
                 else
                     return true;
             }),
-            body('colors').trim().escape().optional()
+            body('colors').optional()
             .custom(async (colors, { req }) => {
                 convertLang(req)
                 // check if it's duplicated color
@@ -237,7 +237,7 @@ export default {
                 else
                     return true;
             }),
-            body('sizes').trim().escape().optional()
+            body('sizes').optional()
             .custom(async (sizes, { req }) => {
                 convertLang(req)
                 for (let size of sizes) {
