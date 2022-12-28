@@ -85,22 +85,33 @@ export default {
             body('sector').optional().isNumeric().withMessage((value, { req}) => {
                 return req.__('sector.numeric', { value});
             }).custom(async (value, { req }) => {
-                if(!req.body.educationType && !value)
-                    throw new Error(req.__('sector.required'))
-                if (!await Category.findOne({_id:value,deleted:false}))
-                    throw new Error(req.__('sector.invalid'));
-                else
-                    return true;
+                if(!value) {
+                    if(!req.body.educationType)
+                        throw new Error(req.__('sector.required'))
+                    else
+                        return true;
+                }else{
+                    if (!await Category.findOne({_id:value,deleted:false}))
+                        throw new Error(req.__('sector.invalid'));
+                    else
+                        return true;
+                }
             }),
             body('subSector').optional().isNumeric().withMessage((value, { req}) => {
                 return req.__('subSector.numeric', { value});
             }).custom(async (value, { req }) => {
-                if(!req.body.educationType && !value)
-                    throw new Error(req.__('subSector.required'))
-                if (!await Category.findOne({_id:value,deleted:false}))
-                    throw new Error(req.__('subSector.invalid'));
-                else
-                    return true;
+                
+                if(!value) {
+                    if(!req.body.educationType)
+                        throw new Error(req.__('subSector.required'))
+                    else
+                        return true;
+                }else{
+                    if (!await Category.findOne({_id:value,deleted:false}))
+                        throw new Error(req.__('subSector.invalid'));
+                    else
+                        return true;
+                }
             }),
             body('educationType').optional().isIn(['SCHOOL','UNIVERSITY','HIGH-ACADEMY','NURSERY','HIGH-CENTER','BASIC-CENTER','INSTITUTE','BASIC-ACADEMY','HIGH','BASIC'])
             .withMessage((value, { req}) => {
