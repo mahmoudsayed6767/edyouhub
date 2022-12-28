@@ -17,11 +17,6 @@ var message={
         ref:'user',
         required:true
     },
-    reservation:{
-        type:Number,
-        ref:'reservation',
-        required:true
-    },
     content:{
         type:String,
         default:""

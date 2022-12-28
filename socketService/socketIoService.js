@@ -8,7 +8,7 @@ module.exports = {
     startChat: function (io) {  
         console.log('socket is on')
         
-        var nsp = io.of('/vTor'); //namespace
+        var nsp = io.of('/edyouhub'); //namespace
 
         nsp.on('connection', async(socket) => { 
                nsp.emit('hi', 'Hello everyone!'); 
