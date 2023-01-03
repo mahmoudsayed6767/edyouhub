@@ -44,7 +44,11 @@ import HigherEducation from "./higherEducation/higherEducation.route"
 import FollowRoute from "./follow/follow.route"
 import MessageRoute from "./message/message.route"
 import connectionRoute from "./connection/connection.route"
+import postRoute from "./post/post.route"
+
 const router = express.Router();
+router.use('/posts', postRoute);
+
 router.use('/offerCart', offerCartRoute);
 router.use('/HigherEducations', HigherEducation);
 router.use('/follow', FollowRoute);
