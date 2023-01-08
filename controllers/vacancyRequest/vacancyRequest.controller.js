@@ -7,6 +7,10 @@ import ApiResponse from "../../helpers/ApiResponse";
 import i18n from "i18n";
 import { transformVacancyRequest,transformVacancyRequestById } from "../../models/vacancyRequest/transformVacancyRequest";
 import Vacancy from "../../models/vacancy/vacancy.model";
+import BusinessManagement from "../../models/business/businessManagement.model"
+import { sendNotifiAndPushNotifi } from "../../services/notification-service";
+import Notif from "../../models/notif/notif.model";
+import Business from "../../models/business/business.model";
 const populateQuery = [
     { path: 'owner', model: 'user' },
     { path: 'business', model: 'business' },
@@ -212,7 +216,102 @@ export default {
             next(err);
         }
     },
-
+    async accept(req, res, next) {
+        
+        try {
+            convertLang(req)
+            let { vacancyRequestId } = req.params;
+            let vacancyRequest = await checkExistThenGet(vacancyRequestId, VacancyRequest);
+            let business = await checkExistThenGet(vacancyRequest.business,Business);
+            let businessManagement = await BusinessManagement.findOne({deleted:false,business:business._id})
+            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
+                let supervisors = [business.owner]
+                if(businessManagement){
+                    supervisors.push(...businessManagement.vacancy.supervisors)
+                }
+                if(!isInArray(supervisors,req.user.type))
+                    return next(new ApiError(403,  i18n.__('notAllow')));
+            }
+            vacancyRequest.status = "ACCEPTED";
+            await vacancyRequest.save();
+            sendNotifiAndPushNotifi({
+                targetUser: vacancyRequest.owner, 
+                fromUser: req.user, 
+                text: ' EdHub',
+                subject: business.id,
+                subjectType: 'Vacancy Request Status',
+                info:'VACANCY-REQUEST'
+            });
+            let notif = {
+                "description_en":businessManagement.acceptanceLetter,
+                "description_ar":businessManagement.acceptanceLetter,
+                "title_en":'Your business Request Has Been Confirmed ',
+                "title_ar":' تمت الموافقه على طلب  الخاص بك',
+                "type":'VACANCY-REQUEST'
+            }
+            await Notif.create({...notif,resource:req.user,target:vacancyRequest.owner,vacancyRequest:vacancyRequest.id});
+            let reports = {
+                "action":"accept vacancyRequest",
+                "type":"VACANCY-REQUEST",
+                "deepId":vacancyRequestId,
+                "user": req.user._id
+            };
+            await Report.create({...reports});
+            res.send({
+                success:true
+            });
+        } catch (err) {
+            next(err);
+        }
+    },
+    async reject(req, res, next) {
+        
+        try {
+            convertLang(req)
+            let { vacancyRequestId } = req.params;
+            let vacancyRequest = await checkExistThenGet(vacancyRequestId, VacancyRequest);
+            let business = await checkExistThenGet(vacancyRequest.business,Business);
+            let businessManagement = await BusinessManagement.findOne({deleted:false,business:business._id})
+            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
+                let supervisors = [business.owner]
+                if(businessManagement){
+                    supervisors.push(...businessManagement.vacancy.supervisors)
+                }
+                if(!isInArray(supervisors,req.user.type))
+                    return next(new ApiError(403,  i18n.__('notAllow')));
+            }
+            vacancyRequest.status = "REJECTED";
+            await vacancyRequest.save();
+            sendNotifiAndPushNotifi({
+                targetUser: vacancyRequest.owner, 
+                fromUser: req.user, 
+                text: ' EdHub',
+                subject: business.id,
+                subjectType: 'Vacancy Request Status',
+                info:'VACANCY-REQUEST'
+            });
+            let notif = {
+                "description_en":businessManagement.rejectionLetter,
+                "description_ar":businessManagement.rejectionLetter,
+                "title_en":'Your business Request Has Been Rejected ',
+                "title_ar":' تم رفض الطلب الخاص بك',
+                "type":'VACANCY-REQUEST'
+            }
+            await Notif.create({...notif,resource:req.user,target:vacancyRequest.owner,vacancyRequest:vacancyRequest.id});
+            let reports = {
+                "action":"قثتثؤف vacancyRequest",
+                "type":"VACANCY-REQUEST",
+                "deepId":vacancyRequestId,
+                "user": req.user._id
+            };
+            await Report.create({...reports});
+            res.send({
+                success:true
+            });
+        } catch (err) {
+            next(err);
+        }
+    },
    
 
 }

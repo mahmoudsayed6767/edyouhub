@@ -11,6 +11,10 @@ import City from "../../models/city/city.model";
 import Country from "../../models/country/country.model";
 import Area from "../../models/area/area.model";
 import Grade from "../../models/grade/grade.model";
+import BusinessManagement from "../../models/business/businessManagement.model"
+import { sendNotifiAndPushNotifi } from "../../services/notification-service";
+import Notif from "../../models/notif/notif.model";
+import Business from "../../models/business/business.model";
 const populateQuery = [
     { path: 'country', model: 'country' },
     { path: 'city', model: 'city' },
@@ -311,6 +315,102 @@ export default {
             await AdmissionRequest.save();
             let reports = {
                 "action":"Delete admission Request",
+                "type":"ADMISSION-REQUEST",
+                "deepId":admissionRequestId,
+                "user": req.user._id
+            };
+            await Report.create({...reports});
+            res.send({
+                success:true
+            });
+        } catch (err) {
+            next(err);
+        }
+    },
+    async accept(req, res, next) {
+        
+        try {
+            convertLang(req)
+            let { admissionRequestId } = req.params;
+            let admissionRequest = await checkExistThenGet(admissionRequestId, AdmissionRequest);
+            let business = await checkExistThenGet(admissionRequest.business,Business);
+            let businessManagement = await BusinessManagement.findOne({deleted:false,business:business._id})
+            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
+                let supervisors = [business.owner]
+                if(businessManagement){
+                    supervisors.push(...businessManagement.admission.supervisors)
+                }
+                if(!isInArray(supervisors,req.user.type))
+                    return next(new ApiError(403,  i18n.__('notAllow')));
+            }
+            admissionRequest.status = "ACCEPTED";
+            await admissionRequest.save();
+            sendNotifiAndPushNotifi({
+                targetUser: admissionRequest.owner, 
+                fromUser: req.user, 
+                text: ' EdHub',
+                subject: business.id,
+                subjectType: 'Admission Request Status',
+                info:'ADMISSION-REQUEST'
+            });
+            let notif = {
+                "description_en":businessManagement.acceptanceLetter,
+                "description_ar":businessManagement.acceptanceLetter,
+                "title_en":'Your business Request Has Been Confirmed ',
+                "title_ar":' تمت الموافقه على طلب  الخاص بك',
+                "type":'ADMISSION-REQUEST'
+            }
+            await Notif.create({...notif,resource:req.user,target:admissionRequest.owner,admissionRequest:admissionRequest.id});
+            let reports = {
+                "action":"accept admissionRequest",
+                "type":"ADMISSION-REQUEST",
+                "deepId":admissionRequestId,
+                "user": req.user._id
+            };
+            await Report.create({...reports});
+            res.send({
+                success:true
+            });
+        } catch (err) {
+            next(err);
+        }
+    },
+    async reject(req, res, next) {
+        
+        try {
+            convertLang(req)
+            let { admissionRequestId } = req.params;
+            let admissionRequest = await checkExistThenGet(admissionRequestId, AdmissionRequest);
+            let business = await checkExistThenGet(admissionRequest.business,Business);
+            let businessManagement = await BusinessManagement.findOne({deleted:false,business:business._id})
+            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
+                let supervisors = [business.owner]
+                if(businessManagement){
+                    supervisors.push(...businessManagement.admission.supervisors)
+                }
+                if(!isInArray(supervisors,req.user.type))
+                    return next(new ApiError(403,  i18n.__('notAllow')));
+            }
+            admissionRequest.status = "REJECTED";
+            await admissionRequest.save();
+            sendNotifiAndPushNotifi({
+                targetUser: admissionRequest.owner, 
+                fromUser: req.user, 
+                text: ' EdHub',
+                subject: business.id,
+                subjectType: 'Admission Request Status',
+                info:'ADMISSION-REQUEST'
+            });
+            let notif = {
+                "description_en":businessManagement.rejectionLetter,
+                "description_ar":businessManagement.rejectionLetter,
+                "title_en":'Your business Request Has Been Rejected ',
+                "title_ar":' تم رفض الطلب الخاص بك',
+                "type":'ADMISSION-REQUEST'
+            }
+            await Notif.create({...notif,resource:req.user,target:admissionRequest.owner,admissionRequest:admissionRequest.id});
+            let reports = {
+                "action":"قثتثؤف admissionRequest",
                 "type":"ADMISSION-REQUEST",
                 "deepId":admissionRequestId,
                 "user": req.user._id

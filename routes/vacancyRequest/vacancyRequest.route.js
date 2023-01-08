@@ -29,7 +29,16 @@ router.route('/:vacancyRequestId')
     .delete(requireAuth,vacancyRequestController.delete);
 
 
-
+router.route('/:vacancyRequestId/accept')
+    .put(
+        requireAuth,
+        vacancyRequestController.accept
+    )
+router.route('/:vacancyRequestId/reject')
+    .put(
+        requireAuth,
+        vacancyRequestController.reject
+    )
 
 
 

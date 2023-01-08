@@ -26,7 +26,16 @@ router.route('/:admissionRequestId')
     .delete(requireAuth,admissionRequestController.delete);
 
 
-
+router.route('/:admissionRequestId/accept')
+    .put(
+        requireAuth,
+        admissionRequestController.accept
+    )
+router.route('/:admissionRequestId/reject')
+    .put(
+        requireAuth,
+        admissionRequestController.reject
+    )
 
 
 
