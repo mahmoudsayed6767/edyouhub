@@ -21,6 +21,8 @@ import Grade from "../../models/grade/grade.model"
 import Branch from "../../models/branch/branch.model";
 import Specialization from "../../models/specialization/specialization.model"
 import Faculty from "../../models/faculty/faculty.model"
+import BusinessManagement from "../../models/business/businessManagement.model"
+
 const populateQuery = [
     { path: 'owner', model: 'user' },
     { path: 'educationSystem', model: 'educationSystem' },
@@ -368,6 +370,7 @@ export default {
             .populate(populateQuery)
             .then(async(e) => {
                 let business = await transformBusinessById(e,lang)
+                business.management = await BusinessManagement.findOne({deleted:false,business:e._id})
                 res.send({
                     success:true,
                     data:business
@@ -382,7 +385,11 @@ export default {
         try {
             convertLang(req)
             let { businessId } = req.params;
-            await checkExist(businessId,Business, { deleted: false })
+            let business = await checkExistThenGet(businessId,Business,{deleted:false})
+            if(!isInArray(["ADMIN","SUB-ADMIN","USER"],req.user.type)){
+                if(business.owner != req.user._id)
+                    return next(new ApiError(403,  i18n.__('notAllow')));
+            }
             const validatedBody = checkValidations(req);
             let branches = []
             if(validatedBody.theBranches){
@@ -624,7 +631,6 @@ export default {
             next(err);
         }
     },
-    
     async reject(req, res, next) {
         
         try {
@@ -665,6 +671,69 @@ export default {
             });
         } catch (err) {
             next(err);
+        }
+    },
+    validateBusinessManagementBody(isUpdate = false) {
+        let validations = [
+            body('vacancy.acceptanceLetter').optional(),
+            body('vacancy.rejectionLetter').optional(),
+            body('vacancy.supervisors').optional()
+            .custom(async (value, { req }) => {
+                for (const user of value) {
+                    if (!await User.findOne({_id:user,deleted:false}))
+                        throw new Error(req.__('user.invalid'));
+                    else
+                        return true;
+                }
+                
+            }),
+            body('admission.acceptanceLetter').optional(),
+            body('admission.rejectionLetter').optional(),
+            body('admission.supervisors').optional()
+            .custom(async (value, { req }) => {
+                for (const user of value) {
+                    if (!await User.findOne({_id:user,deleted:false}))
+                        throw new Error(req.__('user.invalid'));
+                    else
+                        return true;
+                }
+                
+            })
+            
+        ];
+        return validations;
+    },
+    //business setting
+    async businessManagement(req, res, next) {
+        try {
+            convertLang(req)
+            let {businessId} = req.params
+            const validatedBody = checkValidations(req);
+            validatedBody.business = businessId
+            let business = await checkExistThenGet(businessId,Business,{deleted:false})
+            if(!isInArray(["ADMIN","SUB-ADMIN","USER"],req.user.type)){
+                if(business.owner != req.user._id)
+                    return next(new ApiError(403,  i18n.__('notAllow')));
+            }
+            let setting = await BusinessManagement.findOne({business:businessId,deleted:false})
+            if(setting){
+                await BusinessManagement.findByIdAndUpdate(setting.id, { ...validatedBody });
+            }else{
+                await BusinessManagement.create({ ...validatedBody });
+            }
+            
+            let reports = {
+                "action":"Update Business Setting",
+                "type":"ADMISSION",
+                "deepId":businessId,
+                "user": req.user._id
+            };
+            await Report.create({...reports });
+            res.status(201).send({
+                success:true,
+            });
+        } catch (error) {
+            next(error);
         }
     },
 }

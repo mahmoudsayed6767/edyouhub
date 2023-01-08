@@ -31,4 +31,10 @@ router.route('/:businessId/reject')
         requireAuth,
         businessController.reject
     )
+router.route('/:businessId/businessManagement')
+    .post(  
+        requireAuth,
+        businessController.validateBusinessManagementBody(),
+        businessController.businessManagement
+    )
 export default router;

@@ -137,5 +137,16 @@ export async function transformBusinessById(e, lang) {
         faculties.push(faculty)
     }
     index.faculties = faculties;
+    if (e.specializations) {
+        /*specializations*/
+        let specializations = []
+        for (let val of e.specializations) {
+            specializations.push({
+                name: lang == "ar" ? val.name_ar : val.name_en,
+                id: val._id,
+            })
+        }
+        index.specializations = specializations;
+    }
     return index
 }
