@@ -107,10 +107,8 @@ app.use((req, res, next) => {
     if (err instanceof mongoose.CastError)
       err = new ApiError.NotFound(err);
     res.status(err.status || 500).json({
-      errors: {
-          success:false,
-          msg:Array.isArray(err.message)?err.message:[{msg:err.message}]
-      }
+      success:false,
+      errors: Array.isArray(err.message)?err.message:[{msg:err.message}]
     });
   
     // console.log(err);
