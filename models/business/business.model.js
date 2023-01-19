@@ -80,6 +80,16 @@ const businessSchema = new Schema({
     webSite: {
         type: String,
     },
+    youTube: {
+        type: String,
+    },
+    instagram: {
+        type: String,
+    },
+    linkedin: {
+        type: String,
+    },
+
     studyType:{
         type: String,
         enum:['LOCAL','ABROAD'],

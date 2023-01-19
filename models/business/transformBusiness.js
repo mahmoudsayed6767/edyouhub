@@ -31,6 +31,9 @@ export async function transformBusinessById(e, lang) {
         webSite: e.webSite,
         facebook: e.facebook,
         twitter: e.twitter,
+        instagram: e.instagram,
+        youTube:e.youTube,
+        linkedin:e.linkedin,
         gallery: e.gallery,
         phones: e.phones,
         studyType: e.studyType,
@@ -78,6 +81,7 @@ export async function transformBusinessById(e, lang) {
             let branch = {
                 address: lang == "ar" ? val.address_ar : val.address_en,
                 phone: val.phone,
+                email: val.email,
                 img: val.img,
                 location: val.location,
                 id: val._id,

@@ -78,6 +78,9 @@ export default {
             body('webSite').optional(),
             body('facebook').optional(),
             body('twitter').optional(),
+            body('youTube').optional(),
+            body('instagram').optional(),
+            body('linkedin').optional(),
             body('email').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('email.required', { value});
             }),
@@ -243,6 +246,7 @@ export default {
                         validatedLocation(value)
                             return true;
                     }),
+                    body('email').optional(),
                     body('branchId').optional()
                 }
                 return true;
