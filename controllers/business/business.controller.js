@@ -65,9 +65,7 @@ export default {
             body('bio_ar').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('bio_ar.required', { value});
             }),
-            body('educationSystem').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('educationSystem.required', { value});
-            }).isNumeric().withMessage((value, { req}) => {
+            body('educationSystem').optional().isNumeric().withMessage((value, { req}) => {
                 return req.__('educationSystem.numeric', { value});
             }).custom(async (value, { req }) => {
                 if (!await EducationSystem.findOne({_id:value,deleted:false}))
@@ -81,12 +79,8 @@ export default {
             body('youTube').optional(),
             body('instagram').optional(),
             body('linkedin').optional(),
-            body('email').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('email.required', { value});
-            }),
-            body('phones').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('phones.required', { value});
-            }),
+            body('email').optional(),
+            body('phones').optional(),
             body('sector').optional().isNumeric().withMessage((value, { req}) => {
                 return req.__('sector.numeric', { value});
             }).custom(async (value, { req }) => {
@@ -230,9 +224,7 @@ export default {
                             return true;
                     }),
                     
-                    body('phone').not().isEmpty().withMessage((value, { req}) => {
-                        return req.__('phone.required', { value});
-                    })
+                    body('phone').optional()
                     .custom(async (value, { req }) => {
                         var exp = /^[+]*[(]{0,1}[0-9]{1,3}[)]{0,1}[s/./0-9]*$/g
                         if(!exp.test(value))
@@ -323,8 +315,7 @@ export default {
                 let educationInstitution = await EducationInstitution.create({ 
                     name_en:business.name_en,
                     name_ar:business.name_ar,
-                    educationSystem:business.educationSystem,
-                    educationSystem:business.educationSystem,
+                    educationSystem:business.educationSystem, 
                     sector:business.sector,
                     subSector:business.subSector,
                     img:business.img,
@@ -583,7 +574,6 @@ export default {
                 let educationInstitution = await EducationInstitution.create({ 
                     name_en:business.name_en,
                     name_ar:business.name_ar,
-                    educationSystem:business.educationSystem,
                     educationSystem:business.educationSystem,
                     sector:business.sector,
                     subSector:business.subSector,

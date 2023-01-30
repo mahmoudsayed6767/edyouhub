@@ -9,6 +9,7 @@ import i18n from "i18n";
 import Grade from "../../models/grade/grade.model";
 import { transformAdmission,transformAdmissionById } from "../../models/admission/transformAdmission";
 import Business from "../../models/business/business.model";
+import Post from "../../models/post/post.model";
 const populateQuery = [
     { path: 'educationSystem', model: 'educationSystem' },
     { path: 'educationInstitution', model: 'educationInstitution' },
@@ -81,6 +82,15 @@ export default {
             validatedBody.educationInstitution = business.educationInstitution
             validatedBody.educationSystem = business.educationSystem
             let admission = await Admission.create({ ...validatedBody });
+            await Post.create({
+                admission: admission.id,
+                business:business.id,
+                ownerType:'BUSINESS',
+                type:'ADMISSION',
+                startDate:admission.fromDate,
+                toDate:admission.toDate,
+                content:admission.description
+            });
             let reports = {
                 "action":"Create New admission",
                 "type":"ADMISSION",
@@ -130,6 +140,11 @@ export default {
             validatedBody.educationInstitution = business.educationInstitution
             validatedBody.educationSystem = business.educationSystem
             await Admission.findByIdAndUpdate(admissionId, { ...validatedBody });
+            let thePost  = await Post.findOne({admission:admissionId})
+            thePost.startDate = validatedBody.fromDate
+            thePost.toDate = validatedBody.toDate
+            thePost.description = validatedBody.description
+            await thePost.save();
             let reports = {
                 "action":"Update admission",
                 "type":"ADMISSION",

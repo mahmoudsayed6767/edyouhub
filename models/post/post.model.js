@@ -11,7 +11,15 @@ const postSchema=new Schema({
         ref:'user',
         required: true
     },
-
+    business: {
+        type: Number,
+        ref:'business',
+    },
+    ownerType:{
+        type: String,
+        enum:['USER', 'BUSINESS'],
+        default:'USER'
+    },
     content:{
         type: String,
     },
@@ -37,7 +45,14 @@ const postSchema=new Schema({
         enum:['VACANCY','ADMISSION','EVENT', 'ANONCEMENT','GENERAL','VOTE','REQUEST-RECOMMENDATION','GIVE-RECOMMENDATION','HELP','DISCUSSION'],
         default:'GENERAL',
     },
-    
+    admission: {
+        type: Number,
+        ref:'admission',
+    },
+    vacancy: {
+        type: Number,
+        ref:'vacancy',
+    },
     likesCount:{
         type:Number,
         default:0

@@ -55,7 +55,7 @@ const branchSchema = new Schema({
     phone: {
         type: [String],
         trim: true,
-        required: true,
+        //required: true,
     },
     email: {
         type: String,

@@ -8,6 +8,8 @@ import { checkExistThenGet } from "../../helpers/CheckMethods";
 import i18n from "i18n";
 import { transformVacancy,transformVacancyById } from "../../models/vacancy/transformVacancy";
 import Business from "../../models/business/business.model";
+import Post from "../../models/post/post.model";
+
 const populateQuery = [
     { path: 'educationSystem', model: 'educationSystem' },
     { path: 'educationInstitution', model: 'educationInstitution' },
@@ -44,6 +46,13 @@ export default {
             validatedBody.educationInstitution = business.educationInstitution
             validatedBody.educationSystem = business.educationSystem
             let vacancy = await Vacancy.create({ ...validatedBody });
+            await Post.create({
+                vacancy: vacancy.id,
+                business:business.id,
+                ownerType:'BUSINESS',
+                type:'VACANCY',
+                content:vacancy.description
+            });
             let reports = {
                 "action":"Create New vacancy",
                 "type":"VACANCY",
@@ -93,6 +102,9 @@ export default {
             validatedBody.educationInstitution = business.educationInstitution
             validatedBody.educationSystem = business.educationSystem
             await Vacancy.findByIdAndUpdate(vacancyId, { ...validatedBody });
+            let thePost  = await Post.findOne({vacancy:vacancyId})
+            thePost.description = validatedBody.description
+            await thePost.save();
             let reports = {
                 "action":"Update vacancy",
                 "type":"VACANCY",

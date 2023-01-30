@@ -32,10 +32,13 @@ export default {
             convertLang(req)
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
-            let {owner,userId,type} = req.query
+            let {owner,userId,type,business,ownerType} = req.query
             let query = {deleted: false };
             if(owner) query.owner = owner;
             if(type) query.type = type;
+            if(business) query.business = business;
+            if(ownerType) query.ownerType = ownerType;
+
             let myUser
             if(userId){
                 myUser = await checkExistThenGet(userId, User)
@@ -60,10 +63,12 @@ export default {
     async findSelection(req, res, next) {
         try {
             convertLang(req)
-            let {owner,type} = req.query
+            let {owner,type,business,ownerType} = req.query
             let query = {deleted: false };
             if(owner) query.owner = owner;
             if(type) query.type = type;
+            if(business) query.business = business;
+            if(ownerType) query.ownerType = ownerType;
             let myUser = await checkExistThenGet(req.user._id, User)
             await Post.find(query).populate(populateQuery)
                 .sort({ createdAt: -1 }).then(async(data)=>{
@@ -108,6 +113,7 @@ export default {
                 }
                 return true;
             }),
+            body('business').optional(),
         ];
         return validations;
     },
@@ -116,6 +122,7 @@ export default {
             convertLang(req)
             const validatedBody = checkValidations(req);
             validatedBody.owner = req.user._id;
+            if(validatedBody.business) validatedBody.ownerType = 'BUSINESS'
             if (req.files) {
                 if (req.files['files']) {
                     let imagesList = [];

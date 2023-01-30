@@ -41,12 +41,12 @@ const businessSchema = new Schema({
     phones: {
         type: [String],
         trim: true,
-        required: true,
+        //required: true,
     },
     email: {
         type: String,
         trim: true,
-        required: true,
+        //required: true,
     },
     img: {
         type: String,
@@ -65,7 +65,7 @@ const businessSchema = new Schema({
     educationSystem: {
         type: Number,
         ref:'educationSystem',
-        required: true,
+        //required: true,
     },
     educationInstitution: {//if accepted
         type: Number,
