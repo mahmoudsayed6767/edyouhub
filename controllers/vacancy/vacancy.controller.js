@@ -48,6 +48,7 @@ export default {
             let vacancy = await Vacancy.create({ ...validatedBody });
             await Post.create({
                 vacancy: vacancy.id,
+                owner:req.user._id,
                 business:business.id,
                 ownerType:'BUSINESS',
                 type:'VACANCY',

@@ -85,6 +85,7 @@ export default {
             await Post.create({
                 admission: admission.id,
                 business:business.id,
+                owner:req.user._id,
                 ownerType:'BUSINESS',
                 type:'ADMISSION',
                 startDate:admission.fromDate,
