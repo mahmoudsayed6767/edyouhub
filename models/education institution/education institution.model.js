@@ -35,7 +35,7 @@ const educationInstitutionSchema = new Schema({
     educationSystem: {
         type: Number,
         ref:'educationSystem',
-        required: true,
+        //required: true,
     },
     img: {
         type: String,
