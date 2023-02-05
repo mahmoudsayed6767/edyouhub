@@ -12,10 +12,17 @@ router.route('/:vacancyId/apply')
         vacancyRequestController.validateBody(),
         vacancyRequestController.create
     )
-router.route('/:vacancyId/getAll')
+router.route('/:businessId/applyForWaiting')
+    .post(
+        requireAuth,
+        multerSaveTo('education').single('attachment'),
+        vacancyRequestController.validateBody(),
+        vacancyRequestController.createToWaitingList
+    )
+router.route('/')
     .get(requireAuth,vacancyRequestController.getAllPaginated);
 
-router.route('/:vacancyId/withoutPagenation/get')
+router.route('/withoutPagenation/get')
     .get(requireAuth,vacancyRequestController.getAll);
 
 router.route('/:vacancyRequestId')

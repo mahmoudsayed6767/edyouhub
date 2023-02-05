@@ -22,7 +22,6 @@ const gradeSchema = new Schema({
     educationSystem: {
         type: Number,
         ref:'educationSystem',
-        required: true,
     },
     educationInstitution:{
         type: Number,

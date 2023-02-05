@@ -2,6 +2,7 @@
 export async function transformVacancyRequest(e,lang) {
     let index = {
         fullname:e.fullname,
+        type:e.type,
         age:e.age,
         phone: e.phone,
         vacancy:e.vacancy,
@@ -23,6 +24,7 @@ export async function transformVacancyRequest(e,lang) {
 export async function transformVacancyRequestById(e,lang) {
     let index = {
         fullname:e.fullname,
+        type:e.type,
         age:e.age,
         phone: e.phone,
         vacancy:e.vacancy,

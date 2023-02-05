@@ -2,6 +2,7 @@
 export async function transformAdmissionRequest(e,lang) {
     let index = {
         status:e.status,
+        type:e.type,
         firstName: e.firstName,
         secondName: e.secondName,
         familyName: e.familyName,
@@ -38,6 +39,7 @@ export async function transformAdmissionRequest(e,lang) {
 export async function transformAdmissionRequestById(e,lang) {
     let index = {
         status:e.status,
+        type:e.type,
         firstName: e.firstName,
         secondName: e.secondName,
         familyName: e.familyName,

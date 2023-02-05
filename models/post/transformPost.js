@@ -33,6 +33,37 @@ export async function transformPost(e,lang,myUser,userId) {
         options.push(option)
     }
     index.options = options;
+    if(e.vacancy) {
+        let vacancy = {
+            profession:e.vacancy.profession,
+            requirements:e.vacancy.requirements,
+            description: e.vacancy.description,
+            id: e.vacancy._id,
+            createdAt: e.vacancy.createdAt,   
+        }
+        index.vacancy = vacancy;
+    }
+    if(e.admission){
+        let admission = {
+            status:e.admission.status,
+            title: e.admission.title,
+            description: e.admission.description,
+            fromDate: e.admission.fromDate,
+            toDate: e.admission.toDate,
+            id: e.admission._id,                  
+        }
+        /*grades*/
+        let grades=[]
+        for (let val of e.admission.grades) {
+            grades.push({
+                name:lang=="ar"?val.name_ar:val.name_en,
+                cost: val.cost,
+                id:val._id,                         
+            })
+        }
+        admission.grades = grades;
+        index.admission = admission;
+    }
     return index
 }
 export async function transformPostById(e,lang,myUser,userId) {
@@ -70,5 +101,41 @@ export async function transformPostById(e,lang,myUser,userId) {
         options.push(option)
     }
     index.options = options;
+    if(e.vacancy) {
+        let vacancy = {
+            profession:e.vacancy.profession,
+            requirements:e.vacancy.requirements,
+            description: e.vacancy.description,
+            id: e.vacancy._id,
+            createdAt: e.vacancy.createdAt,   
+        }
+        index.vacancy = vacancy;
+    }
+    if(e.admission){
+        let index = {
+            status:e.admission.status,
+            title: e.admission.title,
+            description: e.admission.description,
+            fromDate: e.admission.fromDate,
+            toDate: e.admission.toDate,
+            maxApplications:e.admission.maxApplications,
+            maxAcceptance: e.admission.maxAcceptance,
+            applications:e.admission.applications,
+            acceptance:e.admission.acceptance,
+            id: e.admission._id,
+            createdAt: e.admission.createdAt,                       
+        }
+        /*grades*/
+        let grades=[]
+        for (let val of e.admission.grades) {
+            grades.push({
+                name:lang=="ar"?val.name_ar:val.name_en,
+                cost: val.cost,
+                id:val._id,                         
+            })
+        }
+        admission.grades = grades;
+        index.admission = admission;
+    }
     return index
 }

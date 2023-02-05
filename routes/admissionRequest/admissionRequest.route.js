@@ -10,10 +10,16 @@ router.route('/:admissionId/apply')
         admissionRequestController.validateBody(),
         admissionRequestController.create
     )
-router.route('/:admissionId/getAll')
+router.route('/:businessId/applyForWaiting')
+    .post(
+        requireAuth,
+        admissionRequestController.validateBody(),
+        admissionRequestController.createToWaitingList
+    )
+router.route('/')
     .get(requireAuth,admissionRequestController.getAllPaginated);
 
-router.route('/:admissionId/withoutPagenation/get')
+router.route('/withoutPagenation/get')
     .get(requireAuth,admissionRequestController.getAll);
 
 router.route('/:admissionRequestId')

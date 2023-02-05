@@ -17,6 +17,11 @@ import { toImgUrl } from "../../utils";
 const populateQuery = [
     { path: 'owner', model: 'user'},
     { path: 'options', model: 'option'},
+    { path: 'vacancy', model: 'vacancy'},
+    {
+        path: 'admission', model: 'admission',
+        populate: { path: 'grades', model: 'grade' },
+    },
 ];
 const populateQueryUser =[
     { path: 'country', model: 'country'},

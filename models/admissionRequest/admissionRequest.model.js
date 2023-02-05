@@ -42,10 +42,15 @@ const admissionRequestSchema = new Schema({
         type: Number,
         required: true,
     },
+    type:{
+        type: String,
+        enum:['WAITING-LIST','ON-ADMISSION'],
+        default:'ON-ADMISSION'
+    },
     admission: {
         type: Number,
         ref:'addmission',
-        required: true,
+        //required: true,
     },
     business: {
         type: Number,

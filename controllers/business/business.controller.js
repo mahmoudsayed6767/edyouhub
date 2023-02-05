@@ -2,7 +2,7 @@ import Report from "../../models/reports/report.model";
 import { body } from "express-validator";
 import { checkValidations,convertLang} from "../shared/shared.controller";
 import ApiError from "../../helpers/ApiError";
-import { checkExist,isInArray } from "../../helpers/CheckMethods";
+import { checkExist,isInArray ,isLat,isLng} from "../../helpers/CheckMethods";
 import ApiResponse from "../../helpers/ApiResponse";
 import { checkExistThenGet } from "../../helpers/CheckMethods";
 import i18n from "i18n";
@@ -22,7 +22,15 @@ import BusinessManagement from "../../models/business/businessManagement.model"
 import { sendNotifiAndPushNotifi } from "../../services/notification-service";
 import Notif from "../../models/notif/notif.model";
 import Business from "../../models/business/business.model";
+import { ValidationError } from "mongoose";
 
+//validate location
+function validatedLocation(location) {
+    if (!isLng(location[0]))
+        throw new ValidationError.UnprocessableEntity({ keyword: 'location', message: i18n.__("lng.validate") });
+    if (!isLat(location[1]))
+        throw new ValidationError.UnprocessableEntity({ keyword: 'location', message: i18n.__("lat.validate") });
+}
 const populateQuery = [
     { path: 'owner', model: 'user' },
     { path: 'educationSystem', model: 'educationSystem' },
@@ -275,7 +283,9 @@ export default {
             let grades = []
             if(validatedBody.theGrades){
                 await Promise.all(validatedBody.theGrades.map(async(val) => {
-                    val.educationSystem = validatedBody.educationSystem
+                    if(validatedBody.educationSystem){
+                        val.educationSystem = validatedBody.educationSystem
+                    }
                     val.business = business.id
                     let createdRow = await Grade.create({...val})
                     grades.push(createdRow.id)
@@ -289,24 +299,29 @@ export default {
                         'name_ar':val.name_ar,
                         'name_en':val.name_en
                     }
-                    faculty.educationSystem = validatedBody.educationSystem
+                    if(validatedBody.educationSystem){
+                        faculty.educationSystem = validatedBody.educationSystem
+                    }
                     faculty.business = business.id
                     let createdFaculty = await Faculty.create({...faculty})
                     faculties.push(createdFaculty.id)
                     //add grades
+                    let facultyGrades = [];
                     await Promise.all(val.theGrades.map(async(value) => {
-                        value.educationSystem = validatedBody.educationSystem
+                        if(validatedBody.educationSystem){
+                            value.educationSystem = validatedBody.educationSystem
+                        }
                         value.business = business.id
                         let createdRow = await Grade.create({...value})
                         //add faculty key in grade obj
                         createdRow.faculty = createdFaculty.id
                         await createdRow.save();
-                        grades.push(createdRow.id)
+                        facultyGrades.push(createdRow.id)
                     }));
                     //add grades key in faculty obj
-                    createdFaculty.grades = grades
+                    createdFaculty.grades = facultyGrades
                     await createdFaculty.save();
-                }));  
+                })); 
             }
             business.faculties = faculties
             business.branches = branches
@@ -315,7 +330,7 @@ export default {
                 let educationInstitution = await EducationInstitution.create({ 
                     name_en:business.name_en,
                     name_ar:business.name_ar,
-                    educationSystem:business.educationSystem, 
+                    educationSystem:business.educationSystem?business.educationSystem:null, 
                     sector:business.sector,
                     subSector:business.subSector,
                     img:business.img,
@@ -409,14 +424,53 @@ export default {
                         await Grade.findByIdAndUpdate(val.gradeId, { ...val });
                         grades.push(val.gradeId)
                     }else{
-                        val.educationSystem = validatedBody.educationSystem
+                        
+                        if(validatedBody.educationSystem){
+                            val.educationSystem = validatedBody.educationSystem
+                        }
                         val.business = businessId
                         let createdRow = await Grade.create({...val})
                         grades.push(createdRow.id)
                     }
                 }));  
             }
-            
+            let faculties = []
+            if(validatedBody.theFaculties){
+                await Promise.all(validatedBody.theFaculties.map(async(val) => {
+                    if(val.facultyId){
+                        await Faculty.findByIdAndUpdate(val.facultyId, { ...val });
+                        faculties.push(val.facultyId)
+                    }else{
+                    //add faculty
+                    let faculty = {
+                        'name_ar':val.name_ar,
+                        'name_en':val.name_en
+                    }
+                    if(validatedBody.educationSystem){
+                        faculty.educationSystem = validatedBody.educationSystem
+                    }
+                    faculty.business = business.id
+                    let createdFaculty = await Faculty.create({...faculty})
+                    faculties.push(createdFaculty.id)
+                    //add grades
+                    await Promise.all(val.theGrades.map(async(value) => {
+                        if(validatedBody.educationSystem){
+                            value.educationSystem = validatedBody.educationSystem
+                        }
+                        value.business = business.id
+                        let createdRow = await Grade.create({...value})
+                        //add faculty key in grade obj
+                        createdRow.faculty = createdFaculty.id
+                        await createdRow.save();
+                        grades.push(createdRow.id)
+                    }));
+                    //add grades key in faculty obj
+                    createdFaculty.grades = grades
+                    await createdFaculty.save();
+                    }
+                    
+                }));  
+            }
             validatedBody.branches = branches
             validatedBody.grades = grades
             await Business.findByIdAndUpdate(businessId, { ...validatedBody });

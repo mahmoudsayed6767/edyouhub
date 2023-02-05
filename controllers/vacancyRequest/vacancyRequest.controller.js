@@ -60,6 +60,34 @@ export default {
             next(error);
         }
     },
+    //add new vacancyRequest for waiting list
+    async createToWaitingList(req, res, next) {
+        try {
+            convertLang(req)
+            const validatedBody = checkValidations(req);
+            let {businessId} = req.params;
+            validatedBody.business = businessId
+            validatedBody.owner = req.user._id
+            validatedBody.type = "WAITING-LIST"
+
+            let attachment = await handleImg(req, { attributeName: 'attachment'});
+            validatedBody.attachment = attachment;
+            let vacancyRequest = await VacancyRequest.create({ ...validatedBody });
+            let reports = {
+                "action":"Create New vacancyRequest",
+                "type":"VACANCY-REQUEST",
+                "deepId":vacancyRequest.id,
+                "user": req.user._id
+            };
+            await Report.create({...reports });
+            res.status(201).send({
+                success:true,
+                data:vacancyRequest
+            });
+        } catch (error) {
+            next(error);
+        }
+    },
     //get by id
     async getById(req, res, next) {
         try {
@@ -117,9 +145,8 @@ export default {
             convertLang(req)
             //get lang
             let lang = i18n.getLocale(req)
-            let {owner,status,business} = req.query;
-            let {vacancyId} = req.params
-            let query = {deleted: false ,vacancy:vacancyId}
+            let {owner,status,business,vacancy} = req.query;
+            let query = {deleted: false}
             
             if(owner) {
                 if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
@@ -132,6 +159,7 @@ export default {
             }
             if(status) query.status = status
             if(business) query.business = business
+            if(vacancy) query.vacancy = vacancy
             await VacancyRequest.find(query).populate(populateQuery)
                 .sort({ _id: 1 })
                 .then( async(data) => {
@@ -156,9 +184,8 @@ export default {
              //get lang
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
-            let {owner,status,business} = req.query;
-            let {vacancyId} = req.params
-            let query = {deleted: false ,vacancy:vacancyId}
+            let {owner,status,business,vacancy} = req.query;
+            let query = {deleted: false }
             if(owner) {
                 if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
                     if(req.user.type == "USER"){
@@ -170,6 +197,8 @@ export default {
             }
             if(status) query.status = status
             if(business) query.business = business
+            if(vacancy) query.vacancy = vacancy
+
             await VacancyRequest.find(query).populate(populateQuery)
                 .sort({ _id: 1 })
                 .limit(limit)

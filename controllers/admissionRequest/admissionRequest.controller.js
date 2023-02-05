@@ -163,6 +163,31 @@ export default {
             next(error);
         }
     },
+    //add new admissionRequest to waiting list
+    async createToWaitingList(req, res, next) {
+        try {
+            convertLang(req)
+            let {businessId} = req.params
+            const validatedBody = checkValidations(req);
+            validatedBody.business = businessId
+            validatedBody.owner = req.user._id
+            validatedBody.type = "WAITING-LIST"
+            let admissionRequest = await AdmissionRequest.create({ ...validatedBody });
+            let reports = {
+                "action":"Create New admissionRequest",
+                "type":"ADMISSION-REQUEST",
+                "deepId":admissionRequest.id,
+                "user": req.user._id
+            };
+            await Report.create({...reports });
+            res.status(201).send({
+                success:true,
+                data:admissionRequest
+            });
+        } catch (error) {
+            next(error);
+        }
+    },
     //get by id
     async getById(req, res, next) {
         try {
@@ -220,15 +245,15 @@ export default {
             convertLang(req)
             //get lang
             let lang = i18n.getLocale(req)
-            let {country,city,area,grade,business,owner,status} = req.query;
-            let {admissionId} = req.params
+            let {country,city,area,grade,business,owner,status,admission} = req.query;
 
-            let query = {deleted: false,admission:admissionId }
+            let query = {deleted: false }
             if(country) query.country = country
             if(city) query.city = city
             if(area) query.area = area
             if(grade) query.grade = grade
             if(business) query.business = business
+            if(admission) query.admission = admission
             if(owner) {
                 if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
                     if(req.user.type == "USER"){
@@ -263,14 +288,15 @@ export default {
              //get lang
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
-            let {country,city,area,grade,business,owner,status} = req.query;
-            let {admissionId} = req.params
-            let query = {deleted: false,admission:admissionId }
+            let {country,city,area,grade,business,owner,status,admission} = req.query;
+            let query = {deleted: false }
             if(country) query.country = country
             if(city) query.city = city
             if(area) query.area = area
             if(grade) query.grade = grade
             if(business) query.business = business
+            if(admission) query.admission = admission
+
             if(owner) {
                 if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
                     if(req.user.type == "USER"){

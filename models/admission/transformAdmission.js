@@ -34,6 +34,16 @@ export async function transformAdmission(e,lang) {
             id: e.educationInstitution._id,
         }
     }
+    /*grades*/
+    let grades=[]
+    for (let val of e.grades) {
+        grades.push({
+            name:lang=="ar"?val.name_ar:val.name_en,
+            cost: val.cost,
+            id:val._id,                         
+        })
+    }
+    index.grades = grades;
     return index
 }
 

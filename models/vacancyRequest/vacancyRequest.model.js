@@ -32,10 +32,14 @@ const vacancyRequestSchema = new Schema({
         type: Number,
         required: true,
     },
+    type:{
+        type: String,
+        enum:['WAITING-LIST','ON-VACANCY'],
+        default:'ON-VACANCY'
+    },
     vacancy: {
         type: Number,
         ref:'vacancy',
-        required: true,
     },
     business: {
         type: Number,
