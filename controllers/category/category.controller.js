@@ -1,6 +1,6 @@
 import ApiResponse from "../../helpers/ApiResponse";
 import { checkExist, checkExistThenGet, isImgUrl,isInArray } from "../../helpers/CheckMethods";
-import { handleImg, checkValidations ,convertLang} from "../shared/shared.controller";
+import { handleImg, checkValidations } from "../shared/shared.controller";
 import { body } from "express-validator";
 import Category from "../../models/category/category.model";
 import subCategory from "../../models/category/sub-category.model";
@@ -18,7 +18,6 @@ export default {
     //find main category pagenation
     async findCategoryPagenation(req, res, next) {
         try {
-            convertLang(req)
              //get lang
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20,
@@ -76,7 +75,6 @@ export default {
     //get subCategory under category with pagenation
     async findsubCategoryPagenation(req, res, next) {
         try {
-            convertLang(req)
              //get lang
             let lang = i18n.getLocale(req)
             let { categoryId ,orderByPriority} = req.params,
@@ -176,7 +174,6 @@ export default {
     //get subCategories under category without pagenation
     async findsubCategory(req, res, next) {
         try {
-            convertLang(req)
              //get lang
             let lang = i18n.getLocale(req)
             let {orderByPriority,ids} = req.query
@@ -277,7 +274,6 @@ export default {
     //create new record
     async create(req, res, next) {
         try {
-            convertLang(req)
             const validatedBody = checkValidations(req);
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
@@ -324,7 +320,6 @@ export default {
     },
     async createMultiCategory(req, res, next) {
         try {
-            convertLang(req)
             let data = req.body.data
             for (let i = 0; i < data.length; i++) {
                 const item = data[i];
@@ -339,7 +334,6 @@ export default {
     },
     async createMultiSubCategory(req, res, next) {
         try {
-            convertLang(req)
             let data = req.body.data
             for (let i = 0; i < data.length; i++) {
                 const item = data[i];
@@ -360,7 +354,6 @@ export default {
     //find by id
     async findById(req, res, next) {
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req)
             let { categoryId } = req.params;
             await checkExist(categoryId, Category, { deleted: false });
@@ -392,7 +385,6 @@ export default {
     async update(req, res, next) {
 
         try {
-            convertLang(req)
             let { categoryId } = req.params, model;
             await checkExist(categoryId, Category, { deleted: false });
 
@@ -442,7 +434,6 @@ export default {
     //delete category
     async delete(req, res, next) {
         try {
-            convertLang(req)
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
             let { categoryId } = req.params;

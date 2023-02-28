@@ -1,7 +1,7 @@
 import Product from "../../models/product/product.model";
 import ApiResponse from "../../helpers/ApiResponse";
 import Category from "../../models/category/category.model";
-import { handleImgs, checkValidations ,convertLang} from "../shared/shared.controller";
+import { handleImgs, checkValidations } from "../shared/shared.controller";
 import { checkExistThenGet, checkExist,isInArray } from "../../helpers/CheckMethods";
 import { body } from "express-validator";
 import Report from "../../models/reports/report.model";
@@ -24,7 +24,6 @@ export default {
     async findAll(req, res, next) {
         
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20,
             {sortBy,color,brand,related,id,subCategory,category,available,search,saleCount,priceFrom,priceTo} = req.query;
@@ -104,7 +103,6 @@ export default {
     async getAll(req, res, next) {
         
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req)
             let {sortBy,color,brand,related,id,subCategory,category,available,search,saleCount,priceFrom,priceTo} = req.query;
             let query = {deleted: false };
@@ -274,7 +272,6 @@ export default {
     },
     async create(req, res, next) {
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req)
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth'))); 
@@ -323,8 +320,7 @@ export default {
         }
     },
     async createMulti(req, res, next) {
-        try {
-            convertLang(req) 
+        try { 
             let data = req.body.data
             for (let i = 0; i < data.length; i++) {
                 const item = data[i];
@@ -356,7 +352,6 @@ export default {
     },
     async findById(req, res, next) {
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req)
             let { productId } = req.params;
 
@@ -373,7 +368,6 @@ export default {
 
     async active(req, res, next) {
         try {
-            convertLang(req)
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
 
@@ -398,7 +392,6 @@ export default {
 
     async disactive(req, res, next) {S
         try {
-            convertLang(req)
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth'))); 
 
@@ -423,7 +416,6 @@ export default {
     
     async update(req, res, next) {
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req)
             let {productId } = req.params;
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
@@ -481,7 +473,6 @@ export default {
     },
     async delete(req, res, next) {
         try {
-            convertLang(req)
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
             let {productId } = req.params;

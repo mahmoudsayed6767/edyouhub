@@ -2,7 +2,7 @@ import ApiResponse from "../../helpers/ApiResponse";
 import Report from "../../models/reports/report.model";
 import ApiError from '../../helpers/ApiError';
 import { checkExist, checkExistThenGet,isInArray} from "../../helpers/CheckMethods";
-import { checkValidations,convertLang } from "../shared/shared.controller";
+import { checkValidations } from "../shared/shared.controller";
 import { body } from "express-validator";
 import Package from "../../models/package/package.model";
 import {transformPackage} from "../../models/package/transformPackage"
@@ -13,7 +13,6 @@ export default {
     async findAll(req, res, next) {
 
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req) 
             let page = +req.query.page || 1, limit = +req.query.limit || 20 ;
             let query = {deleted: false };
@@ -42,7 +41,6 @@ export default {
     async findAllWithoutPagenation(req, res, next) {
 
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req) 
             let query = {deleted: false };
             await Package.find(query)
@@ -88,7 +86,6 @@ export default {
     async create(req, res, next) {
 
         try {
-            convertLang(req)
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
     
@@ -112,7 +109,6 @@ export default {
     //get by id
     async findById(req, res, next) {
         try {
-            convertLang(req)
             //get lang
             let lang = i18n.getLocale()
             let { packageId } = req.params;
@@ -134,7 +130,6 @@ export default {
     async update(req, res, next) {
 
         try {
-            convertLang(req)
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
 
@@ -161,7 +156,6 @@ export default {
     //delete package
     async delete(req, res, next) {
         try {
-            convertLang(req)
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
             let { packageId } = req.params;
@@ -186,7 +180,6 @@ export default {
     //buy package
     async buyPackage(req, res, next) {
         try {
-            convertLang(req)
             let { packageId } = req.params;
             let packages = await checkExistThenGet(packageId, Package, { deleted: false });
             let user = await checkExistThenGet(req.user._id,User, { deleted: false });

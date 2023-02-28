@@ -4,7 +4,7 @@ import Fees from "../../models/fees/fees.model"
 import Report from "../../models/reports/report.model";
 import ApiError from '../../helpers/ApiError';
 import { checkExist, checkExistThenGet,isInArray} from "../../helpers/CheckMethods";
-import { checkValidations,convertLang } from "../shared/shared.controller";
+import { checkValidations } from "../shared/shared.controller";
 import { body } from "express-validator";
 import i18n from "i18n";
 import {transformFees} from "../../models/fees/transformFees"
@@ -32,7 +32,6 @@ export default {
 
     async findAll(req, res, next) {
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req) 
             let {educationInstitution,student} = req.query
             let query = {deleted: false};
@@ -60,7 +59,6 @@ export default {
     },
     async findAllPagenation(req, res, next) {
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req) 
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
             let {educationInstitution,student} = req.query
@@ -90,7 +88,6 @@ export default {
     },
     async findById(req, res, next) {
         try {
-            convertLang(req)
             //get lang
             let lang = i18n.getLocale(req)
             let { feesId } = req.params;
@@ -193,7 +190,6 @@ export default {
     async create(req, res, next) {
 
         try {
-            convertLang(req)
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
             const validatedBody = checkValidations(req);
@@ -332,7 +328,6 @@ export default {
     async addMany(req, res, next) {
 
         try {
-            convertLang(req)
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
             const data = checkValidations(req);
@@ -447,7 +442,6 @@ export default {
     async addManyExistStudents(req, res, next) {
 
         try {
-            convertLang(req)
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
             const data = checkValidations(req);
@@ -494,7 +488,6 @@ export default {
    
     async delete(req, res, next) {
         try {
-            convertLang(req)
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
                 

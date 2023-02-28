@@ -2,7 +2,7 @@ import City from "../../models/city/city.model";
 import Area from "../../models/area/area.model";
 import Report from "../../models/reports/report.model";
 import { body } from "express-validator";
-import { checkValidations,convertLang} from "../shared/shared.controller";
+import { checkValidations} from "../shared/shared.controller";
 import ApiError from "../../helpers/ApiError";
 import { checkExist,isInArray } from "../../helpers/CheckMethods";
 import ApiResponse from "../../helpers/ApiResponse";
@@ -34,7 +34,6 @@ export default {
     //add new city
     async create(req, res, next) {
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req)
             const validatedBody = checkValidations(req);
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
@@ -68,7 +67,6 @@ export default {
     },
     async createMulti(req, res, next) {
         try {
-            convertLang(req)
             let data = req.body.data
             for (let i = 0; i < data.length; i++) {
                 const item = data[i];
@@ -83,7 +81,6 @@ export default {
     //get by id
     async getById(req, res, next) {
         try {
-            convertLang(req)
              //get lang
             let lang = i18n.getLocale(req)
             let { cityId } = req.params;
@@ -112,7 +109,6 @@ export default {
     //update city
     async update(req, res, next) {
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req)
             let { cityId } = req.params;
             await checkExist(cityId,City, { deleted: false })
@@ -149,7 +145,6 @@ export default {
     //get without pagenation
     async getAll(req, res, next) {
         try {
-            convertLang(req)
              //get lang
             let lang = i18n.getLocale(req)
             let {name} = req.query;
@@ -197,7 +192,6 @@ export default {
     //get with pagenation
     async getAllPaginated(req, res, next) {
         try {
-            convertLang(req)
              //get lang
             let lang = i18n.getLocale(req)
             let {name} = req.query
@@ -248,7 +242,6 @@ export default {
     async delete(req, res, next) {
         
         try {
-            convertLang(req)
             let { cityId } = req.params;
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));

@@ -1,7 +1,7 @@
 import Admission from "../../models/admission/admission.model";
 import Report from "../../models/reports/report.model";
 import { body } from "express-validator";
-import { checkValidations,convertLang} from "../shared/shared.controller";
+import { checkValidations} from "../shared/shared.controller";
 import { checkExist } from "../../helpers/CheckMethods";
 import ApiResponse from "../../helpers/ApiResponse";
 import { checkExistThenGet } from "../../helpers/CheckMethods";
@@ -76,7 +76,6 @@ export default {
     //add new admission
     async create(req, res, next) {
         try {
-            convertLang(req)
             const validatedBody = checkValidations(req);
             let business = await checkExistThenGet(validatedBody.business,Business,{ deleted: false})
             validatedBody.educationInstitution = business.educationInstitution
@@ -110,7 +109,6 @@ export default {
     //get by id
     async getById(req, res, next) {
         try {
-            convertLang(req)
              //get lang
             let lang = i18n.getLocale(req)
             let { admissionId } = req.params;
@@ -133,7 +131,6 @@ export default {
     //update admission
     async update(req, res, next) {
         try {
-            convertLang(req)
             let { admissionId } = req.params;
             await checkExist(admissionId,Admission, { deleted: false })
             const validatedBody = checkValidations(req);
@@ -163,7 +160,6 @@ export default {
     //get without pagenation
     async getAll(req, res, next) {
         try {
-            convertLang(req)
             //get lang
             let lang = i18n.getLocale(req)
             let {search,educationInstitution,educationSystem,business} = req.query;
@@ -205,7 +201,6 @@ export default {
     //get with pagenation
     async getAllPaginated(req, res, next) {
         try {
-            convertLang(req)
              //get lang
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
@@ -251,7 +246,6 @@ export default {
     async delete(req, res, next) {
         
         try {
-            convertLang(req)
             let { admissionId } = req.params;
             
             let admission = await checkExistThenGet(admissionId, Admission);

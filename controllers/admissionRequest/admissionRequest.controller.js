@@ -1,7 +1,7 @@
 import AdmissionRequest from "../../models/admissionRequest/admissionRequest.model";
 import Report from "../../models/reports/report.model";
 import { body } from "express-validator";
-import { checkValidations,convertLang} from "../shared/shared.controller";
+import { checkValidations} from "../shared/shared.controller";
 import { checkExistThenGet,isInArray } from "../../helpers/CheckMethods";
 import ApiResponse from "../../helpers/ApiResponse";
 import i18n from "i18n";
@@ -140,7 +140,6 @@ export default {
     //add new admissionRequest
     async create(req, res, next) {
         try {
-            convertLang(req)
             const validatedBody = checkValidations(req);
             let {admissionId} = req.params
             let admission = await checkExistThenGet(admissionId,Admission,{ deleted: false})
@@ -166,7 +165,6 @@ export default {
     //add new admissionRequest to waiting list
     async createToWaitingList(req, res, next) {
         try {
-            convertLang(req)
             let {businessId} = req.params
             const validatedBody = checkValidations(req);
             validatedBody.business = businessId
@@ -191,7 +189,6 @@ export default {
     //get by id
     async getById(req, res, next) {
         try {
-            convertLang(req)
              //get lang
             let lang = i18n.getLocale(req)
             let { admissionRequestId } = req.params;
@@ -216,7 +213,6 @@ export default {
     //update admissionRequest
     async update(req, res, next) {
         try {
-            convertLang(req)
             let { admissionRequestId } = req.params;
             let admissionRequest = await checkExistThenGet(admissionRequestId,AdmissionRequest, { deleted: false })
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
@@ -242,7 +238,6 @@ export default {
     //get without pagenation
     async getAll(req, res, next) {
         try {
-            convertLang(req)
             //get lang
             let lang = i18n.getLocale(req)
             let {country,city,area,grade,business,owner,status,admission} = req.query;
@@ -284,7 +279,6 @@ export default {
     //get with pagenation
     async getAllPaginated(req, res, next) {
         try {
-            convertLang(req)
              //get lang
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
@@ -330,7 +324,6 @@ export default {
     async delete(req, res, next) {
         
         try {
-            convertLang(req)
             let { admissionRequestId } = req.params;
             let admissionRequest = await checkExistThenGet(admissionRequestId, AdmissionRequest);
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
@@ -356,7 +349,6 @@ export default {
     async accept(req, res, next) {
         
         try {
-            convertLang(req)
             let { admissionRequestId } = req.params;
             let admissionRequest = await checkExistThenGet(admissionRequestId, AdmissionRequest);
             let business = await checkExistThenGet(admissionRequest.business,Business);
@@ -404,7 +396,6 @@ export default {
     async reject(req, res, next) {
         
         try {
-            convertLang(req)
             let { admissionRequestId } = req.params;
             let admissionRequest = await checkExistThenGet(admissionRequestId, AdmissionRequest);
             let business = await checkExistThenGet(admissionRequest.business,Business);

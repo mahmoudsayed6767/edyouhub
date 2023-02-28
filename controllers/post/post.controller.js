@@ -2,7 +2,7 @@ import ApiResponse from "../../helpers/ApiResponse";
 import Report from "../../models/reports/report.model";
 import ApiError from '../../helpers/ApiError';
 import { checkExist, checkExistThenGet,isInArray} from "../../helpers/CheckMethods";
-import {checkValidations,convertLang } from "../shared/shared.controller";
+import {checkValidations } from "../shared/shared.controller";
 import { body } from "express-validator";
 import Post from "../../models/post/post.model";
 import Like from "../../models/like/like.model";
@@ -34,7 +34,6 @@ const populateQueryComment = [
 export default {
     async findAll(req, res, next) {
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
             let {owner,userId,type,business,ownerType} = req.query
@@ -67,7 +66,6 @@ export default {
     },
     async findSelection(req, res, next) {
         try {
-            convertLang(req)
             let {owner,type,business,ownerType} = req.query
             let query = {deleted: false };
             if(owner) query.owner = owner;
@@ -124,7 +122,6 @@ export default {
     },
     async create(req, res, next) {
         try {
-            convertLang(req)
             const validatedBody = checkValidations(req);
             validatedBody.owner = req.user._id;
             if(validatedBody.business) validatedBody.ownerType = 'BUSINESS'
@@ -163,7 +160,6 @@ export default {
     },
     async findById(req, res, next) {
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req)
             let { postId } = req.params;
             await checkExist(postId, Post, { deleted: false });
@@ -179,7 +175,6 @@ export default {
     },
     async update(req, res, next) {
         try {
-            convertLang(req)
             let { postId } = req.params;
             let post = await checkExistThenGet(postId, Post, { deleted: false });
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
@@ -230,7 +225,6 @@ export default {
     },
     async delete(req, res, next) {
         try {
-            convertLang(req)
             let { postId } = req.params;
             let post = await checkExistThenGet(postId, Post, { deleted: false });
             if(!isInArray(["ADMIN","SUB-ADMIN","ARTIST"],req.user.type)){
@@ -258,7 +252,6 @@ export default {
     /*answer */
     async answer(req, res, next) {
         try {
-            convertLang(req)
             let {optionId } = req.params;
 
             let theOption = await checkExistThenGet(optionId, Option);
@@ -284,7 +277,6 @@ export default {
     /*like post*/
     async addLike(req, res, next) { 
         try {
-            convertLang(req)
             let {postId} = req.params
             await checkExist (postId,Post,{deleted:false})
             let user = await checkExistThenGet(req.user._id, User);
@@ -316,7 +308,6 @@ export default {
     /*remove like  */
     async removeLike(req, res, next) {
         try {
-            convertLang(req)
             let {postId } = req.params;
              /*check if  */
             if(!await Like.findOne({ user: req.user._id, post: postId,deleted:false})){
@@ -357,7 +348,6 @@ export default {
     },
     async getPostLikes(req, res, next) {
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
             let query = {deleted: false,post:req.params.postId };
@@ -392,7 +382,6 @@ export default {
     },
     async addComment(req, res, next) { 
         try {
-            convertLang(req)
             const validatedBody = checkValidations(req);
             validatedBody.user = req.user._id;
             validatedBody.post = req.params.postId
@@ -412,7 +401,6 @@ export default {
     /*remove comment  */
     async removeComment(req, res, next) {
         try {
-            convertLang(req)
             let {commentId } = req.params;
             let comment = await checkExistThenGet(commentId, Comment);
             comment.deleted = true;
@@ -435,7 +423,6 @@ export default {
     },
     async getPostComments(req, res, next) {
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
             let query = {deleted: false,post:req.params.postId };

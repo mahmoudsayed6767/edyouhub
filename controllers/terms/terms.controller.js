@@ -1,6 +1,6 @@
 import Terms from "../../models/terms/terms.model";
 import { body } from "express-validator";
-import { checkValidations ,convertLang} from "../shared/shared.controller";
+import { checkValidations } from "../shared/shared.controller";
 import ApiError from "../../helpers/ApiError";
 import { checkExist,isInArray } from "../../helpers/CheckMethods";
 import ApiResponse from "../../helpers/ApiResponse";
@@ -26,7 +26,6 @@ export default {
     },
     async create(req, res, next) {
         try {
-            convertLang(req)
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
             
@@ -46,7 +45,6 @@ export default {
     },
     async getById(req, res, next) {
         try {
-            convertLang(req)
             //get the language selected
             let lang = i18n.getLocale(req)
             let { TermsId } = req.params;
@@ -71,7 +69,6 @@ export default {
     },
     async update(req, res, next) {
         try {
-            convertLang(req)
             let user = req.user;
             let { TermsId } = req.params;
 
@@ -95,7 +92,6 @@ export default {
 
     async getAll(req, res, next) {
         try {
-            convertLang(req)
             //get the language selected
             let lang = i18n.getLocale(req)
             let query = { deleted: false }
@@ -130,7 +126,6 @@ export default {
     async delete(req, res, next) {
         let { TermsId } = req.params;
         try {
-            convertLang(req)
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
             let terms = await checkExistThenGet(TermsId, Terms);

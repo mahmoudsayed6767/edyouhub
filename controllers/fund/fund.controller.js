@@ -4,13 +4,12 @@ import Student from "../../models/student/student.model";
 import Premium from "../../models/premium/premium.model";
 import Report from "../../models/reports/report.model";
 import { body } from "express-validator";
-import { checkValidations,convertLang,handleImg} from "../shared/shared.controller";
+import { checkValidations} from "../shared/shared.controller";
 import ApiError from "../../helpers/ApiError";
 import { checkExist,isInArray } from "../../helpers/CheckMethods";
 import ApiResponse from "../../helpers/ApiResponse";
 import { checkExistThenGet } from "../../helpers/CheckMethods";
 import EducationInstitution from "../../models/education institution/education institution.model";
-import Category from "../../models/category/category.model"
 import EducationSystem from "../../models/education system/education system.model";
 import Setting from "../../models/setting/setting.model"
 import i18n from "i18n";
@@ -224,7 +223,6 @@ export default {
     //add new fund
     async uploadImgs(req, res, next) {
         try {
-            convertLang(req)
             let personalIdImgs = []
             let utilityBillsImgs=[]
             let proofIncomeImgs=[]
@@ -306,7 +304,6 @@ export default {
     },
     async create(req, res, next) {
         try {
-            convertLang(req)
             const validatedBody = checkValidations(req);
             
             if(!validatedBody.owner){
@@ -343,7 +340,6 @@ export default {
     //get by id
     async findById(req, res, next) {
         try {
-            convertLang(req)
              //get lang
             let lang = i18n.getLocale(req)
             let { fundId } = req.params;
@@ -364,7 +360,6 @@ export default {
     //update fund
     async update(req, res, next) {
         try {
-            convertLang(req)
             let { fundId } = req.params;
             await checkExist(fundId,Fund, { deleted: false })
             const validatedBody = checkValidations(req);
@@ -395,7 +390,6 @@ export default {
     //get without pagenation
     async getAll(req, res, next) {
         try {
-            convertLang(req)
              //get lang
             let lang = i18n.getLocale(req)
             let {student,owner,status,educationInstitution} = req.query;
@@ -424,7 +418,6 @@ export default {
     //get with pagenation
     async getAllPaginated(req, res, next) {
         try {
-            convertLang(req)
              //get lang
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20,
@@ -457,7 +450,6 @@ export default {
     async delete(req, res, next) {
         
         try {
-            convertLang(req)
             let { fundId } = req.params;
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
@@ -497,7 +489,6 @@ export default {
     },
     async reviewing(req, res, next) {
         try {
-            convertLang(req)
             let { fundId } = req.params;
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
@@ -538,7 +529,6 @@ export default {
     },
     async accept(req, res, next) {
         try {
-            convertLang(req)
             let { fundId } = req.params;
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
@@ -588,7 +578,6 @@ export default {
     },
     async needAction(req, res, next) {
         try {
-            convertLang(req)
             let { fundId } = req.params;
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
@@ -656,7 +645,6 @@ export default {
     async actionReply(req, res, next) {
         
         try {
-            convertLang(req)
             let { fundId } = req.params;
             if(!isInArray(["ADMIN","SUB-ADMIN","USER"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
@@ -696,7 +684,6 @@ export default {
     async partialAcceptance(req, res, next) {
         
         try {
-            convertLang(req)
             let { fundId } = req.params;
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
@@ -746,7 +733,6 @@ export default {
     async reject(req, res, next) {
         
         try {
-            convertLang(req)
             let { fundId } = req.params;
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
@@ -816,7 +802,6 @@ export default {
     },
     async active(req, res, next) {
         try {
-            convertLang(req)
             let { fundId } = req.params;
             if(!isInArray(["ADMIN","SUB-ADMIN","USER"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
@@ -839,7 +824,6 @@ export default {
     },
     async cancel(req, res, next) {
         try {
-            convertLang(req)
             let { fundId } = req.params;
             if(!isInArray(["ADMIN","SUB-ADMIN","USER"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
@@ -865,7 +849,6 @@ export default {
     //payFirstPaid 
     async payFirstPaid(req, res, next) {
         try {
-            convertLang(req)
             let { fundId } = req.params;
             let fund = await checkExistThenGet(fundId, Fund);
             fund.status = 'STARTED';

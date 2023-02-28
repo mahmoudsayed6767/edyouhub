@@ -6,7 +6,7 @@ import Notif from "../../models/notif/notif.model"
 import { body } from "express-validator";
 import Product from "../../models/product/product.model";
 import { ValidationError } from "mongoose";
-import { checkValidations ,convertLang} from "../shared/shared.controller";
+import { checkValidations } from "../shared/shared.controller";
 import Supplies from "../../models/supplies/supplies.model"
 import Address from "../../models/address/address.model"
 import ApiError from "../../helpers/ApiError";
@@ -59,7 +59,6 @@ function validatedestination(location) {
 export default {
     async findOrders(req, res, next) {
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20
                 ,{search, status,client,paymentSystem ,accept,start,end} = req.query
@@ -113,7 +112,6 @@ export default {
     },
     async getOrders(req, res, next) {
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req)
             let {search, status,client,paymentSystem ,accept,start,end} = req.query
                 , query = {deleted: false };
@@ -206,7 +204,6 @@ export default {
     },
     async getPrice(req, res, next) {
         try {
-            convertLang(req)
             
             const validatedBody = checkValidations(req);
             console.log("validatedBody",validatedBody)
@@ -351,7 +348,6 @@ export default {
     }, 
     async create(req, res, next) {
         try {
-            convertLang(req)
             const validatedBody = checkValidations(req);
             let {userId} = req.params
             let theUser = await checkExistThenGet(userId, User, { deleted: false })
@@ -482,7 +478,6 @@ export default {
     //find one
     async findById(req, res, next) {
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req)
             let {orderId } = req.params;
             await checkExist(orderId,Order)
@@ -501,7 +496,6 @@ export default {
     //accept
     async accept(req, res, next) {
         try {
-            convertLang(req)
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth'))); 
             let { orderId } = req.params;
@@ -556,7 +550,6 @@ export default {
     //cancel
     async cancel(req, res, next) {
         try {
-            convertLang(req)
             let { orderId } = req.params;
             let order = await checkExistThenGet(orderId, Order, { deleted: false });
             if (['DELIVERED'].includes(order.status))
@@ -603,7 +596,6 @@ export default {
     //refused
     async refuse(req, res, next) {
         try {
-            convertLang(req)
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth'))); 
             let { orderId } = req.params;
@@ -654,7 +646,6 @@ export default {
     //out for delivery
     async outForDelivery(req, res, next) {
         try {
-            convertLang(req)
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
             let { orderId } = req.params;
@@ -692,7 +683,6 @@ export default {
     //order is delivered
     async deliver(req, res, next) {
         try {
-            convertLang(req)
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
             let { orderId } = req.params;
@@ -730,7 +720,6 @@ export default {
     //delete order
     async delete(req, res, next) {
         try {
-            convertLang(req)
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth'))); 
             let { orderId } = req.params;

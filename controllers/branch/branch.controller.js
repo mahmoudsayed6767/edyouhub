@@ -5,7 +5,7 @@ import Business from "../../models/business/business.model";
 import Report from "../../models/reports/report.model";
 import ApiError from '../../helpers/ApiError';
 import { checkExist, checkExistThenGet,isInArray ,isLat,isLng} from "../../helpers/CheckMethods";
-import { handleImg, checkValidations,convertLang } from "../shared/shared.controller";
+import { handleImg, checkValidations } from "../shared/shared.controller";
 import { body } from "express-validator";
 import i18n from "i18n";
 import { ValidationError } from "mongoose";
@@ -27,7 +27,6 @@ export default {
 
     async findAll(req, res, next) {
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req) 
             let {id} = req.params;
             let {type} = req.query
@@ -56,7 +55,6 @@ export default {
     },
     async findAllPagenation(req, res, next) {
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req) 
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
             let {id} = req.params;
@@ -87,7 +85,6 @@ export default {
     //get by id
     async getById(req, res, next) {
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req)          
             let { branchId } = req.params;
             await checkExist(branchId, Branch, { deleted: false });
@@ -148,7 +145,6 @@ export default {
     async create(req, res, next) {
 
         try {
-            convertLang(req)
             let {id} = req.params
             const validatedBody = checkValidations(req);
             validatedLocation(validatedBody.location);
@@ -199,13 +195,12 @@ export default {
     async update(req, res, next) {
 
         try {
-            convertLang(req)
             if(!isInArray(["ADMIN","SUB-ADMIN","PLACE","USER"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
 
                 
             let { branchId } = req.params;
-            let theBranch = await checkExistThenGet(branchId, Branch, { deleted: false });
+            await checkExist(branchId, Branch, { deleted: false });
 
             const validatedBody = checkValidations(req);
             validatedLocation(validatedBody.location);
@@ -253,7 +248,6 @@ export default {
    
     async delete(req, res, next) {
         try {
-            convertLang(req)
             let { branchId } = req.params;
             let branch = await checkExistThenGet(branchId, Branch, { deleted: false });
             branch.deleted = true;

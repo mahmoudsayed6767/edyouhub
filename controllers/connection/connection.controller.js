@@ -16,7 +16,6 @@ const populateQuery = [
 export default {
     async create(req, res, next) {
         try {
-            convertLang(req)
             let{toId} = req.params
             let query = {
                 $and: [
@@ -77,7 +76,6 @@ export default {
     },
     async getAll(req, res, next) {
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req)
             let query = { deleted: false };
             let {status,from,to} = req.query
@@ -152,7 +150,6 @@ export default {
     async delete(req, res, next) {
         
         try {
-            convertLang(req)
             let { connectionId } = req.params;
            
             let connection = await checkExistThenGet(connectionId, Connection);
@@ -196,7 +193,6 @@ export default {
     async accept(req, res, next) {
         
         try {
-            convertLang(req)
             let { connectionId } = req.params;
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
                 if(req.user._id != connection.to)
@@ -255,7 +251,6 @@ export default {
     async reject(req, res, next) {
         
         try {
-            convertLang(req)
             let { connectionId } = req.params;
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
                 if(req.user._id != connection.to)

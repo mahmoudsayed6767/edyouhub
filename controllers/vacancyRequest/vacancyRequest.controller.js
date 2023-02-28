@@ -1,7 +1,7 @@
 import VacancyRequest from "../../models/vacancyRequest/vacancyRequest.model";
 import Report from "../../models/reports/report.model";
 import { body } from "express-validator";
-import { checkValidations,convertLang,handleImg} from "../shared/shared.controller";
+import { checkValidations,handleImg} from "../shared/shared.controller";
 import { checkExist,checkExistThenGet,isInArray } from "../../helpers/CheckMethods";
 import ApiResponse from "../../helpers/ApiResponse";
 import i18n from "i18n";
@@ -35,7 +35,6 @@ export default {
     //add new vacancyRequest
     async create(req, res, next) {
         try {
-            convertLang(req)
             const validatedBody = checkValidations(req);
             let {vacancyId} = req.params;
             let vacancy = await checkExistThenGet(vacancyId,Vacancy,{ deleted: false})
@@ -63,7 +62,6 @@ export default {
     //add new vacancyRequest for waiting list
     async createToWaitingList(req, res, next) {
         try {
-            convertLang(req)
             const validatedBody = checkValidations(req);
             let {businessId} = req.params;
             validatedBody.business = businessId
@@ -91,7 +89,6 @@ export default {
     //get by id
     async getById(req, res, next) {
         try {
-            convertLang(req)
              //get lang
             let lang = i18n.getLocale(req)
             let { vacancyRequestId } = req.params;
@@ -116,7 +113,6 @@ export default {
     //update vacancyRequest
     async update(req, res, next) {
         try {
-            convertLang(req)
             let { vacancyRequestId } = req.params;
             let vacancyRequest =  await checkExistThenGet(vacancyRequestId,VacancyRequest, { deleted: false })
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
@@ -142,7 +138,6 @@ export default {
     //get without pagenation
     async getAll(req, res, next) {
         try {
-            convertLang(req)
             //get lang
             let lang = i18n.getLocale(req)
             let {owner,status,business,vacancy} = req.query;
@@ -180,7 +175,6 @@ export default {
     //get with pagenation
     async getAllPaginated(req, res, next) {
         try {
-            convertLang(req)
              //get lang
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
@@ -222,7 +216,6 @@ export default {
     async delete(req, res, next) {
         
         try {
-            convertLang(req)
             let { vacancyRequestId } = req.params;
             let vacancyRequest = await checkExistThenGet(vacancyRequestId, vacancyRequest);
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
@@ -248,7 +241,6 @@ export default {
     async accept(req, res, next) {
         
         try {
-            convertLang(req)
             let { vacancyRequestId } = req.params;
             let vacancyRequest = await checkExistThenGet(vacancyRequestId, VacancyRequest);
             let business = await checkExistThenGet(vacancyRequest.business,Business);
@@ -296,7 +288,6 @@ export default {
     async reject(req, res, next) {
         
         try {
-            convertLang(req)
             let { vacancyRequestId } = req.params;
             let vacancyRequest = await checkExistThenGet(vacancyRequestId, VacancyRequest);
             let business = await checkExistThenGet(vacancyRequest.business,Business);

@@ -4,7 +4,7 @@ import Report from "../../models/reports/report.model";
 import ApiError from '../../helpers/ApiError';
 
 import { checkExist, checkExistThenGet, isImgUrl,isInArray } from "../../helpers/CheckMethods";
-import { handleImg, checkValidations,convertLang } from "../shared/shared.controller";
+import { handleImg, checkValidations } from "../shared/shared.controller";
 import { body } from "express-validator";
 import i18n from "i18n";
 
@@ -13,7 +13,6 @@ export default {
     async findAll(req, res, next) {
 
         try {
-            convertLang(req)
             let query = {deleted: false };
             let setting = await Setting.findOne(query).sort({ createdAt: -1 })
             res.send({success: true,setting:setting});
@@ -64,7 +63,6 @@ export default {
     async create(req, res, next) {
 
         try {
-            convertLang(req)
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
     
@@ -86,7 +84,6 @@ export default {
 
     async findById(req, res, next) {
         try {
-            convertLang(req)
             let { SettingId } = req.params;
             await checkExist(SettingId, Setting, { deleted: false });
             let setting = await Setting.findById(SettingId);
@@ -98,7 +95,6 @@ export default {
     async update(req, res, next) {
 
         try {
-            convertLang(req)
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
 
@@ -125,7 +121,6 @@ export default {
 
     async delete(req, res, next) {
         try {
-            convertLang(req)
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
                 

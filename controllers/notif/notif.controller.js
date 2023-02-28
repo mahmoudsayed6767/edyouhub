@@ -14,7 +14,6 @@ const populateQuery = [
 export default {
     async find(req, res, next) {
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req)
             let user = req.user._id;
             await checkExist(req.user._id, User);
@@ -181,8 +180,7 @@ export default {
         return validations;
     },
     async SendNotif(req, res, next) {
-        try {
-            convertLang(req) 
+        try { 
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                  return next(new ApiError(403, i18n.__('admin.auth'))); 
             const validatedBody = checkValidations(req);

@@ -1,6 +1,6 @@
 import IndividualSupplies from "../../models/individual supplies/individual supplies.model";
 import ApiResponse from "../../helpers/ApiResponse";
-import {  checkValidations ,convertLang} from "../shared/shared.controller";
+import {  checkValidations } from "../shared/shared.controller";
 import { checkExistThenGet, checkExist,isInArray } from "../../helpers/CheckMethods";
 import { body } from "express-validator";
 import Report from "../../models/reports/report.model";
@@ -18,7 +18,6 @@ export default {
     async findAll(req, res, next) {
         
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20,
             {educationInstitution,grade,search,user} = req.query;
@@ -63,7 +62,6 @@ export default {
     async getAll(req, res, next) {
         
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req)
             let {educationInstitution,grade,search,user} = req.query;
             let query = {deleted: false };
@@ -135,7 +133,6 @@ export default {
 
     async create(req, res, next) {
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req)
             const validatedBody = checkValidations(req);
             validatedBody.user = req.user
@@ -175,7 +172,6 @@ export default {
     },
     async findById(req, res, next) {
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req)
             let { IndividualSuppliesId } = req.params;
 
@@ -192,7 +188,6 @@ export default {
 
     async update(req, res, next) {
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req)
             let {IndividualSuppliesId } = req.params;
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
@@ -234,7 +229,6 @@ export default {
     },
     async delete(req, res, next) {
         try {
-            convertLang(req)
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
             let {IndividualSuppliesId } = req.params;
@@ -257,7 +251,6 @@ export default {
     },
     async confirm(req, res, next) {
         try {
-            convertLang(req)
             let {IndividualSuppliesId } = req.params;
             let individualSupplies = await checkExistThenGet(IndividualSuppliesId, IndividualSupplies,{deleted: false });
             

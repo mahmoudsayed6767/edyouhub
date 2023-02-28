@@ -2,7 +2,7 @@ import { checkExistThenGet } from "../../helpers/CheckMethods";
 import ApiResponse from "../../helpers/ApiResponse";
 import User from "../../models/user/user.model";
 import Product from "../../models/product/product.model";
-import { checkValidations,convertLang } from "../shared/shared.controller";
+import { checkValidations } from "../shared/shared.controller";
 import Color from "../../models/color/color.model";
 import Cart from "../../models/cart/cart.model";
 import ApiError from '../../helpers/ApiError';
@@ -34,7 +34,6 @@ const populateQuery = [
 export default {
     async findAll(req, res, next) {
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
             let query = { user: req.user._id,deleted:false };
@@ -121,7 +120,6 @@ export default {
     },
     async create(req, res, next) {
         try {
-            convertLang(req)
             let {suppliesId} = req.params;
             const validatedBody = checkValidations(req);
             validatedBody.supplies = suppliesId;
@@ -146,7 +144,6 @@ export default {
     },
     async update(req, res, next) {
         try {
-            convertLang(req)
             let { cartId } = req.params;
             let cart = await checkExistThenGet(cartId, Cart, { deleted: false });
             if (cart.user != req.user._id)
@@ -160,7 +157,6 @@ export default {
     },
     async unCart(req, res, next) {
         try {
-            convertLang(req)
             let {cartId} = req.params;
             let cart = await checkExistThenGet(cartId, Cart, { deleted: false });
             if (cart.user != req.user._id)
@@ -176,7 +172,6 @@ export default {
     },
     async deleteAll(req, res, next) {
         try {
-            convertLang(req)
             let carts = await Cart.find({ user: req.user._id });
             for (let cart of carts ) {
                 cart.deleted = true;

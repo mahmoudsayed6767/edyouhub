@@ -1,6 +1,6 @@
 import Report from "../../models/reports/report.model";
 import { body } from "express-validator";
-import { checkValidations,convertLang} from "../shared/shared.controller";
+import { checkValidations} from "../shared/shared.controller";
 import ApiError from "../../helpers/ApiError";
 import { checkExist,isInArray ,isLat,isLng} from "../../helpers/CheckMethods";
 import ApiResponse from "../../helpers/ApiResponse";
@@ -260,7 +260,6 @@ export default {
     //add new education Institution
     async create(req, res, next) {
         try {
-            convertLang(req)
             const validatedBody = checkValidations(req);
             if(validatedBody.educationType){
                 let subSector = await Category.findOne({deleted:false,educationType:validatedBody.educationType})
@@ -370,7 +369,6 @@ export default {
     //get by id
     async getById(req, res, next) {
         try {
-            convertLang(req)
              //get lang
             let lang = i18n.getLocale(req)
             let { businessId } = req.params;
@@ -393,7 +391,6 @@ export default {
     //update business
     async update(req, res, next) {
         try {
-            convertLang(req)
             let { businessId } = req.params;
             let business = await checkExistThenGet(businessId,Business,{deleted:false})
             if(!isInArray(["ADMIN","SUB-ADMIN","USER"],req.user.type)){
@@ -492,7 +489,6 @@ export default {
     //get without pagenation
     async getAll(req, res, next) {
         try {
-            convertLang(req)
             //get lang
             let lang = i18n.getLocale(req)
             let {educationType,owner,name,sector,subSector,educationSystem,status} = req.query;
@@ -541,7 +537,6 @@ export default {
     //get with pagenation
     async getAllPaginated(req, res, next) {
         try {
-            convertLang(req)
             //get lang
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
@@ -594,7 +589,6 @@ export default {
     async delete(req, res, next) {
         
         try {
-            convertLang(req)
             let { businessId } = req.params;
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
@@ -617,7 +611,6 @@ export default {
     },
     async accept(req, res, next) {
         try {
-            convertLang(req)
             let { businessId } = req.params;
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
@@ -682,7 +675,6 @@ export default {
     async reject(req, res, next) {
         
         try {
-            convertLang(req)
             let { businessId } = req.params;
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
@@ -754,7 +746,6 @@ export default {
     //business setting
     async businessManagement(req, res, next) {
         try {
-            convertLang(req)
             let {businessId} = req.params
             const validatedBody = checkValidations(req);
             validatedBody.business = businessId

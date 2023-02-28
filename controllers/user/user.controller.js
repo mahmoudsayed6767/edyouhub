@@ -1,6 +1,6 @@
 import { checkExistThenGet, checkExist ,isInArray} from '../../helpers/CheckMethods';
 import { body } from 'express-validator';
-import { checkValidations, handleImg,convertLang } from '../shared/shared.controller';
+import { checkValidations, handleImg } from '../shared/shared.controller';
 import { generateToken } from '../../utils/token';
 import ApiResponse from "../../helpers/ApiResponse";
 import User from "../../models/user/user.model";
@@ -236,7 +236,6 @@ export default {
     },
     async signUp(req, res, next) {
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req)
             const validatedBody = checkValidations(req);
             let unActiveUsers = await User.find({deleted: false,accountType:'SIGNUP-PROCESS',phone: validatedBody.phone})
@@ -312,7 +311,6 @@ export default {
     },
     async verifyPhone(req, res, next) {
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req)
             let validatedBody = checkValidations(req);
             let user = await checkUserExistByPhone(validatedBody.phone);
@@ -355,7 +353,6 @@ export default {
     },
     async addUser(req, res, next) {
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req)
             const validatedBody = checkValidations(req);
             
@@ -410,7 +407,6 @@ export default {
     },
     async block(req, res, next) {
         try {
-            convertLang(req)
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth'))); 
 
@@ -441,7 +437,6 @@ export default {
     },
     async unblock(req, res, next) {
         try {
-            convertLang(req)
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth'))); 
 
@@ -480,7 +475,6 @@ export default {
     },
     async updatePassword(req, res, next) {
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req)
             let user = await checkExistThenGet(req.user._id, User);
             if (req.body.newPassword) {
@@ -526,7 +520,6 @@ export default {
     },
     async sendCodeToEmail(req, res, next) {
         try {
-            convertLang(req)
             let validatedBody = checkValidations(req);
             let user = await checkUserExistByEmail(validatedBody.email);
             user.verifycode = "0000"//generateVerifyCode(); 
@@ -559,7 +552,6 @@ export default {
     },
     async resetPasswordConfirmVerifyCode(req, res, next) {
         try {
-            convertLang(req)
             let validatedBody = checkValidations(req);
             let user = await checkUserExistByEmail(validatedBody.email);
             if (user.verifycode != validatedBody.verifycode)
@@ -605,7 +597,6 @@ export default {
     },
     async resetPassword(req, res, next) {
         try {
-            convertLang(req)
             let validatedBody = checkValidations(req);
             let user = await checkUserExistByEmail(validatedBody.email);
             if (user.verifycode != validatedBody.verifycode)
@@ -641,7 +632,6 @@ export default {
     },
     async forgetPasswordSms(req, res, next) {
         try {
-            convertLang(req)
             let validatedBody = checkValidations(req);
             let realPhone = "+2" + validatedBody.phone;
             let user = await checkUserExistByPhone(validatedBody.phone);
@@ -683,7 +673,6 @@ export default {
     },
     async resetPasswordConfirmVerifyCodePhone(req, res, next) {
         try {
-            convertLang(req)
             let validatedBody = checkValidations(req);
             console.log(validatedBody)
             let user = await checkUserExistByPhone(validatedBody.phone);
@@ -728,7 +717,6 @@ export default {
     },
     async resetPasswordPhone(req, res, next) {
         try {
-            convertLang(req)
             let validatedBody = checkValidations(req);
             let user = await checkUserExistByPhone(validatedBody.phone);
             if (user.verifycode != validatedBody.verifycode)
@@ -795,7 +783,6 @@ export default {
     },
     async findById(req, res, next) {
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req)
             let { id } = req.params;
             await checkExist(id, User, { deleted: false });
@@ -822,7 +809,6 @@ export default {
     },
     async findAll(req, res, next) {
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req)
             if(!isInArray(["ADMIN","SUB-ADMIN","PLACE"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth'))); 
@@ -874,7 +860,6 @@ export default {
     },
     async getAll(req, res, next) {
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req)
             if(!isInArray(["ADMIN","SUB-ADMIN","PLACE"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth'))); 
@@ -920,7 +905,6 @@ export default {
     },
     async delete(req, res, next) {
         try {
-            convertLang(req)
             let {userId } = req.params;
             let user = await checkExistThenGet(userId, User,{deleted: false });
             //place delete SUBERVISOR
@@ -1022,7 +1006,6 @@ export default {
     },
     async updateUser(req, res, next) {
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req)
             const validatedBody = checkValidations(req);
 
@@ -1182,7 +1165,6 @@ export default {
     },
     async completeProfile(req, res, next) {
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req)
             const validatedBody = checkValidations(req);
 
@@ -1267,7 +1249,6 @@ export default {
     },
     async getAddress(req, res, next){
         try {
-            convertLang(req)
             let lang =i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
             let userId  = req.user._id;

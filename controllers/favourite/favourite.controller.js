@@ -20,8 +20,7 @@ const populateQuery2 = [
 ];
 export default {
     async findAll(req, res, next) {
-        try {
-            convertLang(req)   
+        try {   
             let lang = i18n.getLocale(req) 
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
             let { userId,offer,search,alphabeticalOrder  } = req.query;
@@ -107,8 +106,7 @@ export default {
         }
     },
     async create(req, res, next) {
-        try {
-            convertLang(req) 
+        try { 
             let {offer} = req.params;
             await checkExistThenGet(offer,Offer,{ deleted: false})
             console.log(offer)
@@ -145,8 +143,7 @@ export default {
         }
     },
     async unFavourite(req, res, next) {
-        try {
-            convertLang(req)   
+        try {   
             let {offer} = req.params;
             let favourite = await Favourite.findOne({ user: req.user._id, offer: offer,deleted:false})
 

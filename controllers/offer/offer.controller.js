@@ -1,6 +1,6 @@
 import ApiResponse from "../../helpers/ApiResponse";
 import { checkExist, checkExistThenGet, isInArray } from "../../helpers/CheckMethods";
-import { checkValidations,convertLang } from "../shared/shared.controller";
+import { checkValidations } from "../shared/shared.controller";
 import { body } from "express-validator";
 import Offer from "../../models/offer/offer.model";
 import User from "../../models/user/user.model";
@@ -31,7 +31,6 @@ export default {
 
     async findAll(req, res, next) {
         try {
-            convertLang(req)
              //get lang
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20,
@@ -80,7 +79,6 @@ export default {
     //get without pagenation
     async getAll(req, res, next) {
         try {
-            convertLang(req)
              //get lang
             let lang = i18n.getLocale(req)
             let{userId,category,all, end,place,type,startDate,endDate,bookedUser,gotUser} = req.query;
@@ -186,7 +184,6 @@ export default {
 
     async create(req, res, next) {
         try {
-            convertLang(req)
             if(!isInArray(["ADMIN","SUB-ADMIN","PLACE"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
             const validatedBody = checkValidations(req);
@@ -224,7 +221,6 @@ export default {
     },
     async findById(req, res, next) {
         try {
-            convertLang(req)
             //get lang
             let lang = i18n.getLocale(req)
             let { offerId } = req.params;
@@ -249,7 +245,6 @@ export default {
     async update(req, res, next) {
 
         try {
-            convertLang(req)
             //get lang
             //let lang = i18n.getLocale(req)
             if(!isInArray(["ADMIN","SUB-ADMIN","PLACE"],req.user.type))
@@ -286,7 +281,6 @@ export default {
 
     async delete(req, res, next) {
         try {
-            convertLang(req)
             if(!isInArray(["ADMIN","SUB-ADMIN","PLACE"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
             let { offerId } = req.params;
@@ -309,7 +303,6 @@ export default {
     },
     async bookOffer(req, res, next) {
         try {
-            convertLang(req)
             if(!isInArray(["ADMIN","SUB-ADMIN","USER"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
             let { offerId } = req.params;
@@ -396,7 +389,6 @@ export default {
     },
     async bookOffers(req, res, next) {
         try {
-            convertLang(req)
             if(!isInArray(["ADMIN","SUB-ADMIN","USER"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
 
@@ -466,7 +458,6 @@ export default {
     },
     async confirmOffer(req, res, next) {
         try {
-            convertLang(req)
             if(!isInArray(["ADMIN","SUB-ADMIN","PLACE","SUBERVISOR"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
             

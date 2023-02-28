@@ -1,6 +1,6 @@
 import Brand from "../../models/brand/brand.model";
 import { body } from "express-validator";
-import { checkValidations,convertLang ,handleImg} from "../shared/shared.controller";
+import { checkValidations ,handleImg} from "../shared/shared.controller";
 import ApiError from "../../helpers/ApiError";
 import Report from "../../models/reports/report.model";
 import { checkExist } from "../../helpers/CheckMethods";
@@ -30,7 +30,6 @@ export default {
     },
     async create(req, res, next) {
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req)
 
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
@@ -68,7 +67,6 @@ export default {
     },
     async getById(req, res, next) {
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req)
             let { brandId } = req.params;
             
@@ -94,7 +92,6 @@ export default {
     },
     async update(req, res, next) {
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req)
 
             let { brandId } = req.params;
@@ -135,7 +132,6 @@ export default {
 
     async getAll(req, res, next) {
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req)
             let {search} = req.query;
             let query = { deleted: false };
@@ -223,7 +219,6 @@ export default {
     async delete(req, res, next) {
         
         try {
-            convertLang(req)
             let { brandId } = req.params;
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));

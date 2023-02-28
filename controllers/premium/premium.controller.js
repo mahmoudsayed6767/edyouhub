@@ -4,7 +4,7 @@ import Fees from "../../models/fees/fees.model"
 import Report from "../../models/reports/report.model";
 import ApiError from '../../helpers/ApiError';
 import { checkExist, checkExistThenGet,isInArray} from "../../helpers/CheckMethods";
-import { checkValidations,convertLang } from "../shared/shared.controller";
+import { checkValidations } from "../shared/shared.controller";
 import { body } from "express-validator";
 import i18n from "i18n";
 import {transformPremium} from "../../models/premium/transformPremium"
@@ -25,7 +25,6 @@ export default {
 
     async findAll(req, res, next) {
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req) 
             let {fund,student,fees,type} = req.query
             let query = {deleted: false};
@@ -55,7 +54,6 @@ export default {
     },
     async findAllPagenation(req, res, next) {
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req) 
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
             let {fund,student,fees,type} = req.query
@@ -87,7 +85,6 @@ export default {
     },
     async findById(req, res, next) {
         try {
-            convertLang(req)
             //get lang
             let lang = i18n.getLocale(req)
             let { premiumId } = req.params;
@@ -124,7 +121,6 @@ export default {
     async create(req, res, next) {
 
         try {
-            convertLang(req)
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
             const validatedBody = checkValidations(req);
@@ -145,7 +141,6 @@ export default {
     async update(req, res, next) {
 
         try {
-            convertLang(req)
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
             let { premiumId } = req.params;
@@ -171,7 +166,6 @@ export default {
    
     async delete(req, res, next) {
         try {
-            convertLang(req)
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
                 
@@ -197,7 +191,6 @@ export default {
     async paid(req, res, next) {
         
         try {
-            convertLang(req)
             let { premiumId } = req.params;
            
             let premium = await checkExistThenGet(premiumId, Premium);
@@ -275,7 +268,6 @@ export default {
     async paidMulti(req, res, next) {
         
         try {
-            convertLang(req)
             for (let premiumId of req.body.premiums) {
                 console.log("premium",premiumId)
                 let premium = await checkExistThenGet(premiumId, Premium);

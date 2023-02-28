@@ -1,7 +1,7 @@
 import EducationInstitution from "../../models/education institution/education institution.model";
 import Report from "../../models/reports/report.model";
 import { body } from "express-validator";
-import { checkValidations,convertLang,handleImg} from "../shared/shared.controller";
+import { checkValidations,handleImg} from "../shared/shared.controller";
 import ApiError from "../../helpers/ApiError";
 import { checkExist,isInArray,isImgUrl } from "../../helpers/CheckMethods";
 import ApiResponse from "../../helpers/ApiResponse";
@@ -73,7 +73,6 @@ export default {
     //add new education Institution
     async create(req, res, next) {
         try {
-            convertLang(req)
             const validatedBody = checkValidations(req);
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
@@ -98,7 +97,6 @@ export default {
     //get by id
     async getById(req, res, next) {
         try {
-            convertLang(req)
              //get lang
             let lang = i18n.getLocale(req)
             let { educationInstitutionId } = req.params;
@@ -121,7 +119,6 @@ export default {
     //update educationInstitution
     async update(req, res, next) {
         try {
-            convertLang(req)
             let { educationInstitutionId } = req.params;
             await checkExist(educationInstitutionId,EducationInstitution, { deleted: false })
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
@@ -150,7 +147,6 @@ export default {
     //get without pagenation
     async getAll(req, res, next) {
         try {
-            convertLang(req)
              //get lang
             let lang = i18n.getLocale(req)
             let {service,name,sector,subSector,educationSystem} = req.query;
@@ -194,7 +190,6 @@ export default {
     //get with pagenation
     async getAllPaginated(req, res, next) {
         try {
-            convertLang(req)
              //get lang
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
@@ -241,7 +236,6 @@ export default {
     async delete(req, res, next) {
         
         try {
-            convertLang(req)
             let { educationInstitutionId } = req.params;
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
@@ -265,7 +259,6 @@ export default {
     //get supplies total
     async getSuppliesTotal(req, res, next) {
         try {
-            convertLang(req)
              //get lang
             let lang = i18n.getLocale(req)
             let { educationInstitutionId } = req.params;

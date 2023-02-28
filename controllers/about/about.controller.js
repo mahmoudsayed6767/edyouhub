@@ -3,7 +3,7 @@ import About from "../../models/about/about.model";
 import Report from "../../models/reports/report.model";
 import ApiError from '../../helpers/ApiError';
 import { checkExist, checkExistThenGet, isImgUrl,isInArray ,isLat,isLng} from "../../helpers/CheckMethods";
-import { handleImg, checkValidations,convertLang } from "../shared/shared.controller";
+import { handleImg, checkValidations } from "../shared/shared.controller";
 import { body } from "express-validator";
 import i18n from "i18n";
 import { ValidationError } from "mongoose";
@@ -20,7 +20,6 @@ export default {
     async findAll(req, res, next) {
 
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req) 
             let query = {deleted: false };
             await About.find(query)
@@ -89,7 +88,6 @@ export default {
     async create(req, res, next) {
 
         try {
-            convertLang(req)
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
     
@@ -119,7 +117,6 @@ export default {
     async update(req, res, next) {
 
         try {
-            convertLang(req)
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
             let { aboutId } = req.params;
@@ -152,7 +149,6 @@ export default {
    
     async delete(req, res, next) {
         try {
-            convertLang(req)
             let user = req.user;
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403,i18n.__('admin.auth')));

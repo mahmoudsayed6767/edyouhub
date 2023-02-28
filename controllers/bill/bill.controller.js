@@ -4,7 +4,7 @@ import {transformBill, transformBillById} from "../../models/bill/transformBill"
 import User from "../../models/user/user.model";
 import Report from "../../models/reports/report.model";
 import { body } from "express-validator";
-import { checkValidations,convertLang} from "../shared/shared.controller";
+import { checkValidations} from "../shared/shared.controller";
 import ApiError from "../../helpers/ApiError";
 import { checkExist,isInArray } from "../../helpers/CheckMethods";
 import ApiResponse from "../../helpers/ApiResponse";
@@ -38,7 +38,6 @@ export default {
     //add new bill
     async create(req, res, next) {
         try {
-            convertLang(req)
             const validatedBody = checkValidations(req);
             let offer = await checkExistThenGet(validatedBody.offer,Offer,{deleted: false,end:false})
             validatedBody.client = req.user._id
@@ -65,7 +64,6 @@ export default {
     //get by id
     async findById(req, res, next) {
         try {
-            convertLang(req)
              //get lang
             let lang = i18n.getLocale(req)
             let { billId } = req.params;
@@ -86,7 +84,6 @@ export default {
     //update offer
     async update(req, res, next) {
         try {
-            convertLang(req)
             let { billId } = req.params;
             await checkExist(billId,Bill, { deleted: false })
             if(!isInArray(["USER","ADMIN","SUB-ADMIN"],req.user.type))
@@ -113,7 +110,6 @@ export default {
     //get without pagenation
     async getAll(req, res, next) {
         try {
-            convertLang(req)
              //get lang
             let lang = i18n.getLocale(req)
             let {client,actionUser,place,status,startDate,endDate} = req.query;
@@ -151,7 +147,6 @@ export default {
     //get with pagenation
     async getAllPaginated(req, res, next) {
         try {
-            convertLang(req)
              //get lang
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
@@ -193,7 +188,6 @@ export default {
     async delete(req, res, next) {
         
         try {
-            convertLang(req)
             let { billId } = req.params;
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));

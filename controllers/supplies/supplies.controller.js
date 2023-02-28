@@ -2,7 +2,7 @@ import Supplies from "../../models/supplies/supplies.model";
 import SuppliesItems from "../../models/supplies/suppliesItems.model";
 import Alternative from "../../models/supplies/alternatives.model";
 import ApiResponse from "../../helpers/ApiResponse";
-import {  checkValidations ,convertLang} from "../shared/shared.controller";
+import {  checkValidations } from "../shared/shared.controller";
 import { checkExistThenGet, checkExist,isInArray } from "../../helpers/CheckMethods";
 import { body } from "express-validator";
 import Report from "../../models/reports/report.model";
@@ -58,7 +58,6 @@ export default {
     async findAll(req, res, next) {
         
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20,
             {educationInstitution,subCategory,category,grade,search,type} = req.query;
@@ -110,7 +109,6 @@ export default {
     async getAll(req, res, next) {
         
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req)
             let {educationInstitution,subCategory,category,grade,search,type} = req.query;
             let query = {deleted: false ,type:'NORMAL'};
@@ -153,7 +151,6 @@ export default {
     async getSuplliesMobile(req, res, next) {
         
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req)
             let {educationInstitution,grade,type} = req.query;
             let query = {deleted: false,type:'NORMAL' };
@@ -315,7 +312,6 @@ export default {
     },
     async uploadFile(req, res, next) {
         try {
-            convertLang(req)
             let file 
             if (req.files) {
                 if (req.files['file']) {
@@ -336,7 +332,6 @@ export default {
     },
     async create(req, res, next) {
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req)
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth'))); 
@@ -390,7 +385,6 @@ export default {
     },
     async createIndividual(req, res, next) {
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req)
             let {individualSuppliesId} = req.params
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
@@ -450,7 +444,6 @@ export default {
     },
     async findById(req, res, next) {
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req)
             let { suppliesId } = req.params;
 
@@ -467,7 +460,6 @@ export default {
 
     async update(req, res, next) {
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req)
             let {suppliesId } = req.params;
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
@@ -522,7 +514,6 @@ export default {
     },
     async delete(req, res, next) {
         try {
-            convertLang(req)
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
             let {suppliesId } = req.params;

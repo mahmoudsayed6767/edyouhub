@@ -2,7 +2,7 @@ import { checkExist, checkExistThenGet,isInArray,isArray } from "../../helpers/C
 import ApiResponse from "../../helpers/ApiResponse";
 import User from "../../models/user/user.model";
 import Offer from "../../models/offer/offer.model";
-import { checkValidations,convertLang } from "../shared/shared.controller";
+import { checkValidations } from "../shared/shared.controller";
 
 import OfferCart from "../../models/offerCart/offerCart.model";
 import ApiError from '../../helpers/ApiError';
@@ -21,7 +21,6 @@ const populateQuery = [
 export default {
     async findAll(req, res, next) {
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
             let query = { user: req.user._id,deleted:false };
@@ -53,7 +52,6 @@ export default {
     },
     async create(req, res, next) {
         try {
-            convertLang(req)
             let {offerId} = req.params;
             const validatedBody = checkValidations(req);
             validatedBody.offer = offerId;
@@ -75,7 +73,6 @@ export default {
     },
     async delete(req, res, next) {
         try {
-            convertLang(req)
             let {offerCartId} = req.params;
             let offerCart = await checkExistThenGet(offerCartId, OfferCart, { deleted: false });
             if (offerCart.user != req.user._id)
@@ -102,7 +99,6 @@ export default {
     },
     async deleteAll(req, res, next) {
         try {
-            convertLang(req)
             let theUser = await checkExistThenGet(req.user._id, User);
             theUser.offerCarts = [];
             let offerCarts = await OfferCart.find({ user: req.user._id });

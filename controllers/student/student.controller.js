@@ -2,7 +2,7 @@ import {transformStudent} from "../../models/student/transformStudent";
 import Student from "../../models/student/student.model";
 import Report from "../../models/reports/report.model";
 import { body } from "express-validator";
-import { checkValidations,convertLang} from "../shared/shared.controller";
+import { checkValidations} from "../shared/shared.controller";
 import ApiError from "../../helpers/ApiError";
 import { checkExist,isInArray } from "../../helpers/CheckMethods";
 import ApiResponse from "../../helpers/ApiResponse";
@@ -84,7 +84,6 @@ export default {
     },
     async create(req, res, next) {
         try {
-            convertLang(req)
             const validatedBody = checkValidations(req);
             let student = await Student.create({ ...validatedBody });
             let reports = {
@@ -105,7 +104,6 @@ export default {
     //get by id
     async findById(req, res, next) {
         try {
-            convertLang(req)
              //get lang
             let lang = i18n.getLocale(req)
             let { studentId } = req.params;
@@ -126,7 +124,6 @@ export default {
     //update fund
     async update(req, res, next) {
         try {
-            convertLang(req)
             let { studentId } = req.params;
             await checkExist(studentId,Student, { deleted: false })
             const validatedBody = checkValidations(req);
@@ -148,7 +145,6 @@ export default {
     //get without pagenation
     async getAll(req, res, next) {
         try {
-            convertLang(req)
              //get lang
             let lang = i18n.getLocale(req)
             let {type,sector,subSector,educationSystem,educationInstitution} = req.query;
@@ -178,7 +174,6 @@ export default {
     //get with pagenation
     async getAllPaginated(req, res, next) {
         try {
-            convertLang(req)
              //get lang
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20,
@@ -212,7 +207,6 @@ export default {
     async delete(req, res, next) {
         
         try {
-            convertLang(req)
             let { studentId } = req.params;
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));

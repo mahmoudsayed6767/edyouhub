@@ -4,7 +4,7 @@ import Report from "../../models/reports/report.model";
 import ApiError from '../../helpers/ApiError';
 import User from "../../models/user/user.model";
 import { checkExist, checkExistThenGet ,isInArray} from "../../helpers/CheckMethods";
-import {  checkValidations ,convertLang} from "../shared/shared.controller";
+import {  checkValidations } from "../shared/shared.controller";
 import { body } from "express-validator";
 import i18n from "i18n";
 import EducationInstitution from "../../models/education institution/education institution.model";
@@ -14,7 +14,6 @@ export default {
     async findAll(req, res, next) {
 
         try {
-            convertLang(req)
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
@@ -64,7 +63,6 @@ export default {
     async findAllWithoutPagenation(req, res, next) {
 
         try {
-            convertLang(req)
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
             let query = {deleted: false };
@@ -148,7 +146,6 @@ export default {
     async create(req, res, next) {
 
         try {
-            convertLang(req)
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
 
@@ -172,7 +169,6 @@ export default {
 
     async findById(req, res, next) {
         try {
-            convertLang(req)
             let { couponId } = req.params;
             await checkExist(couponId, Coupon, { deleted: false });
             let Coupon = await Coupon.findById(couponId);
@@ -183,7 +179,6 @@ export default {
     },
     async checkValidateCoupon(req, res, next) {
         try {
-            convertLang(req)
             let theUser = await checkExistThenGet(req.user._id, User, { deleted: false });
             let coupon = await Coupon.findOne({ couponNumber: { $regex: req.body.couponNumber , '$options' : 'i'  },deleted:false,expireDateMillSec:{$gte:Date.parse(new Date())}})
             if(coupon){
@@ -207,7 +202,6 @@ export default {
     async update(req, res, next) {
 
         try {
-            convertLang(req)
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
 
@@ -236,7 +230,6 @@ export default {
 
     async delete(req, res, next) {
         try {
-            convertLang(req)
             let user = req.user;
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
@@ -262,7 +255,6 @@ export default {
     
     async end(req, res, next) {
         try {
-            convertLang(req)
             let user = req.user;
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
@@ -286,7 +278,6 @@ export default {
     },
     async reused(req, res, next) {
         try {
-            convertLang(req)
             let user = req.user;
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));

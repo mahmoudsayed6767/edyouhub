@@ -1,7 +1,7 @@
 import Grade from "../../models/grade/grade.model";
 import Report from "../../models/reports/report.model";
 import { body } from "express-validator";
-import { checkValidations,convertLang} from "../shared/shared.controller";
+import { checkValidations} from "../shared/shared.controller";
 import EducationInstitution from "../../models/education institution/education institution.model";
 import { checkExist } from "../../helpers/CheckMethods";
 import ApiResponse from "../../helpers/ApiResponse";
@@ -58,7 +58,6 @@ export default {
     //add new grade
     async create(req, res, next) {
         try {
-            convertLang(req)
             const validatedBody = checkValidations(req);
             let grade = await Grade.create({ ...validatedBody });
             let reports = {
@@ -79,7 +78,6 @@ export default {
     //get by id
     async getById(req, res, next) {
         try {
-            convertLang(req)
              //get lang
             let lang = i18n.getLocale(req)
             let { gradeId } = req.params;
@@ -102,7 +100,6 @@ export default {
     //update Grade
     async update(req, res, next) {
         try {
-            convertLang(req)
             let { gradeId } = req.params;
             await checkExist(gradeId,Grade, { deleted: false })
             const validatedBody = checkValidations(req);
@@ -124,7 +121,6 @@ export default {
     //get without pagenation
     async getAll(req, res, next) {
         try {
-            convertLang(req)
              //get lang
             let lang = i18n.getLocale(req)
             let {name,educationInstitution,educationSystem} = req.query;
@@ -166,7 +162,6 @@ export default {
     //get with pagenation
     async getAllPaginated(req, res, next) {
         try {
-            convertLang(req)
              //get lang
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
@@ -211,7 +206,6 @@ export default {
     async delete(req, res, next) {
         
         try {
-            convertLang(req)
             let { gradeId } = req.params;
             
             let grade = await checkExistThenGet(gradeId, Grade);

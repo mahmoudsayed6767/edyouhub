@@ -306,7 +306,6 @@ export default {
     },
     async findAllTransactions(req, res, next) {
         try {
-            convertLang(req)
             //get lang
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
@@ -346,7 +345,6 @@ export default {
     },
     async getAllTransactions(req, res, next) {
         try {
-            convertLang(req)
             //get lang
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
@@ -381,7 +379,6 @@ export default {
     },
     async getById(req, res, next) {
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req)
             
             let {transactionId} = req.params

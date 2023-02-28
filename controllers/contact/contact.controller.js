@@ -3,7 +3,7 @@ import Contact from "../../models/contact/contact.model";
 import { checkExistThenGet,isInArray } from "../../helpers/CheckMethods";
 import ApiError from "../../helpers/ApiError";
 import ApiResponse from "../../helpers/ApiResponse";
-import { checkValidations,convertLang } from "../shared/shared.controller";
+import { checkValidations } from "../shared/shared.controller";
 import i18n from "i18n";
 import { toImgUrl } from "../../utils";
 import { sendEmail } from "../../services/sendGrid";
@@ -68,7 +68,6 @@ export default {
     },
     async findAll(req, res, next) {
         try {
-            convertLang(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
             let {contactFor,status} = req.query
             let query = { deleted: false };
@@ -92,7 +91,6 @@ export default {
     },
     async findById(req, res, next) {
         try {
-            convertLang(req)
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
             let { contactId } = req.params;
@@ -111,7 +109,6 @@ export default {
     },
     async reply(req, res, next) {
         try {
-            convertLang(req)
             let { contactId } = req.params;
             const validatedBody = checkValidations(req);
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))

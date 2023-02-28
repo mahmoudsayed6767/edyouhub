@@ -16,8 +16,7 @@ const populateQuery = [
 ];
 export default {
     async findAll(req, res, next) {
-        try {
-            convertLang(req)   
+        try {   
             let lang = i18n.getLocale(req) 
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
             let { userId,business,} = req.query;
@@ -75,8 +74,7 @@ export default {
         }
     },
     async create(req, res, next) {
-        try {
-            convertLang(req) 
+        try { 
             let {business} = req.params;
             await checkExistThenGet(business,Business,{ deleted: false})
             let user = await checkExistThenGet(req.user._id, User,{ deleted: false});
@@ -108,8 +106,7 @@ export default {
         }
     },
     async unfollow(req, res, next) {
-        try {
-            convertLang(req)   
+        try {   
             let {business} = req.params;
             let follow = await Follow.findOne({ user: req.user._id, business: business,deleted:false})
 

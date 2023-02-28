@@ -5,7 +5,7 @@ import ApiError from "../../helpers/ApiError";
 import ApiResponse from "../../helpers/ApiResponse";
 import { body } from "express-validator";
 import { checkExistThenGet ,isInArray,checkExist} from "../../helpers/CheckMethods";
-import { handleImg, checkValidations,convertLang } from "../shared/shared.controller";
+import { handleImg, checkValidations } from "../shared/shared.controller";
 import Area from "../../models/area/area.model";
 import i18n from "i18n";
 import Report from "../../models/reports/report.model";
@@ -61,7 +61,6 @@ export default {
     /*create new country */
     async create(req, res, next) {
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req)
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
@@ -200,7 +199,6 @@ export default {
     /*update record */
     async update(req, res, next) {
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req)
             let { countryId } = req.params;
 
@@ -247,7 +245,6 @@ export default {
     /*get by id */
     async getById(req, res, next) {
         try {
-            convertLang(req)
             let lang = i18n.getLocale(req)
             let { countryId } = req.params;
             await checkExist(countryId, Country, { deleted: false });
@@ -277,7 +274,6 @@ export default {
     async delete(req, res, next) {
         let { countryId } = req.params;
         try {
-            convertLang(req)
             let country = await checkExistThenGet(countryId, Country, { deleted: false });
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));

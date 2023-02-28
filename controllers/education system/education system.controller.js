@@ -1,7 +1,7 @@
 import EducationSystem from "../../models/education system/education system.model";
 import Report from "../../models/reports/report.model";
 import { body } from "express-validator";
-import { checkValidations,convertLang,handleImg} from "../shared/shared.controller";
+import { checkValidations,handleImg} from "../shared/shared.controller";
 import ApiError from "../../helpers/ApiError";
 import { checkExist,isInArray,isImgUrl } from "../../helpers/CheckMethods";
 import ApiResponse from "../../helpers/ApiResponse";
@@ -31,7 +31,6 @@ export default {
     //add new educationSystem
     async create(req, res, next) {
         try {
-            convertLang(req)
             const validatedBody = checkValidations(req);
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
@@ -56,7 +55,6 @@ export default {
     //get by id
     async getById(req, res, next) {
         try {
-            convertLang(req)
              //get lang
             let lang = i18n.getLocale(req)
             let { educationSystemId } = req.params;
@@ -84,7 +82,6 @@ export default {
     //update educationSystem
     async update(req, res, next) {
         try {
-            convertLang(req)
             let { educationSystemId } = req.params;
             await checkExist(educationSystemId,EducationSystem, { deleted: false })
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
@@ -112,7 +109,6 @@ export default {
     //get without pagenation
     async getAll(req, res, next) {
         try {
-            convertLang(req)
              //get lang
             let lang = i18n.getLocale(req)
             let {name} = req.query;
@@ -159,7 +155,6 @@ export default {
     //get with pagenation
     async getAllPaginated(req, res, next) {
         try {
-            convertLang(req)
              //get lang
             let lang = i18n.getLocale(req)
             let {name} = req.query
@@ -209,7 +204,6 @@ export default {
     async delete(req, res, next) {
         
         try {
-            convertLang(req)
             let { educationSystemId } = req.params;
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
