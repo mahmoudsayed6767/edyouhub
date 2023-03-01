@@ -107,7 +107,7 @@ export default {
             }),
             body('theOptions').optional()
             .custom(async (options, { req }) => {
-                convertLang(req)
+                
                 for (let option of options) {
                     body('title').not().isEmpty().withMessage((value) => {
                         return req.__('title.required', { value});

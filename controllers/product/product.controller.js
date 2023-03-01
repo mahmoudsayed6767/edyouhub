@@ -201,7 +201,7 @@ export default {
             }),
             body('colors').optional()
             .custom(async (colors, { req }) => {
-                convertLang(req)
+                
                 // check if it's duplicated color
                 if(colors.some((val, i) => colors.indexOf(val) !== i))
                     throw new Error(i18n.__('color.duplicated'));
@@ -237,7 +237,7 @@ export default {
             }),
             body('sizes').optional()
             .custom(async (sizes, { req }) => {
-                convertLang(req)
+                
                 for (let size of sizes) {
                     body('name_en').not().isEmpty().withMessage((value) => {
                         return req.__('name_en.required', { value});

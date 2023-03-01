@@ -55,7 +55,7 @@ const populateQuery2 = [
 export default {
     async addToken(req,res,next){
         try{
-            convertLang(req)
+            
             let user = req.user;
             let users = await checkExistThenGet(user.id, User);
             let arr2 = users.tokens;
@@ -80,7 +80,7 @@ export default {
     },
     async signIn(req, res, next) {
         try{
-            convertLang(req)
+            
             let lang = i18n.getLocale(req)
             let user = req.user;
             user = await User.findById(user.id).populate(populateQuery);
@@ -739,7 +739,7 @@ export default {
     },
     async updateToken(req,res,next){
         try{
-            convertLang(req)
+            
             
             let users = await checkExistThenGet(req.user._id, User);
             let arr2 = users.tokens;
@@ -762,7 +762,7 @@ export default {
     },
     async logout(req,res,next){
         try{
-            convertLang(req)
+            
             
             let user = await checkExistThenGet(req.user._id, User);
             let arr = user.tokens;
@@ -1075,7 +1075,7 @@ export default {
             
             body('higherEducation').optional()
             .custom(async (higherEducation, { req }) => {
-                convertLang(req)
+                
                 for (let val of higherEducation) {
                     body('higherEducation').not().isEmpty().withMessage((value) => {
                         return req.__('higherEducation.required', { value});
@@ -1095,7 +1095,7 @@ export default {
             }),
             body('courses').optional()
             .custom(async (courses, { req }) => {
-                convertLang(req)
+                
                 for (let course of courses) {
                     body('organization').not().isEmpty().withMessage((value) => {
                         return req.__('organization.required', { value});
@@ -1113,7 +1113,7 @@ export default {
             body('job.jobTitle').optional(),
             body('workExperiences').optional()
             .custom(async (workExperiences, { req }) => {
-                convertLang(req)
+                
                 for (let val of workExperiences) {
                     body('organization').not().isEmpty().withMessage((value) => {
                         return req.__('organization.required', { value});
@@ -1130,7 +1130,7 @@ export default {
             }),
             body('kids').optional()
             .custom(async (kids, { req }) => {
-                convertLang(req)
+                
                 for (let kid of kids) {
                     body('fullname').not().isEmpty().withMessage((value) => {
                         return req.__('fullname.required', { value});
@@ -1234,7 +1234,7 @@ export default {
     },
     async addAddress(req, res, next) {
         try{
-            convertLang(req)
+            
             let validatedBody = checkValidations(req);
             validatedBody.user = req.user
             await Address.create({

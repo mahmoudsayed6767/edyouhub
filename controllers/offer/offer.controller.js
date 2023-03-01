@@ -353,7 +353,7 @@ export default {
                 return req.__('theOffers.required', { value});
             })
             .custom(async (offers, { req }) => {
-                convertLang(req)
+                
                 for (let offer of offers) {
                     body('offer').not().isEmpty().withMessage((value, { req}) => {
                         return req.__('offer.required', { value});

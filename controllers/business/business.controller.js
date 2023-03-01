@@ -139,7 +139,7 @@ export default {
             }),
             body('specializations').optional()
             .custom(async (specializations, { req }) => {
-                convertLang(req)
+                
                 for (let value of specializations) {
                     if (!await Specialization.findOne({_id:value,deleted:false}))
                         throw new Error(req.__('specialization.invalid'));
@@ -151,7 +151,7 @@ export default {
             
             body('theGrades').optional()
             .custom(async (grades, { req }) => {
-                convertLang(req)
+                
                 for (let grade of grades) {
                     body('name_en').not().isEmpty().withMessage((value) => {
                         return req.__('name_en.required', { value});
@@ -168,7 +168,7 @@ export default {
             }),
             body('theFaculties').optional()
             .custom(async (faculties, { req }) => {
-                convertLang(req)
+                
                 for (let faculty of faculties) {
                     body('name_en').not().isEmpty().withMessage((value) => {
                         return req.__('name_en.required', { value});
@@ -178,7 +178,7 @@ export default {
                     }),
                     body('theGrades').optional()
                     .custom(async (grades, { req }) => {
-                        convertLang(req)
+                        
                         for (let grade of grades) {
                             body('name_en').not().isEmpty().withMessage((value) => {
                                 return req.__('name_en.required', { value});
@@ -199,7 +199,7 @@ export default {
             }),
             body('theBranches').optional()
             .custom(async (branches, { req }) => {
-                convertLang(req)
+                
                 for (let branche of branches) {
                     body('address_ar').not().isEmpty().withMessage((value, { req}) => {
                         return req.__('address_ar.required', { value});

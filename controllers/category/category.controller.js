@@ -120,7 +120,7 @@ export default {
     //get main categories without pagenation
     async findCategory(req, res, next) {
         try {         
-            convertLang(req)
+            
              //get lang
             let lang = i18n.getLocale(req)   
             let {orderByPriority,main,type} = req.query

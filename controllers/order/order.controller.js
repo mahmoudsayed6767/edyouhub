@@ -285,7 +285,7 @@ export default {
             body('cart').optional(),
             body('suppliesList').optional()
             .custom(async (suppliesList, { req }) => {
-                convertLang(req)
+                
                 for (let supplies of suppliesList) {
                     body('promoCode').optional(),
                     body('gender').optional().isIn(['MALE','FEMALE','OTHER']).withMessage((value, { req}) => {

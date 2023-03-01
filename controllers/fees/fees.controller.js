@@ -163,7 +163,7 @@ export default {
             //payments
             body('payments').optional()
             .custom(async (payments, { req }) => {
-                convertLang(req)
+                
                 for (let payment of payments) {
                     body('cost').not().isEmpty().withMessage((value) => {
                         return req.__('cost.required', { value});
@@ -258,7 +258,7 @@ export default {
         let validations = [
             body('fees').optional()
             .custom(async (fees, { req }) => {
-                convertLang(req)
+                
                 for (let feesId of fees) {
                     body('educationInstitution').not().isEmpty().withMessage((value, { req}) => {
                         return req.__('educationInstitution.required', { value});
@@ -297,7 +297,7 @@ export default {
                     //payments
                     body('payments').optional()
                     .custom(async (payments, { req }) => {
-                        convertLang(req)
+                        
                         for (let payment of payments) {
                             body('cost').not().isEmpty().withMessage((value) => {
                                 return req.__('cost.required', { value});
@@ -396,7 +396,7 @@ export default {
         let validations = [
             body('fees').optional()
             .custom(async (fees, { req }) => {
-                convertLang(req)
+                
                 for (let feesId of fees) {
                     await checkExist(feesId.educationInstitution,EducationInstitution, { deleted: false })
                     await checkExist(feesId.student, Student,{ deleted: false})
@@ -411,7 +411,7 @@ export default {
                     //payments
                     body('payments').optional()
                     .custom(async (payments, { req }) => {
-                        convertLang(req)
+                        
                         for (let payment of payments) {
                             body('cost').not().isEmpty().withMessage((value) => {
                                 return req.__('cost.required', { value});

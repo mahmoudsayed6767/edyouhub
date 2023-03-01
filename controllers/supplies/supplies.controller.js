@@ -207,7 +207,7 @@ export default {
                 return req.__('existItems.required', { value});
             })
             .custom(async (existItems, { req }) => {
-                convertLang(req)
+                
                 for (let item of existItems) {
                     body('section_en').optional(),
                     body('section_ar').optional(),
@@ -218,7 +218,7 @@ export default {
                         return req.__('items.required', { val});
                     })
                     .custom(async (items, { req }) => {
-                        convertLang(req)
+                        
                         for (let item of items) {
                             body('product').not().isEmpty().withMessage((val, { req}) => {
                                 return req.__('product.required', { val});
@@ -245,7 +245,7 @@ export default {
                             })
                             body('alternatives').optional()
                             .custom(async (alternatives, { req }) => {
-                                convertLang(req)
+                                
                                 for (let alternative of alternatives) {
                                     body('size').not().isEmpty().withMessage((v, { req}) => {
                                         return req.__('size.required', { v});
@@ -286,7 +286,7 @@ export default {
             }),
             body('missingItems').optional()
             .custom(async (missingItems, { req }) => {
-                convertLang(req)
+                
                 for (let item of missingItems) {
                     body('name_en').not().isEmpty().withMessage((value) => {
                         return req.__('name_en.required', { value});

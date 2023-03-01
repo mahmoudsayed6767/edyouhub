@@ -138,7 +138,7 @@ export default {
             body('proofIncomeCost').optional(),
             body('proofIncomeImgs').optional()
             .custom(async (proofIncomeImgs, { req }) => {
-                convertLang(req)
+                
                 for (let img of proofIncomeImgs) {
                     body('img').not().isEmpty().withMessage((value) => {
                         return req.__('img.required', { value});
@@ -159,7 +159,7 @@ export default {
             //student
             body('theStudents').optional()
             .custom(async (students, { req }) => {
-                convertLang(req)
+                
                 for (let student of students) {
                     //await checkExistThenGet(student.educationInstitution, EducationInstitution);
                     body('studentId').optional()
@@ -627,7 +627,7 @@ export default {
             }),
             body('actionFile').optional()
             .custom(async (actionFile, { req }) => {
-                convertLang(req)
+                
                 for (let file of actionFile) {
                     body('file').not().isEmpty().withMessage((value) => {
                         return req.__('file.required', { value});
@@ -785,7 +785,7 @@ export default {
                 return req.__('educationFile.required', { value});
             })
             .custom(async (educationFile, { req }) => {
-                convertLang(req)
+                
                 for (let file of educationFile) {
                     body('file').not().isEmpty().withMessage((value) => {
                         return req.__('file.required', { value});

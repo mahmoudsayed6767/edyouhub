@@ -172,7 +172,7 @@ export default {
 
     async getAllPaginated(req, res, next) {
         try {    
-            convertLang(req)
+            
             let lang = i18n.getLocale(req)       
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
             let {search} = req.query;
