@@ -80,7 +80,7 @@ export default {
                         let index = await transformPost(e,lang,myUser)
                         newdata.push(index)
                     }))
-                    res.send(newdata);
+                    res.send({success:true,data:newdata});
                 })
         } catch (err) {
             next(err);
@@ -153,7 +153,7 @@ export default {
                 "user": req.user._id
             };
             await Report.create({...reports});
-            res.status(201).send(createdPost);
+            res.status(201).send({success:true,data:createdPost});
         } catch (err) {
             next(err);
         }
@@ -167,7 +167,7 @@ export default {
             await Post.findById(postId).populate(populateQuery)
                 .sort({ createdAt: -1 }).then(async(e)=>{
                     let index = await transformPostById(e,lang,myUser,req.user._id)
-                    res.send(index);
+                    res.send({success:true,data:index});
                 })
         } catch (err) {
             next(err);
@@ -217,7 +217,7 @@ export default {
                 "user": req.user._id
             };
             await Report.create({...reports});
-            res.status(200).send(updatedPost);
+            res.status(200).send({success:true,data:updatedPost});
         }
         catch (err) {
             next(err);

@@ -69,6 +69,7 @@ export default {
                 }
                 return true;
             }),
+            body('allGrades').optional()
             
         ];
         return validations;

@@ -10,6 +10,7 @@ export async function transformAdmission(e,lang) {
         maxAcceptance: e.maxAcceptance,
         applications:e.applications,
         acceptance:e.acceptance,
+        allGrades:e.allGrades,
         id: e._id,
         createdAt: e.createdAt,                       
     }
@@ -58,6 +59,7 @@ export async function transformAdmissionById(e,lang) {
         maxAcceptance: e.maxAcceptance,
         applications:e.applications,
         acceptance:e.acceptance,
+        allGrades:e.allGrades,
         id: e._id,
         createdAt: e.createdAt,                       
     }
