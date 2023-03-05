@@ -57,8 +57,23 @@ const admissionSchema = new Schema({
     grades:{
         type: [Number],
         ref: 'grade',
-        required: true,
     },
+    faculties: [
+        new Schema({
+            faculty: {
+                type: Number,
+                ref: 'faculty',
+                required: true,
+            },
+            grades:{
+                type: [Number],
+                ref: 'grade',
+                required: true,
+            },
+            
+        }, { _id: false })
+        
+    ],
     applications: {
         type: Number,
         default: 0,

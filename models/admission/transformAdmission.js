@@ -45,6 +45,25 @@ export async function transformAdmission(e,lang) {
         })
     }
     index.grades = grades;
+    /*faculties*/
+    let faculties=[]
+    for (let val of e.faculties) {
+        let faculty = {
+            name:lang=="ar"?val.faculty.name_ar:val.faculty.name_en,
+            id:val.faculty._id,                         
+        }
+        let grades=[]
+        for (let val2 of val.grades) {
+            grades.push({
+                name:lang=="ar"?val2.name_ar:val2.name_en,
+                cost: val2.cost,
+                id:val2._id,                         
+            })
+        }
+        faculty.grades = grades;
+        faculties.push(faculty)
+    }
+    index.faculties = faculties;
     return index
 }
 
@@ -92,5 +111,24 @@ export async function transformAdmissionById(e,lang) {
         })
     }
     index.grades = grades;
+    /*faculties*/
+    let faculties=[]
+    for (let val of e.faculties) {
+        let faculty = {
+            name:lang=="ar"?val.faculty.name_ar:val.faculty.name_en,
+            id:val.faculty._id,                         
+        }
+        let grades=[]
+        for (let val2 of val.grades) {
+            grades.push({
+                name:lang=="ar"?val2.name_ar:val2.name_en,
+                cost: val2.cost,
+                id:val2._id,                         
+            })
+        }
+        faculty.grades = grades;
+        faculties.push(faculty)
+    }
+    index.faculties = faculties;
     return index
 }

@@ -10,11 +10,14 @@ import Grade from "../../models/grade/grade.model";
 import { transformAdmission,transformAdmissionById } from "../../models/admission/transformAdmission";
 import Business from "../../models/business/business.model";
 import Post from "../../models/post/post.model";
+import Faculty from "../../models/faculty/faculty.model";
 const populateQuery = [
     { path: 'educationSystem', model: 'educationSystem' },
     { path: 'educationInstitution', model: 'educationInstitution' },
     { path: 'business', model: 'business' },
     { path: 'grades', model: 'grade' },
+    { path: 'faculties.grades', model: 'grade' },
+    { path: 'faculties.faculty', model: 'faculty' },
 ];
 export default {
     //validate body
@@ -56,11 +59,12 @@ export default {
                 else
                     return true;
             }),
-            body('grades').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('grades.required', { value});
-            })
+            body('grades').optional()
             .custom(async (grades, { req }) => {
-                
+                if(grades.length == 0 && !req.body.faculties){
+                    throw new Error(req.__('grades.required'));
+
+                }
                 for (let value of grades) {
                     if (!await Grade.findOne({_id:value,deleted:false}))
                         throw new Error(req.__('grade.invalid'));
@@ -69,7 +73,36 @@ export default {
                 }
                 return true;
             }),
-            body('allGrades').optional()
+            body('allGrades').optional(),
+            body('faculties').optional()
+            .custom(async (faculties, { req }) => {
+                for (let faculty of faculties) {
+                    body('grades').not().isEmpty().withMessage((value, { req}) => {
+                        return req.__('grades.required', { value});
+                    })
+                    .custom(async (grades, { req }) => {
+                        
+                        for (let value of grades) {
+                            if (!await Grade.findOne({_id:value,deleted:false}))
+                                throw new Error(req.__('grade.invalid'));
+                            else
+                                return true;
+                        }
+                        return true;
+                    }),
+                    body('faculty').not().isEmpty().withMessage((value, { req}) => {
+                        return req.__('faculty.required', { value});
+                    }).isNumeric().withMessage((value, { req}) => {
+                        return req.__('faculty.numeric', { value});
+                    }).custom(async (value, { req }) => {
+                        if (!await Faculty.findOne({_id:value,deleted:false}))
+                            throw new Error(req.__('faculty.invalid'));
+                        else
+                            return true;
+                    })
+                }
+                return true;
+            }),
             
         ];
         return validations;
