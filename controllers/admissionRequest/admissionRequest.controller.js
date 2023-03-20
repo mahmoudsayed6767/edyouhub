@@ -15,11 +15,14 @@ import BusinessManagement from "../../models/business/businessManagement.model"
 import { sendNotifiAndPushNotifi } from "../../services/notification-service";
 import Notif from "../../models/notif/notif.model";
 import Business from "../../models/business/business.model";
+import Faculty from "../../models/faculty/faculty.model";
+
 const populateQuery = [
     { path: 'country', model: 'country' },
     { path: 'city', model: 'city' },
     { path: 'area', model: 'area' },
     { path: 'business', model: 'business' },
+    { path: 'faculty', model: 'faculty' },
     { path: 'grade', model: 'grade' },
     { path: 'owner', model: 'user' },
 ];
@@ -51,6 +54,16 @@ export default {
             }).custom(async (value, { req }) => {
                 if (!await Grade.findOne({_id:value,deleted:false}))
                     throw new Error(req.__('grade.invalid'));
+                else
+                    return true;
+            }),
+            body('faculty').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('faculty.required', { value});
+            }).isNumeric().withMessage((value, { req}) => {
+                return req.__('faculty.numeric', { value});
+            }).custom(async (value, { req }) => {
+                if (!await Faculty.findOne({_id:value,deleted:false}))
+                    throw new Error(req.__('faculty.invalid'));
                 else
                     return true;
             }),

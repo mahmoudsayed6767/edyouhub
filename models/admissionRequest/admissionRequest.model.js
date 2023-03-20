@@ -57,6 +57,10 @@ const admissionRequestSchema = new Schema({
         ref:'business',
         required: true,
     },
+    faculty:{
+        type: Number,
+        ref: 'faculty'
+    },
     grade:{
         type: Number,
         ref: 'grade',

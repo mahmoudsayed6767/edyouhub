@@ -33,6 +33,12 @@ export async function transformAdmissionRequest(e,lang) {
             id: e.grade._id,
         }
     }
+    if(e.faculty){
+        index.faculty = {
+            name:lang=="ar"?val.faculty.name_ar:val.faculty.name_en,
+            id:val.faculty._id,                         
+        }
+    }
     return index
 }
 
@@ -58,6 +64,12 @@ export async function transformAdmissionRequestById(e,lang) {
             fullname: e.owner.fullname,
             type: e.owner.type,
             id: e.owner._id
+        }
+    }
+    if(e.faculty){
+        index.faculty = {
+            name:lang=="ar"?val.faculty.name_ar:val.faculty.name_en,
+            id:val.faculty._id,                         
         }
     }
     if(e.grade){

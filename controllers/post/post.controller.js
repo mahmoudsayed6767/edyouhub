@@ -22,6 +22,14 @@ const populateQuery = [
         path: 'admission', model: 'admission',
         populate: { path: 'grades', model: 'grade' },
     },
+    {
+        path: 'admission', model: 'admission',
+        populate: { path: 'faculties.faculty', model: 'faculty' },
+    },
+    {
+        path: 'admission', model: 'admission',
+        populate: { path: 'faculties.grades', model: 'grade' },
+    },
 ];
 const populateQueryUser =[
     { path: 'country', model: 'country'},
