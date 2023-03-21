@@ -57,9 +57,7 @@ export default {
                 else
                     return true;
             }),
-            body('faculty').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('faculty.required', { value});
-            }).isNumeric().withMessage((value, { req}) => {
+            body('faculty').optional().isNumeric().withMessage((value, { req}) => {
                 return req.__('faculty.numeric', { value});
             }).custom(async (value, { req }) => {
                 if (!await Faculty.findOne({_id:value,deleted:false}))
