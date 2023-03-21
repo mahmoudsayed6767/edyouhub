@@ -35,8 +35,8 @@ export async function transformAdmissionRequest(e,lang) {
     }
     if(e.faculty){
         index.faculty = {
-            name:lang=="ar"?val.faculty.name_ar:val.faculty.name_en,
-            id:val.faculty._id,                         
+            name:lang=="ar"?e.faculty.name_ar:e.faculty.name_en,
+            id:e.faculty._id,                         
         }
     }
     return index
@@ -68,8 +68,8 @@ export async function transformAdmissionRequestById(e,lang) {
     }
     if(e.faculty){
         index.faculty = {
-            name:lang=="ar"?val.faculty.name_ar:val.faculty.name_en,
-            id:val.faculty._id,                         
+            name:lang=="ar"?e.faculty.name_ar:e.faculty.name_en,
+            id:e.faculty._id,                         
         }
     }
     if(e.grade){
