@@ -46,11 +46,12 @@ import MessageRoute from "./message/message.route"
 import connectionRoute from "./connection/connection.route"
 import postRoute from "./post/post.route"
 import galleryRoute from "./gallery/gallery.route"
+import eventRoute from "./event/event.route"
 
 const router = express.Router();
-router.use('/gallery', galleryRoute);
+router.use('/events', eventRoute);
 router.use('/posts', postRoute);
-
+router.use('/gallery', galleryRoute);
 router.use('/offerCart', offerCartRoute);
 router.use('/HigherEducations', HigherEducation);
 router.use('/follow', FollowRoute);

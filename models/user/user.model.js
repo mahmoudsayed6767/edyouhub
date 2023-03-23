@@ -266,7 +266,14 @@ const userSchema = new Schema({
             
         }, { _id: false })
     ],
-    
+    attendedEvents: [{
+        type:Number,
+        ref:'event',
+    }],
+    followEvents: [{
+        type:Number,
+        ref:'event',
+    }],
     deleted: {
         type: Boolean,
         default: false

@@ -14,10 +14,12 @@ import { transformPost,transformPostById } from "../../models/post/transformPost
 import { transformComment } from "../../models/comment/transformComment";
 import Option from "../../models/post/option.model";
 import { toImgUrl } from "../../utils";
+import Event from "../../models/event/event.model";
 const populateQuery = [
     { path: 'owner', model: 'user'},
     { path: 'options', model: 'option'},
     { path: 'vacancy', model: 'vacancy'},
+    { path: 'event', model: 'event'},
     {
         path: 'admission', model: 'admission',
         populate: { path: 'grades', model: 'grade' },
@@ -44,13 +46,17 @@ export default {
         try {
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
-            let {owner,userId,type,business,ownerType} = req.query
+            let {owner,userId,type,business,ownerType,event} = req.query
             let query = {deleted: false };
             if(owner) query.owner = owner;
-            if(type) query.type = type;
+            if (type) {
+                let values = type.split(",");
+                console.log(values)
+                query.type = {$in:values};
+            };
             if(business) query.business = business;
             if(ownerType) query.ownerType = ownerType;
-
+            if(event) query.event = event;
             let myUser
             if(userId){
                 myUser = await checkExistThenGet(userId, User)
@@ -74,10 +80,15 @@ export default {
     },
     async findSelection(req, res, next) {
         try {
-            let {owner,type,business,ownerType} = req.query
+            let {owner,type,business,ownerType,event} = req.query
             let query = {deleted: false };
+            if(event) query.event = event;
             if(owner) query.owner = owner;
-            if(type) query.type = type;
+            if (type) {
+                let values = type.split(",");
+                console.log(values)
+                query.type = {$in:values};
+            };
             if(business) query.business = business;
             if(ownerType) query.ownerType = ownerType;
             let myUser = await checkExistThenGet(req.user._id, User)
@@ -112,6 +123,14 @@ export default {
             }),
             body('endDate').optional().isISO8601().withMessage((value, { req})=>{
                 return req.__('date.invalid', { value});
+            }),
+            body('event').optional().isNumeric().withMessage((value, { req}) => {
+                return req.__('event.numeric', { value});
+            }).custom(async (event, { req }) => {
+                if (!await Event.findOne({_id:value,deleted:false}))
+                    throw new Error(req.__('event.invalid'));
+                else
+                    return true;
             }),
             body('theOptions').optional()
             .custom(async (options, { req }) => {
@@ -393,6 +412,10 @@ export default {
             const validatedBody = checkValidations(req);
             validatedBody.user = req.user._id;
             validatedBody.post = req.params.postId
+            commentsCount
+            let thePost = await checkExistThenGet(req.params.postId, Post);
+            thePost.commentsCount = thePost.commentsCount + 1;
+            await thePost.save();
             let createdComment = await Comment.create({ ...validatedBody});
             let reports = {
                 "action":"Add Comment",

@@ -34,16 +34,14 @@ const postSchema=new Schema({
         type: [Number],
         ref:'option',
     },
-    startDate:{
-        type: Date,
-    },
-    endDate:{
-        type: Date,
-    },
     type:{
         type: String,
         enum:['VACANCY','ADMISSION','EVENT', 'ANONCEMENT','GENERAL','VOTE','REQUEST-RECOMMENDATION','GIVE-RECOMMENDATION','HELP','DISCUSSION'],
         default:'GENERAL',
+    },
+    event: {
+        type: Number,
+        ref:'event',
     },
     admission: {
         type: Number,
