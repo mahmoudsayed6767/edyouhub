@@ -28,6 +28,8 @@ export async function transformPost(e,lang,myUser,userId) {
     for (let val of e.options) {
         let option = {
             name: val.title,
+            chosenUsers:val.chosenUsers,
+            chosenCount:val.chosenCount,
             id: val._id,
         }
         options.push(option)
@@ -113,6 +115,8 @@ export async function transformPostById(e,lang,myUser,userId) {
     for (let val of e.options) {
         let option = {
             name: val.title,
+            chosenUsers:val.chosenUsers,
+            chosenCount:val.chosenCount,
             chosenCount:val.chosenCount,
             chosenUsers:val.chosenUsers,
             id: val._id,
