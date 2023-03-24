@@ -12,8 +12,6 @@ import {transformOffer} from "../../models/offer/transformOffer";
 import Report from "../../models/reports/report.model";
 const populateQuery = [ 
 
-    {path: 'place', model: 'place' },
-
 ];
 const populateQuery2 = [
    

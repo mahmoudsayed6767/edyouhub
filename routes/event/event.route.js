@@ -34,6 +34,8 @@ router.route('/:eventId/removeAttendence')
         requireAuth,
         eventController.removeAttendance
     )
+router.route('/:eventId/getEventAttendance')
+    .get(requireAuth,eventController.getEventAttendance);
 router.route('/:eventId/follow')
     .put(
         requireAuth,
@@ -45,7 +47,8 @@ router.route('/:eventId/unFollow')
         eventController.unfollowEvent
     )
 
-
+ router.route('/:eventId/getEventFollowers')
+    .get(requireAuth,eventController.getEventFollowers);
 
 
 export default router;

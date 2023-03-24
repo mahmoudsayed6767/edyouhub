@@ -1,6 +1,3 @@
-import { isInArray } from "../../helpers/CheckMethods";
-import i18n from "i18n";
-import moment from 'moment';
 export async function transformUser(e,lang,myUser,userId) {
     let index = {
         username:e.username,

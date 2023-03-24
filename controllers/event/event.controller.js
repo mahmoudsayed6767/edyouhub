@@ -10,6 +10,9 @@ import Post from "../../models/post/post.model";
 import User from "../../models/user/user.model";
 import { checkExist, checkExistThenGet,isLat,isLng} from "../../helpers/CheckMethods";
 import { ValidationError } from "mongoose";
+import FollowEvent from "../../models/event/followEvent.model";
+import EventAttendance from "../../models/event/eventAttendance.model";
+import {transformUser} from "../../models/user/transformUser"
 const populateQuery = [
     { path: 'business', model: 'business' },
     { path: 'businessParticipants', model: 'business' },
@@ -278,63 +281,87 @@ export default {
             let {eventId} = req.params
             await checkExist (eventId,Event,{deleted:false})
             let user = await checkExistThenGet(req.user._id, User);
-            let arr = user.attendedEvents;
-            var found = arr.find((e) => e == eventId); 
-            if(!found){
-                user.attendedEvents.push(eventId);
-                await user.save();
-                let theEvent = await checkExistThenGet(eventId, Event);
-                theEvent.attendance.push(req.user._id)
-                await theEvent.save();
-                let reports = {
-                    "action":"user will attend to event",
-                    "type":"EVENT",
-                    "deepId":eventId,
-                    "user": req.user._id
-                };
-                await Report.create({...reports});
+            if(!await EventAttendance.findOne({ user: req.user._id, event: eventId,deleted:false})){
+                let arr = user.attendedEvents;
+                var found = arr.find((e) => e == eventId); 
+                if(!found){
+                    user.attendedEvents.push(eventId);
+                    await user.save();
+                    await EventAttendance.create({ user: req.user._id, event: eventId });
+                    let reports = {
+                        "action":"user will attend to event",
+                        "type":"EVENT",
+                        "deepId":eventId,
+                        "user": req.user._id
+                    };
+                    await Report.create({...reports});
+                }
             }
+            
             res.status(200).send({success: true});
         } catch (error) {
             next(error)
         }
     },
-    async removeAttendance(req, res, next) { 
+    async removeAttendance(req, res, next) {
         try {
-            let {eventId} = req.params
-            await checkExist (eventId,Event,{deleted:false})
+            let {eventId } = req.params;
+             /*check if  */
+            if(!await EventAttendance.findOne({ user: req.user._id, event: eventId,deleted:false})){
+                return next(new ApiError(500, i18n.__('event.notFoundInList')));
+            }
+            let eventAttendance = await EventAttendance.findOne({ user: req.user._id, event: eventId,deleted:false})
+
+            //if the user make the request is not the owner
+            if (eventAttendance.user != req.user._id)
+                return next(new ApiError(403, i18n.__('notAllow')));
+            eventAttendance.deleted = true;
+            await eventAttendance.save();
+            /*remove event id from user data*/
             let user = await checkExistThenGet(req.user._id, User);
             let arr = user.attendedEvents;
-            var found = arr.find((e) => e == eventId); 
-            if(found){
-                for(let i = 0;i<= arr.length;i=i+1){
-                    if(arr[i] == eventId){
-                        arr.splice(i, 1);
-                    }
+            for(let i = 0;i<= arr.length;i=i+1){
+                if(arr[i] == eventId){
+                    arr.splice(i, 1);
                 }
-                user.attendedEvents = arr;
-                await user.save();
-                //remove user from attendance array
-                let theEvent = await checkExistThenGet(eventId, Event);
-                let arr2 = theEvent.attendance
-                for(let i = 0;i<= arr2.length;i=i+1){
-                    if(arr2[i] == req.user._id){
-                        arr2.splice(i, 1);
-                    }
-                }
-                theEvent.attendance = arr2;
-                await theEvent.save();
-                let reports = {
-                    "action":"user not attend to event",
-                    "type":"EVENT",
-                    "deepId":eventId,
-                    "user": req.user._id
-                };
-                await Report.create({...reports});
             }
-            res.status(200).send({success: true});
+            user.eventAttendance = arr;
+            await user.save();
+            let reports = {
+                "action":"user not attend to event",
+                "type":"EVENT",
+                "deepId":eventId,
+                "user": req.user._id
+            };
+            await Report.create({...reports});
+            res.send({success: true});
         } catch (error) {
             next(error)
+        }
+    },
+    async getEventAttendance(req, res, next) {
+        try {
+            let lang = i18n.getLocale(req)
+            let page = +req.query.page || 1, limit = +req.query.limit || 20;
+            
+            let ids = await EventAttendance.find({event:req.params.eventId})
+                .distinct('user')
+            let query = {deleted: false,_id:ids };
+            await User.find(query)
+                .sort({ createdAt: -1 })
+                .limit(limit)
+                .skip((page - 1) * limit).then(async(data)=>{
+                    let newdata =[]
+                    await Promise.all( data.map(async(e)=>{
+                        let index = await transformUser(e,lang)
+                        newdata.push(index)
+                    }))
+                    const count = await User.countDocuments(query);
+                    const pageCount = Math.ceil(count / limit);
+                    res.send(new ApiResponse(newdata, page, pageCount, limit, count, req));
+                })
+        } catch (err) {
+            next(err);
         }
     },
     async followEvent(req, res, next) { 
@@ -342,63 +369,87 @@ export default {
             let {eventId} = req.params
             await checkExist (eventId,Event,{deleted:false})
             let user = await checkExistThenGet(req.user._id, User);
-            let arr = user.followEvents;
-            var found = arr.find((e) => e == eventId); 
-            if(!found){
-                user.followEvents.push(eventId);
-                await user.save();
-                let theEvent = await checkExistThenGet(eventId, Event);
-                theEvent.followers.push(req.user._id)
-                await theEvent.save();
-                let reports = {
-                    "action":"user follow to event",
-                    "type":"EVENT",
-                    "deepId":eventId,
-                    "user": req.user._id
-                };
-                await Report.create({...reports});
+            if(!await FollowEvent.findOne({ user: req.user._id, event: eventId,deleted:false})){
+                let arr = user.followEvents;
+                var found = arr.find((e) => e == eventId); 
+                if(!found){
+                    user.followEvents.push(eventId);
+                    await user.save();
+                    await FollowEvent.create({ user: req.user._id, event: eventId });
+                    let reports = {
+                        "action":"user follow to event",
+                        "type":"EVENT",
+                        "deepId":eventId,
+                        "user": req.user._id
+                    };
+                    await Report.create({...reports});
+                }
             }
+            
             res.status(200).send({success: true});
         } catch (error) {
             next(error)
         }
     },
-    async unfollowEvent(req, res, next) { 
+    async unfollowEvent(req, res, next) {
         try {
-            let {eventId} = req.params
-            await checkExist (eventId,Event,{deleted:false})
+            let {eventId } = req.params;
+             /*check if  */
+            if(!await FollowEvent.findOne({ user: req.user._id, event: eventId,deleted:false})){
+                return next(new ApiError(500, i18n.__('event.notFoundInList')));
+            }
+            let followEvent = await FollowEvent.findOne({ user: req.user._id, event: eventId,deleted:false})
+
+            //if the user make the request is not the owner
+            if (followEvent.user != req.user._id)
+                return next(new ApiError(403, i18n.__('notAllow')));
+            followEvent.deleted = true;
+            await followEvent.save();
+            /*remove post id from user data*/
             let user = await checkExistThenGet(req.user._id, User);
             let arr = user.followEvents;
-            var found = arr.find((e) => e == eventId); 
-            if(found){
-                for(let i = 0;i<= arr.length;i=i+1){
-                    if(arr[i] == eventId){
-                        arr.splice(i, 1);
-                    }
+            for(let i = 0;i<= arr.length;i=i+1){
+                if(arr[i] == eventId){
+                    arr.splice(i, 1);
                 }
-                user.followEvents = arr;
-                await user.save();
-                //remove user from followers array
-                let theEvent = await checkExistThenGet(eventId, Event);
-                let arr2 = theEvent.followers
-                for(let i = 0;i<= arr2.length;i=i+1){
-                    if(arr2[i] == req.user._id){
-                        arr2.splice(i, 1);
-                    }
-                }
-                theEvent.followers = arr2;
-                await theEvent.save();
-                let reports = {
-                    "action":"user un follow to event",
-                    "type":"EVENT",
-                    "deepId":eventId,
-                    "user": req.user._id
-                };
-                await Report.create({...reports});
             }
-            res.status(200).send({success: true});
+            user.followEvent = arr;
+            await user.save();
+            let reports = {
+                "action":"user un follow to event",
+                "type":"EVENT",
+                "deepId":eventId,
+                "user": req.user._id
+            };
+            await Report.create({...reports});
+            res.send({success: true});
         } catch (error) {
             next(error)
+        }
+    },
+    async getEventFollowers(req, res, next) {
+        try {
+            let lang = i18n.getLocale(req)
+            let page = +req.query.page || 1, limit = +req.query.limit || 20;
+            
+            let ids = await FollowEvent.find({event:req.params.eventId})
+                .distinct('user')
+            let query = {deleted: false,_id:ids };
+            await User.find(query)
+                .sort({ createdAt: -1 })
+                .limit(limit)
+                .skip((page - 1) * limit).then(async(data)=>{
+                    let newdata =[]
+                    await Promise.all( data.map(async(e)=>{
+                        let index = await transformUser(e,lang)
+                        newdata.push(index)
+                    }))
+                    const count = await User.countDocuments(query);
+                    const pageCount = Math.ceil(count / limit);
+                    res.send(new ApiResponse(newdata, page, pageCount, limit, count, req));
+                })
+        } catch (err) {
+            next(err);
         }
     },
     
