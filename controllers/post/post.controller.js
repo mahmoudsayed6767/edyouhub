@@ -109,7 +109,7 @@ export default {
         let validations = [
             body('type').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('type.required', { value});
-            }).isIn(['VACANCY','ADMISSION','EVENT', 'ANONCEMENT','GENERAL','VOTE','REQUEST-RECOMMENDATION','GIVE-RECOMMENDATION','HELP','DISCUSSION']).withMessage((value, { req}) => {
+            }).isIn(['ANONCEMENT','GENERAL','VOTE','REQUEST-RECOMMENDATION','GIVE-RECOMMENDATION','HELP','DISCUSSION']).withMessage((value, { req}) => {
                 return req.__('type.invalid', { value});
             }),
             body('dataType').optional().isIn(['IMAGE', 'VIDEO','FILE','TEXT','LINK']).withMessage((value, { req}) => {
@@ -117,12 +117,6 @@ export default {
             }),
             body('content').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('content.required', { value});
-            }),
-            body('startDate').optional().isISO8601().withMessage((value, { req})=>{
-                return req.__('date.invalid', { value});
-            }),
-            body('endDate').optional().isISO8601().withMessage((value, { req})=>{
-                return req.__('date.invalid', { value});
             }),
             body('event').optional().isNumeric().withMessage((value, { req}) => {
                 return req.__('event.numeric', { value});
