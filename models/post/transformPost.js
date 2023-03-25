@@ -158,6 +158,7 @@ export async function transformPostById(e,lang,myUser,userId) {
             maxAcceptance: e.admission.maxAcceptance,
             applications:e.admission.applications,
             acceptance:e.admission.acceptance,
+            allGrades:e.admission.allGrades,
             id: e.admission._id,
             createdAt: e.admission.createdAt,                       
         }
