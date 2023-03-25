@@ -27,7 +27,7 @@ export async function transformPost(e,lang,myUser,userId) {
     let options = []
     for (let val of e.options) {
         let option = {
-            name: val.title,
+            title: val.title,
             chosenUsers:val.chosenUsers,
             chosenCount:val.chosenCount,
             id: val._id,
@@ -52,6 +52,7 @@ export async function transformPost(e,lang,myUser,userId) {
             description: e.admission.description,
             fromDate: e.admission.fromDate,
             toDate: e.admission.toDate,
+            allGrades:e.admission.allGrades,
             id: e.admission._id,                  
         }
         /*grades*/
@@ -85,6 +86,18 @@ export async function transformPost(e,lang,myUser,userId) {
         admission.faculties = faculties;
         index.admission = admission;
     }
+    if(e.event) {
+        let event = {
+            title:e.event.title,
+            fromDate:e.event.fromDate,
+            toDate:e.event.toDate,
+            time:e.event.time,
+            description: e.event.description,
+            id: e.event._id,
+            createdAt: e.event.createdAt,   
+        }
+        index.event = event;
+    }
     return index
 }
 export async function transformPostById(e,lang,myUser,userId) {
@@ -114,7 +127,7 @@ export async function transformPostById(e,lang,myUser,userId) {
     let options = []
     for (let val of e.options) {
         let option = {
-            name: val.title,
+            title: val.title,
             chosenUsers:val.chosenUsers,
             chosenCount:val.chosenCount,
             chosenCount:val.chosenCount,
@@ -159,6 +172,18 @@ export async function transformPostById(e,lang,myUser,userId) {
         }
         admission.grades = grades;
         index.admission = admission;
+    }
+    if(e.event) {
+        let event = {
+            title:e.event.title,
+            fromDate:e.event.fromDate,
+            toDate:e.event.toDate,
+            time:e.event.time,
+            description: e.event.description,
+            id: e.event._id,
+            createdAt: e.event.createdAt,   
+        }
+        index.event = event;
     }
     return index
 }

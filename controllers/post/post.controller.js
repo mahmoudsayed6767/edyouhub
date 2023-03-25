@@ -412,7 +412,6 @@ export default {
             const validatedBody = checkValidations(req);
             validatedBody.user = req.user._id;
             validatedBody.post = req.params.postId
-            commentsCount
             let thePost = await checkExistThenGet(req.params.postId, Post);
             thePost.commentsCount = thePost.commentsCount + 1;
             await thePost.save();

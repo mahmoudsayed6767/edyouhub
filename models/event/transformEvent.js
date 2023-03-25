@@ -46,8 +46,6 @@ export async function transformEventById(e,lang) {
         fromDate:e.fromDate,
         toDate:e.toDate,
         time:e.time,
-        attendance:e.attendance,
-        followers:e.followers,
         id: e._id,
         createdAt: e.createdAt,                       
     }
