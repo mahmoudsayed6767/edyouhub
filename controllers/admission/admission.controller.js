@@ -196,7 +196,7 @@ export default {
         try {
             //get lang
             let lang = i18n.getLocale(req)
-            let {search,educationInstitution,educationSystem,business} = req.query;
+            let {search,educationInstitution,educationSystem,business,status} = req.query;
 
             let query = {deleted: false }
              /*search  */
@@ -215,6 +215,8 @@ export default {
             if(educationInstitution) query.educationInstitution = educationInstitution
             if(educationSystem) query.educationSystem = educationSystem
             if(business) query.business = business
+            if(status) query.status = status
+
             await Admission.find(query).populate(populateQuery)
                 .sort({ _id: 1 })
                 .then( async(data) => {
@@ -238,7 +240,7 @@ export default {
              //get lang
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
-            let {search,educationInstitution,educationSystem,business} = req.query;
+            let {search,educationInstitution,educationSystem,business,status} = req.query;
 
             let query = {deleted: false }
              /*search  */
@@ -257,6 +259,8 @@ export default {
             if(educationInstitution) query.educationInstitution = educationInstitution
             if(educationSystem) query.educationSystem = educationSystem
             if(business) query.business = business
+            if(status) query.status = status
+
             await Admission.find(query).populate(populateQuery)
                 .sort({ _id: 1 })
                 .limit(limit)
