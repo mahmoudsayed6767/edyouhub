@@ -25,18 +25,7 @@ const populateQuery = [
     { path: 'faculty', model: 'faculty' },
     { path: 'grade', model: 'grade' },
     { path: 'owner', model: 'user' },
-    {
-        path: 'admission', model: 'admission',
-        populate: { path: 'grades', model: 'grade' },
-    },
-    {
-        path: 'admission', model: 'admission',
-        populate: { path: 'faculties.grades', model: 'grade' },
-    },
-    {
-        path: 'admission', model: 'admission',
-        populate: { path: 'faculties.faculty', model: 'faculty' },
-    },
+    { path: 'admission', model: 'admission'},
 ];
 export default {
     //validate body
