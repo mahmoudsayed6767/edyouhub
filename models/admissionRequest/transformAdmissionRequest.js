@@ -7,10 +7,50 @@ export async function transformAdmissionRequest(e,lang) {
         secondName: e.secondName,
         familyName: e.familyName,
         age: e.age,
-        addmission: e.addmission,
         haveSibling:e.haveSibling,
         id: e._id,
         createdAt: e.createdAt,                       
+    }
+    if(e.admission){
+        let admission = {
+            status:e.admission.status,
+            title: e.admission.title,
+            description: e.admission.description,
+            fromDate: e.admission.fromDate,
+            toDate: e.admission.toDate,
+            allGrades:e.admission.allGrades,
+            id: e.admission._id,                   
+        }
+        /*grades*/
+        let grades=[]
+        for (let val of e.admission.grades) {
+            grades.push({
+                name:lang=="ar"?val.name_ar:val.name_en,
+                cost: val.cost,
+                id:val._id,                         
+            })
+        }
+        admission.grades = grades;
+        /*faculties*/
+        let faculties=[]
+        for (let val of e.admission.faculties) {
+            let faculty = {
+                name:lang=="ar"?val.faculty.name_ar:val.faculty.name_en,
+                id:val.faculty._id,                         
+            }
+            let grades=[]
+            for (let val2 of val.grades) {
+                grades.push({
+                    name:lang=="ar"?val2.name_ar:val2.name_en,
+                    cost: val2.cost,
+                    id:val2._id,                         
+                })
+            }
+            faculty.grades = grades;
+            faculties.push(faculty)
+        }
+        admission.faculties = faculties;
+        index.admission = admission
     }
     if (e.owner) {
         index.owner = {
@@ -27,18 +67,6 @@ export async function transformAdmissionRequest(e,lang) {
             id: e.business._id,
         }
     }
-    if(e.grade){
-        index.grade = {
-            name:lang=="ar"?e.grade.name_ar:e.grade.name_en,
-            id: e.grade._id,
-        }
-    }
-    if(e.faculty){
-        index.faculty = {
-            name:lang=="ar"?e.faculty.name_ar:e.faculty.name_en,
-            id:e.faculty._id,                         
-        }
-    }
     return index
 }
 
@@ -51,12 +79,52 @@ export async function transformAdmissionRequestById(e,lang) {
         familyName: e.familyName,
         birthday: birthday,
         age: e.age,
-        addmission: e.addmission,
+        admission: e.admission,
         fatherInfo:e.fatherInfo,
         motherInfo:e.motherInfo,
         haveSibling:e.haveSibling,
         id: e._id,
         createdAt: e.createdAt,                       
+    }
+    if(e.admission){
+        let admission = {
+            status:e.admission.status,
+            title: e.admission.title,
+            description: e.admission.description,
+            fromDate: e.admission.fromDate,
+            toDate: e.admission.toDate,
+            allGrades:e.admission.allGrades,
+            id: e.admission._id,                   
+        }
+        /*grades*/
+        let grades=[]
+        for (let val of e.admission.grades) {
+            grades.push({
+                name:lang=="ar"?val.name_ar:val.name_en,
+                cost: val.cost,
+                id:val._id,                         
+            })
+        }
+        admission.grades = grades;
+        /*faculties*/
+        let faculties=[]
+        for (let val of e.admission.faculties) {
+            let faculty = {
+                name:lang=="ar"?val.faculty.name_ar:val.faculty.name_en,
+                id:val.faculty._id,                         
+            }
+            let grades=[]
+            for (let val2 of val.grades) {
+                grades.push({
+                    name:lang=="ar"?val2.name_ar:val2.name_en,
+                    cost: val2.cost,
+                    id:val2._id,                         
+                })
+            }
+            faculty.grades = grades;
+            faculties.push(faculty)
+        }
+        admission.faculties = faculties;
     }
     if (e.owner) {
         index.owner = {

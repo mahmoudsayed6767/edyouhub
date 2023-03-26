@@ -25,6 +25,18 @@ const populateQuery = [
     { path: 'faculty', model: 'faculty' },
     { path: 'grade', model: 'grade' },
     { path: 'owner', model: 'user' },
+    {
+        path: 'admission', model: 'admission',
+        populate: { path: 'grades', model: 'grade' },
+    },
+    {
+        path: 'admission', model: 'admission',
+        populate: { path: 'faculties.grades', model: 'grade' },
+    },
+    {
+        path: 'admission', model: 'admission',
+        populate: { path: 'faculties.faculty', model: 'faculty' },
+    },
 ];
 export default {
     //validate body
@@ -251,7 +263,7 @@ export default {
         try {
             //get lang
             let lang = i18n.getLocale(req)
-            let {country,city,area,grade,business,owner,status,admission} = req.query;
+            let {country,city,area,grade,business,owner,status,admission,type} = req.query;
 
             let query = {deleted: false }
             if(country) query.country = country
@@ -270,6 +282,7 @@ export default {
                 }
             }
             if(status) query.status = status
+            if(type) query.status = type
             await AdmissionRequest.find(query).populate(populateQuery)
                 .sort({ _id: 1 })
                 .then( async(data) => {
@@ -293,7 +306,7 @@ export default {
              //get lang
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
-            let {country,city,area,grade,business,owner,status,admission} = req.query;
+            let {country,city,area,grade,business,owner,status,admission,type} = req.query;
             let query = {deleted: false }
             if(country) query.country = country
             if(city) query.city = city
@@ -301,6 +314,7 @@ export default {
             if(grade) query.grade = grade
             if(business) query.business = business
             if(admission) query.admission = admission
+            if(type) query.status = type
 
             if(owner) {
                 if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
