@@ -282,7 +282,7 @@ export default {
                 }
             }
             if(status) query.status = status
-            if(type) query.status = type
+            if(type) query.type = type
             await AdmissionRequest.find(query).populate(populateQuery)
                 .sort({ _id: 1 })
                 .then( async(data) => {
@@ -314,7 +314,7 @@ export default {
             if(grade) query.grade = grade
             if(business) query.business = business
             if(admission) query.admission = admission
-            if(type) query.status = type
+            if(type) query.type = type
 
             if(owner) {
                 if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
