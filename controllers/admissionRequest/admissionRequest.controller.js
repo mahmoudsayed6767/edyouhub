@@ -273,7 +273,7 @@ export default {
             if(status) query.status = status
             if(type) query.type = type
             await AdmissionRequest.find(query).populate(populateQuery)
-                .sort({ _id: 1 })
+                .sort({ _id: -1 })
                 .then( async(data) => {
                     var newdata = [];
                     await Promise.all(data.map(async(e) =>{
@@ -316,7 +316,7 @@ export default {
             }
             if(status) query.status = status
             await AdmissionRequest.find(query).populate(populateQuery)
-                .sort({ _id: 1 })
+                .sort({ _id: -1 })
                 .limit(limit)
                 .skip((page - 1) * limit)
                 .then(async (data) => {

@@ -155,7 +155,7 @@ export default {
             if(educationSystem) query.educationSystem = educationSystem
             if(educationInstitution) query.educationInstitution = educationInstitution
             await Student.find(query).populate(populateQuery)
-                .sort({ _id: 1 })
+                .sort({ _id: -1 })
                 .then( async(data) => {
                     var newdata = [];
                     await Promise.all(data.map(async(e) =>{
@@ -185,7 +185,7 @@ export default {
             if(educationSystem) query.educationSystem = educationSystem
             if(educationInstitution) query.educationInstitution = educationInstitution
             await Student.find(query).populate(populateQuery)
-                .sort({ _id: 1 })
+                .sort({ _id: -1 })
                 .limit(limit)
                 .skip((page - 1) * limit)
                 .then(async (data) => {

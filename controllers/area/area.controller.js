@@ -181,7 +181,7 @@ export default {
             }
             console.log(query)
             await Area.find(query)
-                .sort({ _id: 1 })
+                .sort({ _id: -1 })
                 .then( async(data) => {
                     var newdata = [];
                     await Promise.all(data.map(async(e) =>{
@@ -230,7 +230,7 @@ export default {
                 };
             }
             await Area.find(query)
-                .sort({ _id: 1 })
+                .sort({ _id: -1 })
                 .limit(limit)
                 .skip((page - 1) * limit)
                 .then(async (data) => {

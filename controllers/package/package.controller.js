@@ -17,7 +17,7 @@ export default {
             let page = +req.query.page || 1, limit = +req.query.limit || 20 ;
             let query = {deleted: false };
             await Package.find(query)
-                .sort({ _id: 1 })
+                .sort({ _id: -1 })
                 .limit(limit)
                 .skip((page - 1) * limit)
                 .then(async (data) => {
@@ -44,7 +44,7 @@ export default {
             let lang = i18n.getLocale(req) 
             let query = {deleted: false };
             await Package.find(query)
-                .sort({ _id: 1 })
+                .sort({ _id: -1 })
                 .then(async (data) => {
                     var newdata = [];
                     await Promise.all(data.map(async(e) =>{

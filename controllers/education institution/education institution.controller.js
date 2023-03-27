@@ -171,7 +171,7 @@ export default {
             if(subSector) query.subSector = subSector
             if(educationSystem) query.educationSystem = educationSystem
             await EducationInstitution.find(query).populate(populateQuery)
-                .sort({ _id: 1 })
+                .sort({ _id: -1 })
                 .then( async(data) => {
                     var newdata = [];
                     await Promise.all(data.map(async(e) =>{
@@ -214,7 +214,7 @@ export default {
             if(subSector) query.subSector = subSector
             if(educationSystem) query.educationSystem = educationSystem
             await EducationInstitution.find(query).populate(populateQuery)
-                .sort({ _id: 1 })
+                .sort({ _id: -1 })
                 .limit(limit)
                 .skip((page - 1) * limit)
                 .then(async (data) => {

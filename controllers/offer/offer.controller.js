@@ -106,7 +106,7 @@ export default {
                 myUser= await checkExistThenGet(userId, User)
             }
             await Offer.find(query).populate(populateQuery)
-                .sort({ _id: 1 })
+                .sort({ _id: -1 })
                 .then( async(data) => {
                     var newdata = [];
                     await Promise.all(data.map(async(e) =>{

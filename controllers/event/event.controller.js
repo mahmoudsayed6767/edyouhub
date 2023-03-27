@@ -213,7 +213,7 @@ export default {
             if(business) query.business = business
             if(status) query.status = status
             await Event.find(query).populate(populateQuery)
-                .sort({ _id: 1 })
+                .sort({ _id: -1 })
                 .then( async(data) => {
                     var newdata = [];
                     await Promise.all(data.map(async(e) =>{
@@ -256,7 +256,7 @@ export default {
             if(status) query.status = status
 
             await Event.find(query).populate(populateQuery)
-                .sort({ _id: 1 })
+                .sort({ _id: -1 })
                 .limit(limit)
                 .skip((page - 1) * limit)
                 .then(async (data) => {

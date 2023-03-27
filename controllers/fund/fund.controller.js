@@ -399,7 +399,7 @@ export default {
             if(owner) query.owner = owner
             if(status) query.status = status
             await Fund.find(query).populate(populateQuery)
-                .sort({ _id: 1 })
+                .sort({ _id: -1 })
                 .then( async(data) => {
                     var newdata = [];
                     await Promise.all(data.map(async(e) =>{
@@ -428,7 +428,7 @@ export default {
             if(educationInstitution) query.educationInstitutions = educationInstitution
             if(status) query.status = status
             await Fund.find(query).populate(populateQuery)
-                .sort({ _id: 1 })
+                .sort({ _id: -1 })
                 .limit(limit)
                 .skip((page - 1) * limit)
                 .then(async (data) => {
