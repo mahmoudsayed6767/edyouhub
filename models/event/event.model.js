@@ -81,14 +81,6 @@ const eventSchema=new Schema({
         type:Number,
         ref:'business',
     }],
-    attendance: [{
-        type:Number,
-        ref:'user',
-    }],
-    followers: [{
-        type:Number,
-        ref:'user',
-    }],
     deleted:{
         type:Boolean,
         default:false
