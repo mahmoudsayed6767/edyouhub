@@ -14,7 +14,7 @@ import {sendSms} from "../../services/message-service"
 import { sendNotifiAndPushNotifi } from "../../services/notification-service";
 import i18n from "i18n";
 import {transformUser,transformUserById } from '../../models/user/transformUser';
-import UserDevice from "../../models/user devices/user devices.model";
+import Business from "../../models/business/business.model";
 import Country from "../../models/country/country.model";
 import City from "../../models/city/city.model";
 import Area from "../../models/area/area.model";
@@ -800,6 +800,7 @@ export default {
                     totalFunds += element
                 });
                 index.totalFunds = totalFunds
+                index.business = await Business.find({deleted: false,status:'ACCEPTED',owner:id})
                 res.send({success:true,data:index});
             })
             
