@@ -5,6 +5,7 @@ export async function transformEvent(e,lang) {
         description:e.description,
         fromDate:e.fromDate,
         toDate:e.toDate,
+        dailyTimes:e.dailyTimes,
         time:e.time,
         id: e._id,                    
     }
@@ -45,6 +46,7 @@ export async function transformEventById(e,lang) {
         email:e.email,
         fromDate:e.fromDate,
         toDate:e.toDate,
+        dailyTimes:e.dailyTimes,
         time:e.time,
         id: e._id,
         createdAt: e.createdAt,                       

@@ -738,6 +738,16 @@ export default {
                         return true;
                 }
                 
+            }),
+            body('events.supervisors').optional()
+            .custom(async (value, { req }) => {
+                for (const user of value) {
+                    if (!await User.findOne({_id:user,deleted:false}))
+                        throw new Error(req.__('user.invalid'));
+                    else
+                        return true;
+                }
+                
             })
             
         ];

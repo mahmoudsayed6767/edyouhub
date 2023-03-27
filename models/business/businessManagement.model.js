@@ -45,7 +45,12 @@ const businessManagementSchema = new Schema({
             trim: true,
         },
     },
-    
+    events: {
+        supervisors: {
+            type: [Number],
+            ref:'user'
+        },
+    },
     deleted:{
         type:Boolean,
         default:false

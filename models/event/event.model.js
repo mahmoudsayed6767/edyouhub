@@ -57,6 +57,18 @@ const eventSchema=new Schema({
         type: Date,
         required: true
     },
+    dailyTimes: [
+        new Schema({
+            fromDate: {
+                type: Date,
+                required: true
+            },
+            toDate: {
+                type: Date,
+                required: true
+            },
+        }, { _id: false })
+    ],
     time: {
         type: String,
         required: true

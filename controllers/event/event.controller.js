@@ -89,6 +89,22 @@ export default {
                 }
                 return true;
             }),
+            body('dailyTimes').optional()
+            .custom(async (dailyTimes, { req }) => {
+                for (let val of dailyTimes) {
+                    body('fromDate').not().isEmpty().withMessage((value, { req}) => {
+                        return req.__('fromDate.required', { value});
+                    }).isISO8601().withMessage((value, { req}) => {
+                        return req.__('invalid.date', { value});
+                    }),
+                    body('toDate').not().isEmpty().withMessage((value, { req}) => {
+                        return req.__('toDate.required', { value});
+                    }).isISO8601().withMessage((value, { req}) => {
+                        return req.__('invalid.date', { value});
+                    })
+                }
+                return true;
+            }),
             
         ];
         return validations;
