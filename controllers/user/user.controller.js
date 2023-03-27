@@ -800,7 +800,7 @@ export default {
                     totalFunds += element
                 });
                 index.totalFunds = totalFunds
-                index.business = await Business.find({deleted: false,status:'ACCEPTED',owner:id})
+                index.business = await Business.countDocuments({deleted: false,status:'ACCEPTED',owner:id})
                 res.send({success:true,data:index});
             })
             
