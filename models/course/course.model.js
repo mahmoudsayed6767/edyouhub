@@ -15,6 +15,11 @@ const courseSchema=new Schema({
         trim: true,
         required: true,
     },
+    status: {
+        type: String,
+        enum: ['CURRENT','COMING','DONE'],
+        default:'CURRENT',
+    },
     description_en: {
         type: String,
         required: true,
@@ -25,38 +30,51 @@ const courseSchema=new Schema({
         trim: true,
         required: true,
     },
+    sessionsNo: {
+        type: Number,
+        required: true
+    },
     imgs: [{
         type: String,
-        //required: true
+        required: true
     }],
-    place: {
+    specialization: {
         type: Number,
-        required: true,
-        ref:'place'
+        ref:'specialization',
+        required: true
     },
-    category: {
+    business: {
         type: Number,
-        ref:'category',
-        default:59
+        ref:'business',
+        required: true
     },
-    type: {
-        type: String,
-        enum: ['NEW-PRICE','VOUCHER'],
-        default:'NEW-PRICE',
-        required:true
-    },
-    oldPrice: {
+    branch: {
         type: Number,
-        required:true
+        ref:'branch',
+        required: true
     },
-    newPrice: {
+    instractor: {
         type: Number,
-        required:true
+        ref:'business',
+        required: true
     },
-    coins: {
-        type: Number,
-        required:true
-    },
+    days: [
+        new Schema({
+            day:{
+                type: String,
+                enum: ['SATURDAY','SUNDAY', 'MONDAY','WEDNESDAY','TUESDAY','FRIDAY']
+            },
+            fromDate: {
+                type: Date,
+                required: true
+            },
+            toDate: {
+                type: Date,
+                required: true
+            },
+        }, { _id: false })
+    ],
+    
     fromDate: {
         type: Date,
         required: true
@@ -69,29 +87,9 @@ const courseSchema=new Schema({
         type: Number,
         required: true
     },
-    end: {
-        type:Boolean,
-        default:false
-    },
-    withNotif: {
-        type:Boolean,
-        default:false
-    },
-    bookedUsers: {
-        type: [Number],
-        ref:'user',
-    },
-    bookedUsersCount:{
+    maxApplications: {
         type: Number,
-        default:0
-    },
-    gotUsers: {//users take the offer
-        type: [Number],
-        ref:'user',
-    },
-    gotUsersCount:{
-        type: Number,
-        default:0
+        required: true
     },
     deleted:{
         type:Boolean,

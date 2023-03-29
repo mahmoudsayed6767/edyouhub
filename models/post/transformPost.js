@@ -14,6 +14,13 @@ export async function transformPost(e,lang,myUser,userId) {
         id:e._id,
         createdAt: e.createdAt
     }
+    if(e.business){
+        index.business = {
+            name:lang=="ar"?e.business.name_ar:e.business.name_en,
+            img:e.business.img,
+            id: e.business._id,
+        }
+    }
     if(e.owner){
         let owner={
             fullname:e.owner.fullname,
@@ -113,6 +120,13 @@ export async function transformPostById(e,lang,myUser,userId) {
         isLike:userId?isInArray(myUser.likedPosts,e._id):false,
         id:e._id,
         createdAt: e.createdAt
+    }
+    if(e.business){
+        index.business = {
+            name:lang=="ar"?e.business.name_ar:e.business.name_en,
+            img:e.business.img,
+            id: e.business._id,
+        }
     }
     if(e.owner){
         let owner={
