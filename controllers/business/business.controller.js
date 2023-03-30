@@ -491,16 +491,16 @@ export default {
         try {
             //get lang
             let lang = i18n.getLocale(req)
-            let {educationType,owner,name,sector,subSector,educationSystem,status} = req.query;
+            let {educationType,owner,search,sector,subSector,educationSystem,status} = req.query;
 
             let query = {deleted: false }
             /*search by name */
-            if(name) {
+            if(search) {
                 query = {
                     $and: [
                         { $or: [
-                            {name_ar: { $regex: '.*' + name + '.*' , '$options' : 'i'  }}, 
-                            {name_en: { $regex: '.*' + name + '.*', '$options' : 'i'  }}, 
+                            {name_ar: { $regex: '.*' + search + '.*' , '$options' : 'i'  }}, 
+                            {name_en: { $regex: '.*' + search + '.*', '$options' : 'i'  }}, 
                           
                           ] 
                         },
@@ -540,16 +540,16 @@ export default {
             //get lang
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
-            let {educationType,owner,name,sector,subSector,educationSystem,status} = req.query;
+            let {educationType,owner,search,sector,subSector,educationSystem,status} = req.query;
 
             let query = {deleted: false }
             /*search by name */
-            if(name) {
+            if(search) {
                 query = {
                     $and: [
                         { $or: [
-                            {name_ar: { $regex: '.*' + name + '.*' , '$options' : 'i'  }}, 
-                            {name_en: { $regex: '.*' + name + '.*', '$options' : 'i'  }}, 
+                            {name_ar: { $regex: '.*' + search + '.*' , '$options' : 'i'  }}, 
+                            {name_en: { $regex: '.*' + search + '.*', '$options' : 'i'  }}, 
                           
                           ] 
                         },

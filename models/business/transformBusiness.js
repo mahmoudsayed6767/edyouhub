@@ -1,7 +1,6 @@
 export async function transformBusiness(e, lang) {
     let index = {
         businessName: lang == "ar" ? e.name_ar : e.name_en,
-        webSite: e.webSite,
         phones: e.phones,
         email: e.email,
         img: e.img,

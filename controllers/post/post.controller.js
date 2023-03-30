@@ -121,7 +121,7 @@ export default {
             }),
             body('event').optional().isNumeric().withMessage((value, { req}) => {
                 return req.__('event.numeric', { value});
-            }).custom(async (event, { req }) => {
+            }).custom(async (value, { req }) => {
                 if (!await Event.findOne({_id:value,deleted:false}))
                     throw new Error(req.__('event.invalid'));
                 else

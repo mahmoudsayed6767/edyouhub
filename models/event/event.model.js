@@ -17,7 +17,7 @@ const eventSchema=new Schema({
     },
     status: {
         type: String,
-        enum:['CURRENT','COMING','PASS'],
+        enum:['COMING','CURRENT','PASS'],
         default:'COMING'
     },
     
@@ -53,9 +53,13 @@ const eventSchema=new Schema({
         type: Date,
         required: true
     },
-    toDate: {
-        type: Date,
-        required: true
+    fromDateMillSec: {
+        type: Number,
+        //required: true
+    },
+    toDateMillSec: {
+        type: Number,
+        //required: true
     },
     dailyTimes: [
         new Schema({

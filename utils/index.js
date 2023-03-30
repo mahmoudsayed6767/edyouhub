@@ -10,7 +10,7 @@ cloudinary.config(config.cloudinary);
 // Convert Local Upload To Cloudinary Url  toImgUrl
 export async function toImgUrl (multerObject) {
   try {
-    let result = await cloudinary.v2.uploader.upload(multerObject.path);
+    let result = await cloudinary.v2.uploader.upload(multerObject.path,{ resource_type: "auto" });
     return result.secure_url;
     // multerObject.path = 'https'+'://'+'api.edHub.com'+'/'+multerObject.path;
     // console.log("path:  "+multerObject.path);

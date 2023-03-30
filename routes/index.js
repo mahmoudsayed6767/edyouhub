@@ -47,8 +47,10 @@ import connectionRoute from "./connection/connection.route"
 import postRoute from "./post/post.route"
 import galleryRoute from "./gallery/gallery.route"
 import eventRoute from "./event/event.route"
+import storyRoute from "./story/story.route"
 
 const router = express.Router();
+router.use('/stories', storyRoute);
 router.use('/events', eventRoute);
 router.use('/posts', postRoute);
 router.use('/gallery', galleryRoute);

@@ -13,7 +13,7 @@ import { sendEmail } from "../../services/sendGrid";
 import {sendSms} from "../../services/message-service"
 import { sendNotifiAndPushNotifi } from "../../services/notification-service";
 import i18n from "i18n";
-import {transformUser,transformUserById } from '../../models/user/transformUser';
+import {transformUser,transformUserById,transformUserShort } from '../../models/user/transformUser';
 import Business from "../../models/business/business.model";
 import Country from "../../models/country/country.model";
 import City from "../../models/city/city.model";
@@ -895,7 +895,7 @@ export default {
             .then(async(data)=>{
                 let newdata = []
                 await Promise.all(data.map(async(e)=>{
-                    let index = await transformUser(e,lang)
+                    let index = await transformUserShort(e,lang)
                     newdata.push(index)
                 }))
                 res.send({success: true,data:newdata});

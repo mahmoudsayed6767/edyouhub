@@ -290,5 +290,6 @@
 	"courseName.required": "course name is required",
 	"jobTitle.required": "job title is required",
 	"reasons.required": "reasons.required",
-	"buseniss.invalid": "buseniss.invalid"
+	"buseniss.invalid": "buseniss.invalid",
+	"video.required": "video.required"
 }

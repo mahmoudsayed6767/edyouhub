@@ -117,6 +117,9 @@ export default {
             validatedBody.educationInstitution = business.educationInstitution
             validatedLocation(validatedBody.location);
             validatedBody.location = { type: 'Point', coordinates: [+req.body.location[0], +req.body.location[1]] };
+            validatedBody.fromDateMillSec = Date.parse(validatedBody.fromDate)
+            validatedBody.toDateMillSec = Date.parse(validatedBody.roDate)
+
             let event = await Event.create({ ...validatedBody });
             await Post.create({
                 event: event.id,
@@ -167,13 +170,13 @@ export default {
             let { eventId } = req.params;
             await checkExist(eventId,Event, { deleted: false })
             const validatedBody = checkValidations(req);
-            let business = await checkExistThenGet(validatedBody.business,Business,{ deleted: false})
-            validatedBody.educationInstitution = business.educationInstitution
             validatedLocation(validatedBody.location);
             validatedBody.location = { type: 'Point', coordinates: [+req.body.location[0], +req.body.location[1]] };            await Event.findByIdAndUpdate(eventId, { ...validatedBody });
-            let thePost  = await Post.findOne({event:eventId})
-            thePost.description = validatedBody.description
-            await thePost.save();
+            validatedBody.fromDateMillSec = Date.parse(validatedBody.fromDate)
+            validatedBody.toDateMillSec = Date.parse(validatedBody.roDate)
+            await Event.findByIdAndUpdate(eventId, {
+                ...validatedBody,
+            }, { new: true });
             let reports = {
                 "action":"Update event",
                 "type":"EVENT",

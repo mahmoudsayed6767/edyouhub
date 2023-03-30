@@ -14,7 +14,15 @@ export async function transformUser(e,lang,myUser,userId) {
         affiliateCode:e.affiliateCode,
         cashBack:e.cashBack,
         createdAt: e.createdAt,
-        updatedAt: e.updatedAt,
+    }
+    
+    return index;
+}
+export async function transformUserShort(e,lang,myUser,userId) {
+    let index = {
+        fullname:e.fullname,
+        id:e._id,
+        type:e.type,
     }
     
     return index;
@@ -41,7 +49,6 @@ export async function transformUserById(e,lang,myUser,userId) {
         universityInfo:e.universityInfo,
         job:e.job,
         createdAt: e.createdAt,
-        updatedAt: e.updatedAt,
         
     }
     if(e.type =="affiliate"){
