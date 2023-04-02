@@ -16,6 +16,7 @@ import { sendNotifiAndPushNotifi } from "../../services/notification-service";
 import Notif from "../../models/notif/notif.model";
 import Business from "../../models/business/business.model";
 import Faculty from "../../models/faculty/faculty.model";
+import ApiError from "../../helpers/ApiError";
 
 const populateQuery = [
     { path: 'country', model: 'country' },

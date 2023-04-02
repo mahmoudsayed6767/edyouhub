@@ -60,7 +60,7 @@ export async function transformAdmissionRequestById(e,lang) {
         firstName: e.firstName,
         secondName: e.secondName,
         familyName: e.familyName,
-        birthday: birthday,
+        birthday: e.birthday,
         age: e.age,
         admission: e.admission,
         fatherInfo:e.fatherInfo,

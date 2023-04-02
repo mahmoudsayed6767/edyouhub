@@ -2,7 +2,7 @@ import VacancyRequest from "../../models/vacancyRequest/vacancyRequest.model";
 import Report from "../../models/reports/report.model";
 import { body } from "express-validator";
 import { checkValidations,handleImg} from "../shared/shared.controller";
-import { checkExist,checkExistThenGet,isInArray } from "../../helpers/CheckMethods";
+import {checkExistThenGet,isInArray } from "../../helpers/CheckMethods";
 import ApiResponse from "../../helpers/ApiResponse";
 import i18n from "i18n";
 import { transformVacancyRequest,transformVacancyRequestById } from "../../models/vacancyRequest/transformVacancyRequest";
@@ -11,6 +11,8 @@ import BusinessManagement from "../../models/business/businessManagement.model"
 import { sendNotifiAndPushNotifi } from "../../services/notification-service";
 import Notif from "../../models/notif/notif.model";
 import Business from "../../models/business/business.model";
+import ApiError from "../../helpers/ApiError";
+
 const populateQuery = [
     { path: 'owner', model: 'user' },
     { path: 'business', model: 'business' },
