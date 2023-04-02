@@ -14,6 +14,8 @@ import Business from "../../models/business/business.model";
 const populateQuery = [
     { path: 'owner', model: 'user' },
     { path: 'business', model: 'business' },
+    { path: 'vacancy', model: 'vacancy' },
+
 ];
 export default {
     //validate body
@@ -140,7 +142,7 @@ export default {
         try {
             //get lang
             let lang = i18n.getLocale(req)
-            let {owner,status,business,vacancy} = req.query;
+            let {owner,status,business,vacancy,type} = req.query;
             let query = {deleted: false}
             
             if(owner) {
@@ -155,6 +157,7 @@ export default {
             if(status) query.status = status
             if(business) query.business = business
             if(vacancy) query.vacancy = vacancy
+            if(type) query.type = type
             await VacancyRequest.find(query).populate(populateQuery)
                 .sort({ _id: -1 })
                 .then( async(data) => {
@@ -178,7 +181,7 @@ export default {
              //get lang
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
-            let {owner,status,business,vacancy} = req.query;
+            let {owner,status,business,vacancy,type} = req.query;
             let query = {deleted: false }
             if(owner) {
                 if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
@@ -192,6 +195,7 @@ export default {
             if(status) query.status = status
             if(business) query.business = business
             if(vacancy) query.vacancy = vacancy
+            if(type) query.type = type
 
             await VacancyRequest.find(query).populate(populateQuery)
                 .sort({ _id: -1 })

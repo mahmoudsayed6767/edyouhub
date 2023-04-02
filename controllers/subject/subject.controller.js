@@ -1,4 +1,4 @@
-import Specialization from "../../models/specialization/specialization.model";
+import Subject from "../../models/subject/subject.model";
 import { body } from "express-validator";
 import { checkValidations} from "../shared/shared.controller";
 import ApiError from "../../helpers/ApiError";
@@ -7,6 +7,7 @@ import { checkExist } from "../../helpers/CheckMethods";
 import ApiResponse from "../../helpers/ApiResponse";
 import { checkExistThenGet,isInArray } from "../../helpers/CheckMethods";
 import i18n from "i18n";
+import EducationSystem from "../../models/education system/education system.model";
 
 export default {
     validateBody(isUpdate = false) {
@@ -17,10 +18,13 @@ export default {
             body('name_en').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('name_en.required', { value});
             }),
-            body('type').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('type.required', { value});
-            }).isIn(['FOR-USER','FOR-SERVICE-PROVIDER','FOR-COURSE']).withMessage((value, { req}) => {
-                return req.__('type.invalid', { value});
+            body('educationSystem').optional().isNumeric().withMessage((value, { req}) => {
+                return req.__('educationSystem.numeric', { value});
+            }).custom(async (value, { req }) => {
+                if (!await EducationSystem.findOne({_id:value,deleted:false}))
+                    throw new Error(req.__('educationSystem.invalid'));
+                else
+                    return true;
             }),
         ];
         return validations;
@@ -33,26 +37,26 @@ export default {
                 return next(new ApiError(403, i18n.__('admin.auth')));
 
             const validatedBody = checkValidations(req);
-            let specialization = await Specialization.create({ ...validatedBody});
+            let subject = await Subject.create({ ...validatedBody});
             let reports = {
-                "action":"Create New specialization",
-                "type":"SPECIALIZATION",
-                "deepId":specialization.id,
+                "action":"Create New subject",
+                "type":"SUBJECT",
+                "deepId":subject.id,
                 "user": req.user._id
             };
             await Report.create({...reports });
-            await Specialization.findById(specialization.id).then((e) => {
-                let specialization = {
+            await Subject.findById(subject.id).then((e) => {
+                let subject = {
                     name:lang=="ar"?e.name_ar:e.name_en,
                     name_ar:e.name_ar,
                     name_en:e.name_en,
-                    type:e.type,
+                    educationSystem:e.educationSystem,
                     id: e._id,
                     createdAt: e.createdAt,
                 }
                 return res.status(201).send({
                     success:true,
-                    data:specialization
+                    data:subject
                 });
             })
         } catch (error) {
@@ -62,22 +66,22 @@ export default {
     async getById(req, res, next) {
         try {
             let lang = i18n.getLocale(req)
-            let { specializationId } = req.params;
+            let { subjectId } = req.params;
             
-            await checkExist(specializationId, Specialization, { deleted: false });
+            await checkExist(subjectId, Subject, { deleted: false });
 
-            await Specialization.findById(specializationId).then( e => {
-                let specialization = {
+            await Subject.findById(subjectId).then( e => {
+                let subject = {
                     nmae:lang=="ar"?e.name_ar:e.name_en,
                     name_ar:e.name_ar,
                     name_en:e.name_en,
-                    type:e.type,
+                    educationSystem:e.educationSystem,
                     id: e._id,
                     createdAt: e.createdAt,
                 }
                 return res.send({
                     success:true,
-                    data:specialization
+                    data:subject
                 });
             })
         } catch (error) {
@@ -88,31 +92,31 @@ export default {
         try {
             let lang = i18n.getLocale(req)
 
-            let { specializationId } = req.params;
-            await checkExist(specializationId, Specialization, { deleted: false });
+            let { subjectId } = req.params;
+            await checkExist(subjectId, Subject, { deleted: false });
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
             const validatedBody = checkValidations(req);
-            await Specialization.findByIdAndUpdate(specializationId, { ...validatedBody });
+            await Subject.findByIdAndUpdate(subjectId, { ...validatedBody });
             let reports = {
-                "action":"Update specialization",
-                "type":"SPECIALIZATION",
-                "deepId":specializationId,
+                "action":"Update subject",
+                "type":"SUBJECT",
+                "deepId":subjectId,
                 "user": req.user._id
             };
             await Report.create({...reports });
-            await Specialization.findById(specializationId).then((e) => {
-                let specialization = {
+            await Subject.findById(subjectId).then((e) => {
+                let subject = {
                     nmae:lang=="ar"?e.name_ar:e.name_en,
                     name_ar:e.name_ar,
                     name_en:e.name_en,
-                    type:e.type,
+                    educationSystem:e.educationSystem,
                     id: e._id,
                     createdAt: e.createdAt,
                 }
                 return res.status(200).send({
                     success:true,
-                    data:specialization
+                    data:subject
                 });
             })
         } catch (error) {
@@ -123,7 +127,7 @@ export default {
     async getAll(req, res, next) {
         try {
             let lang = i18n.getLocale(req)
-            let {search,type} = req.query;
+            let {search,educationSystem} = req.query;
             let query = { deleted: false };
             if(search) {
                 query = {
@@ -138,8 +142,8 @@ export default {
                     ]
                 };
             }
-            if(type) query.type = type;
-            await Specialization.find(query)
+            if(educationSystem) query.educationSystem = educationSystem
+            await Subject.find(query)
             .then(async (data) => {
                 var newdata = [];
                 await Promise.all(data.map(async(e) =>{
@@ -147,7 +151,7 @@ export default {
                         nmae:lang=="ar"?e.name_ar:e.name_en,
                         name_ar:e.name_ar,
                         name_en:e.name_en,
-                        type:e.type,
+                        educationSystem:e.educationSystem,
                         id: e._id,
                         createdAt: e.createdAt,
                     }
@@ -164,7 +168,7 @@ export default {
         try {    
             let lang = i18n.getLocale(req)       
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
-            let {search,type} = req.query;
+            let {search,educationSystem} = req.query;
             let query = { deleted: false };
             if(search) {
                 query = {
@@ -179,9 +183,8 @@ export default {
                     ]
                 };
             }
-            if(type) query.type = type;
-
-            await Specialization.find(query)
+            if(educationSystem) query.educationSystem = educationSystem
+            await Subject.find(query)
                 .limit(limit)
                 .skip((page - 1) * limit).sort({ _id: -1 })
                 .then(async (data) => {
@@ -191,13 +194,13 @@ export default {
                             nmae:lang=="ar"?e.name_ar:e.name_en,
                             name_ar:e.name_ar,
                             name_en:e.name_en,
-                            type:e.type,
+                            educationSystem:e.educationSystem,
                             id: e._id,
                             createdAt: e.createdAt,
                         }
                         newdata.push(index);
                     }))
-                    const count = await Specialization.countDocuments({deleted: false });
+                    const count = await Subject.countDocuments({deleted: false });
                     const pageCount = Math.ceil(count / limit);
                     res.send(new ApiResponse(newdata, page, pageCount, limit, count, req));
                 })
@@ -208,16 +211,16 @@ export default {
     async delete(req, res, next) {
         
         try {
-            let { specializationId } = req.params;
+            let { subjectId } = req.params;
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
-            let specialization = await checkExistThenGet(specializationId, Specialization);
-            specialization.deleted = true;
-            await specialization.save();
+            let subject = await checkExistThenGet(subjectId, Subject);
+            subject.deleted = true;
+            await subject.save();
             let reports = {
-                "action":"Delete specialization",
-                "type":"SPECIALIZATION",
-                "deepId":specializationId,
+                "action":"Delete subject",
+                "type":"SUBJECT",
+                "deepId":subjectId,
                 "user": req.user._id
             };
             await Report.create({...reports });

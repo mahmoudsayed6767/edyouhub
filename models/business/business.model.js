@@ -115,6 +115,24 @@ const businessSchema = new Schema({
         type: [Number],
         ref: 'specialization',
     },
+    //for tutors
+    subjects: {
+        type: [Number],
+        ref: 'subject',
+    },
+    sessionsPrices: [
+        new Schema({
+            studentGroup: {
+                type: String,
+                required: true,
+                enum:['FOR-ONE','FOR-TWO','FOR-THREE','FOR-FOUR']
+            },
+            price:{
+                type: Number,
+                required: true,
+            },
+        }, { _id: false })
+    ],
     deleted:{
         type:Boolean,
         default:false

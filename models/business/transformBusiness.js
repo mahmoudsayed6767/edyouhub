@@ -51,13 +51,6 @@ export async function transformBusinessById(e, lang) {
             id: e.owner._id
         }
     }
-    if (e.educationSystem) {
-        index.educationSystem = {
-            name: lang == "ar" ? e.educationSystem.name_ar : e.educationSystem.name_en,
-            img: e.educationSystem.img,
-            id: e.educationSystem._id,
-        }
-    }
     if (e.sector) {
         index.sector = {
             name: lang == "ar" ? e.sector.name_ar : e.sector.name_en,
@@ -70,6 +63,14 @@ export async function transformBusinessById(e, lang) {
             name: lang == "ar" ? e.subSector.name_ar : e.subSector.name_en,
             img: e.subSector.img,
             id: e.subSector._id,
+        }
+    }
+    /*educationSystem*/
+    if (e.educationSystem) {
+        index.educationSystem = {
+            name: lang == "ar" ? e.educationSystem.name_ar : e.educationSystem.name_en,
+            img: e.educationSystem.img,
+            id: e.educationSystem._id,
         }
     }
     /* branches*/
@@ -150,6 +151,17 @@ export async function transformBusinessById(e, lang) {
             })
         }
         index.specializations = specializations;
+    }
+    if (e.subjects) {
+        /*subjects*/
+        let subjects = []
+        for (let val of e.subjects) {
+            subjects.push({
+                name: lang == "ar" ? val.name_ar : val.name_en,
+                id: val._id,
+            })
+        }
+        index.subjects = subjects;
     }
     return index
 }

@@ -1,6 +1,6 @@
 import mongoose,{ Schema} from "mongoose";
 import autoIncrement from 'mongoose-auto-increment';
-const specializationSchema = new Schema({
+const subjectSchema = new Schema({
     _id: {
         type: Number,
         required: true
@@ -15,10 +15,10 @@ const specializationSchema = new Schema({
         trim: true,
         required: true,
     },
-    type: {
-        type: String,
-        enum:['FOR-USER','FOR-SERVICE-PROVIDER','FOR-COURSE'],
-        default: 'FOR-USER'
+    educationSystem: {
+        type: Number,
+        ref: 'educationSystem',
+        //required: true
     },
     deleted:{
         type:Boolean,
@@ -26,7 +26,7 @@ const specializationSchema = new Schema({
     }
 }, { timestamps: true });
 
-specializationSchema.set('toJSON', {
+subjectSchema.set('toJSON', {
     transform: function (doc, ret, options) {
         ret.id = ret._id;
         delete ret._id;
@@ -34,6 +34,6 @@ specializationSchema.set('toJSON', {
     }
 });
 autoIncrement.initialize(mongoose.connection);
-specializationSchema.plugin(autoIncrement.plugin, { model: 'specialization', startAt: 1 });
+subjectSchema.plugin(autoIncrement.plugin, { model: 'subject', startAt: 1 });
 
-export default mongoose.model('specialization', specializationSchema);
+export default mongoose.model('subject', subjectSchema);

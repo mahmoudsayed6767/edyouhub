@@ -8,6 +8,7 @@ import User from "../../models/user/user.model";
 import Offer from "../../models/offer/offer.model";
 import Report from "../../models/reports/report.model";
 import i18n from "i18n";
+import { transformCategory } from "../../models/category/transformCategory";
 
 const populateQuery = [ 
     { path: 'child', model: 'category' },
@@ -36,31 +37,8 @@ export default {
                 .then(async (data) => {
                     var newdata = [];
                     await Promise.all(data.map(async(e) =>{
-                        let childs = []
-                        await Promise.all(e.child.map((e)=>{
-                            childs.push({
-                                name:lang=="ar"?e.name_ar:e.name_en,
-                                name_en:e.name_en,
-                                name_ar:e.name_ar,
-                                img:e.img,
-                                type:e.type,
-                                parent:e.parent,
-                                hasChild:e.hasChild,
-                                id: e._id,
-                                createdAt: e.createdAt,
-                            });
-                        }))
-                        newdata.push({
-                            name:lang=="ar"?e.name_ar:e.name_en,
-                            name_en:e.name_en,
-                            name_ar:e.name_ar,
-                            img:e.img,
-                            type:e.type,
-                            hasChild:e.hasChild,
-                            child:childs,
-                            id: e._id,
-                            createdAt: e.createdAt,
-                        });
+                        let index = await transformCategory(e,lang)
+                        newdata.push(index);
                     }))
                     const count = await Category.countDocuments(query);
                     const pageCount = Math.ceil(count / limit);
@@ -89,23 +67,15 @@ export default {
                 sortd = { priority: 1 }
             }
             await subCategory.find(query)
+                .populate(populateQuery)
                 .sort(sortd)
                 .limit(limit)
                 .skip((page - 1) * limit)
                 .then(async (data) => {
                     var newdata = [];
                     await Promise.all(data.map(async(e) =>{
-                        newdata.push({
-                            name:lang=="ar"?e.name_ar:e.name_en,
-                            name_en:e.name_en,
-                            name_ar:e.name_ar,
-                            img:e.img,
-                            type:e.type,
-                            hasChild:e.hasChild,
-                            parent:e.parent,
-                            id: e._id,
-                            createdAt: e.createdAt,
-                        });
+                        let index = await transformCategory(e,lang)
+                        newdata.push(index);
                     }))
                     const count = await subCategory.countDocuments(query);
                     const pageCount = Math.ceil(count / limit);
@@ -120,7 +90,6 @@ export default {
     //get main categories without pagenation
     async findCategory(req, res, next) {
         try {         
-            
              //get lang
             let lang = i18n.getLocale(req)   
             let {orderByPriority,main,type} = req.query
@@ -135,31 +104,8 @@ export default {
                 .then(async (data) => {
                     var newdata = [];
                     await Promise.all(data.map(async(e) =>{
-                        let childs = []
-                        await Promise.all(e.child.map((e)=>{
-                            childs.push({
-                                name:lang=="ar"?e.name_ar:e.name_en,
-                                name_en:e.name_en,
-                                name_ar:e.name_ar,
-                                img:e.img,
-                                type:e.type,
-                                parent:e.parent,
-                                hasChild:e.hasChild,
-                                id: e._id,
-                                createdAt: e.createdAt,
-                            });
-                        }))
-                        newdata.push({
-                            name:lang=="ar"?e.name_ar:e.name_en,
-                            name_en:e.name_en,
-                            name_ar:e.name_ar,
-                            img:e.img,
-                            type:e.type,
-                            hasChild:e.hasChild,
-                            child:childs,
-                            id: e._id,
-                            createdAt: e.createdAt,
-                        });
+                        let index = await transformCategory(e,lang)
+                        newdata.push(index);
                     }))
                     res.send({
                         success:true,
@@ -189,22 +135,13 @@ export default {
             if(orderByPriority){
                 sortd = { priority: 1 }
             }
-            await subCategory.find(query)
+            await subCategory.find(query).populate(populateQuery)
                 .sort(sortd)
                 .then(async (data) => {
                     var newdata = [];
                     await Promise.all(data.map(async(e) =>{
-                        newdata.push({
-                            name:lang=="ar"?e.name_ar:e.name_en,
-                            name_en:e.name_en,
-                            name_ar:e.name_ar,
-                            img:e.img,
-                            type:e.type,
-                            hasChild:e.hasChild,
-                            parent:e.parent,
-                            id: e._id,
-                            createdAt: e.createdAt,
-                        });
+                        let index = await transformCategory(e,lang)
+                        newdata.push(index);
                     }))
                     res.send({
                         success:true,
@@ -257,7 +194,7 @@ export default {
                 return req.__('type.invalid', { value});
             }),
             body('educationType').optional()
-            .isIn(['SCHOOL','UNIVERSITY','HIGH-ACADEMY','NURSERY','HIGH-CENTER','BASIC-CENTER','INSTITUTE','BASIC-ACADEMY','HIGH','BASIC']).withMessage((value, { req}) => {
+            .isIn(['SCHOOL','UNIVERSITY','HIGH-ACADEMY','NURSERY','HIGH-CENTER','BASIC-CENTER','INSTITUTE','BASIC-ACADEMY','TUTOR','SERVICE','HIGH','BASIC']).withMessage((value, { req}) => {
                 return req.__('educationType.invalid', { value});
             }),
             
@@ -358,19 +295,8 @@ export default {
             let { categoryId } = req.params;
             await checkExist(categoryId, Category, { deleted: false });
             await Category.findById(categoryId).populate(populateQuery)
-            .then( e => {
-                let category = {
-                    name:lang=="ar"?e.name_ar:e.name_en,
-                    name_en:e.name_en,
-                    name_ar:e.name_ar,
-                    img:e.img,
-                    type:e.type,
-                    priority:e.priority,
-                    hasChild:e.hasChild,
-                    parent:e.parent,
-                    id: e._id,
-                    createdAt: e.createdAt,
-                }
+            .then(async(e) => {
+                let category = await transformCategory(e,lang)
                 return res.send({
                     success:true,
                     data:category,

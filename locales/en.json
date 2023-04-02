@@ -291,5 +291,6 @@
 	"jobTitle.required": "job title is required",
 	"reasons.required": "reasons.required",
 	"buseniss.invalid": "buseniss.invalid",
-	"video.required": "video.required"
+	"video.required": "video.required",
+	"name_en.duplicated": "name_en.duplicated"
 }

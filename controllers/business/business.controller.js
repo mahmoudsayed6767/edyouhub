@@ -22,6 +22,8 @@ import BusinessManagement from "../../models/business/businessManagement.model"
 import { sendNotifiAndPushNotifi } from "../../services/notification-service";
 import Notif from "../../models/notif/notif.model";
 import Business from "../../models/business/business.model";
+import Subject from "../../models/subject/subject.model";
+
 import { ValidationError } from "mongoose";
 
 //validate location
@@ -37,6 +39,7 @@ const populateQuery = [
     { path: 'sector', model: 'category' },
     { path: 'subSector', model: 'category' },
     { path: 'specializations', model: 'specialization' },
+    { path: 'subjects', model: 'subject' },
     { path: 'grades', model: 'grade' },
     {
         path: 'branches', model: 'branch',
@@ -73,13 +76,14 @@ export default {
             body('bio_ar').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('bio_ar.required', { value});
             }),
-            body('educationSystem').optional().isNumeric().withMessage((value, { req}) => {
-                return req.__('educationSystem.numeric', { value});
-            }).custom(async (value, { req }) => {
+            body('educationSystem').optional()
+            .custom(async (value, { req }) => {
                 if (!await EducationSystem.findOne({_id:value,deleted:false}))
                     throw new Error(req.__('educationSystem.invalid'));
                 else
                     return true;
+            
+                return true;
             }),
             body('webSite').optional(),
             body('facebook').optional(),
@@ -137,9 +141,9 @@ export default {
             body('studyType').optional().isIn(['LOCAL','ABROAD']).withMessage((value, { req}) => {
                 return req.__('studyType.invalid', { value});
             }),
+            //for academy
             body('specializations').optional()
             .custom(async (specializations, { req }) => {
-                
                 for (let value of specializations) {
                     if (!await Specialization.findOne({_id:value,deleted:false}))
                         throw new Error(req.__('specialization.invalid'));
@@ -166,6 +170,7 @@ export default {
                 }
                 return true;
             }),
+            //for univeristy
             body('theFaculties').optional()
             .custom(async (faculties, { req }) => {
                 
@@ -251,7 +256,31 @@ export default {
                 }
                 return true;
             }),
-            body('specializations').optional(),
+            //for tutors
+            body('sessionsPrices').optional()
+            .custom(async (sessions, { req }) => {
+                for (let val of sessions) {
+                    body('studentGroup').not().isEmpty().withMessage((value) => {
+                        return req.__('studentGroup.required', { value});
+                    }).isIn(['FOR-ONE','FOR-TWO','FOR-THREE','FOR-FOUR']).withMessage((value, { req}) => {
+                        return req.__('studentGroup.invalid', { value});
+                    }),
+                    body('price').not().isEmpty().withMessage((value) => {
+                        return req.__('price.required', { value});
+                    })
+                }
+                return true;
+            }),
+            body('subjects').optional()
+            .custom(async (subjects, { req }) => {
+                for (let value of subjects) {
+                    if (!await Subject.findOne({_id:value,deleted:false}))
+                        throw new Error(req.__('subject.invalid'));
+                    else
+                        return true;
+                }
+                return true;
+            }),
             body('gallery').optional(),
             body('img').optional(),
         ];

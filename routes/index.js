@@ -48,8 +48,12 @@ import postRoute from "./post/post.route"
 import galleryRoute from "./gallery/gallery.route"
 import eventRoute from "./event/event.route"
 import storyRoute from "./story/story.route"
+import serviceRoute from "./service/service.route"
+import subjectRoute from "./subject/subject.route"
 
 const router = express.Router();
+router.use('/services', serviceRoute);
+router.use('/subjects', subjectRoute);
 router.use('/stories', storyRoute);
 router.use('/events', eventRoute);
 router.use('/posts', postRoute);
