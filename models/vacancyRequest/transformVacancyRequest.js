@@ -42,6 +42,8 @@ export async function transformVacancyRequestById(e,lang) {
         age:e.age,
         phone: e.phone,
         attachment:e.attachment,
+        interviewDate:e.interviewDate,
+        rejectReason:e.rejectReason,
         id: e._id,
         createdAt: e.createdAt,                       
     }

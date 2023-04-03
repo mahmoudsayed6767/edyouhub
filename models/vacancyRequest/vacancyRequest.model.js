@@ -50,6 +50,12 @@ const vacancyRequestSchema = new Schema({
         type: String,
         required: true,
     },
+    interviewDate:{
+        type:Date,
+    },
+    rejectReason: {
+        type: String,
+    },
     
     deleted:{
         type:Boolean,

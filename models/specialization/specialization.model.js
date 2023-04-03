@@ -17,8 +17,8 @@ const specializationSchema = new Schema({
     },
     type: {
         type: String,
-        enum:['FOR-USER','FOR-SERVICE-PROVIDER','FOR-COURSE'],
-        default: 'FOR-USER'
+        enum:['FOR-EDUCATION','FOR-SERVICE-PROVIDER','FOR-COURSE'],
+        default: 'FOR-EDUCATION'
     },
     deleted:{
         type:Boolean,

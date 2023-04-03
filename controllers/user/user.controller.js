@@ -811,8 +811,6 @@ export default {
     async findAll(req, res, next) {
         try {
             let lang = i18n.getLocale(req)
-            if(!isInArray(["ADMIN","SUB-ADMIN","PLACE"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth'))); 
             let page = +req.query.page || 1, limit = +req.query.limit || 20,
             {cashBack,phoneVerify,search,accountType,type, active,place} = req.query;
             
@@ -861,9 +859,7 @@ export default {
     },
     async getAll(req, res, next) {
         try {
-            let lang = i18n.getLocale(req)
-            if(!isInArray(["ADMIN","SUB-ADMIN","PLACE"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth'))); 
+            let lang = i18n.getLocale(req) 
             let {cashBack,phoneVerify,search,accountType,type, active,place} = req.query;
             
             let query = {deleted: false };

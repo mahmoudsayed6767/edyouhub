@@ -66,6 +66,8 @@ export async function transformAdmissionRequestById(e,lang) {
         fatherInfo:e.fatherInfo,
         motherInfo:e.motherInfo,
         haveSibling:e.haveSibling,
+        interviewDate:e.interviewDate,
+        rejectReason:e.rejectReason,
         id: e._id,
         createdAt: e.createdAt,                       
     }

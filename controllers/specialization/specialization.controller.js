@@ -19,7 +19,7 @@ export default {
             }),
             body('type').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('type.required', { value});
-            }).isIn(['FOR-USER','FOR-SERVICE-PROVIDER','FOR-COURSE']).withMessage((value, { req}) => {
+            }).isIn(['FOR-EDUCATION','FOR-SERVICE-PROVIDER','FOR-COURSE']).withMessage((value, { req}) => {
                 return req.__('type.invalid', { value});
             }),
         ];

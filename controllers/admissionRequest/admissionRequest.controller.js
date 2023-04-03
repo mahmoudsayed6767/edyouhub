@@ -373,10 +373,11 @@ export default {
                 if(businessManagement){
                     supervisors.push(...businessManagement.admission.supervisors)
                 }
-                if(!isInArray(supervisors,req.user.type))
+                if(!isInArray(supervisors,req.user._id))
                     return next(new ApiError(403,  i18n.__('notAllow')));
             }
             admissionRequest.status = "ACCEPTED";
+            admissionRequest.interviewDate = req.body.interviewDate
             await admissionRequest.save();
             sendNotifiAndPushNotifi({
                 targetUser: admissionRequest.owner, 
@@ -420,10 +421,11 @@ export default {
                 if(businessManagement){
                     supervisors.push(...businessManagement.admission.supervisors)
                 }
-                if(!isInArray(supervisors,req.user.type))
+                if(!isInArray(supervisors,req.user._id))
                     return next(new ApiError(403,  i18n.__('notAllow')));
             }
             admissionRequest.status = "REJECTED";
+            admissionRequest.rejectReason = req.body.rejectReason
             await admissionRequest.save();
             sendNotifiAndPushNotifi({
                 targetUser: admissionRequest.owner, 

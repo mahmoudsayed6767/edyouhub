@@ -256,9 +256,10 @@ export default {
                 if(businessManagement){
                     supervisors.push(...businessManagement.vacancy.supervisors)
                 }
-                if(!isInArray(supervisors,req.user.type))
+                if(!isInArray(supervisors,req.user._id))
                     return next(new ApiError(403,  i18n.__('notAllow')));
             }
+            vacancyRequest.interviewDate = req.body.interviewDate
             vacancyRequest.status = "ACCEPTED";
             await vacancyRequest.save();
             sendNotifiAndPushNotifi({
@@ -303,10 +304,12 @@ export default {
                 if(businessManagement){
                     supervisors.push(...businessManagement.vacancy.supervisors)
                 }
-                if(!isInArray(supervisors,req.user.type))
+                if(!isInArray(supervisors,req.user._id))
                     return next(new ApiError(403,  i18n.__('notAllow')));
             }
             vacancyRequest.status = "REJECTED";
+            vacancyRequest.rejectReason = req.body.rejectReason
+
             await vacancyRequest.save();
             sendNotifiAndPushNotifi({
                 targetUser: vacancyRequest.owner, 

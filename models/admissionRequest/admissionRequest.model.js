@@ -157,6 +157,12 @@ const admissionRequestSchema = new Schema({
         type:Boolean,
         default:false
     },
+    interviewDate:{
+        type:Date,
+    },
+    rejectReason: {
+        type: String,
+    },
     deleted:{
         type:Boolean,
         default:false
