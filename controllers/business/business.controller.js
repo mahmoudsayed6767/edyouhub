@@ -13,7 +13,6 @@ import Category from "../../models/category/category.model"
 import EducationSystem from "../../models/education system/education system.model";
 import EducationInstitution from "../../models/education institution/education institution.model";
 import { transformBusiness,transformBusinessById } from "../../models/business/transformBusiness";
-import User from "../../models/user/user.model";
 import Grade from "../../models/grade/grade.model"
 import Branch from "../../models/branch/branch.model";
 import Specialization from "../../models/specialization/specialization.model"
@@ -23,7 +22,8 @@ import { sendNotifiAndPushNotifi } from "../../services/notification-service";
 import Notif from "../../models/notif/notif.model";
 import Business from "../../models/business/business.model";
 import Subject from "../../models/subject/subject.model";
-
+import {transformUser } from '../../models/user/transformUser';
+import User from "../../models/user/user.model";
 import { ValidationError } from "mongoose";
 
 //validate location
@@ -744,6 +744,16 @@ export default {
     },
     validateBusinessManagementBody(isUpdate = false) {
         let validations = [
+            body('events.supervisors').optional()
+            .custom(async (value, { req }) => {
+                for (const user of value) {
+                    if (!await User.findOne({_id:user,deleted:false}))
+                        throw new Error(req.__('user.invalid'));
+                    else
+                        return true;
+                }
+                
+            }),
             body('vacancy.acceptanceLetter').optional(),
             body('vacancy.rejectionLetter').optional(),
             body('vacancy.supervisors').optional()
@@ -812,6 +822,151 @@ export default {
             });
         } catch (error) {
             next(error);
+        }
+    },
+    async getServiceSupervisors(req, res, next) {
+        try {
+            let {businessId} = req.params
+            //get lang
+            let lang = i18n.getLocale(req)
+            let page = +req.query.page || 1, limit = +req.query.limit || 20;
+            let {service} = req.query
+            let business = await checkExistThenGet(businessId,Business,{deleted:false})
+            if(!isInArray(["ADMIN","SUB-ADMIN","USER"],req.user.type)){
+                if(business.owner != req.user._id)
+                    return next(new ApiError(403,  i18n.__('notAllow')));
+            }
+            let businessManagement = await BusinessManagement.findOne({business:businessId,deleted:false})
+            let usersId = []
+            if(service == "ADMISSION") {
+                if(businessManagement.vacancy.supervisors){
+                    usersId = businessManagement.admission.supervisors
+                }
+            } else if(service == "VACANCY") {
+                if(businessManagement.vacancy.supervisors){
+                    usersId = businessManagement.vacancy.supervisors
+                }
+            }else{
+                if(businessManagement.events.supervisors){
+                    usersId = businessManagement.events.supervisors
+                }
+            }
+            await User.find({_id: usersId})
+                .limit(limit)
+                .skip((page - 1) * limit)
+                .then(async(data)=>{
+                    let newdata = []
+                    await Promise.all(data.map(async(e)=>{
+                        let index = await transformUser(e,lang)
+                        newdata.push(index)
+                    }))
+                    
+                    const usersCount = await User.countDocuments({_id: usersId});
+                    const pageCount = Math.ceil(usersCount / limit);
+                    res.send(new ApiResponse(newdata, page, pageCount, limit, usersCount, req));
+                })
+        } catch (error) {
+            next(error);
+        }
+    },
+    validateUpdateServiceSupervisorsBody(isUpdate = false) {
+        let validations = [
+            body('supervisor').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('supervisor.required', { value});
+            }).isNumeric().withMessage((value, { req}) => {
+                return req.__('supervisor.numeric', { value});
+            }).custom(async (value, { req }) => {
+                if (!await User.findOne({_id:value,deleted:false}))
+                    throw new Error(req.__('supervisor.invalid'));
+                else
+                    return true;
+            }),
+            body('service').optional().isIn(['ADMISSION','VACANCY','EVENT']).withMessage((value, { req}) => {
+                return req.__('service.invalid', { value});
+            }),
+            body('type').optional().isIn(['ADD','REMOVE']).withMessage((value, { req}) => {
+                return req.__('type.invalid', { value});
+            }),
+            
+        ];
+        return validations;
+    },
+    async updateServiceSupervisors(req, res, next) {
+        try {
+            let {businessId} = req.params
+            let business = await checkExistThenGet(businessId,Business,{deleted:false})
+            if(!isInArray(["ADMIN","SUB-ADMIN","USER"],req.user.type)){
+                if(business.owner != req.user._id)
+                    return next(new ApiError(403,  i18n.__('notAllow')));
+            }
+            const validatedBody = checkValidations(req);
+
+            let businessManagement = await BusinessManagement.findOne({business:businessId,deleted:false})
+            //add admin to business management
+            if(validatedBody.type == "ADD"){
+                if (validatedBody.service == "ADMISSION") {
+                    let arr = businessManagement.admission.supervisors;
+                    arr.push(validatedBody.supervisor)
+                    businessManagement.admission.supervisors = arr;
+                }
+                if (validatedBody.service == "VACANCY") {
+                    let arr = businessManagement.vacancy.supervisors;
+                    arr.push(validatedBody.supervisor)
+                    businessManagement.vacancy.supervisors = arr;
+                }
+                if (validatedBody.service == "EVENT") {
+                    let arr = businessManagement.events.supervisors;
+                    arr.push(validatedBody.supervisor)
+                    businessManagement.events.supervisors = arr;
+                }
+            }else{
+
+                //remove admin to business management
+                if (validatedBody.service == "ADMISSION") {
+                    let arr = businessManagement.admission.supervisors
+                    let index = arr.findIndex(e=> e == validatedBody.supervisor);
+                    for(var i = 0;i<= arr.length;i=i+1){
+                        if(arr[i] === arr[index]){
+                            arr.splice(index, 1);
+                        }
+                    }
+                    businessManagement.admission.supervisors = arr;
+                }
+                if (validatedBody.service == "VACANCY") {
+                    let arr = businessManagement.vacancy.supervisors
+                    let index = arr.findIndex(e=> e == validatedBody.supervisor);
+                    for(var i = 0;i<= arr.length;i=i+1){
+                        if(arr[i] === arr[index]){
+                            arr.splice(index, 1);
+                        }
+                    }
+                    businessManagement.vacancy.supervisors = arr;
+                }
+                if (validatedBody.service == "EVENT") {
+                    let arr = businessManagement.events.supervisors
+                    let index = arr.findIndex(e=> e == validatedBody.supervisor);
+                    for(var i = 0;i<= arr.length;i=i+1){
+                        if(arr[i] === arr[index]){
+                            arr.splice(index, 1);
+                        }
+                    }
+                    businessManagement.events.supervisors = arr;
+                }
+                
+                
+            }
+            await businessManagement.save();
+            let reports = {
+                "action":"Update service supervisors",
+                "type":"BUSINESS",
+                "deepId":businessId,
+                "user": req.user._id
+            };
+            await Report.create({...reports });
+            res.send({success: true});
+        }
+        catch (err) {
+            next(err);
         }
     },
 }

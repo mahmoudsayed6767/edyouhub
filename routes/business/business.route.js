@@ -37,4 +37,15 @@ router.route('/:businessId/businessManagement')
         businessController.validateBusinessManagementBody(),
         businessController.businessManagement
     )
+router.route('/:businessId/getServiceSupervisors')
+    .get(  
+        requireAuth,
+        businessController.getServiceSupervisors
+    )
+router.route('/:businessId/updateServiceSupervisors')
+    .put(  
+        requireAuth,
+        businessController.validateUpdateServiceSupervisorsBody(),
+        businessController.updateServiceSupervisors
+    )
 export default router;

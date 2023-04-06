@@ -20,12 +20,12 @@ const businessManagementSchema = new Schema({
         },
         acceptanceLetter:{
             type: String,
-            required: true,
+            default: '',
             trim: true,
         },
         rejectionLetter:{
             type: String,
-            required: true,
+            default: '',
             trim: true,
         },
     },
@@ -36,20 +36,20 @@ const businessManagementSchema = new Schema({
         },
         acceptanceLetter:{
             type: String,
-            required: true,
+            default: '',
             trim: true,
         },
         rejectionLetter:{
             type: String,
-            required: true,
+            default: '',
             trim: true,
         },
     },
     events: {
-        supervisors: {
-            type: [Number],
+        supervisors: [{
+            type: Number,
             ref:'user'
-        },
+        }],
     },
     deleted:{
         type:Boolean,
