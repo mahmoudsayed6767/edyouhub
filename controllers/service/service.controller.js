@@ -146,7 +146,7 @@ export default {
             }else{
                 return next(new ApiError(422, i18n.__('imgs.required')));
             }
-            let theservice = await service.create({ ...validatedBody});
+            let theservice = await Service.create({ ...validatedBody});
             let reports = {
                 "action":"Create service",
                 "type":"SERVICE",
@@ -163,7 +163,7 @@ export default {
     async update(req, res, next) {
         try {
             let { serviceId } = req.params;
-            let service = await checkExistThenGet(serviceId, service, { deleted: false });
+            let service = await checkExistThenGet(serviceId, Service, { deleted: false });
             let business = await checkExistThenGet(service.business,Business,{deleted:false})
             if(!isInArray(["ADMIN","SUB-ADMIN","USER"],req.user.type)){
                 if(business.owner != req.user._id)
@@ -187,7 +187,7 @@ export default {
                     validatedBody.attachment = imagesList[0];
                 }
             }
-            await service.findByIdAndUpdate(serviceId, {
+            await Service.findByIdAndUpdate(serviceId, {
                 ...validatedBody,
             }, { new: true });
             let reports = {

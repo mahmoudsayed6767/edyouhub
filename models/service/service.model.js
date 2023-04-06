@@ -33,7 +33,8 @@ const serviceSchema = new Schema({
     },
     priceType: {
         type: String,
-        enum:['BY-CONTACT','FIXED']
+        enum:['BY-CONTACT','FIXED'],
+        default: 'FIXED'
     },
     price: {
         type: String,

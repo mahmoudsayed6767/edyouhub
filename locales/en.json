@@ -292,5 +292,7 @@
 	"reasons.required": "reasons.required",
 	"buseniss.invalid": "buseniss.invalid",
 	"video.required": "video.required",
-	"name_en.duplicated": "name_en.duplicated"
+	"name_en.duplicated": "name_en.duplicated",
+	"priceType.required": "priceType.required",
+	"priceType.invalid": "priceType.invalid"
 }

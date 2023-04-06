@@ -1,5 +1,5 @@
 
-export async function transformGallery(e,lang) {
+export async function transformService(e,lang) {
     let index ={
         title:lang=="ar"?e.title_ar:e.title_en,
         title_ar:e.title_ar,

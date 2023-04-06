@@ -15,7 +15,7 @@ router.route('/:businessId/createService')
         ServiceController.validateBody(),
         ServiceController.create
     )
-router.route('/get')
+router.route('/')
     .get(ServiceController.findAllPagenation)
 router.route('/withoutPagenation/get')
     .get(ServiceController.findAll);
