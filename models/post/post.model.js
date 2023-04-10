@@ -17,7 +17,7 @@ const postSchema=new Schema({
     },
     ownerType:{
         type: String,
-        enum:['USER', 'BUSINESS'],
+        enum:['USER', 'BUSINESS','APP'],
         default:'USER'
     },
     content:{

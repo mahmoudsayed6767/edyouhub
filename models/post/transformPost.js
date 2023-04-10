@@ -102,7 +102,29 @@ export async function transformPost(e,lang,myUser,userId) {
             description: e.event.description,
             id: e.event._id,
             createdAt: e.event.createdAt,   
+            imgs:e.event.imgs,
+            feesType:e.event.feesType,
+            paymentMethod:e.event.paymentMethod,
+            cashPrice:e.event.cashPrice,
         }
+        /*usersParticipants*/
+        let usersParticipants=[]
+        for (let val of e.event.usersParticipants) {
+            usersParticipants.push({
+                fullname:val.fullname,
+                id:val._id,                         
+            })
+        }
+        event.usersParticipants = usersParticipants;
+        /*businessParticipants*/
+        let businessParticipants=[]
+        for (let val of e.event.businessParticipants) {
+            businessParticipants.push({
+                name:lang=="ar"?val.name_ar:val.name_en,
+                id: val._id,                      
+            })
+        }
+        event.businessParticipants = businessParticipants;
         index.event = event;
     }
     return index
@@ -197,7 +219,29 @@ export async function transformPostById(e,lang,myUser,userId) {
             description: e.event.description,
             id: e.event._id,
             createdAt: e.event.createdAt,   
+            imgs:e.event.imgs,
+            feesType:e.event.feesType,
+            paymentMethod:e.event.paymentMethod,
+            cashPrice:e.event.cashPrice,
         }
+        /*usersParticipants*/
+        let usersParticipants=[]
+        for (let val of e.event.usersParticipants) {
+            usersParticipants.push({
+                fullname:val.fullname,
+                id:val._id,                         
+            })
+        }
+        event.usersParticipants = usersParticipants;
+        /*businessParticipants*/
+        let businessParticipants=[]
+        for (let val of e.event.businessParticipants) {
+            businessParticipants.push({
+                name:lang=="ar"?val.name_ar:val.name_en,
+                id: val._id,                      
+            })
+        }
+        event.businessParticipants = businessParticipants;
         index.event = event;
     }
     return index

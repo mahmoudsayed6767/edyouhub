@@ -21,6 +21,8 @@ const populateQuery = [
     { path: 'options', model: 'option'},
     { path: 'vacancy', model: 'vacancy'},
     { path: 'event', model: 'event'},
+    { path: 'event.businessParticipants', model: 'user'},
+    { path: 'event.usersParticipants', model: 'user'},
     {
         path: 'admission', model: 'admission',
         populate: { path: 'grades', model: 'grade' },
@@ -47,9 +49,10 @@ export default {
         try {
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
-            let {owner,userId,type,business,ownerType,event} = req.query
+            let {owner,userId,type,business,ownerType,event,dataType} = req.query
             let query = {deleted: false };
             if(owner) query.owner = owner;
+            if(dataType) query.dataType = dataType;
             if (type) {
                 let values = type.split(",");
                 console.log(values)
@@ -81,10 +84,11 @@ export default {
     },
     async findSelection(req, res, next) {
         try {
-            let {owner,type,business,ownerType,event} = req.query
+            let {owner,type,business,ownerType,event,dataType} = req.query
             let query = {deleted: false };
             if(event) query.event = event;
             if(owner) query.owner = owner;
+            if(dataType) query.dataType = dataType;
             if (type) {
                 let values = type.split(",");
                 console.log(values)
@@ -139,6 +143,7 @@ export default {
                 return true;
             }),
             body('business').optional(),
+            body('ownerType').optional()
         ];
         return validations;
     },
