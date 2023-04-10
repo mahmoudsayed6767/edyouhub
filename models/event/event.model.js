@@ -57,6 +57,10 @@ const eventSchema=new Schema({
         type: Number,
         //required: true
     },
+    toDate: {
+        type: Date,
+        required: true
+    },
     toDateMillSec: {
         type: Number,
         //required: true

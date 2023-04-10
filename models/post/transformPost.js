@@ -106,6 +106,10 @@ export async function transformPost(e,lang,myUser,userId) {
             feesType:e.event.feesType,
             paymentMethod:e.event.paymentMethod,
             cashPrice:e.event.cashPrice,
+            hostname:e.event.hostname,
+            address:e.event.address,
+            location:e.event.location,
+            contactNumbers:e.event.contactNumbers,
         }
         /*usersParticipants*/
         let usersParticipants=[]
