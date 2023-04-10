@@ -13,6 +13,7 @@ import { ValidationError } from "mongoose";
 import FollowEvent from "../../models/event/followEvent.model";
 import EventAttendance from "../../models/event/eventAttendance.model";
 import {transformUser} from "../../models/user/transformUser"
+import ApiError from "../../helpers/ApiError";
 const populateQuery = [
     { path: 'business', model: 'business' },
     { path: 'businessParticipants', model: 'business' },
@@ -105,6 +106,42 @@ export default {
                 }
                 return true;
             }),
+            body('feesType').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('feesType.required', { value});
+            }).isIn(['NO-FEES','WITH-FEES']).withMessage((value, { req}) => {
+                return req.__('feesType.invalid', { value});
+            }),
+            body('paymentMethod').optional().isIn(['CASH','INSTALLMENT','BOTH'])
+            .withMessage((value, { req}) => {
+                return req.__('feesType.invalid', { value});
+            }),
+            body('cashPrice').optional().isNumeric().withMessage((value, { req}) => {
+                return req.__('cashPrice.numeric', { value});
+            }).custom(async (val, { req }) => {
+                if (req.body.feesType == 'WITH-FEES' && !val)
+                    throw new Error(req.__('cashPrice.required'));
+                else
+                    return true;
+            }),
+            body('installmentPrice').optional().isNumeric().withMessage((value, { req}) => {
+                return req.__('installmentPrice.numeric', { value});
+            }).custom(async (val, { req }) => {
+                if (req.body.feesType == 'WITH-FEES' && !val)
+                    throw new Error(req.__('installmentPrice.required'));
+                else
+                    return true;
+            }),
+            body('installments').optional()
+            .custom(async (installments, { req }) => {
+                for (let val of installments) {
+                    body('price').not().isEmpty().withMessage((value, { req}) => {
+                        return req.__('price.required', { value});
+                    })
+                }
+                return true;
+            }),
+            body('imgs').optional(),
+            
             
         ];
         return validations;
@@ -118,8 +155,18 @@ export default {
             validatedLocation(validatedBody.location);
             validatedBody.location = { type: 'Point', coordinates: [+req.body.location[0], +req.body.location[1]] };
             validatedBody.fromDateMillSec = Date.parse(validatedBody.fromDate)
-            validatedBody.toDateMillSec = Date.parse(validatedBody.roDate)
-
+            validatedBody.toDateMillSec = Date.parse(validatedBody.toDate)
+            
+            if (validatedBody.feesType == 'WITH-FEES'){
+                if(!validatedBody.paymentMethod){
+                    return next(new ApiError(422, i18n.__('paymentMethod.required')));
+                }else{
+                    if(validatedBody.paymentMethod != "INSTALLMENT" && !validatedBody.installmentPrice)
+                        return next(new ApiError(422, i18n.__('installmentPrice.required')));
+                    if(validatedBody.paymentMethod != "CASH" && !validatedBody.installmentPrice)
+                        return next(new ApiError(422, i18n.__('cashPrice.required')));
+                }
+            }
             let event = await Event.create({ ...validatedBody });
             await Post.create({
                 event: event.id,
@@ -173,7 +220,17 @@ export default {
             validatedLocation(validatedBody.location);
             validatedBody.location = { type: 'Point', coordinates: [+req.body.location[0], +req.body.location[1]] };            await Event.findByIdAndUpdate(eventId, { ...validatedBody });
             validatedBody.fromDateMillSec = Date.parse(validatedBody.fromDate)
-            validatedBody.toDateMillSec = Date.parse(validatedBody.roDate)
+            validatedBody.toDateMillSec = Date.parse(validatedBody.toDate)
+            if (validatedBody.feesType == 'WITH-FEES'){
+                if(!validatedBody.paymentMethod){
+                    return next(new ApiError(422, i18n.__('paymentMethod.required')));
+                }else{
+                    if(validatedBody.paymentMethod != "INSTALLMENT" && !validatedBody.installmentPrice)
+                        return next(new ApiError(422, i18n.__('installmentPrice.required')));
+                    if(validatedBody.paymentMethod != "CASH" && !validatedBody.installmentPrice)
+                        return next(new ApiError(422, i18n.__('cashPrice.required')));
+                }
+            }
             await Event.findByIdAndUpdate(eventId, {
                 ...validatedBody,
             }, { new: true });
@@ -281,9 +338,9 @@ export default {
     async delete(req, res, next) {
         try {
             let { eventId } = req.params;
-            let event = await checkExistThenGet(eventId, event);
+            let event = await checkExistThenGet(eventId, Event);
             event.deleted = true;
-            await Event.save();
+            await event.save();
             let reports = {
                 "action":"Delete event",
                 "type":"EVENT",

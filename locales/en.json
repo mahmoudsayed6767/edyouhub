@@ -294,5 +294,7 @@
 	"video.required": "video.required",
 	"name_en.duplicated": "name_en.duplicated",
 	"priceType.required": "priceType.required",
-	"priceType.invalid": "priceType.invalid"
+	"priceType.invalid": "priceType.invalid",
+	"paymentMethod.required": "paymentMethod.required",
+	"installmentPrice.required": "installmentPrice.required"
 }

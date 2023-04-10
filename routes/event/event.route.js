@@ -1,7 +1,8 @@
 import express from 'express';
 import { requireAuth } from '../../services/passport';
 import eventController from '../../controllers/event/event.controller';
-
+import { multerSaveTo } from '../../services/multer-service';
+import { parseStringToArrayOfObjectsMwv2 } from '../../utils';
 const router = express.Router();
 
 router.route('/')

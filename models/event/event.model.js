@@ -85,6 +85,32 @@ const eventSchema=new Schema({
         type:Number,
         ref:'business',
     }],
+    imgs: [{
+        type:String,
+    }],
+    feesType:{
+        type: String,
+        enum:['NO-FEES','WITH-FEES'],
+        default:'NO-FEES'
+    },
+    paymentMethod:{
+        type: String,
+        enum:['CASH','INSTALLMENT','BOTH'],
+    },
+    cashPrice: {
+        type:Number,
+    },
+    installmentPrice :{
+        type:Number,
+    },
+    installments: [
+        new Schema({
+            price: {
+                type: Number,
+                required: true
+            },
+        }, { _id: false })
+    ],
     deleted:{
         type:Boolean,
         default:false
