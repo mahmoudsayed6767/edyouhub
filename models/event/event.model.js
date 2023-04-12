@@ -8,19 +8,21 @@ const eventSchema=new Schema({
     business:{
         type:Number,
         ref:'business',
-        required:true
     },
     educationInstitution:{
         type:Number,
         ref:'educationInstitution',
-        required:true
     },
     status: {
         type: String,
         enum:['COMING','CURRENT','PASS'],
         default:'COMING'
     },
-    
+    ownerType:{
+        type: String,
+        enum:['BUSINESS','APP'],
+        default:'BUSINESS'
+    },
     title: {
         type: String,
         required: true

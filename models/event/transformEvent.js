@@ -2,6 +2,7 @@
 export async function transformEvent(e,lang) {
     let index = {
         title:e.title,
+        ownerType:e.ownerType,
         description:e.description,
         shortDescription:e.shortDescription,
         fromDate:e.fromDate,
@@ -46,6 +47,7 @@ export async function transformEvent(e,lang) {
 export async function transformEventById(e,lang) {
     let index = {
         title:e.title,
+        ownerType:e.ownerType,
         description:e.description,
         shortDescription:e.shortDescription,
         hostname:e.hostname,

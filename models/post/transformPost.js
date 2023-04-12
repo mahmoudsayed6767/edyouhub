@@ -3,6 +3,7 @@ import { isInArray } from "../../helpers/CheckMethods";
 export async function transformPost(e,lang,myUser,userId) {
     let index = {
         content: e.content,
+        ownerType: e.ownerType,
         files:e.files,
         likesCount:e.likesCount,
         type:e.type,
@@ -108,6 +109,8 @@ export async function transformPost(e,lang,myUser,userId) {
             address:e.event.address,
             location:e.event.location,
             contactNumbers:e.event.contactNumbers,
+            ownerType:e.event.ownerType,
+
         }
         /*usersParticipants*/
         let usersParticipants=[]
@@ -136,6 +139,7 @@ export async function transformPost(e,lang,myUser,userId) {
 export async function transformPostById(e,lang,myUser,userId) {
     let index = {
         content: e.content,
+        ownerType: e.ownerType,
         files:e.files,
         likesCount:e.likesCount,
         type:e.type,
@@ -224,6 +228,12 @@ export async function transformPostById(e,lang,myUser,userId) {
             feesType:e.event.feesType,
             paymentMethod:e.event.paymentMethod,
             cashPrice:e.event.cashPrice,
+            hostname:e.event.hostname,
+            address:e.event.address,
+            location:e.event.location,
+            contactNumbers:e.event.contactNumbers,
+            ownerType:e.event.ownerType,
+
         }
         /*usersParticipants*/
         let usersParticipants=[]

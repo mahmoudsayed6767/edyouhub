@@ -90,9 +90,7 @@ export default {
             body('time').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('time.required', { value});
             }),
-            body('business').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('business.required', { value});
-            }).isNumeric().withMessage((value, { req}) => {
+            body('business').optional().isNumeric().withMessage((value, { req}) => {
                 return req.__('business.numeric', { value});
             }),
             body('usersParticipants').optional()
@@ -166,7 +164,7 @@ export default {
                 return true;
             }),
             body('imgs').optional(),
-            
+            body('ownerType').optional()
             
         ];
         return validations;
@@ -175,8 +173,14 @@ export default {
     async create(req, res, next) {
         try {
             const validatedBody = checkValidations(req);
-            let business = await checkExistThenGet(validatedBody.business,Business,{ deleted: false})
-            validatedBody.educationInstitution = business.educationInstitution
+            if(validatedBody.business){
+                validatedBody.ownerType == "BUSINESS"
+                let business = await checkExistThenGet(validatedBody.business,Business,{ deleted: false})
+                validatedBody.educationInstitution = business.educationInstitution
+            }else{
+                validatedBody.ownerType == "APP"
+            }
+            
             validatedLocation(validatedBody.location);
             validatedBody.location = { type: 'Point', coordinates: [+req.body.location[0], +req.body.location[1]] };
             validatedBody.fromDateMillSec = Date.parse(validatedBody.fromDate)
@@ -196,8 +200,8 @@ export default {
             await Post.create({
                 event: event.id,
                 owner:req.user._id,
-                business:business.id,
-                ownerType:'BUSINESS',
+                business:validatedBody.business,
+                ownerType:validatedBody.ownerType,
                 type:'EVENT',
                 content:event.description
             });
@@ -278,7 +282,7 @@ export default {
         try {
             //get lang
             let lang = i18n.getLocale(req)
-            let {search,educationInstitution,business,status} = req.query;
+            let {search,educationInstitution,business,status,ownerType} = req.query;
 
             let query = {deleted: false }
              /*search  */
@@ -297,6 +301,8 @@ export default {
             if(educationInstitution) query.educationInstitution = educationInstitution
             if(business) query.business = business
             if(status) query.status = status
+            if(ownerType) query.ownerType = ownerType;
+
             await Event.find(query).populate(populateQuery)
                 .sort({ _id: -1 })
                 .then( async(data) => {
@@ -320,7 +326,7 @@ export default {
              //get lang
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
-            let {search,educationInstitution,business,status} = req.query;
+            let {search,educationInstitution,business,status,ownerType} = req.query;
 
             let query = {deleted: false }
              /*search  */
@@ -339,6 +345,7 @@ export default {
             if(educationInstitution) query.educationInstitution = educationInstitution
             if(business) query.business = business
             if(status) query.status = status
+            if(ownerType) query.ownerType = ownerType;
 
             await Event.find(query).populate(populateQuery)
                 .sort({ _id: -1 })
