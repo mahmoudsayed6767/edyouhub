@@ -114,6 +114,7 @@ export async function transformPost(e,lang,myUser,userId) {
         for (let val of e.event.usersParticipants) {
             usersParticipants.push({
                 fullname:val.fullname,
+                img:val.img,
                 id:val._id,                         
             })
         }
@@ -123,6 +124,7 @@ export async function transformPost(e,lang,myUser,userId) {
         for (let val of e.event.businessParticipants) {
             businessParticipants.push({
                 name:lang=="ar"?val.name_ar:val.name_en,
+                img:val.img,
                 id: val._id,                      
             })
         }
@@ -228,6 +230,7 @@ export async function transformPostById(e,lang,myUser,userId) {
         for (let val of e.event.usersParticipants) {
             usersParticipants.push({
                 fullname:val.fullname,
+                img:val.img,
                 id:val._id,                         
             })
         }
@@ -237,6 +240,7 @@ export async function transformPostById(e,lang,myUser,userId) {
         for (let val of e.event.businessParticipants) {
             businessParticipants.push({
                 name:lang=="ar"?val.name_ar:val.name_en,
+                img:val.img,
                 id: val._id,                      
             })
         }

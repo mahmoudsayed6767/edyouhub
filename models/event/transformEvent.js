@@ -26,6 +26,7 @@ export async function transformEvent(e,lang) {
     for (let val of e.usersParticipants) {
         usersParticipants.push({
             fullname:val.fullname,
+            img:val.img,
             id:val._id,                         
         })
     }
@@ -35,6 +36,7 @@ export async function transformEvent(e,lang) {
     for (let val of e.businessParticipants) {
         businessParticipants.push({
             name:lang=="ar"?val.name_ar:val.name_en,
+            img:val.img,
             id: val._id,                      
         })
     }
@@ -72,13 +74,13 @@ export async function transformEventById(e,lang) {
         }
     }
     if(e.city){
-        index.business = {
+        index.city = {
             name:lang=="ar"?e.city.name_ar:e.city.name_en,
             id: e.city._id,
         }
     }
     if(e.area){
-        index.business = {
+        index.area = {
             name:lang=="ar"?e.area.name_ar:e.area.name_en,
             id: e.area._id,
         }
@@ -88,6 +90,7 @@ export async function transformEventById(e,lang) {
     for (let val of e.usersParticipants) {
         usersParticipants.push({
             fullname:val.fullname,
+            img:val.img,
             id:val._id,                         
         })
     }
@@ -97,6 +100,7 @@ export async function transformEventById(e,lang) {
     for (let val of e.businessParticipants) {
         businessParticipants.push({
             name:lang=="ar"?val.name_ar:val.name_en,
+            img:val.img,
             id: val._id,                      
         })
     }
