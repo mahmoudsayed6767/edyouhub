@@ -7,8 +7,6 @@ export async function transformPost(e,lang,myUser,userId) {
         likesCount:e.likesCount,
         type:e.type,
         commentsCount:e.commentsCount,
-        startDate:e.startDate,
-        endDate:e.endDate,
         dataType:e.dataType,
         isLike:userId?isInArray(myUser.likedPosts,e._id):false,
         id:e._id,
@@ -24,7 +22,6 @@ export async function transformPost(e,lang,myUser,userId) {
     if(e.owner){
         let owner={
             fullname:e.owner.fullname,
-            username:e.owner.username,
             img:e.owner.img,
             id:e.owner._id,
         }
@@ -100,6 +97,7 @@ export async function transformPost(e,lang,myUser,userId) {
             toDate:e.event.toDate,
             time:e.event.time,
             description: e.event.description,
+            shortDescription:e.event.shortDescription,
             id: e.event._id,
             createdAt: e.event.createdAt,   
             imgs:e.event.imgs,
@@ -140,8 +138,6 @@ export async function transformPostById(e,lang,myUser,userId) {
         likesCount:e.likesCount,
         type:e.type,
         commentsCount:e.commentsCount,
-        startDate:e.startDate,
-        endDate:e.endDate,
         dataType:e.dataType,
         isLike:userId?isInArray(myUser.likedPosts,e._id):false,
         id:e._id,
@@ -170,8 +166,6 @@ export async function transformPostById(e,lang,myUser,userId) {
             title: val.title,
             chosenUsers:val.chosenUsers,
             chosenCount:val.chosenCount,
-            chosenCount:val.chosenCount,
-            chosenUsers:val.chosenUsers,
             id: val._id,
         }
         options.push(option)
@@ -221,6 +215,7 @@ export async function transformPostById(e,lang,myUser,userId) {
             toDate:e.event.toDate,
             time:e.event.time,
             description: e.event.description,
+            shortDescription:e.event.shortDescription,
             id: e.event._id,
             createdAt: e.event.createdAt,   
             imgs:e.event.imgs,

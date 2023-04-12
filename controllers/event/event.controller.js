@@ -14,10 +14,14 @@ import FollowEvent from "../../models/event/followEvent.model";
 import EventAttendance from "../../models/event/eventAttendance.model";
 import {transformUser} from "../../models/user/transformUser"
 import ApiError from "../../helpers/ApiError";
+import City from "../../models/city/city.model";
+import Area from "../../models/area/area.model";
 const populateQuery = [
     { path: 'business', model: 'business' },
     { path: 'businessParticipants', model: 'business' },
     { path: 'usersParticipants', model: 'user' },
+    { path: 'city', model: 'city' },
+    { path: 'area', model: 'area' },
 
 ];
 //validate location
@@ -37,6 +41,7 @@ export default {
             body('description').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('description.required', { value});
             }),
+            body('shortDescription').optional(),
             body('hostname').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('hostname.required', { value});
             }),
@@ -45,6 +50,26 @@ export default {
             }),
             body('location').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('location.required', { value});
+            }),
+            body('city').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('city.required', { value});
+            }).isNumeric().withMessage((value, { req}) => {
+                return req.__('city.numeric', { value});
+            }).custom(async (value, { req }) => {
+                if (!await City.findOne({_id:value,deleted:false}))
+                    throw new Error(req.__('city.invalid'));
+                else
+                    return true;
+            }),
+            body('area').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('area.required', { value});
+            }).isNumeric().withMessage((value, { req}) => {
+                return req.__('area.numeric', { value});
+            }).custom(async (value, { req }) => {
+                if (!await Area.findOne({_id:value,deleted:false}))
+                    throw new Error(req.__('area.invalid'));
+                else
+                    return true;
             }),
             body('contactNumbers').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('contactNumbers.required', { value});

@@ -3,6 +3,7 @@ export async function transformEvent(e,lang) {
     let index = {
         title:e.title,
         description:e.description,
+        shortDescription:e.shortDescription,
         fromDate:e.fromDate,
         toDate:e.toDate,
         dailyTimes:e.dailyTimes,
@@ -16,6 +17,7 @@ export async function transformEvent(e,lang) {
     if(e.business){
         index.business = {
             name:lang=="ar"?e.business.name_ar:e.business.name_en,
+            img:e.business.img,
             id: e.business._id,
         }
     }
@@ -43,6 +45,7 @@ export async function transformEventById(e,lang) {
     let index = {
         title:e.title,
         description:e.description,
+        shortDescription:e.shortDescription,
         hostname:e.hostname,
         address:e.address,
         location:e.location,
@@ -64,7 +67,20 @@ export async function transformEventById(e,lang) {
     if(e.business){
         index.business = {
             name:lang=="ar"?e.business.name_ar:e.business.name_en,
+            img:e.business.img,
             id: e.business._id,
+        }
+    }
+    if(e.city){
+        index.business = {
+            name:lang=="ar"?e.city.name_ar:e.city.name_en,
+            id: e.city._id,
+        }
+    }
+    if(e.area){
+        index.business = {
+            name:lang=="ar"?e.area.name_ar:e.area.name_en,
+            id: e.area._id,
         }
     }
     /*usersParticipants*/

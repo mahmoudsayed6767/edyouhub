@@ -29,6 +29,11 @@ const eventSchema=new Schema({
         type: String,
         required: true
     },
+    shortDescription: {
+        type: String,
+        required: true,
+        default: ''
+    },
     hostname: {
         type: String,
         required: true
@@ -40,6 +45,18 @@ const eventSchema=new Schema({
     location: {
         type: { type: String, enum: ['Point'] },
         coordinates: { type: [Number] },
+    },
+    city:{
+        type:Number,
+        ref:'city',
+        required:true,
+        default:1
+    },
+    area:{
+        type:Number,
+        ref:'area',
+        required:true,
+        default:1
     },
     contactNumbers: {
         type: [String],
