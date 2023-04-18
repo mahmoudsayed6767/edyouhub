@@ -18,7 +18,7 @@ var messageController = {
     async uploadImage(req, res, next) {
         try {
             let image = await handleImg(req);
-            res.send(image);
+            res.send({image});
             } catch (error) {
             next(error)
         }

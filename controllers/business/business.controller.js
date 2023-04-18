@@ -787,6 +787,16 @@ export default {
                         return true;
                 }
                 
+            }),
+            body('course.supervisors').optional()
+            .custom(async (value, { req }) => {
+                for (const user of value) {
+                    if (!await User.findOne({_id:user,deleted:false}))
+                        throw new Error(req.__('user.invalid'));
+                    else
+                        return true;
+                }
+                
             })
             
         ];
@@ -903,56 +913,37 @@ export default {
 
             let businessManagement = await BusinessManagement.findOne({business:businessId,deleted:false})
             //add admin to business management
+            let arr
             if(validatedBody.type == "ADD"){
-                if (validatedBody.service == "ADMISSION") {
-                    let arr = businessManagement.admission.supervisors;
-                    arr.push(validatedBody.supervisor)
-                    businessManagement.admission.supervisors = arr;
-                }
-                if (validatedBody.service == "VACANCY") {
-                    let arr = businessManagement.vacancy.supervisors;
-                    arr.push(validatedBody.supervisor)
-                    businessManagement.vacancy.supervisors = arr;
-                }
-                if (validatedBody.service == "EVENT") {
-                    let arr = businessManagement.events.supervisors;
-                    arr.push(validatedBody.supervisor)
-                    businessManagement.events.supervisors = arr;
-                }
-            }else{
+                if (validatedBody.service == "ADMISSION") arr = businessManagement.admission.supervisors;
+                if (validatedBody.service == "VACANCY") arr = businessManagement.vacancy.supervisors;
+                if (validatedBody.service == "EVENT") arr = businessManagement.events.supervisors;
+                if (validatedBody.service == "COURSE") arr = businessManagement.course.supervisors;
 
+                arr.push(validatedBody.supervisor)
+
+                if (validatedBody.service == "ADMISSION") arr = businessManagement.admission.supervisors = arr;
+                if (validatedBody.service == "VACANCY") arr = businessManagement.vacancy.supervisors = arr;
+                if (validatedBody.service == "EVENT") arr = businessManagement.events.supervisors = arr;
+                if (validatedBody.service == "COURSE") arr = businessManagement.course.supervisors = arr;
+                
+            }else{
                 //remove admin to business management
-                if (validatedBody.service == "ADMISSION") {
-                    let arr = businessManagement.admission.supervisors
-                    let index = arr.findIndex(e=> e == validatedBody.supervisor);
-                    for(var i = 0;i<= arr.length;i=i+1){
-                        if(arr[i] === arr[index]){
-                            arr.splice(index, 1);
-                        }
+                if (validatedBody.service == "ADMISSION") arr = businessManagement.admission.supervisors;
+                if (validatedBody.service == "VACANCY") arr = businessManagement.vacancy.supervisors;
+                if (validatedBody.service == "EVENT") arr = businessManagement.events.supervisors;
+                if (validatedBody.service == "COURSE") arr = businessManagement.course.supervisors;
+                
+                for(var i = 0;i<= arr.length;i=i+1){
+                    if(arr[i] === arr[index]){
+                        arr.splice(index, 1);
                     }
-                    businessManagement.admission.supervisors = arr;
-                }
-                if (validatedBody.service == "VACANCY") {
-                    let arr = businessManagement.vacancy.supervisors
-                    let index = arr.findIndex(e=> e == validatedBody.supervisor);
-                    for(var i = 0;i<= arr.length;i=i+1){
-                        if(arr[i] === arr[index]){
-                            arr.splice(index, 1);
-                        }
-                    }
-                    businessManagement.vacancy.supervisors = arr;
-                }
-                if (validatedBody.service == "EVENT") {
-                    let arr = businessManagement.events.supervisors
-                    let index = arr.findIndex(e=> e == validatedBody.supervisor);
-                    for(var i = 0;i<= arr.length;i=i+1){
-                        if(arr[i] === arr[index]){
-                            arr.splice(index, 1);
-                        }
-                    }
-                    businessManagement.events.supervisors = arr;
                 }
                 
+                if (validatedBody.service == "ADMISSION") arr = businessManagement.admission.supervisors = arr;
+                if (validatedBody.service == "VACANCY") arr = businessManagement.vacancy.supervisors = arr;
+                if (validatedBody.service == "EVENT") arr = businessManagement.events.supervisors = arr;
+                if (validatedBody.service == "COURSE") arr = businessManagement.course.supervisors = arr;
                 
             }
             await businessManagement.save();

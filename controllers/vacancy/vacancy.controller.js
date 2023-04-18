@@ -2,13 +2,14 @@ import Vacancy from "../../models/vacancy/vacancy.model";
 import Report from "../../models/reports/report.model";
 import { body } from "express-validator";
 import { checkValidations} from "../shared/shared.controller";
-import { checkExist } from "../../helpers/CheckMethods";
+import { checkExist ,isInArray} from "../../helpers/CheckMethods";
 import ApiResponse from "../../helpers/ApiResponse";
 import { checkExistThenGet } from "../../helpers/CheckMethods";
 import i18n from "i18n";
 import { transformVacancy,transformVacancyById } from "../../models/vacancy/transformVacancy";
 import Business from "../../models/business/business.model";
 import Post from "../../models/post/post.model";
+import BusinessManagement from "../../models/business/businessManagement.model"
 
 const populateQuery = [
     { path: 'educationSystem', model: 'educationSystem' },
@@ -42,6 +43,15 @@ export default {
         try {
             const validatedBody = checkValidations(req);
             let business = await checkExistThenGet(validatedBody.business,Business,{ deleted: false})
+            let businessManagement = await BusinessManagement.findOne({deleted:false,business:business._id})
+            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
+                let supervisors = [business.owner]
+                if(businessManagement){
+                    supervisors.push(...businessManagement.vacancy.supervisors)
+                }
+                if(!isInArray(supervisors,req.user._id))
+                    return next(new ApiError(403,  i18n.__('notAllow')));
+            }
             validatedBody.educationInstitution = business.educationInstitution
             validatedBody.educationSystem = business.educationSystem
             let vacancy = await Vacancy.create({ ...validatedBody });
@@ -97,6 +107,15 @@ export default {
             await checkExist(vacancyId,Vacancy, { deleted: false })
             const validatedBody = checkValidations(req);
             let business = await checkExistThenGet(validatedBody.business,Business,{ deleted: false})
+            let businessManagement = await BusinessManagement.findOne({deleted:false,business:business._id})
+            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
+                let supervisors = [business.owner]
+                if(businessManagement){
+                    supervisors.push(...businessManagement.vacancy.supervisors)
+                }
+                if(!isInArray(supervisors,req.user._id))
+                    return next(new ApiError(403,  i18n.__('notAllow')));
+            }
             validatedBody.educationInstitution = business.educationInstitution
             validatedBody.educationSystem = business.educationSystem
             await Vacancy.findByIdAndUpdate(vacancyId, { ...validatedBody });
@@ -204,11 +223,19 @@ export default {
     },
     //delete 
     async delete(req, res, next) {
-        
         try {
             let { vacancyId } = req.params;
-            
             let vacancy = await checkExistThenGet(vacancyId, vacancy);
+            let business = await checkExistThenGet(vacancy.business,Business,{ deleted: false})
+            let businessManagement = await BusinessManagement.findOne({deleted:false,business:business._id})
+            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
+                let supervisors = [business.owner]
+                if(businessManagement){
+                    supervisors.push(...businessManagement.vacancy.supervisors)
+                }
+                if(!isInArray(supervisors,req.user._id))
+                    return next(new ApiError(403,  i18n.__('notAllow')));
+            }
             vacancy.deleted = true;
             await Vacancy.save();
             let reports = {

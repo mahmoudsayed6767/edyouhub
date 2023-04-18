@@ -4,13 +4,15 @@ import { body } from "express-validator";
 import { checkValidations} from "../shared/shared.controller";
 import { checkExist } from "../../helpers/CheckMethods";
 import ApiResponse from "../../helpers/ApiResponse";
-import { checkExistThenGet } from "../../helpers/CheckMethods";
+import { checkExistThenGet ,isInArray} from "../../helpers/CheckMethods";
 import i18n from "i18n";
 import Grade from "../../models/grade/grade.model";
 import { transformAdmission,transformAdmissionById } from "../../models/admission/transformAdmission";
 import Business from "../../models/business/business.model";
 import Post from "../../models/post/post.model";
 import Faculty from "../../models/faculty/faculty.model";
+import BusinessManagement from "../../models/business/businessManagement.model"
+
 const populateQuery = [
     { path: 'educationSystem', model: 'educationSystem' },
     { path: 'educationInstitution', model: 'educationInstitution' },
@@ -53,11 +55,6 @@ export default {
                 return req.__('business.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('business.numeric', { value});
-            }).custom(async (value, { req }) => {
-                if (!await Business.findOne({_id:value,deleted:false}))
-                    throw new Error(req.__('business.invalid'));
-                else
-                    return true;
             }),
             body('grades').optional()
             .custom(async (grades, { req }) => {
@@ -112,6 +109,15 @@ export default {
         try {
             const validatedBody = checkValidations(req);
             let business = await checkExistThenGet(validatedBody.business,Business,{ deleted: false})
+            let businessManagement = await BusinessManagement.findOne({deleted:false,business:business._id})
+            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
+                let supervisors = [business.owner]
+                if(businessManagement){
+                    supervisors.push(...businessManagement.admission.supervisors)
+                }
+                if(!isInArray(supervisors,req.user._id))
+                    return next(new ApiError(403,  i18n.__('notAllow')));
+            }
             validatedBody.educationInstitution = business.educationInstitution
             validatedBody.educationSystem = business.educationSystem
             let admission = await Admission.create({ ...validatedBody });
@@ -169,6 +175,15 @@ export default {
             await checkExist(admissionId,Admission, { deleted: false })
             const validatedBody = checkValidations(req);
             let business = await checkExistThenGet(validatedBody.business,Business,{ deleted: false})
+            let businessManagement = await BusinessManagement.findOne({deleted:false,business:business._id})
+            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
+                let supervisors = [business.owner]
+                if(businessManagement){
+                    supervisors.push(...businessManagement.admission.supervisors)
+                }
+                if(!isInArray(supervisors,req.user._id))
+                    return next(new ApiError(403,  i18n.__('notAllow')));
+            }
             validatedBody.educationInstitution = business.educationInstitution
             validatedBody.educationSystem = business.educationSystem
             await Admission.findByIdAndUpdate(admissionId, { ...validatedBody });
@@ -287,6 +302,15 @@ export default {
             let { admissionId } = req.params;
             
             let admission = await checkExistThenGet(admissionId, Admission);
+            let businessManagement = await BusinessManagement.findOne({deleted:false,business:admission.business})
+            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
+                let supervisors = [business.owner]
+                if(businessManagement){
+                    supervisors.push(...businessManagement.admission.supervisors)
+                }
+                if(!isInArray(supervisors,req.user._id))
+                    return next(new ApiError(403,  i18n.__('notAllow')));
+            }
             admission.deleted = true;
             await Admission.save();
             let reports = {

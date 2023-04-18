@@ -1,74 +1,124 @@
-import { isInArray } from "../../helpers/CheckMethods";
-import i18n from "i18n";
-import moment from 'moment';
-export async function transformOffer(e,lang,myUser,userId) {
+export async function transformCourse(e,lang,myUser,userId) {
     let index = {
-        title:lang=="ar"?e.title_ar:e.title_en,
-        description:lang=="ar"?e.description_ar:e.description_en,
-        end:e.end,
+        name:lang=="ar"?e.name_ar:e.name_en,
+        status:e.status,
         id:e._id,
         imgs:e.imgs,
-        type:e.type,
         fromDate:e.fromDate,
         toDate:e.toDate,
-        oldPrice:e.oldPrice,
-        newPrice:e.newPrice,
-        coins:e.coins,
+        maxApplications:e.maxApplications,
+        maxAcceptance:e.maxAcceptance,
+        paymentMethod:e.paymentMethod,
+        cashPrice:e.cashPrice,
+        installmentPrice:e.installmentPrice,
+        rate:e.rate,
+        rateCount:e.rateCount,
+        rateNumbers:e.rateNumbers,
+        sessionsNo:e.sessionsNo,
+        acceptanceNo:e.acceptanceNo,
         createdAt:e.createdAt,
-        isFavourite:userId?isInArray(myUser.favourite,e._id):false,
     }
-    if(e.place){
-        index.place = {
-            name:lang=="ar"?e.place.name_ar:e.place.name_en,
-            id:e.place._id,
-            type:e.place.type,
-            logo:e.place.logo,
-            cover:e.place.cover
+    if(e.business){
+        index.business = {
+            name:lang=="ar"?e.business.name_ar:e.business.name_en,
+            img:e.business.img,
+            id: e.business._id,
         }
+    }
+    /*instractors*/
+    let instractors=[]
+    for (let val of e.instractors) {
+        instractors.push({
+            fullname:val.fullname,
+            img:val.img,
+            id:val._id,                         
+        })
     }
     return index;
 }
-export async function transformOfferById(e,lang,myUser,userId) {
+export async function transformCourseById(e,lang,myUser,userId) {
     let index = {
-        title:lang=="ar"?e.title_ar:e.title_en,
+        name:lang=="ar"?e.name_ar:e.name_en,
         description:lang=="ar"?e.description_ar:e.description_en,
-        title_ar:e.title_ar,
-        title_en:e.title_en,
-        description_ar:e.description_ar,
-        description_en:e.description_en,
+        status:e.status,
         id:e._id,
         imgs:e.imgs,
-        type:e.type,
-        oldPrice:e.oldPrice,
-        newPrice:e.newPrice,
-        coins:e.coins,
         fromDate:e.fromDate,
         toDate:e.toDate,
-        end:e.end,
-        withNotif:e.withNotif,
-        bookedUsers:e.bookedUsers,
-        bookedUsersCount:e.bookedUsersCount,
-        gotUsers:e.gotUsers,
-        gotUsersCount:e.gotUsersCount,
+        dailyTimes:e.dailyTimes,
+        maxApplications:e.maxApplications,
+        maxAcceptance:e.maxAcceptance,
+        paymentMethod:e.paymentMethod,
+        cashPrice:e.cashPrice,
+        installments:e.installments,
+        installmentPrice:e.installmentPrice,
+        rate:e.rate,
+        rateCount:e.rateCount,
+        rateNumbers:e.rateNumbers,
+        sessionsNo:e.sessionsNo,
+        acceptanceNo:e.acceptanceNo,
         createdAt:e.createdAt,
-        isFavourite:userId?isInArray(myUser.favourite,e._id):false,
     }
-    if(e.place){
-        index.place = {
-            name:lang=="ar"?e.place.name_ar:e.place.name_en,
-            id:e.place._id,
-            type:e.place.type,
-            logo:e.place.logo,
-            cover:e.place.cover
+    if(e.business){
+        index.business = {
+            name:lang=="ar"?e.business.name_ar:e.business.name_en,
+            img:e.business.img,
+            id: e.business._id,
         }
     }
-    if(e.category){
-        index.category ={
-            name:lang=="ar"?e.category.name_ar:e.category.name_en,
-            id:e.category._id,                         
-            
-        }
+    /*specializations*/
+    let specializations = []
+    for (let val of e.specializations) {
+        specializations.push({
+            name: lang == "ar" ? val.name_ar : val.name_en,
+            id: val._id,
+        })
     }
-    
+    index.specializations = specializations;
+    /* branches*/
+    if (e.branches.length > 0) {
+        let branches = []
+        let arr = [...e.branches.slice(0, 3)]
+        for (let val of arr) {
+            let branch = {
+                address: lang == "ar" ? val.address_ar : val.address_en,
+                phone: val.phone,
+                email: val.email,
+                img: val.img,
+                location: val.location,
+                id: val._id,
+            }
+            if (val.country) {
+                branch.country = {
+                    name: lang == "ar" ? val.country.name_ar : val.country.name_en,
+                    id: val.country._id
+                }
+            }
+            if (val.city) {
+                console.log(val.city)
+                branch.city = {
+                    name: lang == "ar" ? val.city.name_ar : val.city.name_en,
+                    id: val.city._id
+                }
+            }
+            if (val.area) {
+                branch.area = {
+                    name: lang == "ar" ? val.area.name_ar : val.area.name_en,
+                    id: val.area._id
+                }
+            }
+            branches.push(branch)
+        }
+        index.branches = branches
+    }
+    /*instractors*/
+    let instractors=[]
+    for (let val of e.instractors) {
+        instractors.push({
+            fullname:val.fullname,
+            img:val.img,
+            id:val._id,                         
+        })
+    }
     return index;
 }

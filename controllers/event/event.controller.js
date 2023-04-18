@@ -8,7 +8,7 @@ import { transformEvent,transformEventById } from "../../models/event/transformE
 import Business from "../../models/business/business.model";
 import Post from "../../models/post/post.model";
 import User from "../../models/user/user.model";
-import { checkExist, checkExistThenGet,isLat,isLng} from "../../helpers/CheckMethods";
+import { checkExist, checkExistThenGet,isLat,isLng,isInArray} from "../../helpers/CheckMethods";
 import { ValidationError } from "mongoose";
 import FollowEvent from "../../models/event/followEvent.model";
 import EventAttendance from "../../models/event/eventAttendance.model";
@@ -136,7 +136,7 @@ export default {
             }),
             body('paymentMethod').optional().isIn(['CASH','INSTALLMENT','BOTH'])
             .withMessage((value, { req}) => {
-                return req.__('feesType.invalid', { value});
+                return req.__('paymentMethod.invalid', { value});
             }),
             body('cashPrice').optional().isNumeric().withMessage((value, { req}) => {
                 return req.__('cashPrice.numeric', { value});
@@ -436,7 +436,7 @@ export default {
                     arr.splice(i, 1);
                 }
             }
-            user.eventAttendance = arr;
+            user.attendedEvents = arr;
             await user.save();
             let reports = {
                 "action":"user not attend to event",

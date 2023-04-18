@@ -274,6 +274,10 @@ const userSchema = new Schema({
         type:Number,
         ref:'event',
     }],
+    attendedCourses:[{
+        type:Number,
+        ref:'courses',
+    }],
     deleted: {
         type: Boolean,
         default: false

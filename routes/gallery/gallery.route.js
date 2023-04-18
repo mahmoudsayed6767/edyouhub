@@ -2,7 +2,6 @@ import express from 'express';
 import GalleryController from '../../controllers/gallery/gallery.controller';
 import { requireAuth } from '../../services/passport';
 import { multerSaveTo } from '../../services/multer-service';
-import { parseStringToArrayOfObjectsMwv2 } from '../../utils';
 
 const router = express.Router();
 

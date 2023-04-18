@@ -34,35 +34,45 @@ const courseSchema=new Schema({
         type: Number,
         required: true
     },
+    acceptanceNo:{
+        type: Number,
+        default:0
+    },
     imgs: [{
         type: String,
         required: true
     }],
-    specialization: {
-        type: Number,
+    specializations: {
+        type: [Number],
         ref:'specialization',
         required: true
     },
     business: {
         type: Number,
         ref:'business',
-        required: true
+        //required: true
     },
-    branch: {
-        type: Number,
+    branches: {
+        type: [Number],
         ref:'branch',
-        required: true
+        //required: true
     },
-    instractor: {
-        type: Number,
+    ownerType:{
+        type: String,
+        enum:['BUSINESS','APP'],
+        default:'BUSINESS'
+    },
+    instractors: {
+        type: [Number],
         ref:'business',
         required: true
     },
-    days: [
+    dailyTimes: [
         new Schema({
             day:{
                 type: String,
-                enum: ['SATURDAY','SUNDAY', 'MONDAY','WEDNESDAY','TUESDAY','FRIDAY']
+                enum: ['SATURDAY','SUNDAY', 'MONDAY','WEDNESDAY','TUESDAY','FRIDAY'],
+                required: true,
             },
             fromDate: {
                 type: Date,
@@ -91,6 +101,41 @@ const courseSchema=new Schema({
         type: Number,
         required: true
     },
+    maxAcceptance: {
+        type: Number,
+        required: true
+    },
+    paymentMethod:{
+        type: String,
+        enum:['CASH','INSTALLMENT'],
+        required: true
+    },
+    cashPrice: {
+        type:Number,
+    },
+    installmentPrice :{
+        type:Number,
+    },
+    installments: [
+        new Schema({
+            price: {
+                type: Number,
+                required: true
+            },
+        }, { _id: false })
+    ],
+    rateCount: {
+        type: Number,
+        default:0
+    },
+    rateNumbers: {
+        type: Number,
+        default:0
+    },
+    rate: {
+        type: Number,
+        default:0
+    },
     deleted:{
         type:Boolean,
         default:false
@@ -104,6 +149,6 @@ courseSchema.set('toJSON', {
     }
 });
 autoIncrement.initialize(mongoose.connection);
-courseSchema.plugin(autoIncrement.plugin, { model: 'offer', startAt: 1 });
+courseSchema.plugin(autoIncrement.plugin, { model: 'course', startAt: 1 });
 
-export default mongoose.model('offer', courseSchema);
+export default mongoose.model('course', courseSchema);
