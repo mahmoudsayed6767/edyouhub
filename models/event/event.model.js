@@ -96,10 +96,6 @@ const eventSchema=new Schema({
             },
         }, { _id: false })
     ],
-    time: {
-        type: String,
-        required: true
-    },
     usersParticipants: [{
         type:Number,
         ref:'user',

@@ -87,9 +87,6 @@ export default {
             }).isISO8601().withMessage((value, { req}) => {
                 return req.__('invalid.date', { value});
             }),
-            body('time').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('time.required', { value});
-            }),
             body('business').optional().isNumeric().withMessage((value, { req}) => {
                 return req.__('business.numeric', { value});
             }),
