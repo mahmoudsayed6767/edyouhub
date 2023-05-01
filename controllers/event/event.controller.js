@@ -179,7 +179,7 @@ export default {
                 }else{
                     if(validatedBody.paymentMethod != "INSTALLMENT" && !validatedBody.installmentPrice)
                         return next(new ApiError(422, i18n.__('installmentPrice.required')));
-                    if(validatedBody.paymentMethod != "CASH" && !validatedBody.installmentPrice)
+                    if(validatedBody.paymentMethod != "CASH" && !validatedBody.cashPrice)
                         return next(new ApiError(422, i18n.__('cashPrice.required')));
                 }
             }
