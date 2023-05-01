@@ -137,19 +137,9 @@ export default {
             }),
             body('cashPrice').optional().isNumeric().withMessage((value, { req}) => {
                 return req.__('cashPrice.numeric', { value});
-            }).custom(async (val, { req }) => {
-                if (req.body.paymentMethod == 'CASH' && !val)
-                    throw new Error(req.__('cashPrice.required'));
-                else
-                    return true;
             }),
             body('installmentPrice').optional().isNumeric().withMessage((value, { req}) => {
                 return req.__('installmentPrice.numeric', { value});
-            }).custom(async (val, { req }) => {
-                if (req.body.paymentMethod == 'INSTALLMENT' && !val)
-                    throw new Error(req.__('installmentPrice.required'));
-                else
-                    return true;
             }),
             body('installments').optional()
             .custom(async (installments, { req }) => {

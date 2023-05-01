@@ -471,7 +471,6 @@ export default {
     async addParticipant(req, res, next) {
         try {
             const validatedBody = checkValidations(req);
-            console.log(JSON.stringify(validatedBody))
             let {courseId} = req.params
             let course = await checkExistThenGet(courseId, Course);
             //check permission

@@ -4,8 +4,8 @@ import ApiError from '../../helpers/ApiError';
 import { checkExist, checkExistThenGet,isInArray} from "../../helpers/CheckMethods";
 import { checkValidations } from "../shared/shared.controller";
 import { body } from "express-validator";
-import Package from "../../models/package/package.model";
-import {transformPackage} from "../../models/package/transformPackage"
+import CashbackPackage from "../../models/cashbackPackage/cashbackPackage.model";
+import {transformCashbackPackage} from "../../models/cashbackPackage/transformCashbackPackage"
 import i18n from "i18n";
 import User from "../../models/user/user.model";
 export default {
@@ -16,20 +16,20 @@ export default {
             let lang = i18n.getLocale(req) 
             let page = +req.query.page || 1, limit = +req.query.limit || 20 ;
             let query = {deleted: false };
-            await Package.find(query)
+            await CashbackPackage.find(query)
                 .sort({ _id: -1 })
                 .limit(limit)
                 .skip((page - 1) * limit)
                 .then(async (data) => {
                     var newdata = [];
                     await Promise.all(data.map(async(e) =>{
-                        let index = await transformPackage(e,lang)
+                        let index = await transformCashbackPackage(e,lang)
                         newdata.push(index);
                     }))
-                    const packagesCount = await Package.countDocuments(query);
-                    const pageCount = Math.ceil(packagesCount / limit);
+                    const count = await CashbackPackage.countDocuments(query);
+                    const pageCount = Math.ceil(count / limit);
     
-                    res.send(new ApiResponse(newdata, page, pageCount, limit, packagesCount, req));
+                    res.send(new ApiResponse(newdata, page, pageCount, limit, count, req));
                 });
 
 
@@ -43,18 +43,18 @@ export default {
         try {
             let lang = i18n.getLocale(req) 
             let query = {deleted: false };
-            await Package.find(query)
+            await CashbackPackage.find(query)
                 .sort({ _id: -1 })
                 .then(async (data) => {
                     var newdata = [];
                     await Promise.all(data.map(async(e) =>{
-                        let index = await transformPackage(e,lang)
+                        let index = await transformCashbackPackage(e,lang)
                         newdata.push(index);
                     }))
     
                     res.send({
                         success: true,
-                        packages:newdata
+                        data:newdata
                     });
                 });
         } catch (err) {
@@ -75,42 +75,14 @@ export default {
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('cost.numeric', { value});
             }),
-            body('type').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('type.required', { value});
-            }).isIn(['FOR-USER','FOR-BUSINESS']).withMessage((value, { req}) => {
-                return req.__('type.invalid', { value});
-            }),
-            body('badgeType').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('badgeType.required', { value});
-            }).isIn(['GOLD','NORMAL']).withMessage((value, { req}) => {
-                return req.__('badgeType.invalid', { value});
-            }),
-            body('dataView').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('dataView.required', { value});
-            }).isIn(['FIRST','TOP','NORMAL']).withMessage((value, { req}) => {
-                return req.__('dataView.invalid', { value});
-            }),
-            body('createEvents').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('createEvents.required', { value});
-            }),
-            body('createReels').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('createReels.required', { value});
-            }),
-            body('createGroups').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('createGroups.required', { value});
-            }),
-            body('createBusiness').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('createBusiness.required', { value});
-            }),
-            body('enableFollow').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('enableFollow.required', { value});
-            }),
-            body('sendingMessages').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('sendingMessages.required', { value});
-            }),
+            body('coins').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('coins.required', { value});
+            }).isNumeric().withMessage((value, { req}) => {
+                return req.__('coins.numeric', { value});
+            })
         ];
     },
-    //add package
+    //add cashbackPackage
     async create(req, res, next) {
 
         try {
@@ -118,17 +90,17 @@ export default {
                 return next(new ApiError(403, i18n.__('admin.auth')));
     
             const validatedBody = checkValidations(req);
-            let createdpackage = await Package.create({ ...validatedBody});
+            let createdPackage = await CashbackPackage.create({ ...validatedBody});
 
             let reports = {
-                "action":"Create Package",
+                "action":"Create cashbackPackage",
                 "type":"PACKAGES",
-                "deepId":createdpackage.id,
+                "deepId":createdPackage.id,
                 "user": req.user._id
             };
             await Report.create({...reports});
             
-            res.status(200).send({success: true,data:createdpackage});
+            res.status(200).send({success: true,data:createdPackage});
         } catch (err) {
             next(err);
         }
@@ -140,13 +112,13 @@ export default {
             //get lang
             let lang = i18n.getLocale()
             let { packageId } = req.params;
-            await checkExist(packageId, Package, { deleted: false });
-            await Package.findById(packageId)
+            await checkExist(packageId, CashbackPackage, { deleted: false });
+            await CashbackPackage.findById(packageId)
             .then(async(e)=>{
-                let packagee = await transformPackage(e,lang)
+                let cashbackPackagee = await transformCashbackPackage(e,lang)
                 res.send({
                     success:true,
-                    data:packagee
+                    data:cashbackPackagee
                 });
             })
             
@@ -154,7 +126,7 @@ export default {
             next(err);
         }
     },
-    //update package
+    //update cashbackPackage
     async update(req, res, next) {
 
         try {
@@ -162,37 +134,37 @@ export default {
                 return next(new ApiError(403, i18n.__('admin.auth')));
 
             let { packageId } = req.params;
-            await checkExist(packageId, Package, { deleted: false });
+            await checkExist(packageId, CashbackPackage, { deleted: false });
 
             const validatedBody = checkValidations(req);
-            let updatedpackage = await Package.findByIdAndUpdate(packageId, {
+            let updatedCashbackPackage = await CashbackPackage.findByIdAndUpdate(packageId, {
                 ...validatedBody,
             }, { new: true });
             let reports = {
-                "action":"Update Package",
+                "action":"Update cashbackPackage",
                 "type":"PACKAGES",
                 "deepId":packageId,
                 "user": req.user._id
             };
             await Report.create({...reports});
-            res.status(200).send({success: true,data:updatedpackage});
+            res.status(200).send({success: true,data:updatedCashbackPackage});
         }
         catch (err) {
             next(err);
         }
     },
-    //delete package
+    //delete cashbackPackage
     async delete(req, res, next) {
         try {
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
             let { packageId } = req.params;
-            let packages = await checkExistThenGet(packageId, Package, { deleted: false });
+            let cashbackPackages = await checkExistThenGet(packageId, CashbackPackage, { deleted: false });
             
-            packages.deleted = true;
-            await packages.save();
+            cashbackPackages.deleted = true;
+            await cashbackPackages.save();
             let reports = {
-                "action":"Delete Package",
+                "action":"Delete cashbackPackage",
                 "type":"PACKAGES",
                 "deepId":packageId,
                 "user": req.user._id
@@ -205,16 +177,16 @@ export default {
             next(err);
         }
     },
-    //buy package
-    async buyPackage(req, res, next) {
+    //buy cashbackPackage
+    async buycashbackPackage(req, res, next) {
         try {
             let { packageId } = req.params;
-            let packages = await checkExistThenGet(packageId, Package, { deleted: false });
+            let cashbackPackages = await checkExistThenGet(packageId, CashbackPackage, { deleted: false });
             let user = await checkExistThenGet(req.user._id,User, { deleted: false });
-            user.balance  = user.balance + packages.coins
+            user.balance  = user.balance + cashbackPackages.coins
             await user.save();
             let reports = {
-                "action":"Buy Package",
+                "action":"Buy cashbackPackage",
                 "type":"PACKAGES",
                 "deepId":packageId,
                 "user": req.user._id
