@@ -33,7 +33,6 @@ const eventSchema=new Schema({
     },
     shortDescription: {
         type: String,
-        required: true,
         default: ''
     },
     hostname: {
@@ -130,6 +129,18 @@ const eventSchema=new Schema({
             },
         }, { _id: false })
     ],
+    attendance: [{
+        type:Number,
+        ref:'user',
+    }],
+    interesting: [{
+        type:Number,
+        ref:'user',
+    }],
+    waitToPaid: [{
+        type:Number,
+        ref:'user',
+    }],
     deleted:{
         type:Boolean,
         default:false

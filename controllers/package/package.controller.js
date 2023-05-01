@@ -70,35 +70,23 @@ export default {
             body('title_en').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('title_en.required', { value});
             }),
-            body('costs').trim().not().isEmpty().withMessage((value, { req}) => {
-                return req.__('costs.required', { value});
+            body('durationType').trim().not().isEmpty().withMessage((value) => {
+                return req.__('durationType.required', { value});
             })
-            .isLength({ min: 1 }).withMessage((value, { req}) => {
-                return req.__('costs.length', { value});
-            })
-            .custom(async (costs, { req }) => {
-                for (let cost of costs) {
-                    console.log("cost",cost)
-                    body('durationType').trim().not().isEmpty().withMessage((value) => {
-                        return req.__('durationType.required', { value});
-                    })
-                    .isIn(['MONTHLY','YEARLY','DAILY']).withMessage((value) => {
-                        return req.__('durationType.invalid', { value});
-                    })
-                    body('duration').trim().not().isEmpty().withMessage((value) => {
-                        return req.__('duration.required', { value});
-                    }).isNumeric().withMessage((value) => {
-                        return req.__('duration.numeric', { value});
-                    })
-                    body('cost').trim().not().isEmpty().withMessage((value) => {
-                        return req.__('cost.required', { value});
-                    }).isNumeric().withMessage((value) => {
-                        return req.__('cost.numeric', { value});
-                    })
-
-                }
-                return true;
+            .isIn(['MONTHLY','YEARLY','DAILY']).withMessage((value) => {
+                return req.__('durationType.invalid', { value});
             }),
+            body('duration').trim().not().isEmpty().withMessage((value) => {
+                return req.__('duration.required', { value});
+            }).isNumeric().withMessage((value) => {
+                return req.__('duration.numeric', { value});
+            }),
+            body('cost').trim().not().isEmpty().withMessage((value) => {
+                return req.__('cost.required', { value});
+            }).isNumeric().withMessage((value) => {
+                return req.__('cost.numeric', { value});
+            }),
+
             body('type').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('type.required', { value});
             }).isIn(['FOR-USER','FOR-BUSINESS']).withMessage((value, { req}) => {
@@ -249,33 +237,5 @@ export default {
                 return req.__('package.numeric', { value});
             }),
         ];
-    },
-    async buyPackage(req,res,next){
-        try{
-            let userId = req.params.userId
-            let user = await checkExistThenGet(userId, User, { deleted: false })
-            const validatedBody = checkValidations(req);
-            let thePackage = await Package.findById(validatedBody.package)
-            let endDateMillSec
-            if(validatedBody.durationType == "DAILY"){
-                endDateMillSec = Date.parse(moment(new Date()).add(validatedBody.duration, "d").format()) ;
-            }
-            if(validatedBody.durationType == "MONTHLY"){
-                endDateMillSec = Date.parse(moment(new Date()).add(validatedBody.duration, "M").format()) ;
-            }
-            if(validatedBody.durationType == "YEARLY"){
-                endDateMillSec = Date.parse(moment(new Date()).add(validatedBody.duration, "Y").format()) ;
-            }
-            user.hasPackage = true;
-            user.packageStartDateMillSec = Date.parse(new Date());
-            user.packageEndDateMillSec = endDateMillSec ;
-            await user.save();
-
-            res.send({
-                success: true,
-            });
-        }catch(error){
-            next(error)
-        }
     },
 };

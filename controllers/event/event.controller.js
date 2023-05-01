@@ -213,11 +213,13 @@ export default {
              //get lang
             let lang = i18n.getLocale(req)
             let { eventId } = req.params;
+            let {userId} = req.query
             await checkExist(eventId, Event, { deleted: false });
+
             await Event.findById(eventId)
             .populate(populateQuery)
             .then(async(e) => {
-                let event = await transformEventById(e,lang)
+                let event = await transformEventById(e,lang,userId)
                 res.send({
                     success:true,
                     data:event
@@ -269,7 +271,7 @@ export default {
         try {
             //get lang
             let lang = i18n.getLocale(req)
-            let {search,educationInstitution,business,status,ownerType} = req.query;
+            let {userId,search,educationInstitution,business,status,ownerType} = req.query;
 
             let query = {deleted: false }
              /*search  */
@@ -289,13 +291,13 @@ export default {
             if(business) query.business = business
             if(status) query.status = status
             if(ownerType) query.ownerType = ownerType;
-
+            
             await Event.find(query).populate(populateQuery)
                 .sort({ _id: -1 })
                 .then( async(data) => {
                     var newdata = [];
                     await Promise.all(data.map(async(e) =>{
-                        let index = await transformEvent(e,lang)
+                        let index = await transformEvent(e,lang,userId)
                         newdata.push(index)
                     }))
                     res.send({
@@ -313,7 +315,7 @@ export default {
              //get lang
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
-            let {search,educationInstitution,business,status,ownerType} = req.query;
+            let {userId,search,educationInstitution,business,status,ownerType} = req.query;
 
             let query = {deleted: false }
              /*search  */
@@ -333,7 +335,6 @@ export default {
             if(business) query.business = business
             if(status) query.status = status
             if(ownerType) query.ownerType = ownerType;
-
             await Event.find(query).populate(populateQuery)
                 .sort({ _id: -1 })
                 .limit(limit)
@@ -341,7 +342,7 @@ export default {
                 .then(async (data) => {
                     var newdata = [];
                     await Promise.all(data.map(async(e) =>{
-                        let index = await transformEvent(e,lang)
+                        let index = await transformEvent(e,lang,userId)
                         newdata.push(index)
                     }))
                     const count = await Event.countDocuments(query);
@@ -374,69 +375,6 @@ export default {
             next(err);
         }
     },
-    async attendEvent(req, res, next) { 
-        try {
-            let {eventId} = req.params
-            await checkExist (eventId,Event,{deleted:false})
-            let user = await checkExistThenGet(req.user._id, User);
-            if(!await EventAttendance.findOne({ user: req.user._id, event: eventId,deleted:false})){
-                let arr = user.attendedEvents;
-                var found = arr.find((e) => e == eventId); 
-                if(!found){
-                    user.attendedEvents.push(eventId);
-                    await user.save();
-                    await EventAttendance.create({ user: req.user._id, event: eventId });
-                    let reports = {
-                        "action":"user will attend to event",
-                        "type":"EVENT",
-                        "deepId":eventId,
-                        "user": req.user._id
-                    };
-                    await Report.create({...reports});
-                }
-            }
-            
-            res.status(200).send({success: true});
-        } catch (error) {
-            next(error)
-        }
-    },
-    async removeAttendance(req, res, next) {
-        try {
-            let {eventId } = req.params;
-             /*check if  */
-            if(!await EventAttendance.findOne({ user: req.user._id, event: eventId,deleted:false})){
-                return next(new ApiError(500, i18n.__('event.notFoundInList')));
-            }
-            let eventAttendance = await EventAttendance.findOne({ user: req.user._id, event: eventId,deleted:false})
-
-            //if the user make the request is not the owner
-            if (eventAttendance.user != req.user._id)
-                return next(new ApiError(403, i18n.__('notAllow')));
-            eventAttendance.deleted = true;
-            await eventAttendance.save();
-            /*remove event id from user data*/
-            let user = await checkExistThenGet(req.user._id, User);
-            let arr = user.attendedEvents;
-            for(let i = 0;i<= arr.length;i=i+1){
-                if(arr[i] == eventId){
-                    arr.splice(i, 1);
-                }
-            }
-            user.attendedEvents = arr;
-            await user.save();
-            let reports = {
-                "action":"user not attend to event",
-                "type":"EVENT",
-                "deepId":eventId,
-                "user": req.user._id
-            };
-            await Report.create({...reports});
-            res.send({success: true});
-        } catch (error) {
-            next(error)
-        }
-    },
     async getEventAttendance(req, res, next) {
         try {
             let lang = i18n.getLocale(req)
@@ -465,14 +403,13 @@ export default {
     async followEvent(req, res, next) { 
         try {
             let {eventId} = req.params
-            await checkExist (eventId,Event,{deleted:false})
-            let user = await checkExistThenGet(req.user._id, User);
+            let event = await checkExistThenGet (eventId,Event,{deleted:false})
             if(!await FollowEvent.findOne({ user: req.user._id, event: eventId,deleted:false})){
-                let arr = user.followEvents;
-                var found = arr.find((e) => e == eventId); 
+                let arr = event.interesting;
+                var found = arr.find((e) => e == req.user._id); 
                 if(!found){
-                    user.followEvents.push(eventId);
-                    await user.save();
+                    event.interesting.push(eventId);
+                    await event.save();
                     await FollowEvent.create({ user: req.user._id, event: eventId });
                     let reports = {
                         "action":"user follow to event",
@@ -492,7 +429,6 @@ export default {
     async unfollowEvent(req, res, next) {
         try {
             let {eventId } = req.params;
-             /*check if  */
             if(!await FollowEvent.findOne({ user: req.user._id, event: eventId,deleted:false})){
                 return next(new ApiError(500, i18n.__('event.notFoundInList')));
             }
@@ -504,15 +440,15 @@ export default {
             followEvent.deleted = true;
             await followEvent.save();
             /*remove post id from user data*/
-            let user = await checkExistThenGet(req.user._id, User);
-            let arr = user.followEvents;
+            let event = await checkExistThenGet(eventId, Event);
+            let arr = event.interesting;
             for(let i = 0;i<= arr.length;i=i+1){
-                if(arr[i] == eventId){
+                if(arr[i] == req.user._id){
                     arr.splice(i, 1);
                 }
             }
-            user.followEvent = arr;
-            await user.save();
+            event.followEvent = arr;
+            await event.save();
             let reports = {
                 "action":"user un follow to event",
                 "type":"EVENT",

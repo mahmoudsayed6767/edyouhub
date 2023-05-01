@@ -266,14 +266,6 @@ const userSchema = new Schema({
             
         }, { _id: false })
     ],
-    attendedEvents: [{
-        type:Number,
-        ref:'event',
-    }],
-    followEvents: [{
-        type:Number,
-        ref:'event',
-    }],
     attendedCourses:[{
         type:Number,
         ref:'courses',

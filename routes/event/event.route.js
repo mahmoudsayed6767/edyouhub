@@ -22,19 +22,9 @@ router.route('/:eventId')
         eventController.validateBody(true),
         eventController.update
     )
-    .get(requireAuth,eventController.getById)
+    .get(eventController.getById)
     .delete(requireAuth,eventController.delete);
 
-router.route('/:eventId/attend')
-    .put(
-        requireAuth,
-        eventController.attendEvent
-    )
-router.route('/:eventId/removeAttendence')
-    .put(
-        requireAuth,
-        eventController.removeAttendance
-    )
 router.route('/:eventId/getEventAttendance')
     .get(requireAuth,eventController.getEventAttendance);
 router.route('/:eventId/follow')

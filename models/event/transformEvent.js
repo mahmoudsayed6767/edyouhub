@@ -1,5 +1,7 @@
 
-export async function transformEvent(e,lang) {
+import {isInArray} from "../../helpers/CheckMethods";
+
+export async function transformEvent(e,lang,userId) {
     let index = {
         title:e.title,
         ownerType:e.ownerType,
@@ -14,7 +16,9 @@ export async function transformEvent(e,lang) {
         cashPrice:e.cashPrice,
         installmentPrice:e.installmentPrice,
         address:e.address,
-        time:e.time,
+        isInterest:userId?isInArray(e.interesting,userId):false,
+        isAttendance:userId?isInArray(e.attendance,userId):false,
+        waitToPaid:userId?isInArray(e.waitToPaid,userId):false,
         id: e._id,                    
     }
     if(e.business){
@@ -46,7 +50,8 @@ export async function transformEvent(e,lang) {
     index.businessParticipants = businessParticipants;
     return index
 }
-export async function transformEventById(e,lang) {
+export async function transformEventById(e,lang,userId) {
+    console.log(userId)
     let index = {
         title:e.title,
         ownerType:e.ownerType,
@@ -66,7 +71,9 @@ export async function transformEventById(e,lang) {
         cashPrice:e.cashPrice,
         installments:e.installments,
         installmentPrice:e.installmentPrice,
-        time:e.time,
+        isInterest:userId?isInArray(e.interesting,userId):false,
+        isAttendance:userId?isInArray(e.attendance,userId):false,
+        waitToPaid:userId?isInArray(e.waitToPaid,userId):false,
         id: e._id,
         createdAt: e.createdAt,                       
     }

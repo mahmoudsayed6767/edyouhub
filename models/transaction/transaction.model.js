@@ -25,9 +25,17 @@ const transactionSchema = new Schema({
         type:[Number],
         ref:'premium',
     },
+    cashbackPackage:{
+        type:Number,
+        ref:'cashbackPackage',
+    },
     package:{
         type:Number,
         ref:'package',
+    },
+    event:{
+        type:Number,
+        ref:'event',
     },
     offer:{//
         type:Number,
@@ -44,7 +52,7 @@ const transactionSchema = new Schema({
     type:{
         type:String,
         required:true,
-        enum:["PACKAGE","PREMIUM","FUND-FIRSTPAID","OFFER","ORDER"]
+        enum:["PACKAGE","CASHBACK-PACKAGE","EVENT","PREMIUM","FUND-FIRSTPAID","OFFER","ORDER"]
     },
 
     status:{

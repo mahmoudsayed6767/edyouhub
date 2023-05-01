@@ -19,24 +19,19 @@ const PackageSchema=new Schema({
         enum:['FOR-USER','FOR-BUSINESS'],
         default:'FOR-USER'
     },
-    costs: [
-        new Schema({
-            durationType: {
-                type: String,
-                enum:['MONTHLY','YEARLY','DAILY'],
-                required: true,
-            },
-            duration: {
-                type: Number,
-                required: true,
-            },
-            cost: {
-                type: Number,
-                required: true,
-            },
-        }, { _id: false })
-        
-    ],
+    durationType: {
+        type: String,
+        enum:['MONTHLY','YEARLY','DAILY'],
+        required: true,
+    },
+    duration: {
+        type: Number,
+        required: true,
+    },
+    cost: {
+        type: Number,
+        required: true,
+    },
     badgeType:{
         type:String,
         enum:['GOLD','NORMAL'],

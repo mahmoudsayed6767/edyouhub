@@ -304,5 +304,9 @@
 	"dailyTimes.required": "daily times are required",
 	"day.required": "day is required",
 	"branches.invalid": "branches.invalid",
-	"paymentMethod.required": "paymentMethod.required"
+	"paymentMethod.required": "paymentMethod.required",
+	"badgeType.required": "badgeType.required",
+	"badgeType.invalid": "badgeType.invalid",
+	"event.notFoundInList": "event.notFoundInList",
+	"transaction not exist": "transaction not exist"
 }

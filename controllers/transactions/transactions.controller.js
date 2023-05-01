@@ -2,12 +2,14 @@ import ApiResponse from "../../helpers/ApiResponse";
 import Report from "../../models/reports/report.model";
 import ApiError from '../../helpers/ApiError';
 import {checkExistThenGet ,isInArray} from "../../helpers/CheckMethods";
-import { convertLang } from "../shared/shared.controller";
+import Event from "../../models/event/event.model";
 import Transaction from "../../models/transaction/transaction.model";
 import {transformTransaction} from "../../models/transaction/transformTransaction"
 import User from "../../models/user/user.model";
 import Fund from "../../models/fund/fund.model";
 import Package from "../../models/package/package.model";
+import CashbackPackage from "../../models/cashbackPackage/cashbackPackage.model";
+
 import Fees from "../../models/fees/fees.model";
 import Order from "../../models/order/order.model"
 import i18n from "i18n";
@@ -23,6 +25,8 @@ import Notif from "../../models/notif/notif.model";
 import Premium from "../../models/premium/premium.model";
 import OfferBooking from "../../models/offerBooking/offerBooking.model"
 import OfferCart from "../../models/offerCart/offerCart.model";
+import moment from "moment";
+import EventAttendance from "../../models/event/eventAttendance.model"
 const populateQuery2 = [
     {path: 'package', model: 'package'},
     {path: 'order', model: 'order'},
@@ -227,6 +231,55 @@ const payOfferBooking = async (theOfferBooking,client) => {
     }
     return true;
 };
+const payPackage = async (thePackage,userId) => {
+    let user = await checkExistThenGet(userId, User, { deleted: false });
+    let userPackage = await checkExistThenGet(thePackage, Package, { deleted: false });
+    let endDateMillSec
+    if(userPackage.durationType == "DAILY"){
+        endDateMillSec = Date.parse(moment(new Date()).add(userPackage.duration, "d").format()) ;
+    }
+    if(userPackage.durationType == "MONTHLY"){
+        endDateMillSec = Date.parse(moment(new Date()).add(userPackage.duration, "M").format()) ;
+    }
+    if(userPackage.durationType == "YEARLY"){
+        endDateMillSec = Date.parse(moment(new Date()).add(userPackage.duration, "Y").format()) ;
+    }
+    user.hasPackage = true;
+    user.packageStartDateMillSec = Date.parse(new Date());
+    user.packageEndDateMillSec = endDateMillSec ;
+    await user.save();
+    return true;
+};
+const payEvent = async (theEvent,userId) => {
+    let event = await checkExistThenGet(theEvent, Event, { deleted: false });
+    //add client to event attendance
+    let arr = event.attendance;
+    var found = arr.find((e) => e == userId); 
+    if(!found){
+        event.attendance.push(userId);
+        await EventAttendance.create({ user: userId, event: event });
+        let reports = {
+            "action":"user will attend to event",
+            "type":"EVENT",
+            "deepId":event,
+            "user": userId
+        };
+        await Report.create({...reports});
+    }
+    //remove user from under payment list
+    let arr2 = event.waitToPaid;
+    var found2 = arr2.find((e) => e == userId); 
+    if(found2){
+        for(let i = 0;i<= arr2.length;i=i+1){
+            if(arr2[i] == userId){
+                arr2.splice(i, 1);
+            }
+        }
+        event.waitToPaid = arr2;
+    }
+    await event.save();
+    return true;
+};
 export default {
     
     async payment(req,res,next){
@@ -247,6 +300,9 @@ export default {
                 "type":validatedBody.type,
                 "transactionId":data.id,
                 "paymentObject":JSON.stringify(data)
+            }
+            if(validatedBody.type =="CASHBACK-PACKAGE"){
+                transactionData.cashbackPackage = validatedBody.cashbackPackage
             }
             if(validatedBody.type =="PACKAGE"){
                 transactionData.package = validatedBody.package
@@ -274,6 +330,16 @@ export default {
             }
             if(validatedBody.type =="PREMIUM"){
                 transactionData.premiums = validatedBody.premiums
+            }
+            if(validatedBody.type =="EVENT"){
+                transactionData.event = validatedBody.event
+                let event = await checkExistThenGet(validatedBody.event, Event, { deleted: false });
+                let arr = event.waitToPaid;
+                var found = arr.find((e) => e == validatedBody.client); 
+                if(!found){
+                    event.waitToPaid.push(validatedBody.client);
+                    await event.save();
+                }
             }
             if(validatedBody.type =="FUND-FIRSTPAID"){
                 transactionData.fund = validatedBody.fund
@@ -412,10 +478,16 @@ export default {
                 theTransaction.paymentObject = JSON.stringify(data)
                 let userId = theTransaction.user
                 let user = await checkExistThenGet(userId, User, { deleted: false })
-                if(theTransaction.type =="PACKAGE"){
-                    let packages = await checkExistThenGet(theTransaction.package, Package, { deleted: false });
-                    user.balance  = user.balance + packages.coins
+                if(theTransaction.type =="CASHBACK-PACKAGE"){
+                    let cashbackPackage = await checkExistThenGet(theTransaction.cashbackPackage, CashbackPackage, { deleted: false });
+                    user.balance  = user.balance + cashbackPackage.coins
                     await user.save();
+                }
+                if(theTransaction.type =="PACKAGE"){
+                    await payPackage(theTransaction.package,userId)
+                }
+                if(theTransaction.type =="EVENT"){
+                    await payEvent(theTransaction.event,userId)
                 }
                 if(theTransaction.type =="OFFER"){
                     await payOfferBooking(theTransaction.offerBooking,userId)
