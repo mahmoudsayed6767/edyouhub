@@ -166,6 +166,13 @@ export default {
                     }
                     validatedBody.files = imagesList;
                 }
+                if (req.files['preview']) {
+                    let imagesList = [];
+                    for (let imges of req.files['preview']) {
+                        imagesList.push(await toImgUrl(imges))
+                    }
+                    validatedBody.preview = imagesList;
+                }
             }
             let createdPost = await Post.create({ ...validatedBody});
             let options = []

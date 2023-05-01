@@ -26,6 +26,9 @@ const postSchema=new Schema({
     files:{
         type: [String],
     },
+    preview:{
+        type: [String],
+    },
     dataType:{
         type: String,
         enum:['IMAGE', 'VIDEO','FILE'],

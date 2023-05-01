@@ -12,6 +12,8 @@ router.route('/')
         requireAuth,
         multerSaveTo('posts').fields([
             { name: 'files', maxCount: 6, options: false },
+            { name: 'preview', maxCount: 6, options: false },
+            
         ]),
         parseStringToArrayOfObjectsMw('theOptions'),
         postController.validateBody(),
@@ -27,6 +29,7 @@ router.route('/:postId')
         requireAuth,
         multerSaveTo('posts').fields([
             { name: 'files', maxCount: 6, options: false },
+            { name: 'preview', maxCount: 6, options: false },
         ]),
         parseStringToArrayOfObjectsMw('theOptions'),
         postController.validateBody(true),

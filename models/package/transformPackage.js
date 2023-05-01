@@ -4,7 +4,7 @@ export async function transformPackage(e,lang) {
         title:lang=="ar"?e.title_ar:e.title_en,
         title_en:e.title_en,
         title_ar:e.title_ar,
-        cost:e.cost,
+        costs:e.costs,
         type:e.type,
         badgeType:e.badgeType,
         dataView:e.dataView,

@@ -278,6 +278,20 @@ const userSchema = new Schema({
         type:Number,
         ref:'courses',
     }],
+    package: {
+        type: Number,
+        ref:'package',
+    },
+    packageStartDateMillSec:{
+        type: Number,
+    },
+    packageEndDateMillSec:{
+        type: Number,
+    },
+    hasPackage: {
+        type: Boolean,
+        default: false
+    },
     deleted: {
         type: Boolean,
         default: false

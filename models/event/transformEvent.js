@@ -12,6 +12,8 @@ export async function transformEvent(e,lang) {
         feesType:e.feesType,
         paymentMethod:e.paymentMethod,
         cashPrice:e.cashPrice,
+        installmentPrice:e.installmentPrice,
+        address:e.address,
         time:e.time,
         id: e._id,                    
     }

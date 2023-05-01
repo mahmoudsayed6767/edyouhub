@@ -70,10 +70,34 @@ export default {
             body('title_en').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('title_en.required', { value});
             }),
-            body('cost').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('cost.required', { value});
-            }).isNumeric().withMessage((value, { req}) => {
-                return req.__('cost.numeric', { value});
+            body('costs').trim().not().isEmpty().withMessage((value, { req}) => {
+                return req.__('costs.required', { value});
+            })
+            .isLength({ min: 1 }).withMessage((value, { req}) => {
+                return req.__('costs.length', { value});
+            })
+            .custom(async (costs, { req }) => {
+                for (let cost of costs) {
+                    console.log("cost",cost)
+                    body('durationType').trim().not().isEmpty().withMessage((value) => {
+                        return req.__('durationType.required', { value});
+                    })
+                    .isIn(['MONTHLY','YEARLY','DAILY']).withMessage((value) => {
+                        return req.__('durationType.invalid', { value});
+                    })
+                    body('duration').trim().not().isEmpty().withMessage((value) => {
+                        return req.__('duration.required', { value});
+                    }).isNumeric().withMessage((value) => {
+                        return req.__('duration.numeric', { value});
+                    })
+                    body('cost').trim().not().isEmpty().withMessage((value) => {
+                        return req.__('cost.required', { value});
+                    }).isNumeric().withMessage((value) => {
+                        return req.__('cost.numeric', { value});
+                    })
+
+                }
+                return true;
             }),
             body('type').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('type.required', { value});
@@ -206,25 +230,52 @@ export default {
         }
     },
     //buy package
-    async buyPackage(req, res, next) {
-        try {
-            let { packageId } = req.params;
-            let packages = await checkExistThenGet(packageId, Package, { deleted: false });
-            let user = await checkExistThenGet(req.user._id,User, { deleted: false });
-            user.balance  = user.balance + packages.coins
+    validateBuyPackage() {
+        return [
+            body('durationType').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('durationType.required', { value});
+            })
+            .isIn(['MONTHLY','YEARLY','DAILY']).not().isEmpty().withMessage((value, { req}) => {
+                return req.__('durationType.invalid', { value});
+            }),
+            body('duration').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('duration.required', { value});
+            }).isNumeric().withMessage((value, { req}) => {
+                return req.__('duration.numeric', { value});
+            }),
+            body('package').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('package.required', { value});
+            }).isNumeric().withMessage((value, { req}) => {
+                return req.__('package.numeric', { value});
+            }),
+        ];
+    },
+    async buyPackage(req,res,next){
+        try{
+            let userId = req.params.userId
+            let user = await checkExistThenGet(userId, User, { deleted: false })
+            const validatedBody = checkValidations(req);
+            let thePackage = await Package.findById(validatedBody.package)
+            let endDateMillSec
+            if(validatedBody.durationType == "DAILY"){
+                endDateMillSec = Date.parse(moment(new Date()).add(validatedBody.duration, "d").format()) ;
+            }
+            if(validatedBody.durationType == "MONTHLY"){
+                endDateMillSec = Date.parse(moment(new Date()).add(validatedBody.duration, "M").format()) ;
+            }
+            if(validatedBody.durationType == "YEARLY"){
+                endDateMillSec = Date.parse(moment(new Date()).add(validatedBody.duration, "Y").format()) ;
+            }
+            user.hasPackage = true;
+            user.packageStartDateMillSec = Date.parse(new Date());
+            user.packageEndDateMillSec = endDateMillSec ;
             await user.save();
-            let reports = {
-                "action":"Buy Package",
-                "type":"PACKAGES",
-                "deepId":packageId,
-                "user": req.user._id
-            };
-            await Report.create({...reports});
-            res.status(200).send({success:true});
 
-        }
-        catch (err) {
-            next(err);
+            res.send({
+                success: true,
+            });
+        }catch(error){
+            next(error)
         }
     },
 };

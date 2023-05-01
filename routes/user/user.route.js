@@ -2,34 +2,29 @@ import express from 'express';
 import { requireSignIn, requireAuth } from '../../services/passport';
 import UserController from '../../controllers/user/user.controller';
 import { multerSaveTo } from '../../services/multer-service';
-import { parseStringToArrayOfObjectsMw } from '../../utils';
+import AuthController from '../../controllers/user/auth.controller';
 
-import Logger from "../../services/logger";
-const logger = new Logger('login')
 const router = express.Router();
 
 //login with phone and password
-router.post('/signin',(req, res , next) => {
-    logger.info(`${req.ip} || try to login`);
-    next();
-},requireSignIn, UserController.signIn);
+router.post('/signin',requireSignIn, AuthController.signIn);
 router.route('/signUp')
     .post(
         multerSaveTo('users').single('img'),
-        UserController.validateSignUpBody(),
-        UserController.signUp
+        AuthController.validateSignUpBody(),
+        AuthController.signUp
     );
 router.route('/verifyPhone')
     .post(
-        UserController.validateVerifyPhone(),
-        UserController.verifyPhone
+        AuthController.validateVerifyPhone(),
+        AuthController.verifyPhone
     );
 
 router.route('/addUser')
     .post(
         requireAuth,
         multerSaveTo('users').single('img'),
-        UserController.validateSignUpBody(),
+        AuthController.validateSignUpBody(),
         UserController.addUser
     );
 
@@ -60,17 +55,12 @@ router.route('/:userId/unblock')
 router.route('/logout')
     .post(
         requireAuth,
-        UserController.logout
+        AuthController.logout
     );
 router.route('/addToken')
     .post(
         requireAuth,
-        UserController.addToken
-    );
-router.route('/updateToken')
-    .put(
-        requireAuth,
-        UserController.updateToken
+        AuthController.addToken
     );
 //update profile
 router.put('/user/:userId/updateInfo',
@@ -90,28 +80,28 @@ router.put('/user/updatePassword',
 //send verify code
 
 router.post('/sendCode',
-    UserController.validateSendCode(),
-    UserController.sendCodeToEmail);
+    AuthController.validateSendCode(),
+    AuthController.sendCodeToEmail);
 
 router.post('/confirm-code',
-    UserController.validateConfirmVerifyCode(),
-    UserController.resetPasswordConfirmVerifyCode);
+    AuthController.validateConfirmVerifyCode(),
+    AuthController.resetPasswordConfirmVerifyCode);
 
 router.post('/reset-password',
-    UserController.validateResetPassword(),
-    UserController.resetPassword);
+    AuthController.validateResetPassword(),
+    AuthController.resetPassword);
 
 router.post('/sendCode-phone',
-    UserController.validateForgetPassword(),
-    UserController.forgetPasswordSms);
+    AuthController.validateForgetPassword(),
+    AuthController.forgetPasswordSms);
 
 router.post('/confirm-code-phone',
-    UserController.validateConfirmVerifyCodePhone(),
-    UserController.resetPasswordConfirmVerifyCodePhone);
+    AuthController.validateConfirmVerifyCodePhone(),
+    AuthController.resetPasswordConfirmVerifyCodePhone);
 
 router.post('/reset-password-phone',
-    UserController.validateResetPasswordPhone(),
-    UserController.resetPasswordPhone);
+    AuthController.validateResetPasswordPhone(),
+    AuthController.resetPasswordPhone);
 
 router.route('/addAddress')
     .post(

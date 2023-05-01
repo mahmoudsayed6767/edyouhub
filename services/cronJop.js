@@ -3,6 +3,7 @@ import moment from 'moment';
 import Offer from "../models/offer/offer.model";
 import Event from "../models/event/event.model";
 import Story from "../models/story/story.model";
+import User from "../models/user/user.model";
 
 export function cronJop() {
     try { //    */2 * * * *
@@ -40,6 +41,18 @@ export function cronJop() {
                     if(now > e.toDateMillSec) status = 'PASS'
                     Event.findByIdAndUpdate(e.id,{status:status},{new:true}).then((docs)=>{
                         console.log('done update event')
+                        
+                    }).catch((err)=>{
+                        console.log(err);
+                    })
+                })
+            })
+            User.find({deleted:false,
+            hasPackage:true,packageEndDateMillSec:{$lte:Date.parse(new Date())}})
+            .then(async(data)=>{
+                data.map(async(e) =>{
+                    User.findByIdAndUpdate(e.id,{hasPackage:false},{new:true}).then((docs)=>{
+                        console.log('done update user')
                         
                     }).catch((err)=>{
                         console.log(err);
