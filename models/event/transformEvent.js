@@ -51,7 +51,6 @@ export async function transformEvent(e,lang,userId) {
     return index
 }
 export async function transformEventById(e,lang,userId) {
-    console.log(userId)
     let index = {
         title:e.title,
         ownerType:e.ownerType,

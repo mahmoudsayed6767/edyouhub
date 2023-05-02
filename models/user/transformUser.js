@@ -1,3 +1,5 @@
+import {isInArray} from "../../helpers/CheckMethods";
+
 export async function transformUser(e,lang,myUser,userId) {
     let index = {
         username:e.username,
@@ -12,6 +14,8 @@ export async function transformUser(e,lang,myUser,userId) {
         img:e.img,
         block:e.block,
         affiliateCode:e.affiliateCode,
+        isConnected:userId?isInArray(myUser.connections,e._id):false,
+        pendingConnect:userId?isInArray(myUser.pendingConnections,e._id):false,
         cashBack:e.cashBack,
         createdAt: e.createdAt,
     }
@@ -51,6 +55,8 @@ export async function transformUserById(e,lang,myUser,userId) {
         experiencesType:e.experiencesType,
         experiencesProfession:e.experiencesProfession,
         experiencesOrganization:e.experiencesOrganization,
+        isConnected:userId?isInArray(myUser.connections,e._id):false,
+        pendingConnect:userId?isInArray(myUser.pendingConnections,e._id):false,
         createdAt: e.createdAt,
         
     }

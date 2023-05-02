@@ -401,18 +401,22 @@ export default {
              //get lang
             let lang = i18n.getLocale(req)
             let { businessId } = req.params;
-            
+            let {userId} = req.query
             await checkExist(businessId, Business, { deleted: false });
+            let myUser
+            if(userId) {
+                myUser = await checkExistThenGet(userId,User)
+            }
             await Business.findById(businessId)
-            .populate(populateQuery)
-            .then(async(e) => {
-                let business = await transformBusinessById(e,lang)
-                business.management = await BusinessManagement.findOne({deleted:false,business:e._id})
-                res.send({
-                    success:true,
-                    data:business
-                });
-            })
+                .populate(populateQuery)
+                .then(async(e) => {
+                    let business = await transformBusinessById(e,lang,myUser,userId)
+                    business.management = await BusinessManagement.findOne({deleted:false,business:e._id})
+                    res.send({
+                        success:true,
+                        data:business
+                    });
+                })
         } catch (error) {
             next(error);
         }
@@ -520,7 +524,7 @@ export default {
         try {
             //get lang
             let lang = i18n.getLocale(req)
-            let {educationType,owner,search,sector,subSector,educationSystem,status} = req.query;
+            let {userId,educationType,owner,search,sector,subSector,educationSystem,status} = req.query;
 
             let query = {deleted: false }
             /*search by name */
@@ -546,12 +550,16 @@ export default {
                 let catIds = await Category.find({deleted:false,educationType:educationType}).distinct('_id')
                 query.subSector = {$in: catIds}
             }
+            let myUser
+            if(userId) {
+                myUser = await checkExistThenGet(userId,User)
+            }
             await Business.find(query).populate(populateQuery)
                 .sort({ _id: -1 })
                 .then( async(data) => {
                     var newdata = [];
                     await Promise.all(data.map(async(e) =>{
-                        let index = await transformBusiness(e,lang)
+                        let index = await transformBusiness(e,lang,myUser,userId)
                         newdata.push(index)
                     }))
                     res.send({
@@ -569,7 +577,7 @@ export default {
             //get lang
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
-            let {educationType,owner,search,sector,subSector,educationSystem,status} = req.query;
+            let {userId,educationType,owner,search,sector,subSector,educationSystem,status} = req.query;
 
             let query = {deleted: false }
             /*search by name */
@@ -595,6 +603,10 @@ export default {
                 let catIds = await Category.find({deleted:false,educationType:educationType}).distinct('_id')
                 query.subSector = {$in: catIds}
             }
+            let myUser
+            if(userId) {
+                myUser = await checkExistThenGet(userId,User)
+            }
             await Business.find(query).populate(populateQuery)
                 .sort({ _id: -1 })
                 .limit(limit)
@@ -602,7 +614,7 @@ export default {
                 .then(async (data) => {
                     var newdata = [];
                     await Promise.all(data.map(async(e) =>{
-                        let index = await transformBusiness(e,lang)
+                        let index = await transformBusiness(e,lang,myUser,userId)
                         newdata.push(index)
                     }))
                     const count = await Business.countDocuments(query);

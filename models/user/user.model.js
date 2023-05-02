@@ -123,10 +123,6 @@ const userSchema = new Schema({
         type:[Number],
         ref:'user'
     },
-    likedPosts: {
-        type:[Number],
-        ref:'post'
-    },
     balance: {
         type: Number,
         default: 0

@@ -10,6 +10,7 @@ export async function transformConnection(e,lang,userId,myUser) {
             phone: e.from.phone,
             fullname: e.from.fullname,
             type: e.from.type,
+            img:e.from.img,
             id: e.from._id
         }
     }
@@ -18,6 +19,7 @@ export async function transformConnection(e,lang,userId,myUser) {
             phone: e.to.phone,
             fullname: e.to.fullname,
             type: e.to.type,
+            img:e.to.img,
             id: e.to._id
         }
     }

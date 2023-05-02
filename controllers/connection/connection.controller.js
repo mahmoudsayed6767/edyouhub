@@ -194,17 +194,16 @@ export default {
         
         try {
             let { connectionId } = req.params;
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
-                if(req.user._id != connection.to)
-                    return next(new ApiError(403, i18n.__('notAllow')));
-            }
+            
             let connection = await checkExistThenGet(connectionId, Connection);
             if(connection.status != "PENDING"){
                 return next(new ApiError(403, i18n.__('notAllow')));
             }
+            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
+                if(req.user._id != connection.to)
+                    return next(new ApiError(403, i18n.__('notAllow')));
+            }
             connection.status = 'ACCEPTED';
-            await connection.save();
-
             let user =  await checkExistThenGet(req.user._id,User)
             //add to connection list
             var found = user.connections.find(e => e == connection.to)
@@ -218,6 +217,7 @@ export default {
             }
             user.pendingConnections = arr;
             await user.save();
+            await connection.save();
             sendNotifiAndPushNotifi({
                 targetUser: connection.from, 
                 fromUser: connection.to, 
@@ -252,16 +252,17 @@ export default {
         
         try {
             let { connectionId } = req.params;
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
-                if(req.user._id != connection.to)
-                    return next(new ApiError(403, i18n.__('notAllow')));
-            }
+            
             let connection = await checkExistThenGet(connectionId, Connection);
             if(connection.status != "PENDING"){
                 return next(new ApiError(403, i18n.__('notAllow')));
             }
+            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
+                if(req.user._id != connection.to)
+                    return next(new ApiError(403, i18n.__('notAllow')));
+            }
             connection.status = 'REJECTED';
-            await connection.save();
+            
             let user =  await checkExistThenGet(req.user._id,User)
             //remove from pending connections list
             let arr = user.pendingConnections;
@@ -272,6 +273,7 @@ export default {
             }
             user.pendingConnections = arr;
             await user.save();
+            await connection.save();
             sendNotifiAndPushNotifi({
                 targetUser: connection.from, 
                 fromUser: connection.to, 

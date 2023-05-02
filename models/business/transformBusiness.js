@@ -1,4 +1,6 @@
-export async function transformBusiness(e, lang) {
+import {isInArray} from "../../helpers/CheckMethods";
+
+export async function transformBusiness(e,lang,myUser,userId) {
     let index = {
         businessName: lang == "ar" ? e.name_ar : e.name_en,
         phones: e.phones,
@@ -6,6 +8,7 @@ export async function transformBusiness(e, lang) {
         img: e.img,
         reason: e.reason,
         status: e.status,
+        isFollowed:userId?isInArray(myUser.following,e._id):false,
         createdAt: e.createdAt,
         id: e._id
     }
@@ -19,7 +22,7 @@ export async function transformBusiness(e, lang) {
     }
     return index
 }
-export async function transformBusinessById(e, lang) {
+export async function transformBusinessById(e, lang,myUser,userId) {
     let index = {
         businessName: lang == "ar" ? e.name_ar : e.name_en,
         name_en: e.name_en,
@@ -40,6 +43,7 @@ export async function transformBusinessById(e, lang) {
         img: e.img,
         reason: e.reason,
         status: e.status,
+        isFollowed:userId?isInArray(myUser.following,e._id):false,
         createdAt: e.createdAt,
         id: e._id
     }

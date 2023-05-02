@@ -7,10 +7,7 @@ import User from "../../models/user/user.model";
 import Report from "../../models/reports/report.model";
 import ApiError from '../../helpers/ApiError';
 import bcrypt from 'bcryptjs';
-import { generateVerifyCode,generateCode ,generateMaxCode} from '../../services/generator-code-service';
-import DeviceDetector from "device-detector-js";
-import { sendEmail } from "../../services/sendGrid";
-import {sendSms} from "../../services/message-service"
+import { generateCode ,generateMaxCode} from '../../services/generator-code-service';
 import { sendNotifiAndPushNotifi } from "../../services/notification-service";
 import i18n from "i18n";
 import {transformUser,transformUserById,transformUserShort } from '../../models/user/transformUser';
@@ -217,7 +214,7 @@ export default {
             let lang = i18n.getLocale(req)
             let { id } = req.params;
             await checkExist(id, User, { deleted: false });
-            let {userId} = req.params;
+            let {userId} = req.query;
             let myUser
             if(userId){
                 myUser= await checkExistThenGet(userId, User)
@@ -243,7 +240,7 @@ export default {
         try {
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20,
-            {cashBack,phoneVerify,search,accountType,type, active,place} = req.query;
+            {userId,cashBack,phoneVerify,search,accountType,type, active,place} = req.query;
             
             let query = {deleted: false };
             if (place) query.place = place
@@ -268,21 +265,25 @@ export default {
                 })
             }
             let sortd = {createdAt: -1}
+            let myUser
+            if(userId){
+                myUser= await checkExistThenGet(userId, User)
+            }
             await User.find(query).populate(populateQuery)
-            .sort(sortd)
-            .limit(limit)
-            .skip((page - 1) * limit)
-            .then(async(data)=>{
-                let newdata = []
-                await Promise.all(data.map(async(e)=>{
-                    let index = await transformUser(e,lang)
-                    newdata.push(index)
-                }))
-                
-                const usersCount = await User.countDocuments(query);
-                const pageCount = Math.ceil(usersCount / limit);
-                res.send(new ApiResponse(newdata, page, pageCount, limit, usersCount, req));
-            })
+                .sort(sortd)
+                .limit(limit)
+                .skip((page - 1) * limit)
+                .then(async(data)=>{
+                    let newdata = []
+                    await Promise.all(data.map(async(e)=>{
+                        let index = await transformUser(e,lang,myUser,userId)
+                        newdata.push(index)
+                    }))
+                    
+                    const usersCount = await User.countDocuments(query);
+                    const pageCount = Math.ceil(usersCount / limit);
+                    res.send(new ApiResponse(newdata, page, pageCount, limit, usersCount, req));
+                })
            
         } catch (err) {
             next(err);
@@ -291,7 +292,7 @@ export default {
     async getAll(req, res, next) {
         try {
             let lang = i18n.getLocale(req) 
-            let {cashBack,phoneVerify,search,accountType,type, active,place} = req.query;
+            let {userId,cashBack,phoneVerify,search,accountType,type, active,place} = req.query;
             
             let query = {deleted: false };
             if (phoneVerify=="true") query.phoneVerify = true;
@@ -316,17 +317,20 @@ export default {
                 })
             }
             let sortd = {createdAt: -1}
-            
+            let myUser
+            if(userId){
+                myUser= await checkExistThenGet(userId, User)
+            }
             await User.find(query).populate(populateQuery)
-            .sort(sortd)
-            .then(async(data)=>{
-                let newdata = []
-                await Promise.all(data.map(async(e)=>{
-                    let index = await transformUserShort(e,lang)
-                    newdata.push(index)
-                }))
-                res.send({success: true,data:newdata});
-            });
+                .sort(sortd)
+                .then(async(data)=>{
+                    let newdata = []
+                    await Promise.all(data.map(async(e)=>{
+                        let index = await transformUserShort(e,lang,myUser,userId)
+                        newdata.push(index)
+                    }))
+                    res.send({success: true,data:newdata});
+                });
         } catch (err) {
             next(err);
         }
