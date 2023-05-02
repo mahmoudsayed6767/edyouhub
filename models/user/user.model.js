@@ -246,6 +246,16 @@ const userSchema = new Schema({
             type: String,
         },
     },
+    experiencesType:{
+        type: String, 
+        enum: ['EDUCATION','OTHER'],
+    },
+    experiencesOrganization:{
+        type: String,
+    },
+    experiencesProfession:{
+        type: String,
+    },
     workExperiences: [
         new Schema({
             jobTitle:{

@@ -535,10 +535,15 @@ export default {
                 return true;
             }),
             body('job.workType').optional().isIn(['EDUCATION','OTHER']).withMessage((value, { req}) => {
-                return req.__('wrong.type', { value});
+                return req.__('wrong.workType', { value});
             }),
             body('job.organization').optional(),
             body('job.jobTitle').optional(),
+            body('experiencesType').optional().isIn(['EDUCATION','OTHER']).withMessage((value, { req}) => {
+                return req.__('wrong.experiencesType', { value});
+            }),
+            body('experiencesOrganization').optional(),
+            body('experiencesProfession').optional(),
             body('workExperiences').optional()
             .custom(async (workExperiences, { req }) => {
                 

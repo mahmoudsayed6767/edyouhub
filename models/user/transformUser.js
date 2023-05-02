@@ -48,6 +48,9 @@ export async function transformUserById(e,lang,myUser,userId) {
         schoolInfo:e.schoolInfo,
         universityInfo:e.universityInfo,
         job:e.job,
+        experiencesType:e.experiencesType,
+        experiencesProfession:e.experiencesProfession,
+        experiencesOrganization:e.experiencesOrganization,
         createdAt: e.createdAt,
         
     }
