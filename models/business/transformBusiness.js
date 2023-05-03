@@ -44,8 +44,28 @@ export async function transformBusinessById(e, lang,myUser,userId) {
         reason: e.reason,
         status: e.status,
         isFollowed:userId?isInArray(myUser.following,e._id):false,
+        hasPackage:e.hasPackage,
         createdAt: e.createdAt,
         id: e._id
+    }
+    if (e.package) {
+        index.package = {
+            title:lang=="ar"?e.package.title_ar:e.package.title_en,
+            type:e.package.type,
+            badgeType:e.package.badgeType,
+            dataView:e.package.dataView,
+            createEvents:e.package.createEvents,
+            createReels:e.package.createReels,
+            createGroups:e.package.createGroups,
+            createBusiness:e.package.createBusiness,
+            enableFollow:e.package.enableFollow,
+            sendingMessages:e.package.sendingMessages,
+            createPosts:e.package.createPosts,
+            createCourses:e.package.createCourses,
+            createVacancies:e.package.createVacancies,
+            createAdmissions:e.package.createAdmissions,
+            id: e.package._id,
+        }
     }
     if (e.owner) {
         index.owner = {

@@ -27,13 +27,16 @@ import OfferBooking from "../../models/offerBooking/offerBooking.model"
 import OfferCart from "../../models/offerCart/offerCart.model";
 import moment from "moment";
 import EventAttendance from "../../models/event/eventAttendance.model"
+import Business from "../../models/business/business.model"
 const populateQuery2 = [
     {path: 'package', model: 'package'},
+    {path: 'cashbackPackage', model: 'cashbackPackage'},
     {path: 'order', model: 'order'},
     {path: 'fund', model: 'fund'},
     {path: 'premium', model: 'premium'},
     {path: 'offer', model: 'offer'},
     {path: 'user', model: 'user'},
+    {path: 'event', model: 'event'},
     {
         path: 'offerBooking', model: 'offerBooking',
         populate: { path: 'offers.offer', model: 'offer' },
@@ -231,23 +234,34 @@ const payOfferBooking = async (theOfferBooking,client) => {
     }
     return true;
 };
-const payPackage = async (thePackage,userId) => {
-    let user = await checkExistThenGet(userId, User, { deleted: false });
-    let userPackage = await checkExistThenGet(thePackage, Package, { deleted: false });
+const payPackage = async (thePackage,userId,businessId) => {
+    let newPackage = await checkExistThenGet(thePackage, Package, { deleted: false });
     let endDateMillSec
-    if(userPackage.durationType == "DAILY"){
-        endDateMillSec = Date.parse(moment(new Date()).add(userPackage.duration, "d").format()) ;
+    if(newPackage.durationType == "DAILY"){
+        endDateMillSec = Date.parse(moment(new Date()).add(newPackage.duration, "d").format()) ;
     }
-    if(userPackage.durationType == "MONTHLY"){
-        endDateMillSec = Date.parse(moment(new Date()).add(userPackage.duration, "M").format()) ;
+    if(newPackage.durationType == "MONTHLY"){
+        endDateMillSec = Date.parse(moment(new Date()).add(newPackage.duration, "M").format()) ;
     }
-    if(userPackage.durationType == "YEARLY"){
-        endDateMillSec = Date.parse(moment(new Date()).add(userPackage.duration, "Y").format()) ;
+    if(newPackage.durationType == "YEARLY"){
+        endDateMillSec = Date.parse(moment(new Date()).add(newPackage.duration, "Y").format()) ;
     }
-    user.hasPackage = true;
-    user.packageStartDateMillSec = Date.parse(new Date());
-    user.packageEndDateMillSec = endDateMillSec ;
-    await user.save();
+    if(businessId){
+        let theBusiness = await checkExistThenGet(businessId, Business, { deleted: false });
+        theBusiness.package = thePackage;
+        theBusiness.hasPackage = true;
+        theBusiness.packageStartDateMillSec = Date.parse(new Date());
+        theBusiness.packageEndDateMillSec = endDateMillSec ;
+        await theBusiness.save();
+    }else{
+        let user = await checkExistThenGet(userId, User, { deleted: false });
+        user.package = thePackage;
+        user.hasPackage = true;
+        user.packageStartDateMillSec = Date.parse(new Date());
+        user.packageEndDateMillSec = endDateMillSec ;
+        await user.save();
+    }
+    
     return true;
 };
 const payEvent = async (theEvent,userId) => {
@@ -306,6 +320,9 @@ export default {
             }
             if(validatedBody.type =="PACKAGE"){
                 transactionData.package = validatedBody.package
+                if(validatedBody.business){
+                    transactionData.business = validatedBody.business
+                }
             }
             if(validatedBody.type =="OFFER"){
                 let offers = []
@@ -484,7 +501,7 @@ export default {
                     await user.save();
                 }
                 if(theTransaction.type =="PACKAGE"){
-                    await payPackage(theTransaction.package,userId)
+                    await payPackage(theTransaction.package,userId,theTransaction.business)
                 }
                 if(theTransaction.type =="EVENT"){
                     await payEvent(theTransaction.event,userId)

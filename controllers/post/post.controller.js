@@ -13,7 +13,6 @@ import i18n from "i18n";
 import { transformPost,transformPostById } from "../../models/post/transformPost";
 import { transformComment } from "../../models/comment/transformComment";
 import Option from "../../models/post/option.model";
-import { toImgUrl } from "../../utils";
 import Event from "../../models/event/event.model";
 const populateQuery = [
     { path: 'owner', model: 'user'},
@@ -139,12 +138,29 @@ export default {
             }),
             body('theOptions').optional()
             .custom(async (options, { req }) => {
-                
                 for (let option of options) {
                     body('title').not().isEmpty().withMessage((value) => {
                         return req.__('title.required', { value});
                     }),
                     body('optionId').optional()
+                }
+                return true;
+            }),
+            body('files').optional()
+            .custom(async (files, { req }) => {
+                for (let file of files) {
+                    body('dataType').optional().isIn(['IMAGE', 'VIDEO','FILE']).withMessage((value, { req}) => {
+                        return req.__('dataType.invalid', { value});
+                    }),
+                    body('link').not().isEmpty().withMessage((value) => {
+                        return req.__('link.required', { value});
+                    }),
+                    body('link').not().isEmpty().withMessage((value) => {
+                        return req.__('link.required', { value});
+                    }),
+                    body('preview').optional(),
+                    body('title').optional(),
+                    body('duration').optional()
                 }
                 return true;
             }),
@@ -158,22 +174,7 @@ export default {
             const validatedBody = checkValidations(req);
             validatedBody.owner = req.user._id;
             if(validatedBody.business) validatedBody.ownerType = 'BUSINESS'
-            if (req.files) {
-                if (req.files['files']) {
-                    let imagesList = [];
-                    for (let imges of req.files['files']) {
-                        imagesList.push(await toImgUrl(imges))
-                    }
-                    validatedBody.files = imagesList;
-                }
-                if (req.files['preview']) {
-                    let imagesList = [];
-                    for (let imges of req.files['preview']) {
-                        imagesList.push(await toImgUrl(imges))
-                    }
-                    validatedBody.preview = imagesList;
-                }
-            }
+
             let createdPost = await Post.create({ ...validatedBody});
             let options = []
             if(validatedBody.theOptions){
@@ -223,16 +224,6 @@ export default {
                     return next(new ApiError(403, i18n.__('admin.auth')));
             }
             const validatedBody = checkValidations(req);
-            if (req.files) {
-                if (req.files['files']) {
-                    let imagesList = [];
-                    for (let imges of req.files['files']) {
-                        imagesList.push(await toImgUrl(imges))
-                    }
-                    validatedBody.files = imagesList;
-                    
-                }
-            }
             let options = []
             if(validatedBody.theOptions){
                 await Promise.all(validatedBody.theOptions.map(async(val) => {
@@ -318,15 +309,13 @@ export default {
     async addLike(req, res, next) { 
         try {
             let {postId} = req.params
-            await checkExist (postId,Post,{deleted:false})
-            let user = await checkExistThenGet(req.user._id, User);
+            let thePost = await checkExistThenGet(postId, Post);
+
             if(!await Like.findOne({ user: req.user._id, post: postId,deleted:false})){
-                let arr = user.likedPosts;
-                var found = arr.find((e) => e == postId); 
+                let arr = thePost.likedList;
+                var found = arr.find((e) => e == req.user._id); 
                 if(!found){
-                    user.likedPosts.push(postId);
-                    await user.save();
-                    let thePost = await checkExistThenGet(postId, Post);
+                    thePost.likedList.push(postId);
                     thePost.likesCount = thePost.likesCount + 1;
                     let like = await Like.create({ user: req.user._id, post: postId });
                     await thePost.save();
@@ -361,17 +350,15 @@ export default {
             like.deleted = true;
             await like.save();
              /*remove post id from user data*/
-            let user = await checkExistThenGet(req.user._id, User);
-            let arr = user.likedPosts;
+            let thePost = await checkExistThenGet(postId, Post);
+            let arr = thePost.likedList;
             for(let i = 0;i<= arr.length;i=i+1){
-                if(arr[i] == postId){
+                if(arr[i] == req.user._id){
                     arr.splice(i, 1);
                 }
             }
-            user.like = arr;
-            await user.save();
+            thePost.likedList = arr;
             /*reduce the likes count */
-            let thePost = await checkExistThenGet(postId, Post);
             thePost.likesCount = thePost.likesCount - 1;
             await thePost.save();
             let reports = {

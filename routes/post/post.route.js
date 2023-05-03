@@ -1,21 +1,12 @@
 import express from 'express';
 import postController from '../../controllers/post/post.controller';
 import { requireAuth } from '../../services/passport';
-import { multerSaveTo } from '../../services/multer-service';
-import { cache } from '../../services/caching';
-import { parseStringToArrayOfObjectsMw } from '../../utils';
 
 const router = express.Router();
 
 router.route('/')
     .post(
         requireAuth,
-        multerSaveTo('posts').fields([
-            { name: 'files', maxCount: 6, options: false },
-            { name: 'preview', maxCount: 6, options: false },
-            
-        ]),
-        parseStringToArrayOfObjectsMw('theOptions'),
         postController.validateBody(),
         postController.create
     )
@@ -27,11 +18,6 @@ router.route('/withoutPagenation/get')
 router.route('/:postId')
     .put(
         requireAuth,
-        multerSaveTo('posts').fields([
-            { name: 'files', maxCount: 6, options: false },
-            { name: 'preview', maxCount: 6, options: false },
-        ]),
-        parseStringToArrayOfObjectsMw('theOptions'),
         postController.validateBody(true),
         postController.update
     )

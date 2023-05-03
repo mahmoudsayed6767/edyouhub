@@ -16,6 +16,10 @@ export async function transformPackage(e,lang) {
         createBusiness:e.createBusiness,
         enableFollow:e.enableFollow,
         sendingMessages:e.sendingMessages,
+        createPosts:e.createPosts,
+        createCourses:e.createCourses,
+        createVacancies:e.createVacancies,
+        createAdmissions:e.createAdmissions,
         id: e._id,
         createdAt: e.createdAt,
     }

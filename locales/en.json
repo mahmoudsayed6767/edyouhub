@@ -308,5 +308,10 @@
 	"badgeType.required": "badgeType.required",
 	"badgeType.invalid": "badgeType.invalid",
 	"event.notFoundInList": "event.notFoundInList",
-	"transaction not exist": "transaction not exist"
+	"transaction not exist": "transaction not exist",
+	"createPosts.required": "createPosts.required",
+	"createCourses.required": "createCourses.required",
+	"createVacancies.required": "createVacancies.required",
+	"createAdmissions.required": "createAdmissions.required",
+	"connectionRequest.notFound": "connectionRequest.notFound"
 }

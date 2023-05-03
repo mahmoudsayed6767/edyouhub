@@ -147,12 +147,80 @@ export default {
             next(error);
         }
     },
+    async create(req, res, next) {
+        try {
+            let{toId} = req.params
+            let query = {
+                $and: [
+                    { $or: [
+                        {$and: [
+                            {to: toId}, 
+                            {from: req.user._id}, 
+                        ]},
+                        {$and: [
+                            
+                            {to: req.user._id}, 
+                            {from: toId}, 
+                        ]},
+                      ] 
+                    },
+                    {deleted: false},
+                    {status:{$ne:'REJECTED'}}
+                ]
+            }
+            if(await Connection.findOne(query))
+                return next(new ApiError(500, i18n.__('connectionRequest.exist')));
+
+            let connection = await Connection.create({
+                from:req.user._id,
+                to: toId
+            });
+            let user = await checkExistThenGet(req.user._id,User)
+            var found = user.pendingConnections.find(e => e == toId)
+            if(!found) user.pendingConnections.push(toId)
+            await user.save();
+            sendNotifiAndPushNotifi({
+                targetUser: connection.to, 
+                fromUser: connection.from, 
+                text: ' EdHub',
+                subject: connection.id,
+                subjectType: 'connection Status',
+                info:'connection'
+            });
+            let notif = {
+                "description_en":`New connection Request from  ${req.user.fullname}`,
+                "description_ar":`لديك طلب تواصل جديد من ${req.user.fullname}`,
+                "title_en":'New connection Request',
+                "title_ar":'لديك طلب تواصل جديد',
+                "type":'CONNECTION'
+            }
+            await Notif.create({...notif,resource:req.user,target:connection.to,connection:connection.id});
+            let reports = {
+                "action":"Create New connection",
+                "type":"CONNECTION",
+                "deepId":connection.id,
+                "user": req.user._id
+            };
+            await Report.create({...reports });                
+            return res.status(201).send({success:true});
+        } catch (error) {
+            next(error);
+        }
+    },
     async delete(req, res, next) {
         
         try {
-            let { connectionId } = req.params;
-           
-            let connection = await checkExistThenGet(connectionId, Connection);
+            let { toId } = req.params;
+            let query = {
+                to: toId,
+                from: req.user._id,
+                deleted: false
+            }
+            
+            let connection = await Connection.findOne(query);
+            if(!connection)
+                return next(new ApiError(500, i18n.__('connectionRequest.notFound')));
+
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
                 if(req.user._id != connection.from)
                     return next(new ApiError(403, i18n.__('notAllow')));
@@ -180,7 +248,7 @@ export default {
             let reports = {
                 "action":"Delete connection",
                 "type":"CONNECTION",
-                "deepId":connectionId,
+                "deepId":connection.id,
                 "user": req.user._id
             };
             await Report.create({...reports });

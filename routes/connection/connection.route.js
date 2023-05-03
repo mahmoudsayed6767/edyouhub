@@ -13,7 +13,7 @@ router.route('/')
     .get(requireAuth,connectionController.getAllPaginated);
 router.route('/withoutPagenation/get')
     .get(requireAuth,connectionController.getAll);
-router.route('/:connectionId')
+router.route('/:toId')
     .delete(requireAuth,connectionController.delete);
 
 router.route('/:connectionId/accept')

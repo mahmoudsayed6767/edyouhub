@@ -57,8 +57,28 @@ export async function transformUserById(e,lang,myUser,userId) {
         experiencesOrganization:e.experiencesOrganization,
         isConnected:userId?isInArray(myUser.connections,e._id):false,
         pendingConnect:userId?isInArray(myUser.pendingConnections,e._id):false,
+        hasPackage:e.hasPackage,
         createdAt: e.createdAt,
         
+    }
+    if (e.package) {
+        index.package = {
+            title:lang=="ar"?e.package.title_ar:e.package.title_en,
+            type:e.package.type,
+            badgeType:e.package.badgeType,
+            dataView:e.package.dataView,
+            createEvents:e.package.createEvents,
+            createReels:e.package.createReels,
+            createGroups:e.package.createGroups,
+            createBusiness:e.package.createBusiness,
+            enableFollow:e.package.enableFollow,
+            sendingMessages:e.package.sendingMessages,
+            createPosts:e.package.createPosts,
+            createCourses:e.package.createCourses,
+            createVacancies:e.package.createVacancies,
+            createAdmissions:e.package.createAdmissions,
+            id: e.package._id,
+        }
     }
     if(e.type =="affiliate"){
         index.affiliateCode = e.affiliateCode

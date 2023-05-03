@@ -15,6 +15,27 @@ const eventAttendanceSchema = new Schema({
         ref: 'event',
         required: true
     },
+    paymentMethod:{
+        type: String,
+        enum:['CASH','INSTALLMENT'],
+        default:'CASH',
+    },
+    installments: [
+        new Schema({
+            num: {
+                type: Number,
+                required: true
+            },
+            price: {
+                type: Number,
+                required: true
+            },
+            paid: {
+                type: Boolean,
+                default: false
+            }
+        }, { _id: false })
+    ],
     deleted: {
         type: Boolean,
         default: false

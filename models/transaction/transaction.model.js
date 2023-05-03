@@ -33,6 +33,10 @@ const transactionSchema = new Schema({
         type:Number,
         ref:'package',
     },
+    business:{
+        type:Number,
+        ref:'business',
+    },
     event:{
         type:Number,
         ref:'event',

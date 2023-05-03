@@ -20,19 +20,38 @@ const postSchema=new Schema({
         enum:['USER', 'BUSINESS','APP'],
         default:'USER'
     },
+    dataType:{
+        type: String,
+        enum:['IMAGE', 'VIDEO','FILE','TEXT','LINK'],
+        default:'TEXT',
+    },
     content:{
         type: String,
     },
-    files:{
-        type: [String],
-    },
-    preview:{
-        type: [String],
-    },
-    dataType:{
-        type: String,
-        enum:['IMAGE', 'VIDEO','FILE'],
-    },
+    files: [
+        new Schema({
+            dataType:{
+                type: String,
+                enum:['IMAGE', 'VIDEO','FILE'],
+                required:true,
+            },
+            link: {
+                type: String,
+                required:true,
+            },
+            preview: {
+                type: String,
+            },
+            title: {
+                type: String,
+            },
+            duration: {
+                type: String,
+            },
+        }, { _id: false })
+        
+    ],
+    
     options: {
         type: [Number],
         ref:'option',
@@ -53,6 +72,10 @@ const postSchema=new Schema({
     vacancy: {
         type: Number,
         ref:'vacancy',
+    },
+    likedList: {
+        type: [Number],
+        ref:'user',
     },
     likesCount:{
         type:Number,

@@ -28,7 +28,7 @@ const checkUserExistByEmail = async (email) => {
 
     return user;
 }
-const populateQuery = [
+const populateQueryById = [
     { path: 'place', model: 'place'},
     { path: 'country', model: 'country' },
     { path: 'city', model: 'city' },
@@ -69,7 +69,7 @@ export default {
             
             let lang = i18n.getLocale(req)
             let user = req.user;
-            user = await User.findById(user.id).populate(populateQuery);
+            user = await User.findById(user.id).populate(populateQueryById);
            
             if(!user)
                 return next(new ApiError(403, ('phone or password incorrect')));
@@ -109,7 +109,7 @@ export default {
                     await user.save();
                 }
             }
-            await User.findById(user.id).populate(populateQuery)
+            await User.findById(user.id).populate(populateQueryById)
             .then(async(e)=>{
                 let index = await transformUserById(e,lang)
                 if(user.accountType === "SIGNUP-PROCESS"){
@@ -263,7 +263,7 @@ export default {
                 "user": createdUser._id
             };
             await Report.create({...reports });
-            await User.findById(createdUser.id).populate(populateQuery)
+            await User.findById(createdUser.id).populate(populateQueryById)
             .then(async(e)=>{
                 let index = await transformUserById(e,lang)
                 res.status(201).send({
@@ -315,7 +315,7 @@ export default {
                 "user": user._id
             };
             await Report.create({...reports });
-            await User.findById(user.id).populate(populateQuery)
+            await User.findById(user.id).populate(populateQueryById)
             .then(async(e)=>{
                 let index = await transformUserById(e,lang)
                 if(user.accountType == "ACTIVE"){

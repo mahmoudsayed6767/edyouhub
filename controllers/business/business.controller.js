@@ -35,6 +35,10 @@ function validatedLocation(location) {
 }
 const populateQuery = [
     { path: 'owner', model: 'user' },
+];
+const populateQueryById = [
+    { path: 'owner', model: 'user' },
+    { path: 'package', model: 'package' },
     { path: 'educationSystem', model: 'educationSystem' },
     { path: 'sector', model: 'category' },
     { path: 'subSector', model: 'category' },
@@ -408,7 +412,7 @@ export default {
                 myUser = await checkExistThenGet(userId,User)
             }
             await Business.findById(businessId)
-                .populate(populateQuery)
+                .populate(populateQueryById)
                 .then(async(e) => {
                     let business = await transformBusinessById(e,lang,myUser,userId)
                     business.management = await BusinessManagement.findOne({deleted:false,business:e._id})

@@ -94,7 +94,7 @@ export default {
             }),
             body('badgeType').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('badgeType.required', { value});
-            }).isIn(['GOLD','NORMAL']).withMessage((value, { req}) => {
+            }).isIn(['GOLD','NORMAL','VERIFIED']).withMessage((value, { req}) => {
                 return req.__('badgeType.invalid', { value});
             }),
             body('dataView').not().isEmpty().withMessage((value, { req}) => {
@@ -113,6 +113,18 @@ export default {
             }),
             body('createBusiness').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('createBusiness.required', { value});
+            }),
+            body('createPosts').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('createPosts.required', { value});
+            }),
+            body('createCourses').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('createCourses.required', { value});
+            }),
+            body('createVacancies').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('createVacancies.required', { value});
+            }),
+            body('createAdmissions').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('createAdmissions.required', { value});
             }),
             body('enableFollow').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('enableFollow.required', { value});

@@ -35,7 +35,11 @@ const checkUserExistByEmail = async (email) => {
     return user;
 }
 const populateQuery = [
+
+];
+const populateQueryById = [
     { path: 'place', model: 'place'},
+    { path: 'package', model: 'package'},
     { path: 'country', model: 'country' },
     { path: 'city', model: 'city' },
     { path: 'area', model: 'area' },
@@ -92,7 +96,7 @@ export default {
                 "user": req.user._id
             };
             await Report.create({...reports });
-            await User.findById(createdUser.id).populate(populateQuery)
+            await User.findById(createdUser.id).populate(populateQueryById)
             .then(async(e)=>{
                 let index = await transformUserById(e,lang)
                 res.status(201).send({
@@ -195,7 +199,7 @@ export default {
                 }
             }
             await user.save();
-            await User.findById(req.user._id).populate(populateQuery)
+            await User.findById(req.user._id).populate(populateQueryById)
             .then(async(e)=>{
                 let index = await transformUserById(e,lang)
                 res.send({
@@ -219,7 +223,7 @@ export default {
             if(userId){
                 myUser= await checkExistThenGet(userId, User)
             }
-            await User.findById(id).populate(populateQuery)
+            await User.findById(id).populate(populateQueryById)
             .then(async(e)=>{
                 let index = await transformUserById(e,lang,myUser,userId)
                 let funds = await Fund.find({deleted: false,status:{$in:['ACCEPTED','STARTED','COMPLETED']},owner:id}).distinct('totalFees')
@@ -472,7 +476,7 @@ export default {
                 "user": req.user._id
             };
             await Report.create({...reports });
-            await User.findById(userId).populate(populateQuery)
+            await User.findById(userId).populate(populateQueryById)
             .then(async(e)=>{
                 let index = await transformUserById(e,lang)
                 res.send({
@@ -627,7 +631,7 @@ export default {
                 "user": req.user._id
             };
             await Report.create({...reports });
-            await User.findById(userId).populate(populateQuery)
+            await User.findById(userId).populate(populateQueryById)
             .then(async(e)=>{
                 let index = await transformUserById(e,lang)
                 res.send({

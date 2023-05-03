@@ -34,7 +34,7 @@ const PackageSchema=new Schema({
     },
     badgeType:{
         type:String,
-        enum:['GOLD','NORMAL'],
+        enum:['GOLD','NORMAL','VERIFIED'],
         default:'NORMAL'
     },
     dataView:{
@@ -55,6 +55,22 @@ const PackageSchema=new Schema({
         default:false
     },
     createBusiness:{
+        type:Boolean,
+        default:false
+    },
+    createPosts:{
+        type:Boolean,
+        default:false
+    },
+    createCourses:{
+        type:Boolean,
+        default:false
+    },
+    createVacancies:{
+        type:Boolean,
+        default:false
+    },
+    createAdmissions:{
         type:Boolean,
         default:false
     },
