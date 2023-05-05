@@ -18,6 +18,7 @@ import BusinessManagement from "../../models/business/businessManagement.model"
 import City from "../../models/city/city.model"
 import Country from "../../models/country/country.model"
 import Area from "../../models/area/area.model"
+import CourseTutorial from "../../models/course/courseTutorial.model";
 import { toImgUrl } from "../../utils";
 
 const populateQuery = [
@@ -41,11 +42,11 @@ export default {
     //validate body
     validateBody(isUpdate = false) {
         let validations = [
-            body('name_en').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('name_en.required', { value});
+            body('title_en').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('title_en.required', { value});
             }),
-            body('name_ar').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('name_ar.required', { value});
+            body('title_ar').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('title_ar.required', { value});
             }),
             body('description_en').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('description_en.required', { value});
@@ -61,6 +62,9 @@ export default {
             }),
             body('maxAcceptance').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('maxAcceptance.required', { value});
+            }),
+            body('type').optional().isIn(['ONLINE','ON-SITE']).withMessage((value, { req}) => {
+                return req.__('type.invalid', { value});
             }),
             body('specializations').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('specializations.required', { value});
@@ -555,6 +559,61 @@ export default {
                 })
         } catch (err) {
             next(err);
+        }
+    },
+    //validate body
+    validateSectionBody(isUpdate = false) {
+        let validations = [
+            body('section_en').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('section_en.required', { value});
+            }),
+            body('section_ar').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('section_ar.required', { value});
+            }),
+        ];
+        return validations;
+    },
+    //add new course
+    async createSection(req, res, next) {
+        try {
+            const validatedBody = checkValidations(req);
+            let {courseId} = req.params
+            validatedBody.course = courseId
+            let course = await checkExistThenGet(courseId,Course,{deleted:false})
+            let business = await checkExistThenGet(course.business,Business,{ deleted: false})
+            let businessManagement = await BusinessManagement.findOne({deleted:false,business:business._id})
+            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
+                let supervisors = [business.owner]
+                if(businessManagement){
+                    supervisors.push(...businessManagement.course.supervisors)
+                }
+                if(!isInArray(supervisors,req.user._id))
+                    return next(new ApiError(403,  i18n.__('notAllow')));
+            }
+            //upload videos
+            if (req.files) {
+                if (req.files['videos']) {
+                    let imagesList = [];
+                    for (let imges of req.files['videos']) {
+                        imagesList.push(await toImgUrl(imges))
+                    }
+                    validatedBody.videos = imagesList;
+                }
+            }
+            let courseToturial = await CourseTutorial.create({ ...validatedBody });
+            let reports = {
+                "action":"Create New course tutorial",
+                "type":"COURSE",
+                "deepId":courseToturial.id,
+                "user": req.user._id
+            };
+            await Report.create({...reports });
+            res.status(201).send({
+                success:true,
+                data:courseToturial
+            });
+        } catch (error) {
+            next(error);
         }
     },
 }

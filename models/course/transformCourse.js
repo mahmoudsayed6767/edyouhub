@@ -1,6 +1,6 @@
 export async function transformCourse(e,lang,myUser,userId) {
     let index = {
-        name:lang=="ar"?e.name_ar:e.name_en,
+        title:lang=="ar"?e.title_ar:e.title_en,
         status:e.status,
         id:e._id,
         imgs:e.imgs,
@@ -38,7 +38,7 @@ export async function transformCourse(e,lang,myUser,userId) {
 }
 export async function transformCourseById(e,lang,myUser,userId) {
     let index = {
-        name:lang=="ar"?e.name_ar:e.name_en,
+        title:lang=="ar"?e.title_ar:e.title_en,
         description:lang=="ar"?e.description_ar:e.description_en,
         status:e.status,
         id:e._id,

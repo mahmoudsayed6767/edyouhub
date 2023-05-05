@@ -5,15 +5,20 @@ const courseSchema=new Schema({
         type: Number,
         required: true
     },
-    name_en: {
+    title_en: {
         type: String,
         required: true,
         trim: true,
     },
-    name_ar: {
+    title_ar: {
         type: String,
         trim: true,
         required: true,
+    },
+    type: {
+        type: String,
+        enum: ['ONLINE','ON-SITE'],
+        default:'ON-SITE',
     },
     status: {
         type: String,
@@ -136,6 +141,25 @@ const courseSchema=new Schema({
         type: Number,
         default:0
     },
+    tutorial: [
+        new Schema({
+            section_en: {
+                type: String,
+                required: true,
+                trim: true,
+            },
+            section_ar: {
+                type: String,
+                trim: true,
+                required: true,
+            },
+            videos: {
+                type: [String],
+                trim: true,
+                required: true,
+            },
+        }, { _id: false })
+    ],
     deleted:{
         type:Boolean,
         default:false
