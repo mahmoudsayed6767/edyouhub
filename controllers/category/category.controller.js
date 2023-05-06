@@ -194,7 +194,8 @@ export default {
                 return req.__('type.invalid', { value});
             }),
             body('educationType').optional()
-            .isIn(['SCHOOL','UNIVERSITY','HIGH-ACADEMY','NURSERY','HIGH-CENTER','BASIC-CENTER','INSTITUTE','BASIC-ACADEMY','TUTOR','SERVICE','HIGH','BASIC']).withMessage((value, { req}) => {
+            .isIn(['SCHOOL','UNIVERSITY','HIGH-ACADEMY','NURSERY','HIGH-CENTER','BASIC-CENTER','HIGH-TUTOR','BASIC-TUTOR','SERVICE-PROVIDER','INSTITUTE','BASIC-ACADEMY','HIGH','BASIC'])
+            .withMessage((value, { req}) => {
                 return req.__('educationType.invalid', { value});
             }),
             

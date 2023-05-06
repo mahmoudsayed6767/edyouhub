@@ -35,6 +35,7 @@ function validatedLocation(location) {
 }
 const populateQuery = [
     { path: 'owner', model: 'user' },
+    { path: 'package', model: 'package' },
 ];
 const populateQueryById = [
     { path: 'owner', model: 'user' },
@@ -128,7 +129,8 @@ export default {
                         return true;
                 }
             }),
-            body('educationType').optional().isIn(['SCHOOL','UNIVERSITY','HIGH-ACADEMY','NURSERY','HIGH-CENTER','BASIC-CENTER','INSTITUTE','BASIC-ACADEMY','HIGH','BASIC'])
+            body('educationType').optional()
+            .isIn(['SCHOOL','UNIVERSITY','HIGH-ACADEMY','NURSERY','HIGH-CENTER','BASIC-CENTER','HIGH-TUTOR','BASIC-TUTOR','SERVICE-PROVIDER','INSTITUTE','BASIC-ACADEMY','HIGH','BASIC'])
             .withMessage((value, { req}) => {
                 return req.__('educationType.invalid', { value});
             }),

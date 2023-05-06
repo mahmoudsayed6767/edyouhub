@@ -6,7 +6,6 @@ export async function transformUser(e,lang,myUser,userId) {
         fullname:e.fullname,
         email:e.email,
         phone:e.phone,
-        id:e._id,
         type:e.type,
         accountType:e.accountType,
         age:e.age,
@@ -18,6 +17,17 @@ export async function transformUser(e,lang,myUser,userId) {
         pendingConnect:userId?isInArray(myUser.pendingConnections,e._id):false,
         cashBack:e.cashBack,
         createdAt: e.createdAt,
+        hasPackage:e.hasPackage,
+        id: e._id
+    }
+    if (e.package) {
+        index.package = {
+            title:lang=="ar"?e.package.title_ar:e.package.title_en,
+            type:e.package.type,
+            badgeType:e.package.badgeType,
+            dataView:e.package.dataView,
+            id: e.package._id,
+        }
     }
     
     return index;

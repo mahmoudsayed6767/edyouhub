@@ -10,7 +10,17 @@ export async function transformBusiness(e,lang,myUser,userId) {
         status: e.status,
         isFollowed:userId?isInArray(myUser.following,e._id):false,
         createdAt: e.createdAt,
+        hasPackage:e.hasPackage,
         id: e._id
+    }
+    if (e.package) {
+        index.package = {
+            title:lang=="ar"?e.package.title_ar:e.package.title_en,
+            type:e.package.type,
+            badgeType:e.package.badgeType,
+            dataView:e.package.dataView,
+            id: e.package._id,
+        }
     }
     if (e.owner) {
         index.owner = {

@@ -20,22 +20,9 @@ import {transformAddress} from "../../models/address/transformAddress"
 import Fund from "../../models/fund/fund.model";
 import HigherEducation from "../../models/higherEducation/higherEducation.model"
 import EducationSystem from "../../models/education system/education system.model"
-const checkUserExistByPhone = async (phone) => {
-    let user = await User.findOne({ phone:phone,deleted:false });
-    if (!user)
-        throw new ApiError.BadRequest('Phone Not Found');
 
-    return user;
-}
-const checkUserExistByEmail = async (email) => {
-    let user = await User.findOne({ email : email,deleted : false});
-    if (!user)
-        throw new ApiError.BadRequest('email Not Found');
-
-    return user;
-}
 const populateQuery = [
-
+    { path: 'package', model: 'package' },
 ];
 const populateQueryById = [
     { path: 'place', model: 'place'},
