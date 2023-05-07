@@ -261,9 +261,16 @@ export default {
     async accept(req, res, next) {
         
         try {
-            let { connectionId } = req.params;
+            let { toId } = req.params;
+            let query = {
+                to: toId,
+                from: req.user._id,
+                deleted: false
+            }
             
-            let connection = await checkExistThenGet(connectionId, Connection);
+            let connection = await Connection.findOne(query);
+            if(!connection)
+                return next(new ApiError(500, i18n.__('connectionRequest.notFound')));
             if(connection.status != "PENDING"){
                 return next(new ApiError(403, i18n.__('notAllow')));
             }
@@ -319,9 +326,16 @@ export default {
     async reject(req, res, next) {
         
         try {
-            let { connectionId } = req.params;
+            let { toId } = req.params;
+            let query = {
+                to: toId,
+                from: req.user._id,
+                deleted: false
+            }
             
-            let connection = await checkExistThenGet(connectionId, Connection);
+            let connection = await Connection.findOne(query);
+            if(!connection)
+                return next(new ApiError(500, i18n.__('connectionRequest.notFound')));
             if(connection.status != "PENDING"){
                 return next(new ApiError(403, i18n.__('notAllow')));
             }

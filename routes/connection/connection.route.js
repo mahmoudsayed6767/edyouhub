@@ -16,12 +16,12 @@ router.route('/withoutPagenation/get')
 router.route('/:toId')
     .delete(requireAuth,connectionController.delete);
 
-router.route('/:connectionId/accept')
+router.route('/:toId/accept')
     .put(
         requireAuth,
         connectionController.accept
     )
-router.route('/:connectionId/reject')
+router.route('/:toId/reject')
     .put(
         requireAuth,
         connectionController.reject
