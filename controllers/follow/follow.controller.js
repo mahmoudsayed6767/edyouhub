@@ -12,7 +12,7 @@ import {transformBusiness} from "../../models/business/transformBusiness";
 import Report from "../../models/reports/report.model";
 const populateQuery = [ 
     {path: 'owner', model: 'user' },
-
+    { path: 'package', model: 'package' },
 ];
 export default {
     async findAll(req, res, next) {

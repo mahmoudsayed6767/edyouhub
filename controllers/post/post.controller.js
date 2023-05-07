@@ -16,7 +16,10 @@ import Option from "../../models/post/option.model";
 import Event from "../../models/event/event.model";
 const populateQuery = [
     { path: 'owner', model: 'user'},
-    { path: 'business', model: 'business'},
+    {
+        path: 'business', model: 'business',
+        populate: { path: 'package', model: 'package' },
+    },
     { path: 'options', model: 'option'},
     { path: 'vacancy', model: 'vacancy'},
     { path: 'event', model: 'event'},

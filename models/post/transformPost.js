@@ -14,10 +14,21 @@ export async function transformPost(e,lang,myUser,userId) {
         createdAt: e.createdAt
     }
     if(e.business){
-        index.business = {
+        let business = {
             name:lang=="ar"?e.business.name_ar:e.business.name_en,
             img:e.business.img,
             id: e.business._id,
+            hasPackage:e.business.hasPackage,
+
+        }
+        if (e.business.package) {
+            business.package = {
+                title:lang=="ar"?e.business.package.title_ar:e.business.package.title_en,
+                type:e.business.package.type,
+                badgeType:e.business.package.badgeType,
+                dataView:e.business.package.dataView,
+                id: e.business.package._id,
+            }
         }
     }
     if(e.owner){
@@ -150,10 +161,21 @@ export async function transformPostById(e,lang,myUser,userId) {
         createdAt: e.createdAt
     }
     if(e.business){
-        index.business = {
+        let business = {
             name:lang=="ar"?e.business.name_ar:e.business.name_en,
             img:e.business.img,
             id: e.business._id,
+            hasPackage:e.business.hasPackage,
+
+        }
+        if (e.business.package) {
+            business.package = {
+                title:lang=="ar"?e.business.package.title_ar:e.business.package.title_en,
+                type:e.business.package.type,
+                badgeType:e.business.package.badgeType,
+                dataView:e.business.package.dataView,
+                id: e.business.package._id,
+            }
         }
     }
     if(e.owner){
