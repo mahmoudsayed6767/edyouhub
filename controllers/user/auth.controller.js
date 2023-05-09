@@ -243,17 +243,18 @@ export default {
                 ...validatedBody
             });
             //send code
-            let theUser = await checkExistThenGet(createdUser.id, User,{deleted: false });
-            let code =  generateVerifyCode();
-            if(code.toString().length < 4){
-                code = generateVerifyCode(); 
-            }else{
-                theUser.verifycode = code
+            let theUser = await checkExistThenGet(createdUser.id, User,{deleted: false });            
+            let code = "0000"
+            if(process.env.environment === 'PRODUCTION'){
+                if(code.toString().length < 4){
+                    code = generateVerifyCode(); 
+                }
+                let message =  `رمز التحقيق لتطبيق EDYOUHUB هو ${theUser.verifycode} الرجاء استخدامه لتفعيل الحساب الخاص بك.` 
+                sendSms(message,realPhone)
             }
             theUser.verifycode = code
             await theUser.save();
             let realPhone = "+2"+ validatedBody.phone;
-            let message =  `رمز التحقيق لتطبيق EDYOUHUB هو ${theUser.verifycode} الرجاء استخدامه لتفعيل الحساب الخاص بك.` 
 
             sendSms(realPhone,message)
             let reports = {
@@ -349,7 +350,15 @@ export default {
         try {
             let validatedBody = checkValidations(req);
             let user = await checkUserExistByEmail(validatedBody.email);
-            user.verifycode = "0000"//generateVerifyCode(); 
+            let code = "0000"
+            if(process.env.environment === 'PRODUCTION'){
+                if(code.toString().length < 4){
+                    code = generateVerifyCode(); 
+                }
+                let message =  `رمز التحقيق لتطبيق EDYOUHUB هو ${theUser.verifycode} الرجاء استخدامه لتفعيل الحساب الخاص بك.` 
+                sendSms(message,user.phone)
+            }
+            user.verifycode = code; 
             await user.save();
             //send code
             let text = user.verifycode.toString();
@@ -462,12 +471,16 @@ export default {
             let validatedBody = checkValidations(req);
             let realPhone = "+2" + validatedBody.phone;
             let user = await checkUserExistByPhone(validatedBody.phone);
-
-            user.verifycode = generateVerifyCode();
+            let code = "0000"
+            if(process.env.environment === 'PRODUCTION'){
+                if(code.toString().length < 4){
+                    code = generateVerifyCode(); 
+                }
+                let message =  `رمز التحقيق لتطبيق EDYOUHUB هو ${theUser.verifycode} الرجاء استخدامه لتفعيل الحساب الخاص بك.` 
+                sendSms(message,realPhone)
+            }
+            user.verifycode = code
             await user.save();
-             //send code
-            let message =  `رمز التحقيق لتطبيق EDYOUHUB هو ${user.verifycode} الرجاء استخدامه لتفعيل الحساب الخاص بك.` 
-            sendSms(realPhone,message)
             let reports = {
                 "action":"Send code to phone for forget pass",
                 "type":"USERS",

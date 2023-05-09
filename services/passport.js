@@ -2,14 +2,13 @@
 import passport from 'passport';
 import passportJwt from 'passport-jwt';
 import passportLocal from 'passport-local';
-import config from '../config';
-import moment from 'moment';
 import User from '../models/user/user.model';
- 
+require('dotenv').config()
+
 const JwtStrategy = passportJwt.Strategy;
 const LocalStrategy = passportLocal.Strategy;
 const { ExtractJwt } = passportJwt;
-const { jwtSecret } = config;
+const { jwtSecret } = process.env;
 
 
 passport.use(new JwtStrategy({

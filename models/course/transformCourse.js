@@ -34,12 +34,14 @@ export async function transformCourse(e,lang,myUser,userId) {
             id:val._id,                         
         })
     }
+    index.instractors = instractors
     return index;
 }
 export async function transformCourseById(e,lang,myUser,userId) {
     let index = {
         title:lang=="ar"?e.title_ar:e.title_en,
         description:lang=="ar"?e.description_ar:e.description_en,
+        introVideo:e.introVideo,
         status:e.status,
         id:e._id,
         imgs:e.imgs,
@@ -120,5 +122,17 @@ export async function transformCourseById(e,lang,myUser,userId) {
             id:val._id,                         
         })
     }
+    index.instractors = instractors
+    /*toturials*/
+    let toturials=[]
+    for (let val of e.toturials) {
+        toturials.push({
+            title:lang=="ar"?val.title_ar:val.title_en,
+            videos:val.videos,
+            id:val._id,                         
+        })
+    }
+    index.toturials = toturials
+
     return index;
 }

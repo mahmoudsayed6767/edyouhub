@@ -47,6 +47,9 @@ const courseSchema=new Schema({
         type: String,
         required: true
     }],
+    introVideo:{
+        type: String,
+    },
     specializations: {
         type: [Number],
         ref:'specialization',
@@ -141,25 +144,10 @@ const courseSchema=new Schema({
         type: Number,
         default:0
     },
-    tutorial: [
-        new Schema({
-            section_en: {
-                type: String,
-                required: true,
-                trim: true,
-            },
-            section_ar: {
-                type: String,
-                trim: true,
-                required: true,
-            },
-            videos: {
-                type: [String],
-                trim: true,
-                required: true,
-            },
-        }, { _id: false })
-    ],
+    tutorials: {
+        type: [Number],
+        ref:'courseTutorial'
+    },
     deleted:{
         type:Boolean,
         default:false

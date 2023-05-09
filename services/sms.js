@@ -1,5 +1,4 @@
 const axios = require('axios')
-import config from '../config';
 
 export function sendSms(phone,msg) {
   console.log(phone)

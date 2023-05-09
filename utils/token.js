@@ -1,8 +1,8 @@
-import config from '../config';
 import jwt from 'jsonwebtoken';
+require('dotenv').config()
 
 
-const { jwtSecret } = config;
+const { jwtSecret } = process.env;
 
 export const generateToken = id => {
     return jwt.sign({

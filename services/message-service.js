@@ -1,11 +1,11 @@
 import twilio from 'twilio';
-import config from '../config';
-
+require('dotenv').config()
+let twillo = JSON.parse(process.env.twillo)
 export function sendConfirmCode(phone,verifyCode) {
-    let client = new twilio(config.twilio.accountSid, config.twilio.authToken);
+    let client = new twilio(twillo.accountSid, twillo.authToken);
 
     client.messages.create({
-        body: config.confirmMessage + verifyCode,
+        body: process.env.confirmMessage + verifyCode,
         to: phone,
         from: '+19379752310'
     }).then((message) => {
@@ -13,7 +13,7 @@ export function sendConfirmCode(phone,verifyCode) {
     }).catch(err => console.log('Twilio Error: ', err))
 } 
 export function sendSms(phone,message) {
-    let client = new twilio(config.twilio.accountSid, config.twilio.authToken);
+    let client = new twilio(twillo.accountSid, twillo.authToken);
 
     client.messages.create({
         body: message,
@@ -25,7 +25,7 @@ export function sendSms(phone,message) {
 } 
 
 export function sendForgetPassword(password, phone) {
-    let client = new twilio(config.twilio.accountSid, config.twilio.authToken);
+    let client = new twilio(twillo.accountSid, twillo.authToken);
     client.messages.create({
         body: ' verify Code :'+ password,
         to: phone /*phone*/,

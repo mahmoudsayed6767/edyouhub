@@ -25,6 +25,12 @@ const populateQuery = [
     { path: 'business', model: 'business' },
     { path: 'specializations', model: 'specialization'},
     { path: 'instractors', model: 'business'},
+];
+const populateQueryById = [
+    { path: 'business', model: 'business' },
+    { path: 'specializations', model: 'specialization'},
+    { path: 'instractors', model: 'business'},
+    { path: 'toturials', model: 'courseTutorial'},
     {
         path: 'branches', model: 'branch',
         populate: { path: 'country', model: 'country' },
@@ -159,6 +165,7 @@ export default {
                 return true;
             }),
             body('imgs').optional(),
+            body('introVideo').optional(),
             body('ownerType').optional()
             
         ];
@@ -203,7 +210,7 @@ export default {
             let { courseId } = req.params;
             await checkExist(courseId, Course, { deleted: false });
             await Course.findById(courseId)
-            .populate(populateQuery)
+            .populate(populateQueryById)
             .then(async(e) => {
                 let course = await transformCourseById(e,lang)
                 res.send({
@@ -601,6 +608,8 @@ export default {
                 }
             }
             let courseToturial = await CourseTutorial.create({ ...validatedBody });
+            course.tutorials.push(courseToturial.id)
+            await course.save()
             let reports = {
                 "action":"Create New course tutorial",
                 "type":"COURSE",
@@ -616,4 +625,143 @@ export default {
             next(error);
         }
     },
+    //update course
+    async updateSection(req, res, next) {
+        try {
+            const validatedBody = checkValidations(req);
+            let {sectionId} = req.params
+            let section = await checkExistThenGet(sectionId,CourseTutorial,{deleted:false})
+            let course = await checkExistThenGet(section.course,Course,{deleted:false})
+            let business = await checkExistThenGet(course.business,Business,{ deleted: false})
+            let businessManagement = await BusinessManagement.findOne({deleted:false,business:business._id})
+            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
+                let supervisors = [business.owner]
+                if(businessManagement){
+                    supervisors.push(...businessManagement.course.supervisors)
+                }
+                if(!isInArray(supervisors,req.user._id))
+                    return next(new ApiError(403,  i18n.__('notAllow')));
+            }
+            //upload videos
+            if (req.files) {
+                if (req.files['videos']) {
+                    let imagesList = [];
+                    for (let imges of req.files['videos']) {
+                        imagesList.push(await toImgUrl(imges))
+                    }
+                    validatedBody.videos = imagesList;
+                }
+            }
+            let courseToturial = await CourseTutorial.findByIdAndUpdate(sectionId, { ...validatedBody });
+
+            let reports = {
+                "action":"update New course tutorial",
+                "type":"COURSE",
+                "deepId":courseToturial.id,
+                "user": req.user._id
+            };
+            await Report.create({...reports });
+            res.status(201).send({
+                success:true,
+                data:courseToturial
+            });
+        } catch (error) {
+            next(error);
+        }
+    },
+    async updateSectionVideos(req, res, next) {
+        try {
+            let {sectionId} = req.params
+            let section = await checkExistThenGet(sectionId,CourseTutorial,{deleted:false})
+            let course = await checkExistThenGet(section.course,Course,{deleted:false})
+            let business = await checkExistThenGet(course.business,Business,{ deleted: false})
+            let businessManagement = await BusinessManagement.findOne({deleted:false,business:business._id})
+            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
+                let supervisors = [business.owner]
+                if(businessManagement){
+                    supervisors.push(...businessManagement.course.supervisors)
+                }
+                if(!isInArray(supervisors,req.user._id))
+                    return next(new ApiError(403,  i18n.__('notAllow')));
+            }
+            //add img to gallary
+            if(req.body.type == "ADD"){
+                if (req.files) {
+                    let arr = section.video
+                    if (req.files['img']) {
+                        for (let imges of req.files['video']) {
+                            arr.push(await toImgUrl(imges))
+                        }
+                        section.video = arr;
+                    }
+                }
+            }else{
+                //remove from video
+                let arr = section.video
+                let index = arr.findIndex(e=> e == req.body.video);
+                for(var i = 0;i<= arr.length;i=i+1){
+                    if(arr[i] === arr[index]){
+                        arr.splice(index, 1);
+                    }
+                }
+                section.video = arr;
+                
+            }
+            await section.save();
+            let reports = {
+                "action":"Update section video",
+                "type":"COURSES",
+                "deepId":course.id,
+                "user": req.user._id
+            };
+            await Report.create({...reports });
+            
+            res.send({success: true});
+        }
+        catch (err) {
+            next(err);
+        }
+    },
+    //delete 
+    async deleteSection(req, res, next) {
+        try {
+            let { sectionId } = req.params;
+            let section = await checkExistThenGet(sectionId, CourseTutorial);
+
+            let course = await checkExistThenGet(section.course, Course);
+            let business = await checkExistThenGet(course.business, Business);
+            let businessManagement = await BusinessManagement.findOne({deleted:false,business:course._id})
+            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
+                let supervisors = [business.owner]
+                if(businessManagement){
+                    supervisors.push(...businessManagement.course.supervisors)
+                }
+                if(!isInArray(supervisors,req.user._id))
+                    return next(new ApiError(403,  i18n.__('notAllow')));
+            }
+            let arr = course.tutorials;
+            for(let i = 0;i<= arr.length;i=i+1){
+                if(arr[i] == section.id){
+                    arr.splice(i, 1);
+                }
+            }
+            course.tutorials = arr;
+            await course.save();
+            section.deleted = true;
+            await section.save();
+            let reports = {
+                "action":"Delete course section",
+                "type":"COURSE",
+                "deepId":courseId,
+                "user": req.user._id
+            };
+            await Report.create({...reports});
+            res.send({
+                success:true
+            });
+        } catch (err) {
+            next(err);
+        }
+    },
+
 }

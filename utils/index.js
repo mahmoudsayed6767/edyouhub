@@ -2,19 +2,26 @@
 import config from '../config';
 import ApiError from '../helpers/ApiError';
 import * as cloudinary from 'cloudinary';
-
 export * from './token';
+require('dotenv').config()
 
-cloudinary.config(config.cloudinary);
+cloudinary.config(JSON.parse(process.env.cloudinary));
 
 // Convert Local Upload To Cloudinary Url  toImgUrl
 export async function toImgUrl (multerObject) {
   try {
-    let result = await cloudinary.v2.uploader.upload(multerObject.path,{ resource_type: "auto" });
-    return result.secure_url;
-    // multerObject.path = 'https'+'://'+'api.edHub.com'+'/'+multerObject.path;
-    // console.log("path:  "+multerObject.path);
-    // return multerObject.path;
+
+    if(process.env.environment === 'PRODUCTION'){
+      multerObject.path = 'https'+'://'+'api.edyouhub.com'+'/'+multerObject.path;
+      console.log("path:  "+multerObject.path);
+      return multerObject.path;
+    }else{
+      multerObject.path = 'https'+'://'+'api.staging.edyouhub.com'+'/'+multerObject.path;
+      console.log("path:  "+multerObject.path);
+      return multerObject.path;
+    }
+    
+    
 
   }
   catch (err) {

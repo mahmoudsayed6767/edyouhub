@@ -46,6 +46,19 @@ router.route('/:courseId/addNewUserParticipant')
 router.route('/:courseId/getCourseParticipates')
     .get(requireAuth,courseController.getCourseParticipants);
 
+router.route('/:courseId/addCourseSection')
+    .post(
+        requireAuth,
+        courseController.validateSectionBody(),
+        courseController.createSection
+    )
 
+router.route('/:sectionId/sections')
+    .put(
+        requireAuth,
+        courseController.validateSectionBody(),
+        courseController.updateSection
+    )
+    .delete(requireAuth,courseController.deleteSection);
 
 export default router;

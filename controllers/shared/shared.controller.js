@@ -5,7 +5,6 @@ import { validationResult,matchedData } from 'express-validator';
 import { toImgUrl } from '../../utils';
 import i18n from 'i18n';
 import crypto from 'crypto';
-import config from '../../config'
 function deleteTempImages(req) {
   if (req.file || req.files) {
     let files = req.file ? Array.from(req.file) : req.files;
@@ -87,7 +86,7 @@ export function distance(lat1, lon1, lat2, lon2, unit) {
 }
 export async function encryptedData(content,securitykey) {
   const algorithm = "aes-256-cbc"; 
-  const initVector = config.initVector//crypto.randomBytes(16);
+  const initVector = process.env.initVector//crypto.randomBytes(16);
   // the cipher function
   const cipher = crypto.createCipheriv(algorithm, securitykey, initVector);
   let dataAfterEncrypted = cipher.update(content, "utf-8", "hex");
@@ -96,7 +95,7 @@ export async function encryptedData(content,securitykey) {
 }
 export async function decryptedData(encryptedData,securitykey) {
   const algorithm = "aes-256-cbc"; 
-  const initVector = config.initVector//crypto.randomBytes(16);
+  const initVector = process.env.initVector//crypto.randomBytes(16);
   // the cipher function
   const decipher = crypto.createDecipheriv(algorithm, securitykey, initVector);
   let dataAfterDecrypted = decipher.update(encryptedData, "hex", "utf-8");

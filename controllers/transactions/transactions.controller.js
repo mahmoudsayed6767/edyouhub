@@ -15,7 +15,6 @@ import Order from "../../models/order/order.model"
 import i18n from "i18n";
 import Setting from "../../models/setting/setting.model";
 import {encryptedData,decryptedData} from "../shared/shared.controller"
-import config from '../../config'
 import { sendEmail } from "../../services/sendGrid";
 import Offer from "../../models/offer/offer.model";
 import { generateCode } from '../../services/generator-code-service';
@@ -465,7 +464,7 @@ export default {
             let lang = i18n.getLocale(req)
             
             let {transactionId} = req.params
-            const Securitykey =  config.Securitykey
+            const Securitykey =  process.env.Securitykey
             console.log(transactionId.toString())
             let decreptId = await decryptedData(transactionId.toString(),Securitykey)
             console.log(decreptId)
@@ -523,7 +522,7 @@ export default {
                 }
                 
                 let transactionId = theTransaction.id;
-                let encryptedId = await encryptedData(transactionId.toString(),config.Securitykey)
+                let encryptedId = await encryptedData(transactionId.toString(),process.env.Securitykey)
                 //console.log(req.originalUrl)
                 let url = req.protocol + '://edyouhub.com/tax-invoice/'+encryptedId;
                 let text = 'رابط الفاتوره الضريبيه الخاصه بك هو : '
