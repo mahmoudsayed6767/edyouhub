@@ -10,8 +10,14 @@ import { sendNotifiAndPushNotifi } from "../../services/notification-service";
 import Notif from "../../models/notif/notif.model";
 import User from "../../models/user/user.model";
 const populateQuery = [
-    { path: 'to', model: 'user' },
-    { path: 'from', model: 'user' },
+    {
+        path: 'from', model: 'user',
+        populate: { path: 'package', model: 'package' },
+    },
+    {
+        path: 'to', model: 'user',
+        populate: { path: 'package', model: 'package' },
+    },
 ];
 export default {
     async create(req, res, next) {

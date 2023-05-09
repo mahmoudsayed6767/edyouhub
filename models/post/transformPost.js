@@ -30,6 +30,7 @@ export async function transformPost(e,lang,myUser,userId) {
                 id: e.business.package._id,
             }
         }
+        index.business = business
     }
     if(e.owner){
         let owner={
@@ -177,6 +178,8 @@ export async function transformPostById(e,lang,myUser,userId) {
                 id: e.business.package._id,
             }
         }
+        index.business = business
+
     }
     if(e.owner){
         let owner={
