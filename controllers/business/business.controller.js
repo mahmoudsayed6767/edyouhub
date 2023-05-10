@@ -87,8 +87,6 @@ export default {
                     throw new Error(req.__('educationSystem.invalid'));
                 else
                     return true;
-            
-                return true;
             }),
             body('webSite').optional(),
             body('facebook').optional(),

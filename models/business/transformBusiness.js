@@ -53,6 +53,7 @@ export async function transformBusinessById(e, lang,myUser,userId) {
         img: e.img,
         reason: e.reason,
         status: e.status,
+        sessionsPrices:e.sessionsPrices,
         isFollowed:userId?isInArray(myUser.following,e._id):false,
         hasPackage:e.hasPackage,
         createdAt: e.createdAt,

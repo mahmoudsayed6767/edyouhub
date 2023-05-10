@@ -318,7 +318,7 @@ export default {
             let reports = {
                 "action":"Reject Connection Request",
                 "type":"CONNECTION",
-                "deepId":connectionId,
+                "deepId":connection.id,
                 "user": req.user._id
             };
             await Report.create({...reports});
@@ -381,7 +381,7 @@ export default {
             let reports = {
                 "action":"Reject Connection Request",
                 "type":"CONNECTION",
-                "deepId":connectionId,
+                "deepId":connection.id,
                 "user": req.user._id
             };
             await Report.create({...reports});

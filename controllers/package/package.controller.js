@@ -8,6 +8,8 @@ import Package from "../../models/package/package.model";
 import {transformPackage} from "../../models/package/transformPackage"
 import i18n from "i18n";
 import User from "../../models/user/user.model";
+import Business from "../../models/business/business.model";
+import moment from 'moment'
 export default {
     //get with pagenation
     async findAll(req, res, next) {
@@ -247,7 +249,62 @@ export default {
                 return req.__('package.required', { value});
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('package.numeric', { value});
+            }).custom(async (value, { req }) => {
+                if (!await Package.findOne({_id:value,deleted:false}))
+                    throw new Error(req.__('package.invalid'));
+                else
+                    return true;
             }),
+            body('business').optional().custom(async (value, { req }) => {
+                if (!await Business.findOne({_id:value,deleted:false}))
+                    throw new Error(req.__('business.invalid'));
+                else
+                    return true;
+            }),
+            body('user').optional().custom(async (value, { req }) => {
+                if (!await User.findOne({_id:value,deleted:false}))
+                    throw new Error(req.__('user.invalid'));
+                else
+                    return true;
+            })
         ];
+    },
+    async buyPackage(req,res,next){
+        try{
+            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
+                return next(new ApiError(403, i18n.__('admin.auth')));
+            const validatedBody = checkValidations(req);
+            let endDateMillSec
+            if(validatedBody.durationType == "DAILY"){
+                endDateMillSec = Date.parse(moment(new Date()).add(validatedBody.duration, "d").format()) ;
+            }
+            if(validatedBody.durationType == "MONTHLY"){
+                endDateMillSec = Date.parse(moment(new Date()).add(validatedBody.duration, "M").format()) ;
+            }
+            if(validatedBody.durationType == "YEARLY"){
+                endDateMillSec = Date.parse(moment(new Date()).add(validatedBody.duration, "Y").format()) ;
+            }
+            if(validatedBody.user){
+                let user = await checkExistThenGet(validatedBody.user, User, { deleted: false })
+                user.hasPackage = true;
+                user.packageStartDateMillSec = Date.parse(new Date());
+                user.packageEndDateMillSec = endDateMillSec ;
+                user.package = validatedBody.package;        
+                await user.save();
+            }
+            if(validatedBody.business){
+                let business = await checkExistThenGet(validatedBody.business, Business, { deleted: false })
+                business.hasPackage = true;
+                business.packageStartDateMillSec = Date.parse(new Date());
+                business.packageEndDateMillSec = endDateMillSec ;
+                business.package = validatedBody.package;        
+                await business.save();
+            }
+            res.send({
+                success: true,
+            });
+        }catch(error){
+            next(error)
+        }
     },
 };

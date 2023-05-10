@@ -122,6 +122,9 @@ export async function transformPost(e,lang,myUser,userId) {
             location:e.event.location,
             contactNumbers:e.event.contactNumbers,
             ownerType:e.event.ownerType,
+            isInterest:userId?isInArray(e.event.interesting,userId):false,
+            isAttendance:userId?isInArray(e.event.attendance,userId):false,
+            waitToPaid:userId?isInArray(e.event.waitToPaid,userId):false,
 
         }
         /*usersParticipants*/
@@ -258,6 +261,9 @@ export async function transformPostById(e,lang,myUser,userId) {
             location:e.event.location,
             contactNumbers:e.event.contactNumbers,
             ownerType:e.event.ownerType,
+            isInterest:userId?isInArray(e.event.interesting,userId):false,
+            isAttendance:userId?isInArray(e.event.attendance,userId):false,
+            waitToPaid:userId?isInArray(e.event.waitToPaid,userId):false,
 
         }
         /*usersParticipants*/

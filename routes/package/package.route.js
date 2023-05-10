@@ -23,6 +23,9 @@ router.route('/:packageId')
     )
     .get(PackageController.findById)
     .delete( requireAuth,PackageController.delete);
-
+router.post('/buyPackage',
+    requireAuth,
+    PackageController.validateBuyPackage(),
+    PackageController.buyPackage);
 
 export default router;
