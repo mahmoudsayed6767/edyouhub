@@ -185,6 +185,14 @@ export default {
             var found = user.pendingConnections.find(e => e == toId)
             if(!found) user.pendingConnections.push(toId)
             await user.save();
+
+            let to = await checkExistThenGet(toId,User)
+            console.log(toId);
+
+            var found2 = to.recievedConnectionsList.find(e => e == req.user._id)
+            if(!found2) to.recievedConnectionsList.push(req.user._id)
+            console.log("rec ",to.recievedConnectionsList);
+            await to.save();
             sendNotifiAndPushNotifi({
                 targetUser: connection.to, 
                 fromUser: connection.from, 
@@ -251,6 +259,16 @@ export default {
             }
             user.pendingConnections = arr;
             await user.save();
+            let to = await checkExistThenGet(connection.to,User)
+            //remove from pending connections list
+            let arr2 = to.recievedConnectionsList;
+            for(let i = 0;i<= arr2.length;i=i+1){
+                if(arr2[i] == req.user._id){
+                    arr2.splice(i, 1);
+                }
+            }
+            to.recievedConnectionsList = arr;
+            await to.save();
             let reports = {
                 "action":"Delete connection",
                 "type":"CONNECTION",
@@ -298,6 +316,17 @@ export default {
             }
             user.pendingConnections = arr;
             await user.save();
+            
+            let to = await checkExistThenGet(connection.to,User)
+            //remove from pending connections list
+            let arr2 = to.recievedConnectionsList;
+            for(let i = 0;i<= arr2.length;i=i+1){
+                if(arr2[i] == req.user._id){
+                    arr2.splice(i, 1);
+                }
+            }
+            to.recievedConnectionsList = arr;
+            await to.save();
             await connection.save();
             sendNotifiAndPushNotifi({
                 targetUser: connection.from, 
@@ -361,6 +390,17 @@ export default {
             }
             user.pendingConnections = arr;
             await user.save();
+            
+            let to = await checkExistThenGet(connection.to,User)
+            //remove from pending connections list
+            let arr2 = to.recievedConnectionsList;
+            for(let i = 0;i<= arr2.length;i=i+1){
+                if(arr2[i] == req.user._id){
+                    arr2.splice(i, 1);
+                }
+            }
+            to.recievedConnectionsList = arr;
+            await to.save();
             await connection.save();
             sendNotifiAndPushNotifi({
                 targetUser: connection.from, 

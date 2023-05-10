@@ -15,6 +15,7 @@ export async function transformUser(e,lang,myUser,userId) {
         affiliateCode:e.affiliateCode,
         isConnected:userId?isInArray(myUser.connections,e._id):false,
         pendingConnect:userId?isInArray(myUser.pendingConnections,e._id):false,
+        inRecievedConnectionsList:userId?isInArray(myUser.recievedConnectionsList,e._id):false,
         cashBack:e.cashBack,
         createdAt: e.createdAt,
         hasPackage:e.hasPackage,
@@ -67,6 +68,7 @@ export async function transformUserById(e,lang,myUser,userId) {
         experiencesOrganization:e.experiencesOrganization,
         isConnected:userId?isInArray(myUser.connections,e._id):false,
         pendingConnect:userId?isInArray(myUser.pendingConnections,e._id):false,
+        inRecievedConnectionsList:userId?isInArray(myUser.recievedConnectionsList,e._id):false,
         hasPackage:e.hasPackage,
         createdAt: e.createdAt,
         

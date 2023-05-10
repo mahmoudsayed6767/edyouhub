@@ -115,11 +115,15 @@ const userSchema = new Schema({
         type:[Number],
         ref:'business'
     },
-    pendingConnections: {
+    pendingConnections: {//who i send request to him
         type:[Number],
         ref:'user'
     },
     connections: {
+        type:[Number],
+        ref:'user'
+    },
+    recievedConnectionsList: {//who is sent request to me
         type:[Number],
         ref:'user'
     },
