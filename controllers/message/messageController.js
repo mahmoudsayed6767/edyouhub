@@ -15,7 +15,7 @@ const populateQuery = [
 ];
 
 var messageController = {
-    async uploadImage(req, res, next) {
+    async uploadImage(req, res, next) {        
         try {
             let image = await handleImg(req);
             res.send({image});
@@ -179,7 +179,7 @@ var messageController = {
             });
             
     },
-    async unseenCount(req, res, next) {
+    async unseenCount(req, res, next) {        
         try {
             let user = req.user._id;
             let query = { deleted: false,to:user,seen:false };
@@ -250,7 +250,7 @@ var messageController = {
                 console.log(err);
             });
     },
-    async findLastContacts(req, res, next) {
+    async findLastContacts(req, res, next) {        
         try {
             let page = +req.query.page || 1, limit = +req.query.limit || 20,
             { id } = req.query;

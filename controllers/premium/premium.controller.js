@@ -23,7 +23,7 @@ const populateQuery = [
 ];
 export default {
 
-    async findAll(req, res, next) {
+    async findAll(req, res, next) {        
         try {
             let lang = i18n.getLocale(req) 
             let {fund,student,fees,type} = req.query
@@ -52,7 +52,7 @@ export default {
             next(err);
         }
     },
-    async findAllPagenation(req, res, next) {
+    async findAllPagenation(req, res, next) {        
         try {
             let lang = i18n.getLocale(req) 
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
@@ -83,7 +83,7 @@ export default {
             next(err);
         }
     },
-    async findById(req, res, next) {
+    async findById(req, res, next) {        
         try {
             //get lang
             let lang = i18n.getLocale(req)
@@ -119,7 +119,6 @@ export default {
     },
 
     async create(req, res, next) {
-
         try {
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
@@ -139,7 +138,6 @@ export default {
     },
 
     async update(req, res, next) {
-
         try {
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
@@ -164,7 +162,7 @@ export default {
         }
     },
    
-    async delete(req, res, next) {
+    async delete(req, res, next) {        
         try {
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
@@ -189,7 +187,6 @@ export default {
         }
     },
     async paid(req, res, next) {
-        
         try {
             let { premiumId } = req.params;
            
@@ -266,7 +263,6 @@ export default {
         }
     },
     async paidMulti(req, res, next) {
-        
         try {
             for (let premiumId of req.body.premiums) {
                 console.log("premium",premiumId)

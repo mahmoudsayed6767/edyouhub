@@ -16,7 +16,6 @@ const populateQuery = [
 
 export default {
     async findAll(req, res, next) {
-        
         try {
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20,
@@ -60,7 +59,6 @@ export default {
         }
     },
     async getAll(req, res, next) {
-        
         try {
             let lang = i18n.getLocale(req)
             let {educationInstitution,grade,search,user} = req.query;
@@ -131,7 +129,7 @@ export default {
         return validations;
     },
 
-    async create(req, res, next) {
+    async create(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
             const validatedBody = checkValidations(req);
@@ -170,7 +168,7 @@ export default {
             next(err);
         }
     },
-    async findById(req, res, next) {
+    async findById(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
             let { IndividualSuppliesId } = req.params;
@@ -186,12 +184,10 @@ export default {
         }
     },
 
-    async update(req, res, next) {
+    async update(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
             let {IndividualSuppliesId } = req.params;
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth'))); 
             await checkExist(IndividualSuppliesId, IndividualSupplies,
                 {deleted: false });
 
@@ -227,10 +223,8 @@ export default {
             next(err);
         }
     },
-    async delete(req, res, next) {
+    async delete(req, res, next) {        
         try {
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             let {IndividualSuppliesId } = req.params;
 
             let individualSupplies = await checkExistThenGet(IndividualSuppliesId, IndividualSupplies,{deleted: false });
@@ -249,7 +243,7 @@ export default {
             next(err);
         }
     },
-    async confirm(req, res, next) {
+    async confirm(req, res, next) {        
         try {
             let {IndividualSuppliesId } = req.params;
             let individualSupplies = await checkExistThenGet(IndividualSuppliesId, IndividualSupplies,{deleted: false });

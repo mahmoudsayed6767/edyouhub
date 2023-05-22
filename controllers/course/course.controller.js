@@ -172,7 +172,7 @@ export default {
         return validations;
     },
     //add new course
-    async create(req, res, next) {
+    async create(req, res, next) {        
         try {
             const validatedBody = checkValidations(req);
             let business = await checkExistThenGet(validatedBody.business,Business,{ deleted: false})
@@ -203,7 +203,7 @@ export default {
         }
     },
     //get by id
-    async getById(req, res, next) {
+    async getById(req, res, next) {        
         try {
              //get lang
             let lang = i18n.getLocale(req)
@@ -223,7 +223,7 @@ export default {
         }
     },
     //update course
-    async update(req, res, next) {
+    async update(req, res, next) {        
         try {
             let { courseId } = req.params;
             await checkExist(courseId,Course, { deleted: false })
@@ -258,7 +258,7 @@ export default {
         }
     },
     //get without pagenation
-    async getAll(req, res, next) {
+    async getAll(req, res, next) {        
         try {
             //get lang
             let lang = i18n.getLocale(req)
@@ -303,7 +303,7 @@ export default {
         }
     },
     //get with pagenation
-    async getAllPaginated(req, res, next) {
+    async getAllPaginated(req, res, next) {        
         try {
              //get lang
             let lang = i18n.getLocale(req)
@@ -351,7 +351,7 @@ export default {
         }
     },
     //delete 
-    async delete(req, res, next) {
+    async delete(req, res, next) {        
         try {
             let { courseId } = req.params;
             let course = await checkExistThenGet(courseId, Course);
@@ -479,7 +479,7 @@ export default {
         
         return validations;
     },
-    async addParticipant(req, res, next) {
+    async addParticipant(req, res, next) {        
         try {
             const validatedBody = checkValidations(req);
             let {courseId} = req.params
@@ -543,7 +543,7 @@ export default {
             next(error);
         }
     },
-    async getCourseParticipants(req, res, next) {
+    async getCourseParticipants(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
@@ -581,7 +581,7 @@ export default {
         return validations;
     },
     //add new course
-    async createSection(req, res, next) {
+    async createSection(req, res, next) {        
         try {
             const validatedBody = checkValidations(req);
             let {courseId} = req.params
@@ -626,7 +626,7 @@ export default {
         }
     },
     //update course
-    async updateSection(req, res, next) {
+    async updateSection(req, res, next) {        
         try {
             const validatedBody = checkValidations(req);
             let {sectionId} = req.params
@@ -669,7 +669,7 @@ export default {
             next(error);
         }
     },
-    async updateSectionVideos(req, res, next) {
+    async updateSectionVideos(req, res, next) {        
         try {
             let {sectionId} = req.params
             let section = await checkExistThenGet(sectionId,CourseTutorial,{deleted:false})
@@ -723,7 +723,7 @@ export default {
         }
     },
     //delete 
-    async deleteSection(req, res, next) {
+    async deleteSection(req, res, next) {        
         try {
             let { sectionId } = req.params;
             let section = await checkExistThenGet(sectionId, CourseTutorial);

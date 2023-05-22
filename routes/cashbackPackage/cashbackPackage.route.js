@@ -1,13 +1,14 @@
 import express from 'express';
 import cashbackPackageController from '../../controllers/cashbackPackage/cashbackPackage.controller';
 import { requireAuth } from '../../services/passport';
-import { cache } from '../../services/caching'
+import { permissions } from '../../services/permissions';
 
 const router = express.Router();
 
 router.route('/')
     .post(
         requireAuth,
+        permissions('ADMIN'),
         cashbackPackageController.validateBody(),
         cashbackPackageController.create
     )
@@ -18,15 +19,17 @@ router.route('/withoutPagenation/get')
 router.route('/:cashbackPackageId')
     .put(
         requireAuth,
+        permissions('ADMIN'),
         cashbackPackageController.validateBody(true),
         cashbackPackageController.update
     )
     .get(cashbackPackageController.findById)
-    .delete( requireAuth,cashbackPackageController.delete);
+    .delete( requireAuth,permissions('ADMIN'),cashbackPackageController.delete);
 
 router.route('/:cashbackPackageId/buycashbackPackage')
     .put(
         requireAuth,
+        permissions('ADMIN'),
         cashbackPackageController.buycashbackPackage
     )
 

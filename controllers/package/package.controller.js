@@ -1,7 +1,6 @@
 import ApiResponse from "../../helpers/ApiResponse";
 import Report from "../../models/reports/report.model";
-import ApiError from '../../helpers/ApiError';
-import { checkExist, checkExistThenGet,isInArray} from "../../helpers/CheckMethods";
+import { checkExist, checkExistThenGet} from "../../helpers/CheckMethods";
 import { checkValidations } from "../shared/shared.controller";
 import { body } from "express-validator";
 import Package from "../../models/package/package.model";
@@ -13,7 +12,6 @@ import moment from 'moment'
 export default {
     //get with pagenation
     async findAll(req, res, next) {
-
         try {
             let lang = i18n.getLocale(req) 
             let page = +req.query.page || 1, limit = +req.query.limit || 20 ;
@@ -41,7 +39,6 @@ export default {
     },
     //get without pagenation
     async findAllWithoutPagenation(req, res, next) {
-
         try {
             let lang = i18n.getLocale(req) 
             let query = {deleted: false };
@@ -137,12 +134,8 @@ export default {
         ];
     },
     //add package
-    async create(req, res, next) {
-
+    async create(req, res, next) {        
         try {
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
-    
             const validatedBody = checkValidations(req);
             let createdpackage = await Package.create({ ...validatedBody});
 
@@ -161,7 +154,7 @@ export default {
     },
 
     //get by id
-    async findById(req, res, next) {
+    async findById(req, res, next) {        
         try {
             //get lang
             let lang = i18n.getLocale()
@@ -181,12 +174,8 @@ export default {
         }
     },
     //update package
-    async update(req, res, next) {
-
+    async update(req, res, next) {        
         try {
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
-
             let { packageId } = req.params;
             await checkExist(packageId, Package, { deleted: false });
 
@@ -208,10 +197,8 @@ export default {
         }
     },
     //delete package
-    async delete(req, res, next) {
+    async delete(req, res, next) {        
         try {
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             let { packageId } = req.params;
             let packages = await checkExistThenGet(packageId, Package, { deleted: false });
             
@@ -271,8 +258,6 @@ export default {
     },
     async buyPackage(req,res,next){
         try{
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             const validatedBody = checkValidations(req);
             let endDateMillSec
             if(validatedBody.durationType == "DAILY"){

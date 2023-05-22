@@ -2,12 +2,14 @@ import express from 'express';
 import {  requireAuth} from '../../services/passport';
 import OfferController from '../../controllers/offer/offer.controller';
 import { multerSaveTo } from '../../services/multer-service';
+import { permissions } from '../../services/permissions';
 
 const router = express.Router();
 
 router.route('/')
     .post(  
         requireAuth,
+        permissions('ADMIN'),
         multerSaveTo('offers').fields([
             { name: 'imgs', maxCount: 5, options: false },
         ]),
@@ -19,6 +21,7 @@ router.route('/withoutPagenation/get')
 router.route('/:offerId')
     .put(
         requireAuth,
+        permissions('ADMIN'),
         multerSaveTo('offers').fields([
             { name: 'imgs', maxCount: 5, options: false },
         ]),
@@ -26,7 +29,7 @@ router.route('/:offerId')
         OfferController.update
     )
     .get(OfferController.findById)
-    .delete(requireAuth,OfferController.delete);
+    .delete(requireAuth,permissions('ADMIN'),OfferController.delete);
 
 router.route('/:offerId/bookOffer')
     .post(

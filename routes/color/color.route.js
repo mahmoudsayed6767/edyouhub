@@ -3,14 +3,14 @@ import express from 'express';
 import ColorController from '../../controllers/color/color.controller';
 import { multerSaveTo } from '../../services/multer-service';
 import { requireAuth } from '../../services/passport';
-import { cache } from '../../services/caching';
-import { parseStringToArrayOfObjectsMw } from '../../utils';
+import { permissions } from '../../services/permissions';
 
 const router = express.Router();
 
 router.route('/')
     .post(
         requireAuth,
+        permissions('ADMIN'),
         multerSaveTo('Colors').single('img'),
         ColorController.validateBody(),
         ColorController.create
@@ -21,12 +21,13 @@ router.route('/withoutPagenation/get')
 router.route('/:colorId')
     .put(
         requireAuth,
+        permissions('ADMIN'),
         multerSaveTo('Colors').single('img'),
         ColorController.validateBody(true),
         ColorController.update
     )
     .get(ColorController.getById)
-    .delete(requireAuth,ColorController.delete);
+    .delete(requireAuth,permissions('ADMIN'),ColorController.delete);
 
 
 

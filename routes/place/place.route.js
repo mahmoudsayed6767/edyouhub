@@ -3,11 +3,14 @@ import PlaceController from '../../controllers/place/place.controller';
 import { requireAuth } from '../../services/passport';
 import { multerSaveTo } from '../../services/multer-service';
 import { parseStringToArrayOfObjectsMw } from '../../utils';
+import { permissions } from '../../services/permissions';
+
 const router = express.Router();
 
 router.route('/')
     .post(
         requireAuth,
+        permissions('ADMIN'),
         multerSaveTo('places').fields([
             { name: 'logo', maxCount: 1, options: false },
             { name: 'cover', maxCount: 1, options: false },
@@ -26,6 +29,7 @@ router.route('/:placeId')
     .get(PlaceController.findById)
     .put(
         requireAuth,
+        permissions('ADMIN'),
         multerSaveTo('places').fields([
             { name: 'logo', maxCount: 1, options: false },
             { name: 'cover', maxCount: 1, options: false },
@@ -36,6 +40,6 @@ router.route('/:placeId')
         PlaceController.validateBody(true),
         PlaceController.update
     )
-    .delete( requireAuth,PlaceController.delete);
+    .delete( requireAuth,permissions('ADMIN'),PlaceController.delete);
 
 export default router;

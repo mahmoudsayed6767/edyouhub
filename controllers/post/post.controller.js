@@ -53,7 +53,7 @@ const populateQueryComment = [
     { path: 'user', model: 'user'},
 ];
 export default {
-    async findAll(req, res, next) {
+    async findAll(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
@@ -90,7 +90,7 @@ export default {
             next(err);
         }
     },
-    async findSelection(req, res, next) {
+    async findSelection(req, res, next) {        
         try {
             let {owner,type,business,ownerType,event,dataType} = req.query
             let query = {deleted: false };
@@ -172,7 +172,7 @@ export default {
         ];
         return validations;
     },
-    async create(req, res, next) {
+    async create(req, res, next) {        
         try {
             const validatedBody = checkValidations(req);
             validatedBody.owner = req.user._id;
@@ -202,7 +202,7 @@ export default {
             next(err);
         }
     },
-    async findById(req, res, next) {
+    async findById(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
             let { postId } = req.params;
@@ -217,7 +217,7 @@ export default {
             next(err);
         }
     },
-    async update(req, res, next) {
+    async update(req, res, next) {        
         try {
             let { postId } = req.params;
             let post = await checkExistThenGet(postId, Post, { deleted: false });
@@ -257,7 +257,7 @@ export default {
             next(err);
         }
     },
-    async delete(req, res, next) {
+    async delete(req, res, next) {        
         try {
             let { postId } = req.params;
             let post = await checkExistThenGet(postId, Post, { deleted: false });
@@ -284,7 +284,7 @@ export default {
         }
     },
     /*answer */
-    async answer(req, res, next) {
+    async answer(req, res, next) {        
         try {
             let {optionId } = req.params;
 
@@ -309,7 +309,7 @@ export default {
         }
     },
     /*like post*/
-    async addLike(req, res, next) { 
+    async addLike(req, res, next) {         
         try {
             let {postId} = req.params
             let thePost = await checkExistThenGet(postId, Post);
@@ -338,7 +338,7 @@ export default {
         }
     },
     /*remove like  */
-    async removeLike(req, res, next) {
+    async removeLike(req, res, next) {        
         try {
             let {postId } = req.params;
              /*check if  */
@@ -376,7 +376,7 @@ export default {
             next(error)
         }
     },
-    async getPostLikes(req, res, next) {
+    async getPostLikes(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
@@ -410,7 +410,7 @@ export default {
         ];
         return validations;
     },
-    async addComment(req, res, next) { 
+    async addComment(req, res, next) {         
         try {
             const validatedBody = checkValidations(req);
             validatedBody.user = req.user._id;
@@ -432,7 +432,7 @@ export default {
         }
     },
     /*remove comment  */
-    async removeComment(req, res, next) {
+    async removeComment(req, res, next) {        
         try {
             let {commentId } = req.params;
             let comment = await checkExistThenGet(commentId, Comment);
@@ -454,7 +454,7 @@ export default {
             next(error)
         }
     },
-    async getPostComments(req, res, next) {
+    async getPostComments(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;

@@ -1,7 +1,7 @@
 import ApiResponse from "../../helpers/ApiResponse";
 import Report from "../../models/reports/report.model";
 import ApiError from '../../helpers/ApiError';
-import {checkExistThenGet ,isInArray} from "../../helpers/CheckMethods";
+import {checkExistThenGet} from "../../helpers/CheckMethods";
 import Event from "../../models/event/event.model";
 import Transaction from "../../models/transaction/transaction.model";
 import {transformTransaction} from "../../models/transaction/transformTransaction"
@@ -386,11 +386,8 @@ export default {
             next(error)
         }
     },
-    async findAllTransactions(req, res, next) {
+    async findAllTransactions(req, res, next) {        
         try {
-            //get lang
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             let lang = i18n.getLocale(req)
             let page = req.query.page || 1, limit = +req.query.limit || 20 ;
             let {thePackage,type,user,fund,fees,status} = req.query;
@@ -425,11 +422,8 @@ export default {
             next(err);
         }
     },
-    async getAllTransactions(req, res, next) {
+    async getAllTransactions(req, res, next) {        
         try {
-            //get lang
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             let lang = i18n.getLocale(req)
             let {thePackage,type,user,fund,fees,status} = req.query;
             
@@ -445,7 +439,6 @@ export default {
             let sortd = {createdAt: -1}
             await Transaction.find(query).populate(populateQuery2)
             .sort(sortd)
-
             .then(async(data)=>{
                 let newdata = []
                 await Promise.all(data.map(async(e)=>{
@@ -459,7 +452,7 @@ export default {
             next(err);
         }
     },
-    async getById(req, res, next) {
+    async getById(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
             

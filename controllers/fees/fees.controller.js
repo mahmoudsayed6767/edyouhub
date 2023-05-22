@@ -2,8 +2,7 @@ import ApiResponse from "../../helpers/ApiResponse";
 import Premium from "../../models/premium/premium.model";
 import Fees from "../../models/fees/fees.model"
 import Report from "../../models/reports/report.model";
-import ApiError from '../../helpers/ApiError';
-import { checkExist, checkExistThenGet,isInArray} from "../../helpers/CheckMethods";
+import { checkExist, checkExistThenGet} from "../../helpers/CheckMethods";
 import { checkValidations } from "../shared/shared.controller";
 import { body } from "express-validator";
 import i18n from "i18n";
@@ -30,7 +29,7 @@ const populateQuery = [
 ];
 export default {
 
-    async findAll(req, res, next) {
+    async findAll(req, res, next) {        
         try {
             let lang = i18n.getLocale(req) 
             let {educationInstitution,student} = req.query
@@ -57,7 +56,7 @@ export default {
             next(err);
         }
     },
-    async findAllPagenation(req, res, next) {
+    async findAllPagenation(req, res, next) {        
         try {
             let lang = i18n.getLocale(req) 
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
@@ -86,7 +85,7 @@ export default {
             next(err);
         }
     },
-    async findById(req, res, next) {
+    async findById(req, res, next) {        
         try {
             //get lang
             let lang = i18n.getLocale(req)
@@ -187,11 +186,8 @@ export default {
         ];
         return validations;
     },
-    async create(req, res, next) {
-
+    async create(req, res, next) {        
         try {
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             const validatedBody = checkValidations(req);
             //create student
             let theStudent = await Student.create({
@@ -325,11 +321,8 @@ export default {
         ];
         return validations;
     },
-    async addMany(req, res, next) {
-
+    async addMany(req, res, next) {        
         try {
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             const data = checkValidations(req);
             for (let validatedBody of data.fees) {
                 await checkExist(validatedBody.educationInstitution, EducationInstitution,{ deleted: false})
@@ -439,11 +432,8 @@ export default {
         ];
         return validations;
     },
-    async addManyExistStudents(req, res, next) {
-
+    async addManyExistStudents(req, res, next) {        
         try {
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             const data = checkValidations(req);
             for (let validatedBody of data.fees) {
                 await checkExist(validatedBody.educationInstitution, EducationInstitution,{ deleted: false})
@@ -486,11 +476,8 @@ export default {
     },
 
    
-    async delete(req, res, next) {
+    async delete(req, res, next) {        
         try {
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
-                
             let { feesId } = req.params;
             let fees = await checkExistThenGet(feesId, Fees, { deleted: false });
             fees.deleted = true;

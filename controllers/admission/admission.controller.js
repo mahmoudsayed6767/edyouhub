@@ -105,7 +105,7 @@ export default {
         return validations;
     },
     //add new admission
-    async create(req, res, next) {
+    async create(req, res, next) {        
         try {
             const validatedBody = checkValidations(req);
             let business = await checkExistThenGet(validatedBody.business,Business,{ deleted: false})
@@ -147,7 +147,7 @@ export default {
         }
     },
     //get by id
-    async getById(req, res, next) {
+    async getById(req, res, next) {        
         try {
              //get lang
             let lang = i18n.getLocale(req)
@@ -169,7 +169,7 @@ export default {
         }
     },
     //update admission
-    async update(req, res, next) {
+    async update(req, res, next) {        
         try {
             let { admissionId } = req.params;
             await checkExist(admissionId,Admission, { deleted: false })
@@ -207,7 +207,7 @@ export default {
         }
     },
     //get without pagenation
-    async getAll(req, res, next) {
+    async getAll(req, res, next) {        
         try {
             //get lang
             let lang = i18n.getLocale(req)
@@ -250,7 +250,7 @@ export default {
         }
     },
     //get with pagenation
-    async getAllPaginated(req, res, next) {
+    async getAllPaginated(req, res, next) {        
         try {
              //get lang
             let lang = i18n.getLocale(req)
@@ -297,7 +297,6 @@ export default {
     },
     //delete 
     async delete(req, res, next) {
-        
         try {
             let { admissionId } = req.params;
             

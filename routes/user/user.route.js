@@ -3,6 +3,7 @@ import { requireSignIn, requireAuth } from '../../services/passport';
 import UserController from '../../controllers/user/user.controller';
 import { multerSaveTo } from '../../services/multer-service';
 import AuthController from '../../controllers/user/auth.controller';
+import { permissions } from '../../services/permissions';
 
 const router = express.Router();
 
@@ -23,6 +24,7 @@ router.route('/verifyPhone')
 router.route('/addUser')
     .post(
         requireAuth,
+        permissions('ADMIN'),
         multerSaveTo('users').single('img'),
         AuthController.validateSignUpBody(),
         UserController.addUser
@@ -44,11 +46,13 @@ router.route('/:userId/delete')
 router.route('/:userId/block')
     .put(
         requireAuth,
+        permissions('ADMIN'),
         UserController.block
     );
 router.route('/:userId/unblock')
     .put(
         requireAuth,
+        permissions('ADMIN'),
         UserController.unblock
     );
 

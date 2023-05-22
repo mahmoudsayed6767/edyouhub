@@ -291,7 +291,7 @@ export default {
         return validations;
     },
     //add new education Institution
-    async create(req, res, next) {
+    async create(req, res, next) {        
         try {
             const validatedBody = checkValidations(req);
             if(validatedBody.educationType){
@@ -400,7 +400,7 @@ export default {
         }
     },
     //get by id
-    async getById(req, res, next) {
+    async getById(req, res, next) {        
         try {
              //get lang
             let lang = i18n.getLocale(req)
@@ -426,7 +426,7 @@ export default {
         }
     },
     //update business
-    async update(req, res, next) {
+    async update(req, res, next) {        
         try {
             let { businessId } = req.params;
             let business = await checkExistThenGet(businessId,Business,{deleted:false})
@@ -524,7 +524,7 @@ export default {
         }
     },
     //get without pagenation
-    async getAll(req, res, next) {
+    async getAll(req, res, next) {        
         try {
             //get lang
             let lang = i18n.getLocale(req)
@@ -576,7 +576,7 @@ export default {
         }
     },
     //get with pagenation
-    async getAllPaginated(req, res, next) {
+    async getAllPaginated(req, res, next) {        
         try {
             //get lang
             let lang = i18n.getLocale(req)
@@ -631,12 +631,9 @@ export default {
         }
     },
     //delete 
-    async delete(req, res, next) {
-        
+    async delete(req, res, next) {        
         try {
             let { businessId } = req.params;
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             let business = await checkExistThenGet(businessId, Business);
             business.deleted = true;
             await business.save();
@@ -654,11 +651,9 @@ export default {
             next(err);
         }
     },
-    async accept(req, res, next) {
+    async accept(req, res, next) {        
         try {
             let { businessId } = req.params;
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             let business = await checkExistThenGet(businessId, Business);
             business.status = 'ACCEPTED';
             
@@ -717,12 +712,9 @@ export default {
             next(err);
         }
     },
-    async reject(req, res, next) {
-        
+    async reject(req, res, next) {        
         try {
             let { businessId } = req.params;
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             let business = await checkExistThenGet(businessId, Business);
             business.status = 'REJECTED';
             business.reason  = req.body.reason
@@ -819,7 +811,7 @@ export default {
         return validations;
     },
     //business setting
-    async businessManagement(req, res, next) {
+    async businessManagement(req, res, next) {        
         try {
             let {businessId} = req.params
             const validatedBody = checkValidations(req);
@@ -850,7 +842,7 @@ export default {
             next(error);
         }
     },
-    async getServiceSupervisors(req, res, next) {
+    async getServiceSupervisors(req, res, next) {        
         try {
             let {businessId} = req.params
             //get lang
@@ -917,7 +909,7 @@ export default {
         ];
         return validations;
     },
-    async updateServiceSupervisors(req, res, next) {
+    async updateServiceSupervisors(req, res, next) {        
         try {
             let {businessId} = req.params
             let business = await checkExistThenGet(businessId,Business,{deleted:false})

@@ -52,8 +52,11 @@ import serviceRoute from "./service/service.route"
 import subjectRoute from "./subject/subject.route"
 import courseRoute from "./course/course.route"
 import cashbackPackageRoute from "./cashbackPackage/cashbackPackage.route"
+import subscribeServiceRoute from "./subscribeService/subscribeService.route"
 
 const router = express.Router();
+router.use('/subscribeService', subscribeServiceRoute);
+
 router.use('/cashbackPackages', cashbackPackageRoute);
 router.use('/services', serviceRoute);
 router.use('/courses', courseRoute);

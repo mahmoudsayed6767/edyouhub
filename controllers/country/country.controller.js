@@ -1,10 +1,8 @@
 import Country from "../../models/country/country.model";
 import City from "../../models/city/city.model";
-
-import ApiError from "../../helpers/ApiError";
 import ApiResponse from "../../helpers/ApiResponse";
 import { body } from "express-validator";
-import { checkExistThenGet ,isInArray,checkExist} from "../../helpers/CheckMethods";
+import { checkExistThenGet ,checkExist} from "../../helpers/CheckMethods";
 import { handleImg, checkValidations } from "../shared/shared.controller";
 import Area from "../../models/area/area.model";
 import i18n from "i18n";
@@ -59,12 +57,9 @@ export default {
         return validations;
     },
     /*create new country */
-    async create(req, res, next) {
+    async create(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
-
             const validatedBody = checkValidations(req);
             let image = await handleImg(req);
             let country = await Country.create({ ...validatedBody,img:image });
@@ -98,7 +93,7 @@ export default {
         }
     },
     /*get all data without pagenation */
-    async getAll(req, res, next) {
+    async getAll(req, res, next) {        
         try {
             //get lang
             let lang = i18n.getLocale(req)
@@ -146,7 +141,7 @@ export default {
         }
     },
     /*get all data with pagenation */
-    async getAllPaginated(req, res, next) {
+    async getAllPaginated(req, res, next) {        
         try {
             //get lang
             let lang = i18n.getLocale(req)
@@ -197,14 +192,10 @@ export default {
         } 
     }, 
     /*update record */
-    async update(req, res, next) {
+    async update(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
             let { countryId } = req.params;
-
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
-
             const validatedBody = checkValidations(req);
             if (req.file) {
                 let image = await handleImg(req, { attributeName: 'img', isUpdate: true });
@@ -243,7 +234,7 @@ export default {
         }
     },
     /*get by id */
-    async getById(req, res, next) {
+    async getById(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
             let { countryId } = req.params;
@@ -272,11 +263,8 @@ export default {
     },
     /*delete country */
     async delete(req, res, next) {
-        let { countryId } = req.params;
-        try {
+        let { countryId } = req.params;        try {
             let country = await checkExistThenGet(countryId, Country, { deleted: false });
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             /*delete cities under country */
             let cities = await City.find({ country: countryId });
             for (let cityId of cities) {

@@ -1,13 +1,14 @@
 import express from 'express';
 import PackageController from '../../controllers/package/package.controller';
 import { requireAuth } from '../../services/passport';
-import { cache } from '../../services/caching'
+import { permissions } from '../../services/permissions';
 
 const router = express.Router();
 
 router.route('/')
     .post(
         requireAuth,
+        permissions('ADMIN'),
         PackageController.validateBody(),
         PackageController.create
     )
@@ -18,13 +19,15 @@ router.route('/withoutPagenation/get')
 router.route('/:packageId')
     .put(
         requireAuth,
+        permissions('ADMIN'),
         PackageController.validateBody(true),
         PackageController.update
     )
     .get(PackageController.findById)
-    .delete( requireAuth,PackageController.delete);
+    .delete( requireAuth,permissions('ADMIN'),PackageController.delete);
 router.post('/buyPackage',
     requireAuth,
+    permissions('ADMIN'),
     PackageController.validateBuyPackage(),
     PackageController.buyPackage);
 

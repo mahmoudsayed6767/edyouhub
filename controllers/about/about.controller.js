@@ -1,8 +1,6 @@
-import ApiResponse from "../../helpers/ApiResponse";
 import About from "../../models/about/about.model";
 import Report from "../../models/reports/report.model";
-import ApiError from '../../helpers/ApiError';
-import { checkExist, checkExistThenGet, isImgUrl,isInArray ,isLat,isLng} from "../../helpers/CheckMethods";
+import { checkExist, checkExistThenGet, isImgUrl ,isLat,isLng} from "../../helpers/CheckMethods";
 import { handleImg, checkValidations } from "../shared/shared.controller";
 import { body } from "express-validator";
 import i18n from "i18n";
@@ -18,7 +16,6 @@ function validatedLocation(location) {
 export default {
 
     async findAll(req, res, next) {
-
         try {
             let lang = i18n.getLocale(req) 
             let query = {deleted: false };
@@ -85,12 +82,8 @@ export default {
         return validations;
     },
 
-    async create(req, res, next) {
-
+    async create(req, res, next) {        
         try {
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
-    
             const validatedBody = checkValidations(req);
             console.log(validatedBody)
             validatedLocation(validatedBody.location);
@@ -114,11 +107,8 @@ export default {
         }
     },
 
-    async update(req, res, next) {
-
+    async update(req, res, next) {        
         try {
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             let { aboutId } = req.params;
             await checkExist(aboutId, About, { deleted: false });
             const validatedBody = checkValidations(req);
@@ -147,12 +137,8 @@ export default {
         }
     },
    
-    async delete(req, res, next) {
+    async delete(req, res, next) {        
         try {
-            let user = req.user;
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403,i18n.__('admin.auth')));
-                
             let { aboutId } = req.params;
             let about = await checkExistThenGet(aboutId, About, { deleted: false });
             about.deleted = true;

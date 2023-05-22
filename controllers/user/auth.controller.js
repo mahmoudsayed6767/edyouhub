@@ -220,7 +220,7 @@ export default {
         ];
         return validations;
     },
-    async signUp(req, res, next) {
+    async signUp(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
             const validatedBody = checkValidations(req);
@@ -296,7 +296,7 @@ export default {
             })
         ];
     },
-    async verifyPhone(req, res, next) {
+    async verifyPhone(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
             let validatedBody = checkValidations(req);
@@ -346,7 +346,7 @@ export default {
             }).isEmail().withMessage('email.syntax')
         ];
     },
-    async sendCodeToEmail(req, res, next) {
+    async sendCodeToEmail(req, res, next) {        
         try {
             let validatedBody = checkValidations(req);
             let user = await checkUserExistByEmail(validatedBody.email);
@@ -386,7 +386,7 @@ export default {
             }).isEmail().withMessage('email.syntax')
         ];
     },
-    async resetPasswordConfirmVerifyCode(req, res, next) {
+    async resetPasswordConfirmVerifyCode(req, res, next) {        
         try {
             let validatedBody = checkValidations(req);
             let user = await checkUserExistByEmail(validatedBody.email);
@@ -431,7 +431,7 @@ export default {
             }),
         ];
     },
-    async resetPassword(req, res, next) {
+    async resetPassword(req, res, next) {        
         try {
             let validatedBody = checkValidations(req);
             let user = await checkUserExistByEmail(validatedBody.email);
@@ -466,7 +466,7 @@ export default {
             })
         ];
     },
-    async forgetPasswordSms(req, res, next) {
+    async forgetPasswordSms(req, res, next) {        
         try {
             let validatedBody = checkValidations(req);
             let realPhone = "+2" + validatedBody.phone;
@@ -511,7 +511,7 @@ export default {
             }),
         ];
     },
-    async resetPasswordConfirmVerifyCodePhone(req, res, next) {
+    async resetPasswordConfirmVerifyCodePhone(req, res, next) {        
         try {
             let validatedBody = checkValidations(req);
             console.log(validatedBody)
@@ -555,7 +555,7 @@ export default {
             }),
         ];
     },
-    async resetPasswordPhone(req, res, next) {
+    async resetPasswordPhone(req, res, next) {        
         try {
             let validatedBody = checkValidations(req);
             let user = await checkUserExistByPhone(validatedBody.phone);

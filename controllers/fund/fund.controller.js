@@ -22,6 +22,13 @@ import City from "../../models/city/city.model";
 import Area from "../../models/area/area.model";
 const populateQuery = [
     { path: 'owner', model: 'user'},
+    {
+        path: 'students', model: 'student',
+        populate: { path: 'educationInstitution', model: 'educationInstitution' },
+    },
+];
+const populateQueryById = [
+    { path: 'owner', model: 'user'},
     { path: 'country', model: 'country'},
     { path: 'city', model: 'city'},
     { path: 'area', model: 'area'},
@@ -221,7 +228,7 @@ export default {
         return validations;
     },
     //add new fund
-    async uploadImgs(req, res, next) {
+    async uploadImgs(req, res, next) {        
         try {
             let personalIdImgs = []
             let utilityBillsImgs=[]
@@ -302,7 +309,7 @@ export default {
             next(error);
         }
     },
-    async create(req, res, next) {
+    async create(req, res, next) {        
         try {
             const validatedBody = checkValidations(req);
             
@@ -338,7 +345,7 @@ export default {
         }
     },
     //get by id
-    async findById(req, res, next) {
+    async findById(req, res, next) {        
         try {
              //get lang
             let lang = i18n.getLocale(req)
@@ -346,7 +353,7 @@ export default {
             
             await checkExist(fundId, Fund, { deleted: false });
 
-            await Fund.findById(fundId).populate(populateQuery).then(async(e) => {
+            await Fund.findById(fundId).populate(populateQueryById).then(async(e) => {
                 let fund = await transformFundById(e,lang)
                 res.send({
                     success:true,
@@ -358,10 +365,14 @@ export default {
         }
     },
     //update fund
-    async update(req, res, next) {
+    async update(req, res, next) {        
         try {
             let { fundId } = req.params;
-            await checkExist(fundId,Fund, { deleted: false })
+            let fund = await checkExistThenGet(fundId,Fund, { deleted: false })
+            if(!isInArray(["ADMIN","SUB-ADMIN","USER"],req.user.type)){
+                if(fund.owner != req.user._id)
+                    return next(new ApiError(403,  i18n.__('notAllow')));
+            }
             const validatedBody = checkValidations(req);
             if(validatedBody.theStudents){
                 let students = []
@@ -388,7 +399,7 @@ export default {
         }
     },
     //get without pagenation
-    async getAll(req, res, next) {
+    async getAll(req, res, next) {        
         try {
              //get lang
             let lang = i18n.getLocale(req)
@@ -416,7 +427,7 @@ export default {
         }
     },
     //get with pagenation
-    async getAllPaginated(req, res, next) {
+    async getAllPaginated(req, res, next) {        
         try {
              //get lang
             let lang = i18n.getLocale(req)
@@ -447,14 +458,9 @@ export default {
         }
     },
     //delete 
-    async delete(req, res, next) {
-        
+    async delete(req, res, next) {        
         try {
             let { fundId } = req.params;
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
-            
-        
             let fund = await checkExistThenGet(fundId, Fund);
             fund.deleted = true;
             await fund.save();
@@ -487,11 +493,9 @@ export default {
             }),
         ]
     },
-    async reviewing(req, res, next) {
+    async reviewing(req, res, next) {        
         try {
             let { fundId } = req.params;
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             let fund = await checkExistThenGet(fundId, Fund);
             if(fund.status != "NEW")
                 return next(new ApiError(500, i18n.__('fund.pending')));
@@ -527,11 +531,9 @@ export default {
             next(err);
         }
     },
-    async accept(req, res, next) {
+    async accept(req, res, next) {        
         try {
             let { fundId } = req.params;
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             let fund = await checkExistThenGet(fundId, Fund);
             if(!isInArray(["PENDING","NEED-ACTION"],fund.status))
                 return next(new ApiError(500, i18n.__('fund.pending')));
@@ -576,11 +578,9 @@ export default {
             next(err);
         }
     },
-    async needAction(req, res, next) {
+    async needAction(req, res, next) {        
         try {
             let { fundId } = req.params;
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             let fund = await checkExistThenGet(fundId, Fund);
             if(fund.status != "PENDING")
                 return next(new ApiError(500, i18n.__('fund.pending')));
@@ -642,13 +642,14 @@ export default {
             }),
         ]
     },
-    async actionReply(req, res, next) {
-        
+    async actionReply(req, res, next) {    
         try {
             let { fundId } = req.params;
-            if(!isInArray(["ADMIN","SUB-ADMIN","USER"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             let fund = await checkExistThenGet(fundId, Fund);
+            if(!isInArray(["ADMIN","SUB-ADMIN","USER"],req.user.type)){
+                if(fund.owner != req.user._id)
+                    return next(new ApiError(403,  i18n.__('notAllow')));
+            }
             if(fund.status != "NEED-ACTION")
                 return next(new ApiError(500, i18n.__('fund.pending')));
             const validatedBody = checkValidations(req);
@@ -681,12 +682,9 @@ export default {
             body('partialAcceptReason').optional()
         ]
     },
-    async partialAcceptance(req, res, next) {
-        
+    async partialAcceptance(req, res, next) {        
         try {
             let { fundId } = req.params;
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             let fund = await checkExistThenGet(fundId, Fund);
             if(!isInArray(["PENDING","NEED-ACTION"],fund.status))
                 return next(new ApiError(500, i18n.__('fund.pending')));
@@ -730,12 +728,9 @@ export default {
         }
     },
     //reject
-    async reject(req, res, next) {
-        
+    async reject(req, res, next) {        
         try {
             let { fundId } = req.params;
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             let fund = await checkExistThenGet(fundId, Fund);
             if(fund.status != "PENDING")
                 return next(new ApiError(500, i18n.__('fund.pending')));
@@ -800,12 +795,10 @@ export default {
             }),
         ]
     },
-    async active(req, res, next) {
+    async active(req, res, next) {        
         try {
             let { fundId } = req.params;
-            if(!isInArray(["ADMIN","SUB-ADMIN","USER"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
-            let fund = await checkExistThenGet(fundId, Fund);
+            await checkExist(fundId, Fund);
             const validatedBody = checkValidations(req);
             await Fund.findByIdAndUpdate(fundId, { ...validatedBody });
             let reports = {
@@ -822,12 +815,14 @@ export default {
             next(err);
         }
     },
-    async cancel(req, res, next) {
+    async cancel(req, res, next) {   
         try {
             let { fundId } = req.params;
-            if(!isInArray(["ADMIN","SUB-ADMIN","USER"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             let fund = await checkExistThenGet(fundId, Fund);
+            if(!isInArray(["ADMIN","SUB-ADMIN","USER"],req.user.type)){
+                if(fund.owner != req.user._id)
+                    return next(new ApiError(403,  i18n.__('notAllow')));
+            }
             if(isInArray(["STARTED","COMPLETED"],fund.status))
                 return next(new ApiError(500, i18n.__('notAllow')));
             fund.status = 'CANCELED';
@@ -847,7 +842,7 @@ export default {
         }
     },
     //payFirstPaid 
-    async payFirstPaid(req, res, next) {
+    async payFirstPaid(req, res, next) {        
         try {
             let { fundId } = req.params;
             let fund = await checkExistThenGet(fundId, Fund);

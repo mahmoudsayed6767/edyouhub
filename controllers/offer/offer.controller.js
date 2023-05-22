@@ -7,7 +7,6 @@ import User from "../../models/user/user.model";
 import Report from "../../models/reports/report.model";
 import Place from "../../models/place/place.model"
 import { toImgUrl } from "../../utils";
-//import Category from "../../models/category/category.model";
 import i18n from "i18n";
 import { generateCode } from '../../services/generator-code-service';
 import Bill from "../../models/bill/bill.model";
@@ -17,19 +16,14 @@ import { sendNotifiAndPushNotifi } from "../../services/notification-service";
 import Notif from "../../models/notif/notif.model";
 import OfferBooking from "../../models/offerBooking/offerBooking.model"
 const populateQuery = [ 
-    
-    {
-        path: 'place', model: 'place',
-    },
-    {
-        path: 'category', model: 'category',
-    },
+    { path: 'place', model: 'place'},
+    { path: 'category', model: 'category'},
 ];
 
 export default {
 
 
-    async findAll(req, res, next) {
+    async findAll(req, res, next) {        
         try {
              //get lang
             let lang = i18n.getLocale(req)
@@ -77,7 +71,7 @@ export default {
         }
     },
     //get without pagenation
-    async getAll(req, res, next) {
+    async getAll(req, res, next) {        
         try {
              //get lang
             let lang = i18n.getLocale(req)
@@ -182,10 +176,8 @@ export default {
         return validations;
     },
 
-    async create(req, res, next) {
+    async create(req, res, next) {        
         try {
-            if(!isInArray(["ADMIN","SUB-ADMIN","PLACE"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             const validatedBody = checkValidations(req);
             await checkExist(validatedBody.place, Place, { deleted: false });
             validatedBody.toDateMillSec = Date.parse(validatedBody.toDate)
@@ -219,7 +211,7 @@ export default {
             next(err);
         }
     },
-    async findById(req, res, next) {
+    async findById(req, res, next) {        
         try {
             //get lang
             let lang = i18n.getLocale(req)
@@ -242,13 +234,8 @@ export default {
         }
     },
 
-    async update(req, res, next) {
-
+    async update(req, res, next) {        
         try {
-            //get lang
-            //let lang = i18n.getLocale(req)
-            if(!isInArray(["ADMIN","SUB-ADMIN","PLACE"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             let { offerId } = req.params;
             await checkExist(offerId, Offer, { deleted: false });
 
@@ -279,10 +266,8 @@ export default {
         }
     },
 
-    async delete(req, res, next) {
+    async delete(req, res, next) {        
         try {
-            if(!isInArray(["ADMIN","SUB-ADMIN","PLACE"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             let { offerId } = req.params;
             let offer = await checkExistThenGet(offerId, Offer, { deleted: false });
             offer.deleted = true;
@@ -301,7 +286,7 @@ export default {
             next(err);
         }
     },
-    async bookOffer(req, res, next) {
+    async bookOffer(req, res, next) {        
         try {
             if(!isInArray(["ADMIN","SUB-ADMIN","USER"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
@@ -387,7 +372,7 @@ export default {
         ];
         return validations;
     },
-    async bookOffers(req, res, next) {
+    async bookOffers(req, res, next) {        
         try {
             if(!isInArray(["ADMIN","SUB-ADMIN","USER"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
@@ -456,7 +441,7 @@ export default {
             
         ]
     },
-    async confirmOffer(req, res, next) {
+    async confirmOffer(req, res, next) {        
         try {
             if(!isInArray(["ADMIN","SUB-ADMIN","PLACE","SUBERVISOR"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));

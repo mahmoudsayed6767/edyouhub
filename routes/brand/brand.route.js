@@ -3,13 +3,14 @@ import express from 'express';
 import BrandController from '../../controllers/brand/brand.controller';
 import { multerSaveTo } from '../../services/multer-service';
 import { requireAuth } from '../../services/passport';
-import { cache } from '../../services/caching';
+import { permissions } from '../../services/permissions';
 
 const router = express.Router();
 
 router.route('/')
     .post(
         requireAuth,
+        permissions('ADMIN'),
         multerSaveTo('brands').single('img'),
         BrandController.validateBody(),
         BrandController.create
@@ -20,12 +21,13 @@ router.route('/withoutPagenation/get')
 router.route('/:brandId')
     .put(
         requireAuth,
+        permissions('ADMIN'),
         multerSaveTo('brands').single('img'),
         BrandController.validateBody(true),
         BrandController.update
     )
     .get(BrandController.getById)
-    .delete(requireAuth,BrandController.delete);
+    .delete(requireAuth,permissions('ADMIN'),BrandController.delete);
 
 
 

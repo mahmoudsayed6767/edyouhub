@@ -20,7 +20,7 @@ const populateQuery = [
     },
 ];
 export default {
-    async create(req, res, next) {
+    async create(req, res, next) {        
         try {
             let{toId} = req.params
             let query = {
@@ -80,7 +80,7 @@ export default {
             next(error);
         }
     },
-    async getAll(req, res, next) {
+    async getAll(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
             let query = { deleted: false };
@@ -114,7 +114,7 @@ export default {
             next(error);
         }
     },
-    async getAllPaginated(req, res, next) {
+    async getAllPaginated(req, res, next) {        
         try {    
             
             let lang = i18n.getLocale(req)       
@@ -145,7 +145,7 @@ export default {
                         let index = await transformConnection(e,lang,req.user._id,req.user)
                         newdata.push(index);
                     }))
-                    const count = await Connection.countDocuments({deleted: false });
+                    const count = await Connection.countDocuments(query);
                     const pageCount = Math.ceil(count / limit);
                     res.send(new ApiResponse(newdata, page, pageCount, limit, count, req));
                 })
@@ -153,7 +153,7 @@ export default {
             next(error);
         }
     },
-    async create(req, res, next) {
+    async create(req, res, next) {        
         try {
             let{toId} = req.params
             let query = {
@@ -222,7 +222,6 @@ export default {
         }
     },
     async delete(req, res, next) {
-        
         try {
             let { toId } = req.params;
             let query = {
@@ -283,7 +282,6 @@ export default {
         }
     },
     async accept(req, res, next) {
-        
         try {
             let { toId } = req.params;
             let query = {
@@ -359,7 +357,6 @@ export default {
         }
     },
     async reject(req, res, next) {
-        
         try {
             let { toId } = req.params;
             let query = {

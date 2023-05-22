@@ -56,7 +56,6 @@ const populateQuery = [
 
 export default {
     async findAll(req, res, next) {
-        
         try {
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20,
@@ -107,7 +106,6 @@ export default {
         }
     },
     async getAll(req, res, next) {
-        
         try {
             let lang = i18n.getLocale(req)
             let {educationInstitution,subCategory,category,grade,search,type} = req.query;
@@ -149,7 +147,6 @@ export default {
         }
     }, 
     async getSuplliesMobile(req, res, next) {
-        
         try {
             let lang = i18n.getLocale(req)
             let {educationInstitution,grade,type} = req.query;
@@ -310,7 +307,7 @@ export default {
     
         return validations;
     },
-    async uploadFile(req, res, next) {
+    async uploadFile(req, res, next) {        
         try {
             let file 
             if (req.files) {
@@ -330,7 +327,7 @@ export default {
             next(error);
         }
     },
-    async create(req, res, next) {
+    async create(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
@@ -383,7 +380,7 @@ export default {
             next(err);
         }
     },
-    async createIndividual(req, res, next) {
+    async createIndividual(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
             let {individualSuppliesId} = req.params
@@ -442,7 +439,7 @@ export default {
             next(err);
         }
     },
-    async findById(req, res, next) {
+    async findById(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
             let { suppliesId } = req.params;
@@ -458,7 +455,7 @@ export default {
         }
     },
 
-    async update(req, res, next) {
+    async update(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
             let {suppliesId } = req.params;
@@ -512,7 +509,7 @@ export default {
             next(err);
         }
     },
-    async delete(req, res, next) {
+    async delete(req, res, next) {        
         try {
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));

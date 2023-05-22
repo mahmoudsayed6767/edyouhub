@@ -1,11 +1,10 @@
 import Subject from "../../models/subject/subject.model";
 import { body } from "express-validator";
 import { checkValidations} from "../shared/shared.controller";
-import ApiError from "../../helpers/ApiError";
 import Report from "../../models/reports/report.model";
 import { checkExist } from "../../helpers/CheckMethods";
 import ApiResponse from "../../helpers/ApiResponse";
-import { checkExistThenGet,isInArray } from "../../helpers/CheckMethods";
+import { checkExistThenGet } from "../../helpers/CheckMethods";
 import i18n from "i18n";
 import EducationSystem from "../../models/education system/education system.model";
 
@@ -29,13 +28,9 @@ export default {
         ];
         return validations;
     },
-    async create(req, res, next) {
+    async create(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
-
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
-
             const validatedBody = checkValidations(req);
             let subject = await Subject.create({ ...validatedBody});
             let reports = {
@@ -63,7 +58,7 @@ export default {
             next(error);
         }
     },
-    async getById(req, res, next) {
+    async getById(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
             let { subjectId } = req.params;
@@ -88,14 +83,11 @@ export default {
             next(error);
         }
     },
-    async update(req, res, next) {
+    async update(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
-
             let { subjectId } = req.params;
             await checkExist(subjectId, Subject, { deleted: false });
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             const validatedBody = checkValidations(req);
             await Subject.findByIdAndUpdate(subjectId, { ...validatedBody });
             let reports = {
@@ -124,7 +116,7 @@ export default {
         }
     },
 
-    async getAll(req, res, next) {
+    async getAll(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
             let {search,educationSystem} = req.query;
@@ -164,7 +156,7 @@ export default {
             next(error);
         }
     },
-    async getAllPaginated(req, res, next) {
+    async getAllPaginated(req, res, next) {        
         try {    
             let lang = i18n.getLocale(req)       
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
@@ -208,12 +200,9 @@ export default {
             next(error);
         }
     },
-    async delete(req, res, next) {
-        
+    async delete(req, res, next) {        
         try {
             let { subjectId } = req.params;
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             let subject = await checkExistThenGet(subjectId, Subject);
             subject.deleted = true;
             await subject.save();

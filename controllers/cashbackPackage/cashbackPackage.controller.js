@@ -10,8 +10,7 @@ import i18n from "i18n";
 import User from "../../models/user/user.model";
 export default {
     //get with pagenation
-    async findAll(req, res, next) {
-
+    async findAll(req, res, next) {        
         try {
             let lang = i18n.getLocale(req) 
             let page = +req.query.page || 1, limit = +req.query.limit || 20 ;
@@ -38,8 +37,7 @@ export default {
         }
     },
     //get without pagenation
-    async findAllWithoutPagenation(req, res, next) {
-
+    async findAllWithoutPagenation(req, res, next) {        
         try {
             let lang = i18n.getLocale(req) 
             let query = {deleted: false };
@@ -83,12 +81,8 @@ export default {
         ];
     },
     //add cashbackPackage
-    async create(req, res, next) {
-
+    async create(req, res, next) {        
         try {
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
-    
             const validatedBody = checkValidations(req);
             let createdPackage = await CashbackPackage.create({ ...validatedBody});
 
@@ -107,7 +101,7 @@ export default {
     },
 
     //get by id
-    async findById(req, res, next) {
+    async findById(req, res, next) {        
         try {
             //get lang
             let lang = i18n.getLocale()
@@ -127,12 +121,8 @@ export default {
         }
     },
     //update cashbackPackage
-    async update(req, res, next) {
-
+    async update(req, res, next) {        
         try {
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
-
             let { packageId } = req.params;
             await checkExist(packageId, CashbackPackage, { deleted: false });
 
@@ -154,10 +144,8 @@ export default {
         }
     },
     //delete cashbackPackage
-    async delete(req, res, next) {
+    async delete(req, res, next) {        
         try {
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             let { packageId } = req.params;
             let cashbackPackages = await checkExistThenGet(packageId, CashbackPackage, { deleted: false });
             
@@ -178,7 +166,7 @@ export default {
         }
     },
     //buy cashbackPackage
-    async buycashbackPackage(req, res, next) {
+    async buycashbackPackage(req, res, next) {        
         try {
             let { packageId } = req.params;
             let cashbackPackages = await checkExistThenGet(packageId, CashbackPackage, { deleted: false });

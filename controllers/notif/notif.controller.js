@@ -12,7 +12,7 @@ const populateQuery = [
     { path: 'resource', model: 'user',},
 ];
 export default {
-    async find(req, res, next) {
+    async find(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
             let user = req.user._id;
@@ -81,7 +81,7 @@ export default {
             next(err);
         }
     },
-    async unreadCount(req, res, next) {
+    async unreadCount(req, res, next) {        
         try {
             let user = req.user._id;
             await checkExist(req.user._id, User);
@@ -94,7 +94,7 @@ export default {
             next(err);
         }
     },
-    async read(req, res, next) {
+    async read(req, res, next) {        
         try {
             let { notifId} = req.params;
             let notif = await checkExistThenGet(notifId, Notif);
@@ -112,7 +112,7 @@ export default {
             next(error);
         }
     },
-    async unread(req, res, next) {
+    async unread(req, res, next) {        
         try {
             let { notifId} = req.params;
             let notif = await checkExistThenGet(notifId, Notif);
@@ -130,7 +130,7 @@ export default {
             next(error);
         }
     },
-    async delete(req, res, next) {
+    async delete(req, res, next) {        
         try {
             let { notifId} = req.params;
             let notif = await checkExistThenGet(notifId, Notif);
@@ -148,7 +148,7 @@ export default {
             next(error);
         }
     },
-    async deleteAll(req, res, next) {
+    async deleteAll(req, res, next) {        
         try {
             let notifs = await Notif.find({target :req.user._id });
             for (let notif of notifs ) {
@@ -179,7 +179,7 @@ export default {
         ];
         return validations;
     },
-    async SendNotif(req, res, next) {
+    async SendNotif(req, res, next) {        
         try { 
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                  return next(new ApiError(403, i18n.__('admin.auth'))); 

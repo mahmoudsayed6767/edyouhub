@@ -1,8 +1,6 @@
 import express from 'express';
 import { requireAuth } from '../../services/passport';
 import GradeController from '../../controllers/grade/grade.controller';
-import { multerSaveTo } from '../../services/multer-service';
-import { parseStringToArrayOfObjectsMw } from '../../utils';
 
 const router = express.Router();
 

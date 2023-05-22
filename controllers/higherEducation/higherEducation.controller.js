@@ -1,11 +1,10 @@
 import HigherEducation from "../../models/higherEducation/higherEducation.model";
 import { body } from "express-validator";
 import { checkValidations} from "../shared/shared.controller";
-import ApiError from "../../helpers/ApiError";
 import Report from "../../models/reports/report.model";
 import { checkExist } from "../../helpers/CheckMethods";
 import ApiResponse from "../../helpers/ApiResponse";
-import { checkExistThenGet,isInArray } from "../../helpers/CheckMethods";
+import { checkExistThenGet } from "../../helpers/CheckMethods";
 import i18n from "i18n";
 
 export default {
@@ -20,13 +19,9 @@ export default {
         ];
         return validations;
     },
-    async create(req, res, next) {
+    async create(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
-
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
-
             const validatedBody = checkValidations(req);
             let higherEducation = await HigherEducation.create({ ...validatedBody});
             let reports = {
@@ -53,7 +48,7 @@ export default {
             next(error);
         }
     },
-    async getById(req, res, next) {
+    async getById(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
             let { higherEducationId } = req.params;
@@ -77,14 +72,12 @@ export default {
             next(error);
         }
     },
-    async update(req, res, next) {
+    async update(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
 
             let { higherEducationId } = req.params;
             await checkExist(higherEducationId, HigherEducation, { deleted: false });
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             const validatedBody = checkValidations(req);
             await HigherEducation.findByIdAndUpdate(higherEducationId, { ...validatedBody });
             let reports = {
@@ -112,7 +105,7 @@ export default {
         }
     },
 
-    async getAll(req, res, next) {
+    async getAll(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
             let {search} = req.query;
@@ -151,9 +144,8 @@ export default {
         }
     },
 
-    async getAllPaginated(req, res, next) {
+    async getAllPaginated(req, res, next) {        
         try {    
-            
             let lang = i18n.getLocale(req)       
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
             let {search} = req.query;
@@ -196,12 +188,9 @@ export default {
     },
 
 
-    async delete(req, res, next) {
-        
+    async delete(req, res, next) {        
         try {
             let { higherEducationId } = req.params;
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             let higherEducation = await checkExistThenGet(higherEducationId, HigherEducation);
             higherEducation.deleted = true;
             await HigherEducation.save();

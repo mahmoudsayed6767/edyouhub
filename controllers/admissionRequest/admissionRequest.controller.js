@@ -151,7 +151,7 @@ export default {
         return validations;
     },
     //add new admissionRequest
-    async create(req, res, next) {
+    async create(req, res, next) {        
         try {
             const validatedBody = checkValidations(req);
             let {admissionId} = req.params
@@ -176,7 +176,7 @@ export default {
         }
     },
     //add new admissionRequest to waiting list
-    async createToWaitingList(req, res, next) {
+    async createToWaitingList(req, res, next) {        
         try {
             let {businessId} = req.params
             const validatedBody = checkValidations(req);
@@ -200,7 +200,7 @@ export default {
         }
     },
     //get by id
-    async getById(req, res, next) {
+    async getById(req, res, next) {        
         try {
              //get lang
             let lang = i18n.getLocale(req)
@@ -224,7 +224,7 @@ export default {
         }
     },
     //update admissionRequest
-    async update(req, res, next) {
+    async update(req, res, next) {        
         try {
             let { admissionRequestId } = req.params;
             let admissionRequest = await checkExistThenGet(admissionRequestId,AdmissionRequest, { deleted: false })
@@ -249,7 +249,7 @@ export default {
         }
     },
     //get without pagenation
-    async getAll(req, res, next) {
+    async getAll(req, res, next) {        
         try {
             //get lang
             let lang = i18n.getLocale(req)
@@ -291,7 +291,7 @@ export default {
         }
     },
     //get with pagenation
-    async getAllPaginated(req, res, next) {
+    async getAllPaginated(req, res, next) {        
         try {
              //get lang
             let lang = i18n.getLocale(req)
@@ -337,7 +337,6 @@ export default {
     },
     //delete 
     async delete(req, res, next) {
-        
         try {
             let { admissionRequestId } = req.params;
             let admissionRequest = await checkExistThenGet(admissionRequestId, AdmissionRequest);
@@ -362,7 +361,6 @@ export default {
         }
     },
     async accept(req, res, next) {
-        
         try {
             let { admissionRequestId } = req.params;
             let admissionRequest = await checkExistThenGet(admissionRequestId, AdmissionRequest);
@@ -410,7 +408,6 @@ export default {
         }
     },
     async reject(req, res, next) {
-        
         try {
             let { admissionRequestId } = req.params;
             let admissionRequest = await checkExistThenGet(admissionRequestId, AdmissionRequest);

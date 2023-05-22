@@ -2,7 +2,7 @@ import express from 'express';
 import {  requireAuth} from '../../services/passport';
 import fundController from '../../controllers/fund/fund.controller';
 import { multerSaveTo } from '../../services/multer-service';
-import { parseStringToArrayOfObjectsMw } from '../../utils';
+import { permissions } from '../../services/permissions';
 
 const router = express.Router();
 router.route('/uploads')
@@ -37,6 +37,7 @@ router.route('/:fundId')
 router.route('/:fundId/reviewing')
     .put(
         requireAuth,
+        permissions('ADMIN'),
         fundController.reviewing
     )
 router.route('/:fundId/cancel')
@@ -48,6 +49,7 @@ router.route('/:fundId/cancel')
 router.route('/:fundId/needAction')
     .put(
         requireAuth,
+        permissions('ADMIN'),
         fundController.validateTakeActionBody(),
         fundController.needAction
     )
@@ -60,30 +62,35 @@ router.route('/:fundId/actionReply')
 router.route('/:fundId/reject')
     .put(
         requireAuth,
+        permissions('ADMIN'),
         fundController.validateTakeActionBody(),
         fundController.reject
     )
 router.route('/:fundId/partialAcceptance')
     .put(
         requireAuth,
+        permissions('ADMIN'),
         fundController.validatePartialAcceptBody(),
         fundController.partialAcceptance
     )
 router.route('/:fundId/accept')
     .put(
         requireAuth,
+        permissions('ADMIN'),
         fundController.validateTakeActionBody(),
         fundController.accept
     )
 router.route('/:fundId/active')
     .put(
         requireAuth,
+        permissions('ADMIN'),
         fundController.validateActiveBody(),
         fundController.active
     )
 router.route('/:fundId/payFirstPaid')
     .put(
         requireAuth,
+        permissions('ADMIN'),
         fundController.payFirstPaid
     )
 export default router;

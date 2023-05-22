@@ -1,4 +1,3 @@
-import { isInArray } from "../../helpers/CheckMethods";
 export async function transformPlace(e,lang,myUser,userId) {
     let index = {
         name:lang=="ar"?e.name_ar:e.name_en,

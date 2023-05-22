@@ -25,7 +25,7 @@ const populateQuery = [
 ];
 export default {
 
-    async findAll(req, res, next) {
+    async findAll(req, res, next) {        
         try {
             let lang = i18n.getLocale(req) 
             let {id} = req.params;
@@ -53,7 +53,7 @@ export default {
             next(err);
         }
     },
-    async findAllPagenation(req, res, next) {
+    async findAllPagenation(req, res, next) {        
         try {
             let lang = i18n.getLocale(req) 
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
@@ -83,7 +83,7 @@ export default {
         }
     },
     //get by id
-    async getById(req, res, next) {
+    async getById(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)          
             let { branchId } = req.params;
@@ -143,7 +143,6 @@ export default {
     },
 
     async create(req, res, next) {
-
         try {
             let {id} = req.params
             const validatedBody = checkValidations(req);
@@ -193,7 +192,6 @@ export default {
     },
 
     async update(req, res, next) {
-
         try {
             if(!isInArray(["ADMIN","SUB-ADMIN","PLACE","USER"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
@@ -246,7 +244,7 @@ export default {
         }
     },
    
-    async delete(req, res, next) {
+    async delete(req, res, next) {        
         try {
             let { branchId } = req.params;
             let branch = await checkExistThenGet(branchId, Branch, { deleted: false });

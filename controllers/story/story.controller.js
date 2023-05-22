@@ -15,7 +15,7 @@ const populateQuery = [
 ];
 export default {
 
-    async findAll(req, res, next) {
+    async findAll(req, res, next) {        
         try {
             let lang = i18n.getLocale(req) 
             let query = {deleted: false,end:false};
@@ -36,7 +36,7 @@ export default {
             next(err);
         }
     },
-    async findAllPagenation(req, res, next) {
+    async findAllPagenation(req, res, next) {        
         try {
             let lang = i18n.getLocale(req) 
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
@@ -59,7 +59,7 @@ export default {
         }
     },
     //get by id
-    async getById(req, res, next) {
+    async getById(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)          
             let { storyId } = req.params;
@@ -95,7 +95,7 @@ export default {
         return validations;
     },
 
-    async create(req, res, next) {
+    async create(req, res, next) {        
         try {
             const validatedBody = checkValidations(req);
             if(validatedBody.business) validatedBody.type = "BUSINESS"
@@ -138,7 +138,7 @@ export default {
         }
     },
 
-    async update(req, res, next) {
+    async update(req, res, next) {        
         try {
             let { storyId } = req.params;
             let story = await checkExistThenGet(storyId, Story, { deleted: false });
@@ -186,7 +186,7 @@ export default {
         }
     },
    
-    async delete(req, res, next) {
+    async delete(req, res, next) {        
         try {
             let { storyId } = req.params;
             let story = await checkExistThenGet(storyId, Story, { deleted: false });

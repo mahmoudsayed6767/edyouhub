@@ -1,16 +1,14 @@
 import Brand from "../../models/brand/brand.model";
 import { body } from "express-validator";
 import { checkValidations ,handleImg} from "../shared/shared.controller";
-import ApiError from "../../helpers/ApiError";
 import Report from "../../models/reports/report.model";
 import { checkExist } from "../../helpers/CheckMethods";
 import ApiResponse from "../../helpers/ApiResponse";
-import { checkExistThenGet,isInArray } from "../../helpers/CheckMethods";
+import { checkExistThenGet } from "../../helpers/CheckMethods";
 import i18n from "i18n";
 
 export default {
     validateBody(isUpdate = false) {
-
         let validations = [
             body('name_ar').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('name_ar.required', { value});
@@ -28,13 +26,9 @@ export default {
 
         return validations;
     },
-    async create(req, res, next) {
+    async create(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
-
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
-
             const validatedBody = checkValidations(req);
             //upload img
             let image = await handleImg(req);
@@ -65,7 +59,7 @@ export default {
             next(error);
         }
     },
-    async getById(req, res, next) {
+    async getById(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
             let { brandId } = req.params;
@@ -90,14 +84,11 @@ export default {
             next(error);
         }
     },
-    async update(req, res, next) {
+    async update(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
-
             let { brandId } = req.params;
             await checkExist(brandId, Brand, { deleted: false });
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             const validatedBody = checkValidations(req);
             if (req.file) {
                 let image = await handleImg(req, { attributeName: 'img', isUpdate: true });
@@ -130,7 +121,7 @@ export default {
         }
     },
 
-    async getAll(req, res, next) {
+    async getAll(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
             let {search} = req.query;
@@ -170,9 +161,8 @@ export default {
         }
     },
 
-    async getAllPaginated(req, res, next) {
+    async getAllPaginated(req, res, next) {        
         try {    
-            
             let lang = i18n.getLocale(req)       
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
             let {search} = req.query;
@@ -216,12 +206,9 @@ export default {
     },
 
 
-    async delete(req, res, next) {
-        
+    async delete(req, res, next) {        
         try {
             let { brandId } = req.params;
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             let brand = await checkExistThenGet(brandId, Brand);
             brand.deleted = true;
             await brand.save();

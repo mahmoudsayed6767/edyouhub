@@ -41,7 +41,7 @@ const populateQuery2 = [
 ];
 
 export default {
-    async addUser(req, res, next) {
+    async addUser(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
             const validatedBody = checkValidations(req);
@@ -95,11 +95,8 @@ export default {
             next(err);
         }
     },
-    async block(req, res, next) {
+    async block(req, res, next) {        
         try {
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth'))); 
-
             let { userId} = req.params;
             let user = await checkExistThenGet(userId,User);
             user.block = true;
@@ -125,11 +122,8 @@ export default {
             next(error);
         }
     },
-    async unblock(req, res, next) {
+    async unblock(req, res, next) {        
         try {
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth'))); 
-
             let { userId} = req.params;
             let user = await checkExistThenGet(userId,User);
             user.block = false;
@@ -163,7 +157,7 @@ export default {
 
         return validation;
     },
-    async updatePassword(req, res, next) {
+    async updatePassword(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
             let user = await checkExistThenGet(req.user._id, User);
@@ -200,7 +194,7 @@ export default {
             next(error);
         }
     },
-    async findById(req, res, next) {
+    async findById(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
             let { id } = req.params;
@@ -227,7 +221,7 @@ export default {
             next(error);
         }
     },
-    async findAll(req, res, next) {
+    async findAll(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20,
@@ -280,7 +274,7 @@ export default {
             next(err);
         }
     },
-    async getAll(req, res, next) {
+    async getAll(req, res, next) {        
         try {
             let lang = i18n.getLocale(req) 
             let {userId,cashBack,phoneVerify,search,accountType,type, active,place} = req.query;
@@ -326,7 +320,7 @@ export default {
             next(err);
         }
     },
-    async delete(req, res, next) {
+    async delete(req, res, next) {        
         try {
             let {userId } = req.params;
             let user = await checkExistThenGet(userId, User,{deleted: false });
@@ -427,7 +421,7 @@ export default {
 
         return validation;
     },
-    async updateUser(req, res, next) {
+    async updateUser(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
             const validatedBody = checkValidations(req);
@@ -591,7 +585,7 @@ export default {
 
         return validation;
     },
-    async completeProfile(req, res, next) {
+    async completeProfile(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
             const validatedBody = checkValidations(req);
@@ -675,7 +669,7 @@ export default {
             next(err);
         }
     },
-    async getAddress(req, res, next){
+    async getAddress(req, res, next){        
         try {
             let lang =i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;

@@ -1,7 +1,7 @@
 import express from 'express';
 import OrderController from '../../controllers/order/order.controller';
 import { requireAuth } from '../../services/passport';
-import { cache } from '../../services/caching';
+import { permissions } from '../../services/permissions';
 
 const router = express.Router();
 
@@ -23,17 +23,17 @@ router.route('/:orderId')
 
 
 router.route('/:orderId/accept')
-    .put( requireAuth,OrderController.accept)
+    .put( requireAuth,permissions('ADMIN'),OrderController.accept)
 
 router.route('/:orderId/refuse')
-    .put( requireAuth,OrderController.refuse)
+    .put( requireAuth,permissions('ADMIN'),OrderController.refuse)
 router.route('/:orderId/cancel')
     .put( requireAuth,OrderController.cancel)
 router.route('/:orderId/outForDelivery')
-    .put( requireAuth,OrderController.outForDelivery)
+    .put( requireAuth,permissions('ADMIN'),OrderController.outForDelivery)
 
 router.route('/:orderId/delivered')
-    .put( requireAuth,OrderController.deliver)
+    .put( requireAuth,permissions('ADMIN'),OrderController.deliver)
 
 router.route('/getDelivaryPrice')
     .post(

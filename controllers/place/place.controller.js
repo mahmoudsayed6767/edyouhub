@@ -7,7 +7,7 @@ import Bill from "../../models/bill/bill.model";
 import Category from "../../models/category/category.model";
 import Report from "../../models/reports/report.model";
 import ApiError from '../../helpers/ApiError';
-import { checkExist, checkExistThenGet,isInArray,isLat,isLng} from "../../helpers/CheckMethods";
+import { checkExist, checkExistThenGet,isLat,isLng} from "../../helpers/CheckMethods";
 import { checkValidations } from "../shared/shared.controller";
 import { body } from "express-validator";
 import i18n from "i18n";
@@ -17,6 +17,9 @@ import Branch from "../../models/branch/branch.model";
 import { ValidationError } from "mongoose";
 
 const populateQuery = [
+    { path: 'owner', model: 'user'},
+];
+const populateQueryById = [
     { path: 'categories', model: 'category'},
     { path: 'subCategories', model: 'category'},
     { path: 'owner', model: 'user'},
@@ -42,7 +45,7 @@ function validatedLocation(location) {
 }
 export default {
 
-    async findAll(req, res, next) {
+    async findAll(req, res, next) {        
         try {
             let lang = i18n.getLocale(req) 
             let {search,category,subCategory} = req.query
@@ -90,7 +93,7 @@ export default {
             next(err);
         }
     },
-    async findAllPagenation(req, res, next) {
+    async findAllPagenation(req, res, next) {        
         try {
             let lang = i18n.getLocale(req) 
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
@@ -140,7 +143,7 @@ export default {
             next(err);
         }
     },
-    async findById(req, res, next) {
+    async findById(req, res, next) {        
         try {
             //get lang
             let lang = i18n.getLocale(req)
@@ -151,7 +154,7 @@ export default {
             if(userId){
                 myUser= await checkExistThenGet(userId, User)
             }
-            await Place.findById(placeId).populate(populateQuery).then(async(e) => {
+            await Place.findById(placeId).populate(populateQueryById).then(async(e) => {
                 let place = await transformPlaceById(e,lang,myUser,userId)
                 res.send({
                     success:true,
@@ -268,11 +271,8 @@ export default {
         return validations;
     },
 
-    async create(req, res, next) {
-
+    async create(req, res, next) {        
         try {
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             const validatedBody = checkValidations(req);
             validatedLocation(validatedBody.location);
             validatedBody.location = { type: 'Point', coordinates: [+req.body.location[0], +req.body.location[1]] };
@@ -343,11 +343,8 @@ export default {
         }
     },
 
-    async update(req, res, next) {
-
+    async update(req, res, next) {        
         try {
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             let { placeId } = req.params;
             await checkExist(placeId, Place, { deleted: false });
             const validatedBody = checkValidations(req);
@@ -384,11 +381,8 @@ export default {
         }
     },
    
-    async delete(req, res, next) {
+    async delete(req, res, next) {        
         try {
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
-                
             let { placeId } = req.params;
             let place = await checkExistThenGet(placeId, Place, { deleted: false });
             place.deleted = true;

@@ -1,18 +1,16 @@
 import Product from "../../models/product/product.model";
 import ApiResponse from "../../helpers/ApiResponse";
 import Category from "../../models/category/category.model";
-import { handleImgs, checkValidations } from "../shared/shared.controller";
-import { checkExistThenGet, checkExist,isInArray } from "../../helpers/CheckMethods";
+import { checkValidations } from "../shared/shared.controller";
+import { checkExistThenGet, checkExist } from "../../helpers/CheckMethods";
 import { body } from "express-validator";
 import Report from "../../models/reports/report.model";
 import { toImgUrl } from "../../utils";
-import ApiError from '../../helpers/ApiError';
 import Cart from "../../models/cart/cart.model";
 import i18n from "i18n";
 import { transformProduct,transformProductById } from "../../models/product/transformProduct";
 import Color from "../../models/color/color.model";
 import Brand from "../../models/brand/brand.model"
-import User from "../../models/user/user.model";
 const populateQuery = [
     { path: 'category', model: 'category' },
     { path: 'subCategory', model: 'category' },
@@ -22,7 +20,6 @@ const populateQuery = [
 
 export default {
     async findAll(req, res, next) {
-        
         try {
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20,
@@ -101,7 +98,6 @@ export default {
         }
     },
     async getAll(req, res, next) {
-        
         try {
             let lang = i18n.getLocale(req)
             let {sortBy,color,brand,related,id,subCategory,category,available,search,saleCount,priceFrom,priceTo} = req.query;
@@ -270,11 +266,9 @@ export default {
     
         return validations;
     },
-    async create(req, res, next) {
+    async create(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth'))); 
             const validatedBody = checkValidations(req);
             if (req.files) {
                 if (req.files['img']) {
@@ -319,7 +313,7 @@ export default {
             next(err);
         }
     },
-    async createMulti(req, res, next) {
+    async createMulti(req, res, next) {        
         try { 
             let data = req.body.data
             for (let i = 0; i < data.length; i++) {
@@ -350,7 +344,7 @@ export default {
             next(err);
         }
     },
-    async findById(req, res, next) {
+    async findById(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
             let { productId } = req.params;
@@ -366,11 +360,8 @@ export default {
         }
     },
 
-    async active(req, res, next) {
+    async active(req, res, next) {        
         try {
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
-
             let {productId} = req.params;
             let product = await checkExistThenGet(productId, Product,
                 {deleted: false });
@@ -390,11 +381,8 @@ export default {
         }
     },
 
-    async disactive(req, res, next) {S
+    async disactive(req, res, next) { 
         try {
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth'))); 
-
             let {productId } = req.params;
             let product = await checkExistThenGet(productId, Product,
                 {deleted: false });
@@ -414,12 +402,10 @@ export default {
         }
     },
     
-    async update(req, res, next) {
+    async update(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
             let {productId } = req.params;
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth'))); 
             await checkExist(productId, Product,
                 {deleted: false });
 
@@ -471,10 +457,8 @@ export default {
             next(err);
         }
     },
-    async delete(req, res, next) {
+    async delete(req, res, next) {        
         try {
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             let {productId } = req.params;
 
             let product = await checkExistThenGet(productId, Product,

@@ -1,10 +1,8 @@
 import { body } from "express-validator";
 import Contact from "../../models/contact/contact.model";
-import { checkExistThenGet,isInArray } from "../../helpers/CheckMethods";
-import ApiError from "../../helpers/ApiError";
+import { checkExistThenGet } from "../../helpers/CheckMethods";
 import ApiResponse from "../../helpers/ApiResponse";
 import { checkValidations } from "../shared/shared.controller";
-import i18n from "i18n";
 import { toImgUrl } from "../../utils";
 import { sendEmail } from "../../services/sendGrid";
 
@@ -44,7 +42,7 @@ export default {
             body('message').optional(),
         ]
     },
-    async createContactMessage(req, res, next) {
+    async createContactMessage(req, res, next) {        
         try {
             const validatedBody = checkValidations(req);
             
@@ -66,15 +64,13 @@ export default {
             next(error);
         }
     },
-    async findAll(req, res, next) {
+    async findAll(req, res, next) {        
         try {
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
             let {contactFor,status} = req.query
             let query = { deleted: false };
             if(contactFor) query.contactFor = contactFor
             if(status) query.status = status
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             let contacts = await Contact.find(query)
                 .sort({ createdAt: -1 })
                 .limit(limit)
@@ -89,10 +85,8 @@ export default {
             next(err);
         }
     },
-    async findById(req, res, next) {
+    async findById(req, res, next) {        
         try {
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             let { contactId } = req.params;
             res.send({success:true,data:await checkExistThenGet(contactId, Contact)});
         } catch (err) {
@@ -107,12 +101,10 @@ export default {
         ]
         return validation;
     },
-    async reply(req, res, next) {
+    async reply(req, res, next) {        
         try {
             let { contactId } = req.params;
             const validatedBody = checkValidations(req);
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             let contact = await checkExistThenGet(contactId, Contact);
             contact.comments.push({
                 comment:validatedBody.reply,
@@ -130,11 +122,9 @@ export default {
             next(err);
         }
     },
-    async checked(req, res, next) {
+    async checked(req, res, next) {        
         try {
             let { contactId } = req.params;
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             let contact = await checkExistThenGet(contactId, Contact);
             contact.status = "CHECKED";
             await contact.save();
@@ -143,11 +133,9 @@ export default {
             next(err);
         }
     },
-    async delete(req, res, next) {
+    async delete(req, res, next) {        
         try {
             let { contactId } = req.params;
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             let contact = await checkExistThenGet(contactId, Contact);
             contact.deleted = true;
             await contact.save();

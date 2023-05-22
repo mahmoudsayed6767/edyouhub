@@ -1,6 +1,5 @@
-import { checkExistThenGet } from "../../helpers/CheckMethods";
+import { checkExistThenGet,isInArray } from "../../helpers/CheckMethods";
 import ApiResponse from "../../helpers/ApiResponse";
-import User from "../../models/user/user.model";
 import Product from "../../models/product/product.model";
 import { checkValidations } from "../shared/shared.controller";
 import Color from "../../models/color/color.model";
@@ -32,7 +31,7 @@ const populateQuery = [
     {path: 'promoCode', model: 'coupon'}
 ];
 export default {
-    async findAll(req, res, next) {
+    async findAll(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
@@ -118,7 +117,7 @@ export default {
         ]
         return validations;
     },
-    async create(req, res, next) {
+    async create(req, res, next) {        
         try {
             let {suppliesId} = req.params;
             const validatedBody = checkValidations(req);
@@ -142,12 +141,14 @@ export default {
             next(error)
         }
     },
-    async update(req, res, next) {
+    async update(req, res, next) {        
         try {
             let { cartId } = req.params;
             let cart = await checkExistThenGet(cartId, Cart, { deleted: false });
-            if (cart.user != req.user._id)
-                return next(new ApiError(403, i18n.__('notAllow')));
+            if(!isInArray(["ADMIN","SUB-ADMIN","USER"],req.user.type)){
+                if(cart.user != req.user._id)
+                    return next(new ApiError(403,  i18n.__('notAllow')));
+            }
             const validatedBody = checkValidations(req);
             await Cart.findByIdAndUpdate(cartId, { ...validatedBody });
             return res.status(200).send({success: true});
@@ -155,12 +156,14 @@ export default {
             next(error);
         }
     },
-    async unCart(req, res, next) {
+    async unCart(req, res, next) {        
         try {
             let {cartId} = req.params;
             let cart = await checkExistThenGet(cartId, Cart, { deleted: false });
-            if (cart.user != req.user._id)
-                return next(new ApiError(403, i18n.__('notAllow')));
+            if(!isInArray(["ADMIN","SUB-ADMIN","USER"],req.user.type)){
+                if(cart.user != req.user._id)
+                    return next(new ApiError(403,  i18n.__('notAllow')));
+            }
             cart.deleted = true;
             await cart.save();
             res.send({
@@ -170,7 +173,7 @@ export default {
             next(error)
         }
     },
-    async deleteAll(req, res, next) {
+    async deleteAll(req, res, next) {        
         try {
             let carts = await Cart.find({ user: req.user._id });
             for (let cart of carts ) {

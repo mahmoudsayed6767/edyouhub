@@ -1,11 +1,10 @@
 import Color from "../../models/color/color.model";
 import { body } from "express-validator";
 import { checkValidations,handleImg } from "../shared/shared.controller";
-import ApiError from "../../helpers/ApiError";
 import Report from "../../models/reports/report.model";
 import { checkExist } from "../../helpers/CheckMethods";
 import ApiResponse from "../../helpers/ApiResponse";
-import { checkExistThenGet,isInArray ,isImgUrl} from "../../helpers/CheckMethods";
+import { checkExistThenGet,isImgUrl} from "../../helpers/CheckMethods";
 import i18n from "i18n";
 export default {
     validateBody(isUpdate = false) {
@@ -27,13 +26,9 @@ export default {
         
         return validations;
     },
-    async create(req, res, next) {
+    async create(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
-
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
-
             const validatedBody = checkValidations(req);
             let image = await handleImg(req);
             validatedBody.img = image;
@@ -63,7 +58,7 @@ export default {
             next(error);
         }
     },
-    async getById(req, res, next) {
+    async getById(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
             let { colorId } = req.params;
@@ -88,14 +83,12 @@ export default {
             next(error);
         }
     },
-    async update(req, res, next) {
+    async update(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
 
             let { colorId } = req.params;
             await checkExist(colorId, Color, { deleted: false });
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             const validatedBody = checkValidations(req);
             if (req.file) {
                 let image = await handleImg(req, { attributeName: 'img', isUpdate: true });
@@ -128,7 +121,7 @@ export default {
         }
     },
 
-    async getAll(req, res, next) {
+    async getAll(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
             let {search} = req.query;
@@ -168,9 +161,8 @@ export default {
         }
     },
 
-    async getAllPaginated(req, res, next) {
+    async getAllPaginated(req, res, next) {        
         try {    
-            
             let lang = i18n.getLocale(req)       
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
             let {search} = req.query;
@@ -215,12 +207,9 @@ export default {
     },
 
 
-    async delete(req, res, next) {
-        
+    async delete(req, res, next) {        
         try {
             let { colorId } = req.params;
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             let color = await checkExistThenGet(colorId, Color);
             color.deleted = true;
             await color.save();

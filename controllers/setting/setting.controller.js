@@ -1,17 +1,12 @@
-import ApiResponse from "../../helpers/ApiResponse";
 import Setting from "../../models/setting/setting.model";
 import Report from "../../models/reports/report.model";
-import ApiError from '../../helpers/ApiError';
-
-import { checkExist, checkExistThenGet, isImgUrl,isInArray } from "../../helpers/CheckMethods";
-import { handleImg, checkValidations } from "../shared/shared.controller";
+import { checkExist, checkExistThenGet } from "../../helpers/CheckMethods";
+import { checkValidations } from "../shared/shared.controller";
 import { body } from "express-validator";
-import i18n from "i18n";
 
 export default {
 
-    async findAll(req, res, next) {
-
+    async findAll(req, res, next) {        
         try {
             let query = {deleted: false };
             let setting = await Setting.findOne(query).sort({ createdAt: -1 })
@@ -60,12 +55,8 @@ export default {
         return validations;
     },
 
-    async create(req, res, next) {
-
+    async create(req, res, next) {        
         try {
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
-    
             const validatedBody = checkValidations(req);
             let createdSetting = await Setting.create({ ...validatedBody});
             let reports = {
@@ -82,7 +73,7 @@ export default {
     },
 
 
-    async findById(req, res, next) {
+    async findById(req, res, next) {        
         try {
             let { SettingId } = req.params;
             await checkExist(SettingId, Setting, { deleted: false });
@@ -92,12 +83,8 @@ export default {
             next(err);
         }
     },
-    async update(req, res, next) {
-
+    async update(req, res, next) {        
         try {
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
-
             let { SettingId } = req.params;
             await checkExist(SettingId, Setting, { deleted: false });
 
@@ -119,11 +106,8 @@ export default {
         }
     },
 
-    async delete(req, res, next) {
-        try {
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
-                
+    async delete(req, res, next) {        
+        try {  
             let { SettingId } = req.params;
             let setting = await checkExistThenGet(SettingId, Setting, { deleted: false });
             setting.deleted = true;

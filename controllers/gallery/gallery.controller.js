@@ -15,7 +15,7 @@ const populateQuery = [
 ];
 export default {
 
-    async findAll(req, res, next) {
+    async findAll(req, res, next) {        
         try {
             let lang = i18n.getLocale(req) 
             let {businessId} = req.params;
@@ -37,7 +37,7 @@ export default {
             next(err);
         }
     },
-    async findAllPagenation(req, res, next) {
+    async findAllPagenation(req, res, next) {        
         try {
             let lang = i18n.getLocale(req) 
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
@@ -61,7 +61,7 @@ export default {
         }
     },
     //get by id
-    async getById(req, res, next) {
+    async getById(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)          
             let { galleryId } = req.params;
@@ -94,7 +94,7 @@ export default {
         return validations;
     },
 
-    async create(req, res, next) {
+    async create(req, res, next) {        
         try {
             let {businessId} = req.params
             const validatedBody = checkValidations(req);
@@ -133,7 +133,7 @@ export default {
         }
     },
 
-    async update(req, res, next) {
+    async update(req, res, next) {        
         try {
             let { galleryId } = req.params;
             let gallery = await checkExistThenGet(galleryId, Gallery, { deleted: false });
@@ -170,7 +170,7 @@ export default {
         }
     },
    
-    async delete(req, res, next) {
+    async delete(req, res, next) {        
         try {
             let { galleryId } = req.params;
             let gallery = await checkExistThenGet(galleryId, Gallery, { deleted: false });

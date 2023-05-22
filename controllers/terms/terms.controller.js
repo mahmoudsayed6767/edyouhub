@@ -1,9 +1,7 @@
 import Terms from "../../models/terms/terms.model";
 import { body } from "express-validator";
 import { checkValidations } from "../shared/shared.controller";
-import ApiError from "../../helpers/ApiError";
-import { checkExist,isInArray } from "../../helpers/CheckMethods";
-import ApiResponse from "../../helpers/ApiResponse";
+import { checkExist } from "../../helpers/CheckMethods";
 import { checkExistThenGet } from "../../helpers/CheckMethods";
 import i18n from "i18n";
 import Report from "../../models/reports/report.model";
@@ -24,11 +22,8 @@ export default {
             }),
         ];
     },
-    async create(req, res, next) {
+    async create(req, res, next) {        
         try {
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
-            
             const validatedBody = checkValidations(req);
             let terms = await Terms.create({ ...validatedBody });
             let reports = {
@@ -43,7 +38,7 @@ export default {
             next(error);
         }
     },
-    async getById(req, res, next) {
+    async getById(req, res, next) {        
         try {
             //get the language selected
             let lang = i18n.getLocale(req)
@@ -67,13 +62,9 @@ export default {
             next(error);
         }
     },
-    async update(req, res, next) {
+    async update(req, res, next) {        
         try {
-            let user = req.user;
             let { TermsId } = req.params;
-
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             const validatedBody = checkValidations(req);
             let reports = {
                 "action":"Update terms",
@@ -90,7 +81,7 @@ export default {
         }
     },
 
-    async getAll(req, res, next) {
+    async getAll(req, res, next) {        
         try {
             //get the language selected
             let lang = i18n.getLocale(req)
@@ -119,15 +110,9 @@ export default {
             next(error);
         }
     },
-
-   
-
-
-    async delete(req, res, next) {
-        let { TermsId } = req.params;
+    async delete(req, res, next) {        
         try {
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
+            let { TermsId } = req.params;
             let terms = await checkExistThenGet(TermsId, Terms);
             terms.deleted = true;
             await terms.save();

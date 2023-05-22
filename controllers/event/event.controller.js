@@ -157,7 +157,7 @@ export default {
         return validations;
     },
     //add new event
-    async create(req, res, next) {
+    async create(req, res, next) {        
         try {
             const validatedBody = checkValidations(req);
             if(validatedBody.business){
@@ -208,7 +208,7 @@ export default {
         }
     },
     //get by id
-    async getById(req, res, next) {
+    async getById(req, res, next) {        
         try {
              //get lang
             let lang = i18n.getLocale(req)
@@ -230,7 +230,7 @@ export default {
         }
     },
     //update event
-    async update(req, res, next) {
+    async update(req, res, next) {        
         try {
             let { eventId } = req.params;
             await checkExist(eventId,Event, { deleted: false })
@@ -267,7 +267,7 @@ export default {
         }
     },
     //get without pagenation
-    async getAll(req, res, next) {
+    async getAll(req, res, next) {        
         try {
             //get lang
             let lang = i18n.getLocale(req)
@@ -310,7 +310,7 @@ export default {
         }
     },
     //get with pagenation
-    async getAllPaginated(req, res, next) {
+    async getAllPaginated(req, res, next) {        
         try {
              //get lang
             let lang = i18n.getLocale(req)
@@ -355,7 +355,7 @@ export default {
         }
     },
     //delete 
-    async delete(req, res, next) {
+    async delete(req, res, next) {        
         try {
             let { eventId } = req.params;
             let event = await checkExistThenGet(eventId, Event);
@@ -375,7 +375,7 @@ export default {
             next(err);
         }
     },
-    async getEventAttendance(req, res, next) {
+    async getEventAttendance(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
@@ -400,7 +400,7 @@ export default {
             next(err);
         }
     },
-    async followEvent(req, res, next) { 
+    async followEvent(req, res, next) {         
         try {
             let {eventId} = req.params
             let event = await checkExistThenGet (eventId,Event,{deleted:false})
@@ -426,7 +426,7 @@ export default {
             next(error)
         }
     },
-    async unfollowEvent(req, res, next) {
+    async unfollowEvent(req, res, next) {        
         try {
             let {eventId } = req.params;
             if(!await FollowEvent.findOne({ user: req.user._id, event: eventId,deleted:false})){
@@ -461,7 +461,7 @@ export default {
             next(error)
         }
     },
-    async getEventFollowers(req, res, next) {
+    async getEventFollowers(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;

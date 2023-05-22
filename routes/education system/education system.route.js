@@ -1,14 +1,15 @@
 import express from 'express';
 import { requireAuth } from '../../services/passport';
-import { cache } from '../../services/caching'
 import EducationSystemController from '../../controllers/education system/education system.controller';
 import { multerSaveTo } from '../../services/multer-service';
+import { permissions } from '../../services/permissions';
 
 const router = express.Router();
 
 router.route('/')
     .post(
         requireAuth,
+        permissions('ADMIN'),
         multerSaveTo('education').single('img'),
         EducationSystemController.validateBody(),
         EducationSystemController.create
@@ -21,12 +22,13 @@ router.route('/withoutPagenation/get')
 router.route('/:educationSystemId')
     .put(
         requireAuth,
+        permissions('ADMIN'),
         multerSaveTo('education').single('img'),
         EducationSystemController.validateBody(true),
         EducationSystemController.update
     )
-    .get(requireAuth,EducationSystemController.getById)
-    .delete(requireAuth,EducationSystemController.delete);
+    .get(requireAuth,permissions('ADMIN'),EducationSystemController.getById)
+    .delete(requireAuth,permissions('ADMIN'),EducationSystemController.delete);
 
 
 

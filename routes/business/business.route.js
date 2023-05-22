@@ -1,7 +1,7 @@
 import express from 'express';
 import {  requireAuth} from '../../services/passport';
 import businessController from '../../controllers/business/business.controller';
-
+import {permissions} from '../../services/permissions';
 const router = express.Router();
 
 router.route('/')
@@ -24,11 +24,13 @@ router.route('/:businessId')
 router.route('/:businessId/accept')
     .put(
         requireAuth,
+        permissions('ADMIN'),
         businessController.accept
     )
 router.route('/:businessId/reject')
     .put(
         requireAuth,
+        permissions('ADMIN'),
         businessController.reject
     )
 router.route('/:businessId/businessManagement')

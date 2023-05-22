@@ -1,5 +1,5 @@
 import ApiResponse from "../../helpers/ApiResponse";
-import { checkExist, checkExistThenGet, isImgUrl,isInArray } from "../../helpers/CheckMethods";
+import { checkExist, checkExistThenGet, isImgUrl } from "../../helpers/CheckMethods";
 import { handleImg, checkValidations } from "../shared/shared.controller";
 import { body } from "express-validator";
 import Category from "../../models/category/category.model";
@@ -17,7 +17,7 @@ const populateQuery = [
 export default {
 
     //find main category pagenation
-    async findCategoryPagenation(req, res, next) {
+    async findCategoryPagenation(req, res, next) {        
         try {
              //get lang
             let lang = i18n.getLocale(req)
@@ -51,7 +51,7 @@ export default {
         }
     },
     //get subCategory under category with pagenation
-    async findsubCategoryPagenation(req, res, next) {
+    async findsubCategoryPagenation(req, res, next) {        
         try {
              //get lang
             let lang = i18n.getLocale(req)
@@ -88,7 +88,7 @@ export default {
         }
     },
     //get main categories without pagenation
-    async findCategory(req, res, next) {
+    async findCategory(req, res, next) {        
         try {         
              //get lang
             let lang = i18n.getLocale(req)   
@@ -118,7 +118,7 @@ export default {
         }
     },
     //get subCategories under category without pagenation
-    async findsubCategory(req, res, next) {
+    async findsubCategory(req, res, next) {        
         try {
              //get lang
             let lang = i18n.getLocale(req)
@@ -210,11 +210,9 @@ export default {
         return validations;
     },
     //create new record
-    async create(req, res, next) {
+    async create(req, res, next) {        
         try {
             const validatedBody = checkValidations(req);
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             let model;
             if(validatedBody.main){
                 validatedBody.main = true
@@ -256,7 +254,7 @@ export default {
             next(err);
         }
     },
-    async createMultiCategory(req, res, next) {
+    async createMultiCategory(req, res, next) {        
         try {
             let data = req.body.data
             for (let i = 0; i < data.length; i++) {
@@ -270,7 +268,7 @@ export default {
             next(error);
         }
     },
-    async createMultiSubCategory(req, res, next) {
+    async createMultiSubCategory(req, res, next) {        
         try {
             let data = req.body.data
             for (let i = 0; i < data.length; i++) {
@@ -290,7 +288,7 @@ export default {
         }
     },
     //find by id
-    async findById(req, res, next) {
+    async findById(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
             let { categoryId } = req.params;
@@ -309,16 +307,12 @@ export default {
         }
     },
     //update category
-    async update(req, res, next) {
-
+    async update(req, res, next) {        
         try {
             let { categoryId } = req.params, model;
             await checkExist(categoryId, Category, { deleted: false });
 
             const validatedBody = checkValidations(req);
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-            return next(new ApiError(403, i18n.__('admin.auth')));
-
             if (validatedBody.parent) {
                 let parentCategory = await checkExistThenGet(validatedBody.parent, Category);
                 parentCategory.hasChild = true;
@@ -359,10 +353,8 @@ export default {
         }
     },
     //delete category
-    async delete(req, res, next) {
+    async delete(req, res, next) {        
         try {
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             let { categoryId } = req.params;
 
             let category = await checkExistThenGet(categoryId, Category, { deleted: false });

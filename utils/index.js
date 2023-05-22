@@ -10,7 +10,6 @@ cloudinary.config(JSON.parse(process.env.cloudinary));
 // Convert Local Upload To Cloudinary Url  toImgUrl
 export async function toImgUrl (multerObject) {
   try {
-
     if(process.env.environment === 'PRODUCTION'){
       multerObject.path = 'https'+'://'+'api.edyouhub.com'+'/'+multerObject.path;
       console.log("path:  "+multerObject.path);
@@ -20,9 +19,6 @@ export async function toImgUrl (multerObject) {
       console.log("path:  "+multerObject.path);
       return multerObject.path;
     }
-    
-    
-
   }
   catch (err) {
     console.log('Cloudinary Error: ', err);

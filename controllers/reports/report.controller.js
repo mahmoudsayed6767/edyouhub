@@ -11,7 +11,7 @@ const populateQuery = [
 ];
 export default {
 
-    async findAll(req, res, next) {
+    async findAll(req, res, next) {        
         try {
             let page = +req.query.page || 1, limit = +req.query.limit || 20
             ,{user,type} = req.query
@@ -32,7 +32,7 @@ export default {
             next(err);
         }
     },
-    async findById(req, res, next) {
+    async findById(req, res, next) {        
         try {
             let { reportId } = req.params;
             await checkExist(reportId, Report, { deleted: false });
@@ -44,7 +44,7 @@ export default {
             next(err);
         }
     },
-    async delete(req, res, next) {
+    async delete(req, res, next) {        
         try {
             let user = req.user;
             if (user.type != 'ADMIN')

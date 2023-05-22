@@ -3,13 +3,14 @@ import AboutController from '../../controllers/about/about.controller';
 import { requireAuth } from '../../services/passport';
 import { parseStringToArrayOfObjectsMwv2 } from '../../utils';
 import { multerSaveTo } from '../../services/multer-service';
-import { cache } from '../../services/caching';
+import { permissions } from '../../services/permissions';
 
 const router = express.Router();
 
 router.route('/')
     .post(
         requireAuth,
+        permissions('ADMIN'),
         multerSaveTo('about').single('logo'),
         parseStringToArrayOfObjectsMwv2('location'),
         AboutController.validateBody(),
@@ -20,12 +21,13 @@ router.route('/')
 router.route('/:aboutId')
     .put(
         requireAuth,
+        permissions('ADMIN'),
         multerSaveTo('about').single('logo'),
         parseStringToArrayOfObjectsMwv2('location'),
         AboutController.validateBody(true),
         AboutController.update
     )
-    .delete( requireAuth,AboutController.delete);
+    .delete( requireAuth,permissions('ADMIN'),AboutController.delete);
 
 
 export default router;

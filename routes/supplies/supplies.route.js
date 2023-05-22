@@ -2,6 +2,7 @@ import express from 'express';
 import {  requireAuth} from '../../services/passport';
 import suppliesController from '../../controllers/supplies/supplies.controller';
 import { multerSaveTo } from '../../services/multer-service';
+import { permissions } from '../../services/permissions';
 
 const router = express.Router();
 router.route('/upload')

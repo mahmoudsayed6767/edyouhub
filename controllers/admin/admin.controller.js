@@ -55,7 +55,7 @@ const populateQueryOrder = [
     
 ];
 export default {
-    async getLastUser(req, res, next) {
+    async getLastUser(req, res, next) {        
         try {
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                return next(new ApiError(403, i18n.__('admin.auth')));
@@ -79,7 +79,7 @@ export default {
             next(error);
         }
     },
-    async getLastOffers(req, res, next) {
+    async getLastOffers(req, res, next) {        
         try {
             let user = req.user;
             if (user.type != 'ADMIN')
@@ -103,7 +103,7 @@ export default {
         }
     },
 
-    async getLastOrders(req, res, next) {
+    async getLastOrders(req, res, next) {        
         try {
             let user = req.user;
             if (user.type != 'ADMIN')
@@ -128,7 +128,7 @@ export default {
         }
     },
    
-    async count(req,res, next) {
+    async count(req,res, next) {        
         try {
             let query = { deleted: false };
             const usersCount = await User.countDocuments({deleted: false,type:'USER',accountType:'ACTIVE'});

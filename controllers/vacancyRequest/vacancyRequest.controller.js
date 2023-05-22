@@ -37,7 +37,7 @@ export default {
         return validations;
     },
     //add new vacancyRequest
-    async create(req, res, next) {
+    async create(req, res, next) {        
         try {
             const validatedBody = checkValidations(req);
             let {vacancyId} = req.params;
@@ -64,7 +64,7 @@ export default {
         }
     },
     //add new vacancyRequest for waiting list
-    async createToWaitingList(req, res, next) {
+    async createToWaitingList(req, res, next) {        
         try {
             const validatedBody = checkValidations(req);
             let {businessId} = req.params;
@@ -91,7 +91,7 @@ export default {
         }
     },
     //get by id
-    async getById(req, res, next) {
+    async getById(req, res, next) {        
         try {
              //get lang
             let lang = i18n.getLocale(req)
@@ -115,7 +115,7 @@ export default {
         }
     },
     //update vacancyRequest
-    async update(req, res, next) {
+    async update(req, res, next) {        
         try {
             let { vacancyRequestId } = req.params;
             let vacancyRequest =  await checkExistThenGet(vacancyRequestId,VacancyRequest, { deleted: false })
@@ -140,7 +140,7 @@ export default {
         }
     },
     //get without pagenation
-    async getAll(req, res, next) {
+    async getAll(req, res, next) {        
         try {
             //get lang
             let lang = i18n.getLocale(req)
@@ -178,7 +178,7 @@ export default {
         }
     },
     //get with pagenation
-    async getAllPaginated(req, res, next) {
+    async getAllPaginated(req, res, next) {        
         try {
              //get lang
             let lang = i18n.getLocale(req)
@@ -220,7 +220,6 @@ export default {
     },
     //delete 
     async delete(req, res, next) {
-        
         try {
             let { vacancyRequestId } = req.params;
             let vacancyRequest = await checkExistThenGet(vacancyRequestId, vacancyRequest);
@@ -245,7 +244,6 @@ export default {
         }
     },
     async accept(req, res, next) {
-        
         try {
             let { vacancyRequestId } = req.params;
             let vacancyRequest = await checkExistThenGet(vacancyRequestId, VacancyRequest);
@@ -293,7 +291,6 @@ export default {
         }
     },
     async reject(req, res, next) {
-        
         try {
             let { vacancyRequestId } = req.params;
             let vacancyRequest = await checkExistThenGet(vacancyRequestId, VacancyRequest);

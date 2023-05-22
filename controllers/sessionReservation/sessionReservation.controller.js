@@ -41,7 +41,7 @@ export default {
         
         return validations;
     },
-    async create(req, res, next) {
+    async create(req, res, next) {        
         try {
             const validatedBody = checkValidations(req);
             //check permission
@@ -69,7 +69,7 @@ export default {
             next(error);
         }
     },
-    async getAllPagenation(req, res, next) {
+    async getAllPagenation(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;

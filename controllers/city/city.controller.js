@@ -3,8 +3,7 @@ import Area from "../../models/area/area.model";
 import Report from "../../models/reports/report.model";
 import { body } from "express-validator";
 import { checkValidations} from "../shared/shared.controller";
-import ApiError from "../../helpers/ApiError";
-import { checkExist,isInArray } from "../../helpers/CheckMethods";
+import { checkExist } from "../../helpers/CheckMethods";
 import ApiResponse from "../../helpers/ApiResponse";
 import { checkExistThenGet } from "../../helpers/CheckMethods";
 import i18n from "i18n";
@@ -32,12 +31,10 @@ export default {
         return validations;
     },
     //add new city
-    async create(req, res, next) {
+    async create(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
             const validatedBody = checkValidations(req);
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             let city = await City.create({ ...validatedBody });
             let reports = {
                 "action":"Create New City",
@@ -65,7 +62,7 @@ export default {
             next(error);
         }
     },
-    async createMulti(req, res, next) {
+    async createMulti(req, res, next) {        
         try {
             let data = req.body.data
             for (let i = 0; i < data.length; i++) {
@@ -79,7 +76,7 @@ export default {
         }
     },
     //get by id
-    async getById(req, res, next) {
+    async getById(req, res, next) {        
         try {
              //get lang
             let lang = i18n.getLocale(req)
@@ -107,13 +104,11 @@ export default {
         }
     },
     //update city
-    async update(req, res, next) {
+    async update(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
             let { cityId } = req.params;
             await checkExist(cityId,City, { deleted: false })
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             const validatedBody = checkValidations(req);
             await City.findByIdAndUpdate(cityId, { ...validatedBody });
             let reports = {
@@ -143,7 +138,7 @@ export default {
         }
     },
     //get without pagenation
-    async getAll(req, res, next) {
+    async getAll(req, res, next) {        
         try {
              //get lang
             let lang = i18n.getLocale(req)
@@ -190,7 +185,7 @@ export default {
         }
     },
     //get with pagenation
-    async getAllPaginated(req, res, next) {
+    async getAllPaginated(req, res, next) {        
         try {
              //get lang
             let lang = i18n.getLocale(req)
@@ -239,12 +234,9 @@ export default {
         }
     },
     //delete 
-    async delete(req, res, next) {
-        
+    async delete(req, res, next) {        
         try {
             let { cityId } = req.params;
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             let city = await checkExistThenGet(cityId, City);
             city.deleted = true;
             let areas = await Area.find({ data: cityId });

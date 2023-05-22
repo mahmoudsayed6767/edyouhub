@@ -2,8 +2,7 @@ import EducationSystem from "../../models/education system/education system.mode
 import Report from "../../models/reports/report.model";
 import { body } from "express-validator";
 import { checkValidations,handleImg} from "../shared/shared.controller";
-import ApiError from "../../helpers/ApiError";
-import { checkExist,isInArray,isImgUrl } from "../../helpers/CheckMethods";
+import { checkExist,isImgUrl } from "../../helpers/CheckMethods";
 import ApiResponse from "../../helpers/ApiResponse";
 import { checkExistThenGet } from "../../helpers/CheckMethods";
 import i18n from "i18n";
@@ -29,11 +28,9 @@ export default {
         return validations;
     },
     //add new educationSystem
-    async create(req, res, next) {
+    async create(req, res, next) {        
         try {
             const validatedBody = checkValidations(req);
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             let image = await handleImg(req, { attributeName: 'img'});
             validatedBody.img = image;
             let educationSystem = await EducationSystem.create({ ...validatedBody });
@@ -53,7 +50,7 @@ export default {
         }
     },
     //get by id
-    async getById(req, res, next) {
+    async getById(req, res, next) {        
         try {
              //get lang
             let lang = i18n.getLocale(req)
@@ -80,12 +77,10 @@ export default {
         }
     },
     //update educationSystem
-    async update(req, res, next) {
+    async update(req, res, next) {        
         try {
             let { educationSystemId } = req.params;
             await checkExist(educationSystemId,EducationSystem, { deleted: false })
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             const validatedBody = checkValidations(req);
             if (req.file) {
                 let image = await handleImg(req, { attributeName: 'img'});
@@ -107,7 +102,7 @@ export default {
         }
     },
     //get without pagenation
-    async getAll(req, res, next) {
+    async getAll(req, res, next) {        
         try {
              //get lang
             let lang = i18n.getLocale(req)
@@ -153,7 +148,7 @@ export default {
         }
     },
     //get with pagenation
-    async getAllPaginated(req, res, next) {
+    async getAllPaginated(req, res, next) {        
         try {
              //get lang
             let lang = i18n.getLocale(req)
@@ -201,12 +196,9 @@ export default {
         }
     },
     //delete 
-    async delete(req, res, next) {
-        
+    async delete(req, res, next) {        
         try {
             let { educationSystemId } = req.params;
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             let educationSystem = await checkExistThenGet(educationSystemId, EducationSystem);
             educationSystem.deleted = true;
             await educationSystem.save();

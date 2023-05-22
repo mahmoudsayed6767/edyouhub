@@ -11,11 +11,8 @@ import EducationInstitution from "../../models/education institution/education i
 
 export default {
 //get with pagenation
-    async findAll(req, res, next) {
-
+    async findAll(req, res, next) {        
         try {
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
             let query = {deleted: false };
             let {search} = req.query
@@ -60,11 +57,8 @@ export default {
         }
     },
     //get with pagenation
-    async findAllWithoutPagenation(req, res, next) {
-
+    async findAllWithoutPagenation(req, res, next) {        
         try {
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             let query = {deleted: false };
             let {search} = req.query
             if(search) {
@@ -143,12 +137,8 @@ export default {
         return validations;
     },
     //create new coupon
-    async create(req, res, next) {
-
+    async create(req, res, next) {        
         try {
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
-
             const validatedBody = checkValidations(req);
             validatedBody.expireDateMillSec = Date.parse(validatedBody.expireDate)
             let createdCoupon = await Coupon.create({
@@ -167,7 +157,7 @@ export default {
         }
     },
 
-    async findById(req, res, next) {
+    async findById(req, res, next) {        
         try {
             let { couponId } = req.params;
             await checkExist(couponId, Coupon, { deleted: false });
@@ -177,7 +167,7 @@ export default {
             next(err);
         }
     },
-    async checkValidateCoupon(req, res, next) {
+    async checkValidateCoupon(req, res, next) {        
         try {
             let theUser = await checkExistThenGet(req.user._id, User, { deleted: false });
             let coupon = await Coupon.findOne({ couponNumber: { $regex: req.body.couponNumber , '$options' : 'i'  },deleted:false,expireDateMillSec:{$gte:Date.parse(new Date())}})
@@ -199,12 +189,8 @@ export default {
             next(err);
         }
     },
-    async update(req, res, next) {
-
+    async update(req, res, next) {        
         try {
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
-
             let { couponId } = req.params;
             await checkExist(couponId, Coupon, { deleted: false });
 
@@ -228,12 +214,8 @@ export default {
         }
     },
 
-    async delete(req, res, next) {
+    async delete(req, res, next) {        
         try {
-            let user = req.user;
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
-                
             let { couponId } = req.params;
             let coupon = await checkExistThenGet(couponId, Coupon, { deleted: false });
             coupon.deleted = true;
@@ -253,11 +235,8 @@ export default {
         }
     },
     
-    async end(req, res, next) {
+    async end(req, res, next) {        
         try {
-            let user = req.user;
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             let { couponId } = req.params;
             let coupon = await checkExistThenGet(couponId, Coupon);
             coupon.end = true;
@@ -276,11 +255,8 @@ export default {
             next(err);
         }
     },
-    async reused(req, res, next) {
+    async reused(req, res, next) {        
         try {
-            let user = req.user;
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             let { couponId } = req.params;
             let coupon = await checkExistThenGet(couponId, Coupon);
             coupon.end = false;

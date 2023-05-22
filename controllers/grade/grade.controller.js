@@ -56,7 +56,7 @@ export default {
         return validations;
     },
     //add new grade
-    async create(req, res, next) {
+    async create(req, res, next) {        
         try {
             const validatedBody = checkValidations(req);
             let grade = await Grade.create({ ...validatedBody });
@@ -76,7 +76,7 @@ export default {
         }
     },
     //get by id
-    async getById(req, res, next) {
+    async getById(req, res, next) {        
         try {
              //get lang
             let lang = i18n.getLocale(req)
@@ -98,7 +98,7 @@ export default {
         }
     },
     //update Grade
-    async update(req, res, next) {
+    async update(req, res, next) {        
         try {
             let { gradeId } = req.params;
             await checkExist(gradeId,Grade, { deleted: false })
@@ -119,7 +119,7 @@ export default {
         }
     },
     //get without pagenation
-    async getAll(req, res, next) {
+    async getAll(req, res, next) {        
         try {
              //get lang
             let lang = i18n.getLocale(req)
@@ -160,7 +160,7 @@ export default {
         }
     },
     //get with pagenation
-    async getAllPaginated(req, res, next) {
+    async getAllPaginated(req, res, next) {        
         try {
              //get lang
             let lang = i18n.getLocale(req)
@@ -204,7 +204,6 @@ export default {
     },
     //delete 
     async delete(req, res, next) {
-        
         try {
             let { gradeId } = req.params;
             

@@ -1,11 +1,10 @@
 import Specialization from "../../models/specialization/specialization.model";
 import { body } from "express-validator";
 import { checkValidations} from "../shared/shared.controller";
-import ApiError from "../../helpers/ApiError";
 import Report from "../../models/reports/report.model";
 import { checkExist } from "../../helpers/CheckMethods";
 import ApiResponse from "../../helpers/ApiResponse";
-import { checkExistThenGet,isInArray } from "../../helpers/CheckMethods";
+import { checkExistThenGet } from "../../helpers/CheckMethods";
 import i18n from "i18n";
 
 export default {
@@ -25,13 +24,9 @@ export default {
         ];
         return validations;
     },
-    async create(req, res, next) {
+    async create(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
-
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
-
             const validatedBody = checkValidations(req);
             let specialization = await Specialization.create({ ...validatedBody});
             let reports = {
@@ -59,7 +54,7 @@ export default {
             next(error);
         }
     },
-    async getById(req, res, next) {
+    async getById(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
             let { specializationId } = req.params;
@@ -84,14 +79,12 @@ export default {
             next(error);
         }
     },
-    async update(req, res, next) {
+    async update(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
 
             let { specializationId } = req.params;
             await checkExist(specializationId, Specialization, { deleted: false });
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             const validatedBody = checkValidations(req);
             await Specialization.findByIdAndUpdate(specializationId, { ...validatedBody });
             let reports = {
@@ -120,7 +113,7 @@ export default {
         }
     },
 
-    async getAll(req, res, next) {
+    async getAll(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
             let {search,type} = req.query;
@@ -160,7 +153,7 @@ export default {
             next(error);
         }
     },
-    async getAllPaginated(req, res, next) {
+    async getAllPaginated(req, res, next) {        
         try {    
             let lang = i18n.getLocale(req)       
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
@@ -205,12 +198,9 @@ export default {
             next(error);
         }
     },
-    async delete(req, res, next) {
-        
+    async delete(req, res, next) {        
         try {
             let { specializationId } = req.params;
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             let specialization = await checkExistThenGet(specializationId, Specialization);
             specialization.deleted = true;
             await specialization.save();

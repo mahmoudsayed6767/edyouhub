@@ -1,14 +1,10 @@
-import { checkExist, checkExistThenGet,isInArray,isArray } from "../../helpers/CheckMethods";
+import { checkExistThenGet,isInArray } from "../../helpers/CheckMethods";
 import ApiResponse from "../../helpers/ApiResponse";
 import User from "../../models/user/user.model";
-import Offer from "../../models/offer/offer.model";
 import { checkValidations } from "../shared/shared.controller";
 
 import OfferCart from "../../models/offerCart/offerCart.model";
 import ApiError from '../../helpers/ApiError';
-import Notif from "../../models/notif/notif.model";
-import { sendNotifiAndPushNotifi } from "../../services/notification-service";
-import { body } from "express-validator";
 import i18n from "i18n";
 import {transformOfferCart} from "../../models/offerCart/transformOfferCart"
 
@@ -19,7 +15,7 @@ const populateQuery = [
     },
 ];
 export default {
-    async findAll(req, res, next) {
+    async findAll(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
@@ -44,13 +40,7 @@ export default {
             next(err);
         }
     },
-    validateBody() {
-        let validations = [
-            
-        ]
-        return validations;
-    },
-    async create(req, res, next) {
+    async create(req, res, next) {        
         try {
             let {offerId} = req.params;
             const validatedBody = checkValidations(req);
@@ -71,12 +61,14 @@ export default {
             next(error)
         }
     },
-    async delete(req, res, next) {
+    async delete(req, res, next) {        
         try {
             let {offerCartId} = req.params;
             let offerCart = await checkExistThenGet(offerCartId, OfferCart, { deleted: false });
-            if (offerCart.user != req.user._id)
-                return next(new ApiError(403, i18n.__('notAllow')));
+            if(!isInArray(["ADMIN","SUB-ADMIN","USER"],req.user.type)){
+                if(offerCart.user != req.user._id)
+                    return next(new ApiError(403,  i18n.__('notAllow')));
+            }
             offerCart.deleted = true;
             await offerCart.save();
             let user = await checkExistThenGet(req.user._id, User);
@@ -97,7 +89,7 @@ export default {
             next(error)
         }
     },
-    async deleteAll(req, res, next) {
+    async deleteAll(req, res, next) {        
         try {
             let theUser = await checkExistThenGet(req.user._id, User);
             theUser.offerCarts = [];

@@ -1,4 +1,4 @@
-import { checkExistThenGet, isLng, isLat, isArray, isNumeric,isInArray,checkExist } from "../../helpers/CheckMethods";
+import { checkExistThenGet, isLng, isLat, isArray, isNumeric,checkExist } from "../../helpers/CheckMethods";
 import ApiResponse from "../../helpers/ApiResponse";
 import Order from "../../models/order/order.model";
 import { sendNotifiAndPushNotifi } from "../../services/notification-service";
@@ -19,6 +19,18 @@ import Coupon from "../../models/coupon/coupon.model";
 import i18n from "i18n";
 import { transformOrder, transformOrderById } from "../../models/order/transformOrder";
 const populateQuery = [
+    { path: 'client', model: 'user'},
+    {
+        path: 'address', model: 'address',
+        populate: { path: 'city', model: 'city' },
+    },
+    {
+        path: 'address', model: 'address',
+        populate: { path: 'area', model: 'area' },
+    },
+    
+];
+const populateQueryById = [
     { path: 'client', model: 'user'},
     { path: 'suppliesList.promoCode', model: 'coupon' },
     {
@@ -57,7 +69,7 @@ function validatedestination(location) {
 }
 
 export default {
-    async findOrders(req, res, next) {
+    async findOrders(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20
@@ -110,7 +122,7 @@ export default {
             next(err);
         }
     },
-    async getOrders(req, res, next) {
+    async getOrders(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
             let {search, status,client,paymentSystem ,accept,start,end} = req.query
@@ -202,7 +214,7 @@ export default {
         ];
         return validations;
     },
-    async getPrice(req, res, next) {
+    async getPrice(req, res, next) {        
         try {
             
             const validatedBody = checkValidations(req);
@@ -346,7 +358,7 @@ export default {
         ];
         return validations;
     }, 
-    async create(req, res, next) {
+    async create(req, res, next) {        
         try {
             const validatedBody = checkValidations(req);
             let {userId} = req.params
@@ -469,19 +481,19 @@ export default {
                 "user": req.user._id
             };
             await Report.create({...reports});
-            res.status(201).send(await Order.populate(createdOrder, populateQuery));
+            res.status(201).send(await Order.populate(createdOrder, populateQueryById));
         } catch (err) {
             next(err);
             
         }
     },
     //find one
-    async findById(req, res, next) {
+    async findById(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
             let {orderId } = req.params;
             await checkExist(orderId,Order)
-            await Order.findById(orderId).populate(populateQuery)
+            await Order.findById(orderId).populate(populateQueryById)
                 .sort({ createdAt: -1 }).then(async (e) =>{
                     let index = await transformOrderById(e,lang)
                     res.send({
@@ -494,10 +506,8 @@ export default {
         }
     },
     //accept
-    async accept(req, res, next) {
+    async accept(req, res, next) {        
         try {
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth'))); 
             let { orderId } = req.params;
             let order = await checkExistThenGet(orderId, Order);
             if (['DELIVERED'].includes(order.status))
@@ -548,7 +558,7 @@ export default {
         }
     },
     //cancel
-    async cancel(req, res, next) {
+    async cancel(req, res, next) {        
         try {
             let { orderId } = req.params;
             let order = await checkExistThenGet(orderId, Order, { deleted: false });
@@ -594,10 +604,8 @@ export default {
         }
     },
     //refused
-    async refuse(req, res, next) {
+    async refuse(req, res, next) {        
         try {
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth'))); 
             let { orderId } = req.params;
             let order = await checkExistThenGet(orderId, Order);
             if (['DELIVERED'].includes(order.status))
@@ -644,10 +652,8 @@ export default {
         }
     },
     //out for delivery
-    async outForDelivery(req, res, next) {
+    async outForDelivery(req, res, next) {        
         try {
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             let { orderId } = req.params;
             let order = await checkExistThenGet(orderId, Order);
             order.status = 'OUT-FOR-DELIVERY';
@@ -681,10 +687,8 @@ export default {
         }
     },
     //order is delivered
-    async deliver(req, res, next) {
+    async deliver(req, res, next) {        
         try {
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth')));
             let { orderId } = req.params;
             let order = await checkExistThenGet(orderId, Order);
             order.status = 'DELIVERED';
@@ -718,10 +722,8 @@ export default {
         }
     },
     //delete order
-    async delete(req, res, next) {
+    async delete(req, res, next) {        
         try {
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                return next(new ApiError(403, i18n.__('admin.auth'))); 
             let { orderId } = req.params;
             
             let order = await checkExistThenGet(orderId, Order);

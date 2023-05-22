@@ -1,7 +1,7 @@
 import express from 'express';
 import ContactController from '../../controllers/contact/contact.controller';
 import { requireAuth } from '../../services/passport';
-import { cache } from '../../services/caching'
+import { permissions } from '../../services/permissions'
 import { multerSaveTo } from '../../services/multer-service';
 import { parseStringToArrayOfObjectsMwv2 } from '../../utils';
 
@@ -21,17 +21,19 @@ router.route('/')
 
 router.route('/:contactId')
     .get(requireAuth,ContactController.findById)
-    .delete(requireAuth,ContactController.delete)
+    .delete(requireAuth,permissions('ADMIN'),ContactController.delete)
 
 router.route('/:contactId/reply')
     .post(
         requireAuth,
+        permissions('ADMIN'),
         ContactController.validateContactReplyBody(),
         ContactController.reply
     );
 router.route('/:contactId/checked')
     .put(
         requireAuth,
+        permissions('ADMIN'),
         ContactController.checked
     );
 

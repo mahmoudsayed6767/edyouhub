@@ -82,7 +82,7 @@ export default {
         ];
         return validations;
     },
-    async create(req, res, next) {
+    async create(req, res, next) {        
         try {
             const validatedBody = checkValidations(req);
             let student = await Student.create({ ...validatedBody });
@@ -102,7 +102,7 @@ export default {
         }
     },
     //get by id
-    async findById(req, res, next) {
+    async findById(req, res, next) {        
         try {
              //get lang
             let lang = i18n.getLocale(req)
@@ -122,7 +122,7 @@ export default {
         }
     },
     //update fund
-    async update(req, res, next) {
+    async update(req, res, next) {        
         try {
             let { studentId } = req.params;
             await checkExist(studentId,Student, { deleted: false })
@@ -143,7 +143,7 @@ export default {
         }
     },
     //get without pagenation
-    async getAll(req, res, next) {
+    async getAll(req, res, next) {        
         try {
              //get lang
             let lang = i18n.getLocale(req)
@@ -172,7 +172,7 @@ export default {
         }
     },
     //get with pagenation
-    async getAllPaginated(req, res, next) {
+    async getAllPaginated(req, res, next) {        
         try {
              //get lang
             let lang = i18n.getLocale(req)
@@ -205,7 +205,6 @@ export default {
     },
     //delete 
     async delete(req, res, next) {
-        
         try {
             let { studentId } = req.params;
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
