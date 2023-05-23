@@ -6,6 +6,7 @@ import { checkValidations } from "../shared/shared.controller";
 import i18n from "i18n";
 import Report from "../../models/reports/report.model";
 import Business from "../../models/business/business.model";
+import ApiError from "../../helpers/ApiError";
 import {transformSubscribeService} from "../../models/subscribeService/transformSubscribeService";
 const populateQuery = [
     { path:'business',model:'business'}
@@ -22,8 +23,13 @@ export default {
         try {
             let lang = i18n.getLocales(req)
             let {businessId} = req.params
+            //check if pending request exist
             await checkExist(businessId,Business,{deleted:false})
             const validatedBody = checkValidations(req);
+            if(await SubscribeService.findOne({deleted:false,tatus:'PENDING',service:validatedBody.service,business:businessId})){
+                return next(new ApiError(500,  i18n.__('pendingReq.exist')));
+            }
+
             validatedBody.business = businessId
             let data = await SubscribeService.create({ ...validatedBody });
             let reports = {
