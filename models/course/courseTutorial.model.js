@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 import autoIncrement from 'mongoose-auto-increment';
-const courseToturialSchema = new Schema({
+const courseTutorialSchema = new Schema({
     _id: {
         type: Number,
         required: true
@@ -30,7 +30,7 @@ const courseToturialSchema = new Schema({
     }
 }, { timestamps: true });
 
-courseToturialSchema.set('toJSON', {
+courseTutorialSchema.set('toJSON', {
     transform: function (doc, ret, options) {
         ret.id = ret._id;
         delete ret._id;
@@ -39,6 +39,6 @@ courseToturialSchema.set('toJSON', {
     }
 });
 autoIncrement.initialize(mongoose.connection);
-courseToturialSchema.plugin(autoIncrement.plugin, { model: 'courseToturial', startAt: 1 });
+courseTutorialSchema.plugin(autoIncrement.plugin, { model: 'courseTutorial', startAt: 1 });
 
-export default mongoose.model('courseToturial', courseToturialSchema);
+export default mongoose.model('courseTutorial', courseTutorialSchema);

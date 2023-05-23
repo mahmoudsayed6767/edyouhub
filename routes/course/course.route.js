@@ -52,7 +52,14 @@ router.route('/:courseId/addCourseSection')
         courseController.validateSectionBody(),
         courseController.createSection
     )
-
+router.route('/:sectionId/addOrRemoveVideo')
+    .put(
+        requireAuth,
+        multerSaveTo('courses').fields([
+            { name: 'video', maxCount: 1, options: false },
+        ]),
+        courseController.updateSectionVideos
+    )
 router.route('/:sectionId/sections')
     .put(
         requireAuth,

@@ -18,6 +18,6 @@ router.route('/upload')
     .post( 
         requireAuth,
             multerSaveTo('chats').single('img'),
-            messageController.uploadImage
+            messageController.uploadFile
         )  
 module.exports = router;

@@ -30,7 +30,7 @@ const populateQueryById = [
     { path: 'business', model: 'business' },
     { path: 'specializations', model: 'specialization'},
     { path: 'instractors', model: 'business'},
-    { path: 'toturials', model: 'courseTutorial'},
+    { path: 'tutorials', model: 'courseTutorial'},
     {
         path: 'branches', model: 'branch',
         populate: { path: 'country', model: 'country' },
@@ -165,6 +165,7 @@ export default {
                 return true;
             }),
             body('imgs').optional(),
+            body('hasCertificate').optional(),
             body('introVideo').optional(),
             body('ownerType').optional()
             
@@ -381,7 +382,6 @@ export default {
         }
     },
     validateAddParticipantBody(newUser = false) {
-        console.log("newUser",newUser);
         let validations = [
             body('paymentMethod').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('paymentMethod.required', { value});
@@ -577,6 +577,7 @@ export default {
             body('section_ar').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('section_ar.required', { value});
             }),
+            body('videos').optional()
         ];
         return validations;
     },
@@ -597,18 +598,11 @@ export default {
                 if(!isInArray(supervisors,req.user._id))
                     return next(new ApiError(403,  i18n.__('notAllow')));
             }
-            //upload videos
-            if (req.files) {
-                if (req.files['videos']) {
-                    let imagesList = [];
-                    for (let imges of req.files['videos']) {
-                        imagesList.push(await toImgUrl(imges))
-                    }
-                    validatedBody.videos = imagesList;
-                }
-            }
             let courseToturial = await CourseTutorial.create({ ...validatedBody });
-            course.tutorials.push(courseToturial.id)
+            let tutorials = course.tutorials
+            tutorials.push(courseToturial.id)
+            console.log(tutorials)
+            course.tutorials = [...new Set(tutorials)];
             await course.save()
             let reports = {
                 "action":"Create New course tutorial",
@@ -642,16 +636,6 @@ export default {
                 if(!isInArray(supervisors,req.user._id))
                     return next(new ApiError(403,  i18n.__('notAllow')));
             }
-            //upload videos
-            if (req.files) {
-                if (req.files['videos']) {
-                    let imagesList = [];
-                    for (let imges of req.files['videos']) {
-                        imagesList.push(await toImgUrl(imges))
-                    }
-                    validatedBody.videos = imagesList;
-                }
-            }
             let courseToturial = await CourseTutorial.findByIdAndUpdate(sectionId, { ...validatedBody });
 
             let reports = {
@@ -684,29 +668,26 @@ export default {
                 if(!isInArray(supervisors,req.user._id))
                     return next(new ApiError(403,  i18n.__('notAllow')));
             }
-            //add img to gallary
+            //add video to section
+            let arr = section.videos
             if(req.body.type == "ADD"){
                 if (req.files) {
-                    let arr = section.video
-                    if (req.files['img']) {
+                    if (req.files['video']) {
                         for (let imges of req.files['video']) {
                             arr.push(await toImgUrl(imges))
                         }
-                        section.video = arr;
                     }
                 }
             }else{
                 //remove from video
-                let arr = section.video
                 let index = arr.findIndex(e=> e == req.body.video);
                 for(var i = 0;i<= arr.length;i=i+1){
                     if(arr[i] === arr[index]){
                         arr.splice(index, 1);
                     }
                 }
-                section.video = arr;
-                
             }
+            section.videos = arr;
             await section.save();
             let reports = {
                 "action":"Update section video",

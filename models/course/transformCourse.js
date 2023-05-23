@@ -59,6 +59,7 @@ export async function transformCourseById(e,lang,myUser,userId) {
         rateNumbers:e.rateNumbers,
         sessionsNo:e.sessionsNo,
         acceptanceNo:e.acceptanceNo,
+        hasCertificate:e.hasCertificate,
         createdAt:e.createdAt,
     }
     if(e.business){
@@ -123,16 +124,16 @@ export async function transformCourseById(e,lang,myUser,userId) {
         })
     }
     index.instractors = instractors
-    /*toturials*/
-    let toturials=[]
-    for (let val of e.toturials) {
-        toturials.push({
-            title:lang=="ar"?val.title_ar:val.title_en,
+    /*tutorials*/
+    let tutorials=[]
+    for (let val of e.tutorials) {
+        tutorials.push({
+            section:lang=="ar"?val.section_ar:val.section_en,
             videos:val.videos,
             id:val._id,                         
         })
     }
-    index.toturials = toturials
+    index.tutorials = tutorials
 
     return index;
 }

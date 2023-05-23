@@ -148,6 +148,10 @@ const courseSchema=new Schema({
         type: [Number],
         ref:'courseTutorial'
     },
+    hasCertificate:{
+        type:Boolean,
+        default:false
+    },
     deleted:{
         type:Boolean,
         default:false

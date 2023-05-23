@@ -15,10 +15,10 @@ const populateQuery = [
 ];
 
 var messageController = {
-    async uploadImage(req, res, next) {        
+    async uploadFile(req, res, next) {        
         try {
-            let image = await handleImg(req);
-            res.send({image});
+            let file = await handleImg(req);
+            res.send({file:file});
             } catch (error) {
             next(error)
         }
