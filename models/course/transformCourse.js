@@ -16,6 +16,7 @@ export async function transformCourse(e,lang,myUser,userId) {
         rateNumbers:e.rateNumbers,
         sessionsNo:e.sessionsNo,
         acceptanceNo:e.acceptanceNo,
+        type:e.type,
         createdAt:e.createdAt,
     }
     if(e.business){
@@ -60,6 +61,7 @@ export async function transformCourseById(e,lang,myUser,userId) {
         sessionsNo:e.sessionsNo,
         acceptanceNo:e.acceptanceNo,
         hasCertificate:e.hasCertificate,
+        type:e.type,
         createdAt:e.createdAt,
     }
     if(e.business){

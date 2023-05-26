@@ -263,7 +263,7 @@ export default {
         try {
             //get lang
             let lang = i18n.getLocale(req)
-            let {search,instractor,paymentMethod,specialization,business,status,ownerType} = req.query;
+            let {type,search,instractor,paymentMethod,specialization,business,status,ownerType} = req.query;
 
             let query = {deleted: false }
              /*search  */
@@ -281,10 +281,11 @@ export default {
             }
             if(instractor) query.instractors = instractor
             if(paymentMethod) query.paymentMethod = paymentMethod;
-            if(specialization) query.specialization = specialization
+            if(specialization) query.specializations = specialization
             if(business) query.business = business
             if(status) query.status = status
             if(ownerType) query.ownerType = ownerType;
+            if(type) query.type = type
 
             await Course.find(query).populate(populateQuery)
                 .sort({ _id: -1 })
@@ -309,7 +310,7 @@ export default {
              //get lang
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
-            let {search,instractor,paymentMethod,specialization,business,status,ownerType} = req.query;
+            let {type,search,instractor,paymentMethod,specialization,business,status,ownerType} = req.query;
 
             let query = {deleted: false }
             /*search  */
@@ -325,9 +326,11 @@ export default {
                     ]
                 };
             }
+            if(type) query.type = type
+
             if(instractor) query.instractors = instractor
             if(paymentMethod) query.paymentMethod = paymentMethod;
-            if(specialization) query.specialization = specialization
+            if(specialization) query.specializations = specialization
             if(business) query.business = business
             if(status) query.status = status
             if(ownerType) query.ownerType = ownerType;
