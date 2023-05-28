@@ -298,7 +298,16 @@
 	"instractor.invalid":"المحاضر غير صحيح",
 	"branches.required":"حقل الفروع مطلوب",
 	"dailyTimes.required":"حقل المواعيد مطلوب",
-	"day.required":"حقل اليوم مطلوب"
+	"day.required":"حقل اليوم مطلوب",
+	"paymentMethod.required": "حقل وسيله الدفع غير صحيح",
+	"badgeType.required": "حقل نوع البادج مطلوب",
+	"badgeType.invalid": "حقل نوع البادج غير صحيح",
+	"event.notFoundInList": "هذا الحدث غير موجود لديك",
+	"transaction not exist": "عمليه الدفع غير موجوده",
+	"section_en.required": "حقل اسم السكشن باللغه الانجليزيه مطلوب",
+	"section_ar.required": "حقل السكشن باللغه العربيه مطلوب",
+	"completeData":"يرجى اكمال البيانات"
+	
 
 	
 }

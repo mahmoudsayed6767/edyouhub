@@ -23,6 +23,7 @@ const courseParticipantSchema = new Schema({
     paymentMethod:{
         type: String,
         enum:['CASH','INSTALLMENT'],
+        default:'CASH',
     },
     receipt: [{
         type: String,

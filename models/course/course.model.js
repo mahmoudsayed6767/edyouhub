@@ -124,6 +124,16 @@ const courseSchema=new Schema({
     installmentPrice :{
         type:Number,
     },
+    oldPrice:{
+        type:Number,
+        required: true,
+        default:0,
+    },
+    totalDuration :{
+        type:Number,
+        required: true,
+        default:0,
+    },
     installments: [
         new Schema({
             price: {

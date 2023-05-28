@@ -1,3 +1,5 @@
+import {isInArray} from "../../helpers/CheckMethods";
+
 export async function transformCourse(e,lang,myUser,userId) {
     let index = {
         title:lang=="ar"?e.title_ar:e.title_en,
@@ -17,6 +19,9 @@ export async function transformCourse(e,lang,myUser,userId) {
         sessionsNo:e.sessionsNo,
         acceptanceNo:e.acceptanceNo,
         type:e.type,
+        oldPrice:e.oldPrice,
+        totalDuration:e.totalDuration,
+        isAttendance:userId?isInArray(myUser.attendedCourses,e._id):false,
         createdAt:e.createdAt,
     }
     if(e.business){
@@ -62,6 +67,9 @@ export async function transformCourseById(e,lang,myUser,userId) {
         acceptanceNo:e.acceptanceNo,
         hasCertificate:e.hasCertificate,
         type:e.type,
+        oldPrice:e.oldPrice,
+        totalDuration:e.totalDuration,
+        isAttendance:userId?isInArray(myUser.attendedCourses,e._id):false,
         createdAt:e.createdAt,
     }
     if(e.business){
@@ -129,11 +137,20 @@ export async function transformCourseById(e,lang,myUser,userId) {
     /*tutorials*/
     let tutorials=[]
     for (let val of e.tutorials) {
-        tutorials.push({
+        let tutorial = {
             section:lang=="ar"?val.section_ar:val.section_en,
-            videos:val.videos,
             id:val._id,                         
-        })
+        }
+        let videos = []
+        for (let video of val.videos) {
+            videos.push({
+                title:lang=="ar"?video.title_ar:video.title_en,
+                duration:video.duration,
+                link:video.link
+            })
+        }
+        tutorial.videos = videos
+        tutorials.push(tutorial)
     }
     index.tutorials = tutorials
 

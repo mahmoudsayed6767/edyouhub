@@ -53,10 +53,14 @@ const transactionSchema = new Schema({
         type:Number,
         ref:'order',
     },
+    course:{
+        type:Number,
+        ref:'course',
+    },
     type:{
         type:String,
         required:true,
-        enum:["PACKAGE","CASHBACK-PACKAGE","EVENT","PREMIUM","FUND-FIRSTPAID","OFFER","ORDER"]
+        enum:["PACKAGE","CASHBACK-PACKAGE","COURSE","EVENT","PREMIUM","FUND-FIRSTPAID","OFFER","ORDER"]
     },
 
     status:{

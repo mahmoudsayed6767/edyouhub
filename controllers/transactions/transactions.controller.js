@@ -27,6 +27,8 @@ import OfferCart from "../../models/offerCart/offerCart.model";
 import moment from "moment";
 import EventAttendance from "../../models/event/eventAttendance.model"
 import Business from "../../models/business/business.model"
+import CourseParticipant from "../../models/course/courseParticipant.model";
+
 const populateQuery2 = [
     {path: 'package', model: 'package'},
     {path: 'cashbackPackage', model: 'cashbackPackage'},
@@ -293,6 +295,29 @@ const payEvent = async (theEvent,userId) => {
     await event.save();
     return true;
 };
+const payCourse = async (theCourse,userId) => {
+    let attendedUser = await checkExistThenGet(userId, User);
+    let arr = attendedUser.attendedCourses;
+    var found = arr.find((e) => e == theCourse); 
+    if(!found){
+        attendedUser.attendedCourses.push(theCourse);
+        await attendedUser.save();
+        await CourseParticipant.create({
+            user:userId,
+            course:theCourse,
+            status:'PAID',
+            paymentMethod:'CASH'
+        });
+        let reports = {
+            "action":"user will attend to course",
+            "type":"COURSE",
+            "deepId":theCourse,
+            "user": userId
+        };
+        await Report.create({...reports});
+    }
+    return true;
+};
 export default {
     
     async payment(req,res,next){
@@ -357,6 +382,10 @@ export default {
                     await event.save();
                 }
             }
+            if(validatedBody.type =="COURSE"){
+                transactionData.course = validatedBody.course
+            }
+            
             if(validatedBody.type =="FUND-FIRSTPAID"){
                 transactionData.fund = validatedBody.fund
                 let fund = await checkExistThenGet(validatedBody.fund, Fund);
@@ -476,9 +505,12 @@ export default {
             let data = req.body
             console.log("data",data)
             let theTransaction = await Transaction.findOne({transactionId:data.merchantRefNumber})
-
             if(!theTransaction)
                 return next(new ApiError(400, i18n.__('transaction not exist')))
+
+            let doneTransaction = await Transaction.findOne({status:{$ne:'PENDING'},transactionId:data.merchantRefNumber})
+            if(doneTransaction)
+                return next(new ApiError(400, i18n.__('transaction is done')))
 
             if(data.orderStatus == "PAID"){
                 console.log("paymentObject",JSON.stringify(data))
@@ -498,6 +530,9 @@ export default {
                 if(theTransaction.type =="EVENT"){
                     await payEvent(theTransaction.event,userId)
                 }
+                if(theTransaction.type =="COURSE"){
+                    await payCourse(theTransaction.course,userId)
+                }
                 if(theTransaction.type =="OFFER"){
                     await payOfferBooking(theTransaction.offerBooking,userId)
 
@@ -513,7 +548,7 @@ export default {
                     order.status  = 'ACCEPTED'
                     await order.save();
                 }
-                
+                console.log("kkk",process.env.Securitykey)
                 let transactionId = theTransaction.id;
                 let encryptedId = await encryptedData(transactionId.toString(),process.env.Securitykey)
                 //console.log(req.originalUrl)

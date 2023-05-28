@@ -123,9 +123,7 @@ export default {
                 }
                 return true;
             }),
-            body('dailyTimes').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('dailyTimes.required', { value});
-            }).custom(async (dailyTimes, { req }) => {
+            body('dailyTimes').optional().custom(async (dailyTimes, { req }) => {
                 for (let val of dailyTimes) {
                     body('day').not().isEmpty().withMessage((value, { req}) => {
                         return req.__('day.required', { value});
@@ -155,6 +153,17 @@ export default {
             body('installmentPrice').optional().isNumeric().withMessage((value, { req}) => {
                 return req.__('installmentPrice.numeric', { value});
             }),
+            body('totalDuration').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('totalDuration.required', { value});
+            }).isNumeric().withMessage((value, { req}) => {
+                return req.__('totalDuration.numeric', { value});
+            }),
+            body('oldPrice').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('oldPrice.required', { value});
+            }).isNumeric().withMessage((value, { req}) => {
+                return req.__('oldPrice.numeric', { value});
+            }),
+            
             body('installments').optional()
             .custom(async (installments, { req }) => {
                 for (let val of installments) {
@@ -206,19 +215,24 @@ export default {
     //get by id
     async getById(req, res, next) {        
         try {
-             //get lang
+            //get lang
             let lang = i18n.getLocale(req)
             let { courseId } = req.params;
+            let {userId} = req.query
             await checkExist(courseId, Course, { deleted: false });
+            let myUser
+            if(userId) {
+                myUser = await checkExistThenGet(userId,User)
+            }
             await Course.findById(courseId)
-            .populate(populateQueryById)
-            .then(async(e) => {
-                let course = await transformCourseById(e,lang)
-                res.send({
-                    success:true,
-                    data:course
-                });
-            })
+                .populate(populateQueryById)
+                .then(async(e) => {
+                    let course = await transformCourseById(e,lang,myUser,userId)
+                    res.send({
+                        success:true,
+                        data:course
+                    });
+                })
         } catch (error) {
             next(error);
         }
@@ -263,7 +277,7 @@ export default {
         try {
             //get lang
             let lang = i18n.getLocale(req)
-            let {type,search,instractor,paymentMethod,specialization,business,status,ownerType} = req.query;
+            let {userId,type,search,instractor,paymentMethod,specialization,business,status,ownerType} = req.query;
 
             let query = {deleted: false }
              /*search  */
@@ -286,13 +300,16 @@ export default {
             if(status) query.status = status
             if(ownerType) query.ownerType = ownerType;
             if(type) query.type = type
-
+            let myUser
+            if(userId) {
+                myUser = await checkExistThenGet(userId,User)
+            }
             await Course.find(query).populate(populateQuery)
                 .sort({ _id: -1 })
                 .then( async(data) => {
                     var newdata = [];
                     await Promise.all(data.map(async(e) =>{
-                        let index = await transformCourse(e,lang)
+                        let index = await transformCourse(e,lang,myUser,userId)
                         newdata.push(index)
                     }))
                     res.send({
@@ -310,7 +327,7 @@ export default {
              //get lang
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
-            let {type,search,instractor,paymentMethod,specialization,business,status,ownerType} = req.query;
+            let {userId,type,search,instractor,paymentMethod,specialization,business,status,ownerType} = req.query;
 
             let query = {deleted: false }
             /*search  */
@@ -334,7 +351,10 @@ export default {
             if(business) query.business = business
             if(status) query.status = status
             if(ownerType) query.ownerType = ownerType;
-
+            let myUser
+            if(userId) {
+                myUser = await checkExistThenGet(userId,User)
+            }
             await Course.find(query).populate(populateQuery)
                 .sort({ _id: -1 })
                 .limit(limit)
@@ -342,7 +362,7 @@ export default {
                 .then(async (data) => {
                     var newdata = [];
                     await Promise.all(data.map(async(e) =>{
-                        let index = await transformCourse(e,lang)
+                        let index = await transformCourse(e,lang,myUser,userId)
                         newdata.push(index)
                     }))
                     const count = await Course.countDocuments(query);
@@ -580,7 +600,25 @@ export default {
             body('section_ar').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('section_ar.required', { value});
             }),
-            body('videos').optional()
+            body('videos').optional().custom(async (videos, { req }) => {
+                for (let val of videos) {
+                    body('title_en').not().isEmpty().withMessage((value, { req}) => {
+                        return req.__('title_en.required', { value});
+                    }),
+                    body('title_ar').not().isEmpty().withMessage((value, { req}) => {
+                        return req.__('title_ar.required', { value});
+                    })
+                    body('link').not().isEmpty().withMessage((value, { req}) => {
+                        return req.__('link.required', { value});
+                    })
+                    body('duration').not().isEmpty().withMessage((value, { req}) => {
+                        return req.__('duration.required', { value});
+                    }).isNumeric().withMessage((value, { req}) => {
+                        return req.__('duration.numeric', { value});
+                    })
+                }
+                return true;
+            }),
         ];
         return validations;
     },
@@ -604,7 +642,6 @@ export default {
             let courseToturial = await CourseTutorial.create({ ...validatedBody });
             let tutorials = course.tutorials
             tutorials.push(courseToturial.id)
-            console.log(tutorials)
             course.tutorials = [...new Set(tutorials)];
             await course.save()
             let reports = {
@@ -622,6 +659,7 @@ export default {
             next(error);
         }
     },
+
     //update course
     async updateSection(req, res, next) {        
         try {
@@ -656,8 +694,33 @@ export default {
             next(error);
         }
     },
+    //validate body
+    validateSectionVideosBody(isUpdate = false) {
+        let validations = [
+            body('type').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('type.required', { value});
+            }).isIn(['ADD','REMOVE']).withMessage((value, { req}) => {
+                return req.__('type.invalid', { value});
+            }),
+            body('title_en').optional(),
+            body('title_ar').optional(),
+            body('video').optional(),
+            body('duration').optional().isNumeric().withMessage((value, { req}) => {
+                return req.__('duration.numeric', { value});
+            })
+        ];
+        return validations;
+    },
     async updateSectionVideos(req, res, next) {        
         try {
+            const validatedBody = checkValidations(req);
+            if(validatedBody.type == "REMOVE" && !validatedBody.video)
+                return next(new ApiError(422,  i18n.__('video.required')));
+            if(validatedBody.type == "ADD" && !validatedBody.video){
+                if(!validatedBody.title_ar || !validatedBody.title_en || !validatedBody.duration)
+                    return next(new ApiError(422,  i18n.__('completeData')));
+
+            }
             let {sectionId} = req.params
             let section = await checkExistThenGet(sectionId,CourseTutorial,{deleted:false})
             let course = await checkExistThenGet(section.course,Course,{deleted:false})
@@ -673,19 +736,27 @@ export default {
             }
             //add video to section
             let arr = section.videos
-            if(req.body.type == "ADD"){
+            console.log(validatedBody.type)
+            if(validatedBody.type == "ADD"){
                 if (req.files) {
                     if (req.files['video']) {
+                        let videos = [];
                         for (let imges of req.files['video']) {
-                            arr.push(await toImgUrl(imges))
+                            videos.push(await toImgUrl(imges))
                         }
+                        arr.push({
+                            link:videos[0],
+                            title_en:validatedBody.title_en,
+                            title_ar:validatedBody.title_ar,
+                            duration:validatedBody.duration,
+                        })
                     }
                 }
             }else{
                 //remove from video
-                let index = arr.findIndex(e=> e == req.body.video);
+                let index = arr.findIndex(e=> e == validatedBody.video);
                 for(var i = 0;i<= arr.length;i=i+1){
-                    if(arr[i] === arr[index]){
+                    if(arr[i].link === arr[index].link){
                         arr.splice(index, 1);
                     }
                 }

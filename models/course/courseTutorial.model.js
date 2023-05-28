@@ -20,10 +20,27 @@ const courseTutorialSchema = new Schema({
         trim: true,
         required: true,
     },
-    videos: {
-        type: [String],
-        trim: true,
-    },
+    
+    videos: [
+        new Schema({
+            link: {
+                type: String,
+                required: true,
+            },
+            title_ar: {
+                type: String,
+                required: true,
+            },
+            title_en: {
+                type: String,
+                required: true,
+            },
+            duration: {
+                type: Number,
+                required: true
+            },
+        }, { _id: false })
+    ],
     deleted: {
         type: Boolean,
         default: false

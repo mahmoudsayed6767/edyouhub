@@ -58,6 +58,7 @@ router.route('/:sectionId/addOrRemoveVideo')
         multerSaveTo('courses').fields([
             { name: 'video', maxCount: 1, options: false },
         ]),
+        courseController.validateSectionVideosBody(),
         courseController.updateSectionVideos
     )
 router.route('/:sectionId/sections')
