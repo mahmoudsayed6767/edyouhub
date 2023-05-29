@@ -35,7 +35,7 @@ export async function transformCourse(e,lang,myUser,userId) {
     let instractors=[]
     for (let val of e.instractors) {
         instractors.push({
-            fullname:val.fullname,
+            businessName:val.businessName,
             img:val.img,
             id:val._id,                         
         })
@@ -128,7 +128,7 @@ export async function transformCourseById(e,lang,myUser,userId) {
     let instractors=[]
     for (let val of e.instractors) {
         instractors.push({
-            fullname:val.fullname,
+            businessName:val.businessName,
             img:val.img,
             id:val._id,                         
         })
