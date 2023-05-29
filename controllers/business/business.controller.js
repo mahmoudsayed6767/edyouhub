@@ -551,6 +551,9 @@ export default {
             if(educationSystem) query.educationSystem = educationSystem
             if(status) query.status = status
             if(educationType){
+                if(educationType == "TUTOR") {
+                    educationType = ['HIGH-TUTOR','BASIC-TUTOR']
+                }
                 let catIds = await Category.find({deleted:false,educationType:educationType}).distinct('_id')
                 query.subSector = {$in: catIds}
             }
@@ -604,6 +607,9 @@ export default {
             if(educationSystem) query.educationSystem = educationSystem
             if(status) query.status = status
             if(educationType){
+                if(educationType == "TUTOR") {
+                    educationType = ['HIGH-TUTOR','BASIC-TUTOR']
+                }
                 let catIds = await Category.find({deleted:false,educationType:educationType}).distinct('_id')
                 query.subSector = {$in: catIds}
             }
