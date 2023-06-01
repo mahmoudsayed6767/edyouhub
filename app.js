@@ -18,6 +18,7 @@ import compression from 'compression'
 import Logger from "./services/logger";
 import fs from 'fs'
 import {cronJop} from './services/cronJop'
+import rateLimit from 'express-rate-limit'
 
 const logger = new Logger('log '+ new Date(Date.now()).toDateString())
 const errorsLog = new Logger('errorsLog '+ new Date(Date.now()).toDateString())
@@ -47,7 +48,16 @@ app.use(cors());
 app.use(helmet());
 
 app.use(compression())
+const limiter = rateLimit({
+	windowMs: 1 * 60 * 1000, // 1 minutes
+	max: 300, // Limit each IP to 100 requests per `window` (here, per 1 minutes)
+  message:'Too many requests created from this IP, please try again after an minutes',
+	standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+	legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+})
 
+// Apply the rate limiting middleware to all requests
+app.use(limiter)
 
 i18n.configure({
     locales: ['en', 'ar'],

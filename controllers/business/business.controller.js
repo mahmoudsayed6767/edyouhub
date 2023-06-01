@@ -563,9 +563,9 @@ export default {
             }
             await Business.find(query).populate(populateQuery)
                 .sort({ _id: -1 })
-                .then( async(data) => {
+                .then(async(data) => {
                     var newdata = [];
-                    await Promise.all(data.map(async(e) =>{
+                    await Promise.allSettled(data.map(async(e) =>{
                         let index = await transformBusiness(e,lang,myUser,userId)
                         newdata.push(index)
                     }))
