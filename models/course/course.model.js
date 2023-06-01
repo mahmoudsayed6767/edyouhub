@@ -79,7 +79,7 @@ const courseSchema=new Schema({
         new Schema({
             day:{
                 type: String,
-                enum: ['SATURDAY','SUNDAY', 'MONDAY','WEDNESDAY','TUESDAY','FRIDAY'],
+                enum: ['SATURDAY','SUNDAY', 'MONDAY','WEDNESDAY','TUESDAY','THURSDAY','FRIDAY'],
                 required: true,
             },
             fromDate: {
