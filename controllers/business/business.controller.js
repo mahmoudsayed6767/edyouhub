@@ -802,7 +802,7 @@ export default {
                 }
                 
             }),
-            body('course.supervisors').optional()
+            body('courses.supervisors').optional()
             .custom(async (value, { req }) => {
                 for (const user of value) {
                     if (!await User.findOne({_id:user,deleted:false}))
@@ -905,7 +905,7 @@ export default {
                 else
                     return true;
             }),
-            body('service').optional().isIn(['ADMISSION','VACANCY','EVENT']).withMessage((value, { req}) => {
+            body('service').optional().isIn(['ADMISSION','VACANCY','EVENT','COURSES']).withMessage((value, { req}) => {
                 return req.__('service.invalid', { value});
             }),
             body('type').optional().isIn(['ADD','REMOVE']).withMessage((value, { req}) => {
@@ -932,21 +932,21 @@ export default {
                 if (validatedBody.service == "ADMISSION") arr = businessManagement.admission.supervisors;
                 if (validatedBody.service == "VACANCY") arr = businessManagement.vacancy.supervisors;
                 if (validatedBody.service == "EVENT") arr = businessManagement.events.supervisors;
-                if (validatedBody.service == "COURSE") arr = businessManagement.course.supervisors;
+                if (validatedBody.service == "COURSE") arr = businessManagement.courses.supervisors;
 
                 arr.push(validatedBody.supervisor)
 
                 if (validatedBody.service == "ADMISSION") arr = businessManagement.admission.supervisors = arr;
                 if (validatedBody.service == "VACANCY") arr = businessManagement.vacancy.supervisors = arr;
                 if (validatedBody.service == "EVENT") arr = businessManagement.events.supervisors = arr;
-                if (validatedBody.service == "COURSE") arr = businessManagement.course.supervisors = arr;
+                if (validatedBody.service == "COURSE") arr = businessManagement.courses.supervisors = arr;
                 
             }else{
                 //remove admin to business management
                 if (validatedBody.service == "ADMISSION") arr = businessManagement.admission.supervisors;
                 if (validatedBody.service == "VACANCY") arr = businessManagement.vacancy.supervisors;
                 if (validatedBody.service == "EVENT") arr = businessManagement.events.supervisors;
-                if (validatedBody.service == "COURSE") arr = businessManagement.course.supervisors;
+                if (validatedBody.service == "COURSE") arr = businessManagement.courses.supervisors;
                 
                 for(var i = 0;i<= arr.length;i=i+1){
                     if(arr[i] === arr[index]){
@@ -957,7 +957,7 @@ export default {
                 if (validatedBody.service == "ADMISSION") arr = businessManagement.admission.supervisors = arr;
                 if (validatedBody.service == "VACANCY") arr = businessManagement.vacancy.supervisors = arr;
                 if (validatedBody.service == "EVENT") arr = businessManagement.events.supervisors = arr;
-                if (validatedBody.service == "COURSE") arr = businessManagement.course.supervisors = arr;
+                if (validatedBody.service == "COURSE") arr = businessManagement.courses.supervisors = arr;
                 
             }
             await businessManagement.save();

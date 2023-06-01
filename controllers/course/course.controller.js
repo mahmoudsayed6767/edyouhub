@@ -190,7 +190,7 @@ export default {
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
                 let supervisors = [business.owner]
                 if(businessManagement){
-                    supervisors.push(...businessManagement.course.supervisors)
+                    supervisors.push(...businessManagement.courses.supervisors)
                 }
                 if(!isInArray(supervisors,req.user._id))
                     return next(new ApiError(403,  i18n.__('notAllow')));
@@ -248,7 +248,7 @@ export default {
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
                 let supervisors = [business.owner]
                 if(businessManagement){
-                    supervisors.push(...businessManagement.course.supervisors)
+                    supervisors.push(...businessManagement.courses.supervisors)
                 }
                 if(!isInArray(supervisors,req.user._id))
                     return next(new ApiError(403,  i18n.__('notAllow')));
@@ -383,7 +383,7 @@ export default {
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
                 let supervisors = [business.owner]
                 if(businessManagement){
-                    supervisors.push(...businessManagement.course.supervisors)
+                    supervisors.push(...businessManagement.courses.supervisors)
                 }
                 if(!isInArray(supervisors,req.user._id))
                     return next(new ApiError(403,  i18n.__('notAllow')));
@@ -513,7 +513,7 @@ export default {
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
                 let supervisors = [business.owner]
                 if(businessManagement){
-                    supervisors.push(...businessManagement.course.supervisors)
+                    supervisors.push(...businessManagement.courses.supervisors)
                 }
                 if(!isInArray(supervisors,req.user._id))
                     return next(new ApiError(403,  i18n.__('notAllow')));
@@ -634,7 +634,7 @@ export default {
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
                 let supervisors = [business.owner]
                 if(businessManagement){
-                    supervisors.push(...businessManagement.course.supervisors)
+                    supervisors.push(...businessManagement.courses.supervisors)
                 }
                 if(!isInArray(supervisors,req.user._id))
                     return next(new ApiError(403,  i18n.__('notAllow')));
@@ -672,7 +672,7 @@ export default {
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
                 let supervisors = [business.owner]
                 if(businessManagement){
-                    supervisors.push(...businessManagement.course.supervisors)
+                    supervisors.push(...businessManagement.courses.supervisors)
                 }
                 if(!isInArray(supervisors,req.user._id))
                     return next(new ApiError(403,  i18n.__('notAllow')));
@@ -729,7 +729,7 @@ export default {
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
                 let supervisors = [business.owner]
                 if(businessManagement){
-                    supervisors.push(...businessManagement.course.supervisors)
+                    supervisors.push(...businessManagement.courses.supervisors)
                 }
                 if(!isInArray(supervisors,req.user._id))
                     return next(new ApiError(403,  i18n.__('notAllow')));
@@ -789,7 +789,7 @@ export default {
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
                 let supervisors = [business.owner]
                 if(businessManagement){
-                    supervisors.push(...businessManagement.course.supervisors)
+                    supervisors.push(...businessManagement.courses.supervisors)
                 }
                 if(!isInArray(supervisors,req.user._id))
                     return next(new ApiError(403,  i18n.__('notAllow')));

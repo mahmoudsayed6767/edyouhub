@@ -51,6 +51,12 @@ const businessManagementSchema = new Schema({
             ref:'user'
         }],
     },
+    courses: {
+        supervisors: [{
+            type: Number,
+            ref:'user'
+        }],
+    },
     deleted:{
         type:Boolean,
         default:false
