@@ -1,7 +1,7 @@
 import Course from "../../models/course/course.model";
 import Report from "../../models/reports/report.model";
 import { body } from "express-validator";
-import { checkValidations} from "../shared/shared.controller";
+import { checkValidations,encryptedData} from "../shared/shared.controller";
 import ApiResponse from "../../helpers/ApiResponse";
 import i18n from "i18n";
 import { transformCourse,transformCourseById } from "../../models/course/transformCourse";
@@ -20,6 +20,7 @@ import Country from "../../models/country/country.model"
 import Area from "../../models/area/area.model"
 import CourseTutorial from "../../models/course/courseTutorial.model";
 import { toImgUrl } from "../../utils";
+import bcrypt from 'bcryptjs';
 
 const populateQuery = [
     { path: 'business', model: 'business' },
@@ -147,6 +148,12 @@ export default {
             .withMessage((value, { req}) => {
                 return req.__('paymentMethod.invalid', { value});
             }),
+            body('feesType').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('feesType.required', { value});
+            }).isIn(['NO-FEES','WITH-FEES'])
+            .withMessage((value, { req}) => {
+                return req.__('feesType.invalid', { value});
+            }),
             body('cashPrice').optional().isNumeric().withMessage((value, { req}) => {
                 return req.__('cashPrice.numeric', { value});
             }),
@@ -158,9 +165,7 @@ export default {
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('totalDuration.numeric', { value});
             }),
-            body('oldPrice').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('oldPrice.required', { value});
-            }).isNumeric().withMessage((value, { req}) => {
+            body('oldPrice').optional().isNumeric().withMessage((value, { req}) => {
                 return req.__('oldPrice.numeric', { value});
             }),
             
@@ -196,7 +201,20 @@ export default {
                     return next(new ApiError(403,  i18n.__('notAllow')));
             }
             validatedBody.toDateMillSec = Date.parse(validatedBody.toDate)
+            if (validatedBody.feesType == 'WITH-FEES'){
+                if(!validatedBody.paymentMethod){
+                    return next(new ApiError(422, i18n.__('paymentMethod.required')));
+                }else{
+                    if(validatedBody.paymentMethod == "INSTALLMENT" && !validatedBody.installmentPrice)
+                        return next(new ApiError(422, i18n.__('installmentPrice.required')));
+                    if(validatedBody.paymentMethod == "CASH" && !validatedBody.cashPrice)
+                        return next(new ApiError(422, i18n.__('cashPrice.required')));
+                }
+            }
             let course = await Course.create({ ...validatedBody });
+            let secretKey = (await bcrypt.hash(course.id.toString(),bcrypt.genSaltSync())).substring(0,16)
+            course.secretKey = secretKey
+            await course.save()
             let reports = {
                 "action":"Create New course",
                 "type":"COURSE",
@@ -254,7 +272,16 @@ export default {
                     return next(new ApiError(403,  i18n.__('notAllow')));
             }
             validatedBody.toDateMillSec = Date.parse(validatedBody.toDate)
-
+            if (validatedBody.feesType == 'WITH-FEES'){
+                if(!validatedBody.paymentMethod){
+                    return next(new ApiError(422, i18n.__('paymentMethod.required')));
+                }else{
+                    if(validatedBody.paymentMethod == "INSTALLMENT" && !validatedBody.installmentPrice)
+                        return next(new ApiError(422, i18n.__('installmentPrice.required')));
+                    if(validatedBody.paymentMethod == "CASH" && !validatedBody.cashPrice)
+                        return next(new ApiError(422, i18n.__('cashPrice.required')));
+                }
+            }
             await Course.findByIdAndUpdate(courseId, {
                 ...validatedBody,
             }, { new: true });
@@ -639,6 +666,13 @@ export default {
                 if(!isInArray(supervisors,req.user._id))
                     return next(new ApiError(403,  i18n.__('notAllow')));
             }
+            let videos = [];
+            for (let val of validatedBody.videos) {
+                let secretKey = course.secretKey + process.env.encryptSecret
+                val.link = await encryptedData(val.link,secretKey)
+                videos.push(val)
+            }
+            validatedBody.videos = videos;
             let courseToturial = await CourseTutorial.create({ ...validatedBody });
             let tutorials = course.tutorials
             tutorials.push(courseToturial.id)
@@ -677,6 +711,13 @@ export default {
                 if(!isInArray(supervisors,req.user._id))
                     return next(new ApiError(403,  i18n.__('notAllow')));
             }
+            let videos = [];
+            for (let val of validatedBody.videos) {
+                let secretKey = course.secretKey + process.env.encryptSecret
+                val.link = await encryptedData(val.link,secretKey)
+                videos.push(val)
+            }
+            validatedBody.videos = videos;
             let courseToturial = await CourseTutorial.findByIdAndUpdate(sectionId, { ...validatedBody });
 
             let reports = {
@@ -744,8 +785,9 @@ export default {
                         for (let imges of req.files['video']) {
                             videos.push(await toImgUrl(imges))
                         }
+                        let secretKey = course.secretKey + process.env.encryptSecret
                         arr.push({
-                            link:videos[0],
+                            link:await encryptedData(videos[0],secretKey),
                             title_en:validatedBody.title_en,
                             title_ar:validatedBody.title_ar,
                             duration:validatedBody.duration,

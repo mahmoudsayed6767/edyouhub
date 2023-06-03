@@ -1,4 +1,5 @@
 import {isInArray} from "../../helpers/CheckMethods";
+import {decryptedData} from "../../controllers/shared/shared.controller";
 
 export async function transformCourse(e,lang,myUser,userId) {
     let index = {
@@ -10,6 +11,7 @@ export async function transformCourse(e,lang,myUser,userId) {
         toDate:e.toDate,
         maxApplications:e.maxApplications,
         maxAcceptance:e.maxAcceptance,
+        feesType:e.feesType,
         paymentMethod:e.paymentMethod,
         cashPrice:e.cashPrice,
         installmentPrice:e.installmentPrice,
@@ -56,6 +58,7 @@ export async function transformCourseById(e,lang,myUser,userId) {
         dailyTimes:e.dailyTimes,
         maxApplications:e.maxApplications,
         maxAcceptance:e.maxAcceptance,
+        feesType:e.feesType,
         paymentMethod:e.paymentMethod,
         cashPrice:e.cashPrice,
         installments:e.installments,
@@ -143,10 +146,11 @@ export async function transformCourseById(e,lang,myUser,userId) {
         }
         let videos = []
         for (let video of val.videos) {
+            let secretKey = e.secretKey + process.env.encryptSecret
             videos.push({
                 title:lang=="ar"?video.title_ar:video.title_en,
                 duration:video.duration,
-                link:video.link
+                link:index.isAttendance ==true ?await decryptedData(video.link,secretKey):video.link
             })
         }
         tutorial.videos = videos

@@ -113,10 +113,14 @@ const courseSchema=new Schema({
         type: Number,
         required: true
     },
+    feesType:{
+        type: String,
+        enum:['NO-FEES','WITH-FEES'],
+        default:'WITH-FEES'
+    },
     paymentMethod:{
         type: String,
         enum:['CASH','INSTALLMENT'],
-        required: true
     },
     cashPrice: {
         type:Number,
@@ -126,8 +130,6 @@ const courseSchema=new Schema({
     },
     oldPrice:{
         type:Number,
-        required: true,
-        default:0,
     },
     totalDuration :{
         type:Number,
@@ -161,6 +163,9 @@ const courseSchema=new Schema({
     hasCertificate:{
         type:Boolean,
         default:false
+    },
+    secretKey: {
+        type: String,
     },
     deleted:{
         type:Boolean,
