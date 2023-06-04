@@ -58,7 +58,7 @@ const postSchema=new Schema({
     },
     type:{
         type: String,
-        enum:['VACANCY','ADMISSION','EVENT', 'ANONCEMENT','GENERAL','VOTE','REQUEST-RECOMMENDATION','GIVE-RECOMMENDATION','HELP','DISCUSSION'],
+        enum:['VACANCY','ADMISSION','EVENT', 'ANONCEMENT','GENERAL','EXPERICENCE','VOTE','REQUEST-RECOMMENDATION','GIVE-RECOMMENDATION','HELP','DISCUSSION'],
         default:'GENERAL',
     },
     event: {

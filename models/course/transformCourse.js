@@ -111,7 +111,6 @@ export async function transformCourseById(e,lang,myUser,userId) {
                 }
             }
             if (val.city) {
-                console.log(val.city)
                 branch.city = {
                     name: lang == "ar" ? val.city.name_ar : val.city.name_en,
                     id: val.city._id

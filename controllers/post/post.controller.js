@@ -122,7 +122,7 @@ export default {
         let validations = [
             body('type').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('type.required', { value});
-            }).isIn(['ANONCEMENT','GENERAL','VOTE','REQUEST-RECOMMENDATION','GIVE-RECOMMENDATION','HELP','DISCUSSION']).withMessage((value, { req}) => {
+            }).isIn(['ANONCEMENT','GENERAL','VOTE','EXPERICENCE','REQUEST-RECOMMENDATION','GIVE-RECOMMENDATION','HELP','DISCUSSION']).withMessage((value, { req}) => {
                 return req.__('type.invalid', { value});
             }),
             body('dataType').optional().isIn(['IMAGE', 'VIDEO','FILE','TEXT','LINK']).withMessage((value, { req}) => {

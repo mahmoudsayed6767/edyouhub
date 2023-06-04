@@ -11,11 +11,11 @@ cloudinary.config(JSON.parse(process.env.cloudinary));
 export async function toImgUrl (multerObject) {
   try {
     if(process.env.environment === 'PRODUCTION'){
-      multerObject.path = 'https'+'://'+'api.edyouhub.com'+'/'+multerObject.path;
+      multerObject.path = 'https://api.edyouhub.com/'+multerObject.path;
       console.log("path:  "+multerObject.path);
       return multerObject.path;
     }else{
-      multerObject.path = 'https'+'://'+'api.staging.edyouhub.com'+'/'+multerObject.path;
+      multerObject.path = 'https://api.staging.edyouhub.com/'+multerObject.path;
       console.log("path:  "+multerObject.path);
       return multerObject.path;
     }
