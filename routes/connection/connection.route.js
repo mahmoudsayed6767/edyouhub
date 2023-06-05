@@ -13,15 +13,15 @@ router.route('/')
     .get(requireAuth,connectionController.getAllPaginated);
 router.route('/withoutPagenation/get')
     .get(requireAuth,connectionController.getAll);
-router.route('/:toId')
+router.route('/:fromId')
     .delete(requireAuth,connectionController.delete);
 
-router.route('/:toId/accept')
+router.route('/:fromId/accept')
     .put(
         requireAuth,
         connectionController.accept
     )
-router.route('/:toId/reject')
+router.route('/:fromId/reject')
     .put(
         requireAuth,
         connectionController.reject

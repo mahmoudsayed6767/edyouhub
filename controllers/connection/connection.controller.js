@@ -164,7 +164,6 @@ export default {
                             {from: req.user._id}, 
                         ]},
                         {$and: [
-                            
                             {to: req.user._id}, 
                             {from: toId}, 
                         ]},
@@ -174,6 +173,7 @@ export default {
                     {status:{$ne:'REJECTED'}}
                 ]
             }
+            console.log(await Connection.findOne(query))
             if(await Connection.findOne(query))
                 return next(new ApiError(500, i18n.__('connectionRequest.exist')));
 
@@ -223,10 +223,10 @@ export default {
     },
     async delete(req, res, next) {
         try {
-            let { toId } = req.params;
+            let { fromId } = req.params;
             let query = {
-                to: toId,
-                from: req.user._id,
+                from: fromId,
+                to: req.user._id,
                 deleted: false
             }
             
@@ -283,13 +283,13 @@ export default {
     },
     async accept(req, res, next) {
         try {
-            let { toId } = req.params;
+            let { fromId } = req.params;
             let query = {
-                to: toId,
-                from: req.user._id,
+                from: fromId,
+                to: req.user._id,
                 deleted: false
             }
-            
+            console.log(query);
             let connection = await Connection.findOne(query);
             if(!connection)
                 return next(new ApiError(500, i18n.__('connectionRequest.notFound')));
@@ -358,10 +358,10 @@ export default {
     },
     async reject(req, res, next) {
         try {
-            let { toId } = req.params;
+            let { fromId } = req.params;
             let query = {
-                to: toId,
-                from: req.user._id,
+                from: fromId,
+                to: req.user._id,
                 deleted: false
             }
             

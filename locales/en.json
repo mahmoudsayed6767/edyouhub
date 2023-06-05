@@ -308,5 +308,6 @@
 	"section_en.required": "section_en is required",
 	"section_ar.required": "section_ar is required",
 	"completeData": "please complete data",
-	"transaction is done": "transaction is done"
+	"transaction is done": "transaction is done",
+	"connectionRequest.notFound": "connectionRequest.notFound"
 }
