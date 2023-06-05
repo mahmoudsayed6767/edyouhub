@@ -33,6 +33,14 @@ export async function transformCourse(e,lang,myUser,userId) {
             id: e.business._id,
         }
     }
+    /*specializations*/
+    let specializations = []
+    for (let val of e.specializations) {
+        specializations.push({
+            name: lang == "ar" ? val.name_ar : val.name_en,
+            id: val._id,
+        })
+    }
     /*instractors*/
     let instractors=[]
     for (let val of e.instractors) {
