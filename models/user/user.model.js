@@ -2,7 +2,6 @@ import mongoose, { Schema } from 'mongoose';
 import autoIncrement from 'mongoose-auto-increment';
 import bcrypt from 'bcryptjs';
 import isEmail from 'validator/lib/isEmail';
-import { isImgUrl } from "../../helpers/CheckMethods";
 
 const userSchema = new Schema({
     _id: {
@@ -134,6 +133,10 @@ const userSchema = new Schema({
     usedCoupons: {
         type:[Number],
         ref:'coupons'
+    },
+    groups: {
+        type:[Number],
+        ref:'group'
     },
     cashBack: {
         type: Boolean,

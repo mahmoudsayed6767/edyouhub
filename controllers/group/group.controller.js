@@ -1,0 +1,381 @@
+import Group from "../../models/group/group.model";
+import {transformGroup,transformGroupById,transformParticipant} from "../../models/group/transformGroup";
+import GroupParticipant from "../../models/group/groupParticipant.model";
+import { body } from "express-validator";
+import { checkValidations ,handleImg} from "../shared/shared.controller";
+import Report from "../../models/reports/report.model";
+import { checkExist } from "../../helpers/CheckMethods";
+import ApiResponse from "../../helpers/ApiResponse";
+import { checkExistThenGet } from "../../helpers/CheckMethods";
+import i18n from "i18n";
+import User from "../../models/user/user.model"
+const populateQuery = [
+    { path: 'owner', model: 'user' },
+    { path: 'admins', model: 'user' },
+];
+const populateQueryParticipant = [
+    { path: 'user', model: 'user' },
+];
+export default {
+    validateBody(isUpdate = false) {
+        let validations = [
+            body('name').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('name.required', { value});
+            }),
+            body('about').optional(),
+            body('type').optional().isIn(['PRIVATE', 'PUBLIC'])
+            .withMessage((value, { req}) => {
+                return req.__('type.invalid', { value});
+            }),
+            body('postedType').optional().isIn(['OPENED', 'BY-REQUEST'])
+            .withMessage((value, { req}) => {
+                return req.__('postedType.invalid', { value});
+            }),
+        ];
+        if (isUpdate)
+        validations.push([
+            body('img').optional().custom(val => isImgUrl(val)).withMessage((value, { req}) => {
+                return req.__('img.syntax', { value});
+            })
+        ]);
+
+        return validations;
+    },
+    async create(req, res, next) {        
+        try {
+            let lang = i18n.getLocale(req)
+            const validatedBody = checkValidations(req);
+            //upload img
+            let image = await handleImg(req);
+            validatedBody.img = image;
+            validatedBody.owner = req.user._id
+            let group = await Group.create({ ...validatedBody});
+            let reports = {
+                "action":"Create New group",
+                "type":"GROUP",
+                "deepId":group.id,
+                "user": req.user._id
+            };
+            await Report.create({...reports });
+            await Group.findById(group.id).populate(populateQuery).then((e) => {
+                let index = transformGroupById(e,lang)
+                return res.status(201).send({
+                    success:true,
+                    data:index
+                });
+            })
+        } catch (error) {
+            next(error);
+        }
+    },
+    async getById(req, res, next) {        
+        try {
+            let lang = i18n.getLocale(req)
+            let { groupId } = req.params;
+            await checkExist(groupId, Group, { deleted: false });
+            await Group.findById(groupId).populate(populateQuery).then( e => {
+                let index = transformGroupById(e,lang)
+                return res.send({
+                    success:true,
+                    data:index
+                });
+            })
+        } catch (error) {
+            next(error);
+        }
+    },
+    async update(req, res, next) {        
+        try {
+            let lang = i18n.getLocale(req)
+            let { groupId } = req.params;
+            let group = await checkExistThenGet(groupId, Group, { deleted: false });
+            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
+                let supervisors = [business.owner]
+                supervisors.push(... group.admins)
+                if(!isInArray(supervisors,req.user._id))
+                    return next(new ApiError(403,  i18n.__('notAllow')));
+            }
+            const validatedBody = checkValidations(req);
+            if (req.file) {
+                let image = await handleImg(req, { attributeName: 'img', isUpdate: true });
+                validatedBody.img = image;
+            }
+            await Group.findByIdAndUpdate(groupId, { ...validatedBody });
+            let reports = {
+                "action":"Update group",
+                "type":"GROUP",
+                "deepId":groupId,
+                "user": req.user._id
+            };
+            await Report.create({...reports });
+            await Group.findById(groupId).populate(populateQuery).then((e) => {
+                let index = transformGroupById(e,lang)
+                return res.status(200).send({
+                    success:true,
+                    data:index
+                });
+            })
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    async getAll(req, res, next) {        
+        try {
+            let lang = i18n.getLocale(req)
+            let {search} = req.query;
+            let query = { deleted: false };
+            if(search) {
+                query = {
+                    $and: [
+                        { $or: [
+                            {about: { $regex: '.*' + search + '.*' , '$options' : 'i' }}, 
+                            {name: { $regex: '.*' + search + '.*' , '$options' : 'i' }}, 
+                        
+                          ] 
+                        },
+                        {deleted: false},
+                    ]
+                };
+            }
+            await Group.find(query).populate(populateQuery)
+            .then(async (data) => {
+                var newdata = [];
+                await Promise.all(data.map(async(e) =>{
+                    let index = transformGroup(e,lang)
+                    newdata.push(index);
+                    
+                }))
+                res.send({success:true,data:newdata});
+            })
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    async getAllPaginated(req, res, next) {        
+        try {    
+            let lang = i18n.getLocale(req)       
+            let page = +req.query.page || 1, limit = +req.query.limit || 20;
+            let {search} = req.query;
+            let query = { deleted: false };
+            if(search) {
+                query = {
+                    $and: [
+                        { $or: [
+                            {about: { $regex: '.*' + search + '.*' , '$options' : 'i' }}, 
+                            {name: { $regex: '.*' + search + '.*' , '$options' : 'i' }}, 
+                        
+                          ] 
+                        },
+                        {deleted: false},
+                    ]
+                };
+            }
+            await Group.find(query).populate(populateQuery)
+                .limit(limit)
+                .skip((page - 1) * limit).sort({ _id: -1 })
+                .then(async (data) => {
+                    var newdata = [];
+                    await Promise.all(data.map(async(e) =>{
+                        let index = transformGroup(e,lang)
+                        newdata.push(index);
+                    }))
+                    const count = await Group.countDocuments({deleted: false });
+                    const pageCount = Math.ceil(count / limit);
+                    res.send(new ApiResponse(newdata, page, pageCount, limit, count, req));
+                })
+        } catch (error) {
+            next(error);
+        }
+    },
+
+
+    async delete(req, res, next) {        
+        try {
+            let { groupId } = req.params;
+            let group = await checkExistThenGet(groupId, Group);
+            group.deleted = true;
+            await group.save();
+            let reports = {
+                "action":"Delete group",
+                "type":"GROUP",
+                "deepId":groupId,
+                "user": req.user._id
+            };
+            await Report.create({...reports });
+            res.send({success: true});
+
+        } catch (err) {
+            next(err);
+        }
+    },
+    validateAddParticipantBody() {
+        let validations = [
+            body('user').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('user.required', { value});
+            }).isNumeric().withMessage((value, { req}) => {
+                return req.__('user.numeric', { value});
+            }).custom(async (value, { req }) => {
+                if (!await User.findOne({_id:value,deleted:false}))
+                    throw new Error(req.__('user.invalid'));
+                else
+                    return true;
+            }),
+        ];
+        
+        return validations;
+    },
+    async addParticipant(req, res, next) {        
+        try {
+            const validatedBody = checkValidations(req);
+            let {groupId} = req.params
+            let group = await checkExistThenGet(groupId, group);
+            //check permission
+            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
+                let supervisors = [business.owner]
+                supervisors.push(... group.admins)
+                if(!isInArray(supervisors,req.user._id))
+                    return next(new ApiError(403,  i18n.__('notAllow')));
+            }
+            validatedBody.group = groupId;
+            //check if user is new or exist
+            let user = await checkExistThenGet(validatedBody.user, User);
+            validatedBody.user = user.id
+            if(group.type == "PUBLIC") validatedBody.status = 'ACCEPTED'
+            if(!await GroupParticipant.findOne({ user: validatedBody.user, group: groupId,type:{$ne:'REJECTED'},deleted:false})){
+                let arr = user.groups;
+                var found = arr.find((e) => e == groupId); 
+                if(!found){
+                    user.groups.push(groupId);
+                    await user.save();
+                    await GroupParticipant.create({ ...validatedBody });
+                    let reports = {
+                        "action":"user will attend to group",
+                        "type":"GROUP",
+                        "deepId":groupId,
+                        "user": req.user._id
+                    };
+                    await Report.create({...reports});
+                }
+            }
+            res.status(201).send({
+                success:true,
+            });
+        } catch (error) {
+            next(error);
+        }
+    },
+    async getGroupParticipants(req, res, next) {        
+        try {
+            let lang = i18n.getLocale(req)
+            let page = +req.query.page || 1, limit = +req.query.limit || 20;
+            let query = {deleted: false,group:req.params.groupId };
+            await GroupParticipant.find(query).populate(populateQueryParticipant)
+                .sort({ createdAt: -1 })
+                .limit(limit)
+                .skip((page - 1) * limit).then(async(data)=>{
+                    let newdata =[]
+                    await Promise.all( data.map(async(e)=>{
+                        let index = await transformParticipant(e,lang)
+                        newdata.push(index)
+                    }))
+                    const count = await GroupParticipant.countDocuments(query);
+                    const pageCount = Math.ceil(count / limit);
+                    res.send(new ApiResponse(newdata, page, pageCount, limit, count, req));
+                })
+        } catch (err) {
+            next(err);
+        }
+    },
+    async accept(req, res, next) {
+        try {
+            let { groupParticipantId } = req.params;
+            let groupParticipant = await checkExistThenGet(groupParticipantId, GroupParticipant);
+            let group = await checkExistThenGet(groupParticipant.group, Group);
+
+            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
+                let supervisors = [business.owner]
+                supervisors.push(... group.admins)
+                if(!isInArray(supervisors,req.user._id))
+                    return next(new ApiError(403,  i18n.__('notAllow')));
+            }
+            groupParticipant.status = "ACCEPTED";
+            await groupParticipant.save();
+            sendNotifiAndPushNotifi({
+                targetUser: groupParticipant.user, 
+                fromUser: req.user, 
+                text: ' EdHub',
+                subject: groupParticipant.id,
+                subjectType: 'group Request Status',
+                info:'GROUP-REQUEST'
+            });
+            let notif = {
+                "description_en":'Your join Request Has Been Accepted ',
+                "description_ar":' تم قبول الطلب الانضمام الخاص بك',
+                "title_en":'Your join Request Has Been Accepted ',
+                "title_ar":' تم قبول الطلب الانضمام الخاص بك',
+                "type":'GROUP-REQUEST'
+            }
+            await Notif.create({...notif,resource:req.user,target:groupParticipant.عسثق,groupParticipant:GROUPRequest.id});
+            let reports = {
+                "action":"Accept group join request",
+                "type":"GROUP-REQUEST",
+                "deepId":groupParticipantId,
+                "user": req.user._id
+            };
+            await Report.create({...reports});
+            res.send({
+                success:true
+            });
+        } catch (err) {
+            next(err);
+        }
+    },
+    async reject(req, res, next) {
+        try {
+            let { groupParticipantId } = req.params;
+            let groupParticipant = await checkExistThenGet(groupParticipantId, GroupParticipant);
+            let group = await checkExistThenGet(groupParticipant.group, Group);
+
+            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
+                let supervisors = [business.owner]
+                supervisors.push(... group.admins)
+                if(!isInArray(supervisors,req.user._id))
+                    return next(new ApiError(403,  i18n.__('notAllow')));
+            }
+            groupParticipant.status = "REJECTED";
+            await groupParticipant.save();
+            sendNotifiAndPushNotifi({
+                targetUser: groupParticipant.user, 
+                fromUser: req.user, 
+                text: ' EdHub',
+                subject: groupParticipant.id,
+                subjectType: 'group Request Status',
+                info:'GROUP-REQUEST'
+            });
+            let notif = {
+                "description_en":'Your join Request Has Been Rejected ',
+                "description_ar":' تم رفض الطلب الانضمام الخاص بك',
+                "title_en":'Your join Request Has Been Rejected ',
+                "title_ar":' تم رفض الطلب الانضمام الخاص بك',
+                "type":'GROUP-REQUEST'
+            }
+            await Notif.create({...notif,resource:req.user,target:groupParticipant.عسثق,groupParticipant:GROUPRequest.id});
+            let reports = {
+                "action":"reject group join request",
+                "type":"GROUP-REQUEST",
+                "deepId":groupParticipantId,
+                "user": req.user._id
+            };
+            await Report.create({...reports});
+            res.send({
+                success:true
+            });
+        } catch (err) {
+            next(err);
+        }
+    },
+
+
+}

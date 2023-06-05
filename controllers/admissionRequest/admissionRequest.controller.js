@@ -441,7 +441,7 @@ export default {
             }
             await Notif.create({...notif,resource:req.user,target:admissionRequest.owner,admissionRequest:admissionRequest.id});
             let reports = {
-                "action":"قثتثؤف admissionRequest",
+                "action":"reject admissionRequest",
                 "type":"ADMISSION-REQUEST",
                 "deepId":admissionRequestId,
                 "user": req.user._id

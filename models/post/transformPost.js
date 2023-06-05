@@ -38,6 +38,15 @@ export async function transformPost(e,lang,myUser,userId) {
             img:e.owner.img,
             id:e.owner._id,
         }
+        if (e.owner.package) {
+            owner.package = {
+                title:lang=="ar"?e.owner.package.title_ar:e.owner.package.title_en,
+                type:e.owner.package.type,
+                badgeType:e.owner.package.badgeType,
+                dataView:e.owner.package.dataView,
+                id: e.owner.package._id,
+            }
+        }
         index.owner = owner
     }
     /*options*/
@@ -190,6 +199,15 @@ export async function transformPostById(e,lang,myUser,userId) {
             username:e.owner.username,
             img:e.owner.img,
             id:e.owner._id,
+        }
+        if (e.owner.package) {
+            owner.package = {
+                title:lang=="ar"?e.owner.package.title_ar:e.owner.package.title_en,
+                type:e.owner.package.type,
+                badgeType:e.owner.package.badgeType,
+                dataView:e.owner.package.dataView,
+                id: e.owner.package._id,
+            }
         }
         index.owner = owner
     }
