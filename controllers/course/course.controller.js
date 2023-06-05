@@ -304,7 +304,7 @@ export default {
         try {
             //get lang
             let lang = i18n.getLocale(req)
-            let {userId,type,search,instractor,paymentMethod,specialization,business,status,ownerType} = req.query;
+            let {userId,myCourses,type,search,instractor,paymentMethod,specialization,business,status,ownerType} = req.query;
 
             let query = {deleted: false }
              /*search  */
@@ -330,6 +330,9 @@ export default {
             let myUser
             if(userId) {
                 myUser = await checkExistThenGet(userId,User)
+                if(myCourses == "true"){
+                    query._id = myUser.attendedCourses
+                }
             }
             await Course.find(query).populate(populateQuery)
                 .sort({ _id: -1 })
@@ -354,7 +357,7 @@ export default {
              //get lang
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
-            let {userId,type,search,instractor,paymentMethod,specialization,business,status,ownerType} = req.query;
+            let {myCourses,userId,type,search,instractor,paymentMethod,specialization,business,status,ownerType} = req.query;
 
             let query = {deleted: false }
             /*search  */
@@ -381,6 +384,9 @@ export default {
             let myUser
             if(userId) {
                 myUser = await checkExistThenGet(userId,User)
+                if(myCourses == "true"){
+                    query._id = myUser.attendedCourses
+                }
             }
             await Course.find(query).populate(populateQuery)
                 .sort({ _id: -1 })

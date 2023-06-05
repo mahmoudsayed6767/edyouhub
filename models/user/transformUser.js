@@ -154,17 +154,20 @@ export async function transformUserById(e,lang,myUser,userId) {
 
     //education
     /*higherEducation*/
-    let higherEducation=[]
+    let higherEducations=[]
     for (let val of e.higherEducation) {
-        higherEducation.push({
-            higherEducation:{
+        let value = {
+            faculty:val.faculty,                        
+        }
+        if(val.higherEducation){
+            value.higherEducation = {
                 name:lang=="ar"?val.higherEducation.name_ar:val.higherEducation.name_en,
                 id:e.higherEducation._id
-            },
-            faculty:val.faculty,                        
-        })
+            }
+        }
+        higherEducations.push(value)
     }
-    index.higherEducation = higherEducation;
+    index.higherEducation = higherEducations;
 
     /*courses*/
     let courses=[]

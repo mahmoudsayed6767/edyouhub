@@ -31,6 +31,7 @@ const populateQueryById = [
     { path: 'city', model: 'city' },
     { path: 'area', model: 'area' },
     { path: 'affiliate', model: 'user'},
+    { path: 'package', model: 'package'},
     { path: 'higherEducation.higherEducation', model: 'higherEducation'},
     { path: 'kids.educationSystem', model: 'educationSystem'}
     
@@ -492,7 +493,6 @@ export default {
             
             body('higherEducation').optional()
             .custom(async (higherEducation, { req }) => {
-                
                 for (let val of higherEducation) {
                     body('higherEducation').not().isEmpty().withMessage((value) => {
                         return req.__('higherEducation.required', { value});
@@ -535,8 +535,14 @@ export default {
             body('experiencesProfession').optional(),
             body('workExperiences').optional()
             .custom(async (workExperiences, { req }) => {
-                
                 for (let val of workExperiences) {
+                    body('workType').optional().isIn(['EDUCATION','OTHER']).withMessage((value, { req}) => {
+                        return req.__('wrong.workType', { value});
+                    }),
+                    body('educationField').optional().isIn(['TEACHING','NON-TEACHING']).withMessage((value, { req}) => {
+                        return req.__('wrong.workType', { value});
+                    }),
+                    body('subject').optional(),
                     body('organization').not().isEmpty().withMessage((value) => {
                         return req.__('organization.required', { value});
                     }),

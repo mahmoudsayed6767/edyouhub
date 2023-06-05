@@ -34,6 +34,7 @@ const populateQueryById = [
     { path: 'city', model: 'city' },
     { path: 'area', model: 'area' },
     { path: 'affiliate', model: 'user'},
+    { path: 'package', model: 'package'},
     { path: 'higherEducation.higherEducation', model: 'higherEducation'},
     { path: 'kids.educationSystem', model: 'educationSystem'}
     
