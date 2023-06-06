@@ -309,5 +309,8 @@
 	"section_ar.required": "section_ar is required",
 	"completeData": "please complete data",
 	"transaction is done": "transaction is done",
-	"connectionRequest.notFound": "connectionRequest.notFound"
+	"connectionRequest.notFound": "connectionRequest.notFound",
+	"user.required": "user.required",
+	"user.numeric": "user.numeric",
+	"user.invalid": "user.invalid"
 }

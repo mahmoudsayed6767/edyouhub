@@ -4,9 +4,8 @@ import GroupParticipant from "../../models/group/groupParticipant.model";
 import { body } from "express-validator";
 import { checkValidations ,handleImg} from "../shared/shared.controller";
 import Report from "../../models/reports/report.model";
-import { checkExist } from "../../helpers/CheckMethods";
+import { checkExist,isInArray,checkExistThenGet } from "../../helpers/CheckMethods";
 import ApiResponse from "../../helpers/ApiResponse";
-import { checkExistThenGet } from "../../helpers/CheckMethods";
 import i18n from "i18n";
 import User from "../../models/user/user.model"
 const populateQuery = [
@@ -31,6 +30,16 @@ export default {
             .withMessage((value, { req}) => {
                 return req.__('postedType.invalid', { value});
             }),
+            body('admins').optional()
+            .custom(async (admins, { req }) => {
+                for (let value of admins) {
+                    if (!await User.findOne({_id:value,deleted:false}))
+                        throw new Error(req.__('admin.invalid'));
+                    else
+                        return true;
+                }
+                return true;
+            }),
         ];
         if (isUpdate)
         validations.push([
@@ -49,6 +58,12 @@ export default {
             let image = await handleImg(req);
             validatedBody.img = image;
             validatedBody.owner = req.user._id
+            if(!validatedBody.admins){
+                validatedBody.admins = [req.user._id]
+            }else{
+                validatedBody.admins.push(req.user._id)
+            }
+            
             let group = await Group.create({ ...validatedBody});
             let reports = {
                 "action":"Create New group",
@@ -57,8 +72,8 @@ export default {
                 "user": req.user._id
             };
             await Report.create({...reports });
-            await Group.findById(group.id).populate(populateQuery).then((e) => {
-                let index = transformGroupById(e,lang)
+            await Group.findById(group.id).populate(populateQuery).then(async(e) => {
+                let index = await transformGroupById(e,lang)
                 return res.status(201).send({
                     success:true,
                     data:index
@@ -73,8 +88,8 @@ export default {
             let lang = i18n.getLocale(req)
             let { groupId } = req.params;
             await checkExist(groupId, Group, { deleted: false });
-            await Group.findById(groupId).populate(populateQuery).then( e => {
-                let index = transformGroupById(e,lang)
+            await Group.findById(groupId).populate(populateQuery).then(async(e) => {
+                let index = await transformGroupById(e,lang)
                 return res.send({
                     success:true,
                     data:index
@@ -90,9 +105,9 @@ export default {
             let { groupId } = req.params;
             let group = await checkExistThenGet(groupId, Group, { deleted: false });
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
-                let supervisors = [business.owner]
-                supervisors.push(... group.admins)
-                if(!isInArray(supervisors,req.user._id))
+                let admins = [group.owner]
+                admins.push(... group.admins)
+                if(!isInArray(admins,req.user._id))
                     return next(new ApiError(403,  i18n.__('notAllow')));
             }
             const validatedBody = checkValidations(req);
@@ -108,8 +123,8 @@ export default {
                 "user": req.user._id
             };
             await Report.create({...reports });
-            await Group.findById(groupId).populate(populateQuery).then((e) => {
-                let index = transformGroupById(e,lang)
+            await Group.findById(groupId).populate(populateQuery).then(async(e) => {
+                let index = await transformGroupById(e,lang)
                 return res.status(200).send({
                     success:true,
                     data:index
@@ -123,7 +138,7 @@ export default {
     async getAll(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
-            let {search} = req.query;
+            let {search,type,owner} = req.query;
             let query = { deleted: false };
             if(search) {
                 query = {
@@ -138,11 +153,13 @@ export default {
                     ]
                 };
             }
+            if(type) query.type = type;
+            if(owner) query.owner = owner;
             await Group.find(query).populate(populateQuery)
             .then(async (data) => {
                 var newdata = [];
                 await Promise.all(data.map(async(e) =>{
-                    let index = transformGroup(e,lang)
+                    let index = await transformGroup(e,lang)
                     newdata.push(index);
                     
                 }))
@@ -157,7 +174,7 @@ export default {
         try {    
             let lang = i18n.getLocale(req)       
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
-            let {search} = req.query;
+            let {search,type,owner} = req.query;
             let query = { deleted: false };
             if(search) {
                 query = {
@@ -172,13 +189,15 @@ export default {
                     ]
                 };
             }
+            if(type) query.type = type;
+            if(owner) query.owner = owner;
             await Group.find(query).populate(populateQuery)
                 .limit(limit)
                 .skip((page - 1) * limit).sort({ _id: -1 })
                 .then(async (data) => {
                     var newdata = [];
                     await Promise.all(data.map(async(e) =>{
-                        let index = transformGroup(e,lang)
+                        let index = await transformGroup(e,lang)
                         newdata.push(index);
                     }))
                     const count = await Group.countDocuments({deleted: false });
@@ -230,12 +249,12 @@ export default {
         try {
             const validatedBody = checkValidations(req);
             let {groupId} = req.params
-            let group = await checkExistThenGet(groupId, group);
+            let group = await checkExistThenGet(groupId, Group);
             //check permission
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
-                let supervisors = [business.owner]
-                supervisors.push(... group.admins)
-                if(!isInArray(supervisors,req.user._id))
+                let admins = [group.owner]
+                admins.push(... group.admins)
+                if(!isInArray(admins,req.user._id))
                     return next(new ApiError(403,  i18n.__('notAllow')));
             }
             validatedBody.group = groupId;
@@ -270,7 +289,9 @@ export default {
         try {
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
+            let {status} = req.query
             let query = {deleted: false,group:req.params.groupId };
+            if(status) query.status = status;
             await GroupParticipant.find(query).populate(populateQueryParticipant)
                 .sort({ createdAt: -1 })
                 .limit(limit)
@@ -295,9 +316,9 @@ export default {
             let group = await checkExistThenGet(groupParticipant.group, Group);
 
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
-                let supervisors = [business.owner]
-                supervisors.push(... group.admins)
-                if(!isInArray(supervisors,req.user._id))
+                let admins = [group.owner]
+                admins.push(... group.admins)
+                if(!isInArray(admins,req.user._id))
                     return next(new ApiError(403,  i18n.__('notAllow')));
             }
             groupParticipant.status = "ACCEPTED";
@@ -339,9 +360,9 @@ export default {
             let group = await checkExistThenGet(groupParticipant.group, Group);
 
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
-                let supervisors = [business.owner]
-                supervisors.push(... group.admins)
-                if(!isInArray(supervisors,req.user._id))
+                let admins = [group.owner]
+                admins.push(... group.admins)
+                if(!isInArray(admins,req.user._id))
                     return next(new ApiError(403,  i18n.__('notAllow')));
             }
             groupParticipant.status = "REJECTED";

@@ -223,10 +223,10 @@ export default {
     },
     async delete(req, res, next) {
         try {
-            let { fromId } = req.params;
+            let { toId } = req.params;
             let query = {
-                from: fromId,
-                to: req.user._id,
+                from: toId,
+                from: req.user._id,
                 deleted: false
             }
             

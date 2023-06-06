@@ -1,6 +1,8 @@
 import express from 'express';
 import { requireAuth } from '../../services/passport';
 import groupController from '../../controllers/group/group.controller';
+import { multerSaveTo } from '../../services/multer-service';
+import { parseStringToArrayOfObjectsMwv2 } from '../../utils';
 
 const router = express.Router();
 
@@ -8,6 +10,8 @@ router.route('/')
     .get(requireAuth,groupController.getAllPaginated)
     .post(
         requireAuth,
+        multerSaveTo('groups').single('img'),
+        parseStringToArrayOfObjectsMwv2('admins'),
         groupController.validateBody(),
         groupController.create
     )
@@ -18,6 +22,8 @@ router.route('/withoutPagenation/get')
 router.route('/:groupId')
     .put(
         requireAuth,
+        multerSaveTo('groups').single('img'),
+        parseStringToArrayOfObjectsMwv2('admins'),
         groupController.validateBody(true),
         groupController.update
     )
@@ -32,12 +38,12 @@ router.route('/:groupId/addParticipant')
     )
 router.route('/:groupId/getParticipants')
     .get(requireAuth,groupController.getGroupParticipants);
-router.route('/:groupParticipantId/accept')
+router.route('/:groupParticipantId/acceptMember')
     .put(
         requireAuth,
         groupController.accept
     )
-router.route('/:groupParticipantId/reject')
+router.route('/:groupParticipantId/rejectMember')
     .put(
         requireAuth,
         groupController.reject

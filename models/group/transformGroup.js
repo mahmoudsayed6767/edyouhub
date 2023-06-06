@@ -13,9 +13,9 @@ export async function transformGroup(e,lang,myUser,userId) {
     }
     if(e.owner){
         index.owner = {
-            fullname:val.fullname,
-            img:val.img,
-            id:val._id,  
+            fullname:e.owner.fullname,
+            img:e.owner.img,
+            id:e.owner._id,  
         }
     }
     /*admins*/
@@ -42,9 +42,9 @@ export async function transformGroupById(e,lang,myUser,userId) {
     }
     if(e.owner){
         index.owner = {
-            fullname:val.fullname,
-            img:val.img,
-            id:val._id,  
+            fullname:e.owner.fullname,
+            img:e.owner.img,
+            id:e.owner._id,  
         }
     }
     /*admins*/
@@ -67,9 +67,9 @@ export async function transformParticipant(e,lang,myUser,userId) {
     }
     if(e.user){
         index.user = {
-            fullname:val.fullname,
-            img:val.img,
-            id:val._id,  
+            fullname:e.user.fullname,
+            img:e.user.img,
+            id:e.user._id,  
         }
     }
     return index
