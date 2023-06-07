@@ -105,9 +105,7 @@ export default {
             let { groupId } = req.params;
             let group = await checkExistThenGet(groupId, Group, { deleted: false });
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
-                let admins = [group.owner]
-                admins.push(... group.admins)
-                if(!isInArray(admins,req.user._id))
+                if(!isInArray(group.admins,req.user._id))
                     return next(new ApiError(403,  i18n.__('notAllow')));
             }
             const validatedBody = checkValidations(req);
@@ -138,7 +136,7 @@ export default {
     async getAll(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
-            let {search,type,owner} = req.query;
+            let {search,type,owner,userId,myGroups} = req.query;
             let query = { deleted: false };
             if(search) {
                 query = {
@@ -153,13 +151,20 @@ export default {
                     ]
                 };
             }
+            let myUser
+            if(userId) {
+                myUser = await checkExistThenGet(userId,User)
+                if(myGroups == "true"){
+                    query._id = myUser.groups
+                }
+            }
             if(type) query.type = type;
             if(owner) query.owner = owner;
             await Group.find(query).populate(populateQuery)
             .then(async (data) => {
                 var newdata = [];
                 await Promise.all(data.map(async(e) =>{
-                    let index = await transformGroup(e,lang)
+                    let index = await transformGroup(e,lang,myUser,userId)
                     newdata.push(index);
                     
                 }))
@@ -174,7 +179,7 @@ export default {
         try {    
             let lang = i18n.getLocale(req)       
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
-            let {search,type,owner} = req.query;
+            let {search,type,owner,userId,myGroups} = req.query;
             let query = { deleted: false };
             if(search) {
                 query = {
@@ -191,13 +196,20 @@ export default {
             }
             if(type) query.type = type;
             if(owner) query.owner = owner;
+            let myUser
+            if(userId) {
+                myUser = await checkExistThenGet(userId,User)
+                if(myGroups == "true"){
+                    query._id = myUser.groups
+                }
+            }
             await Group.find(query).populate(populateQuery)
                 .limit(limit)
                 .skip((page - 1) * limit).sort({ _id: -1 })
                 .then(async (data) => {
                     var newdata = [];
                     await Promise.all(data.map(async(e) =>{
-                        let index = await transformGroup(e,lang)
+                        let index = await transformGroup(e,lang,myUser,userId)
                         newdata.push(index);
                     }))
                     const count = await Group.countDocuments({deleted: false });
@@ -252,16 +264,18 @@ export default {
             let group = await checkExistThenGet(groupId, Group);
             //check permission
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
-                let admins = [group.owner]
-                admins.push(... group.admins)
-                if(!isInArray(admins,req.user._id))
+                if(!isInArray(group.admins,req.user._id))
                     return next(new ApiError(403,  i18n.__('notAllow')));
             }
             validatedBody.group = groupId;
             //check if user is new or exist
             let user = await checkExistThenGet(validatedBody.user, User);
             validatedBody.user = user.id
-            if(group.type == "PUBLIC") validatedBody.status = 'ACCEPTED'
+            if(group.type == "PUBLIC") {
+                validatedBody.status = 'ACCEPTED'
+                group.usersCount = group.usersCount + 1
+                await group.save()
+            }
             if(!await GroupParticipant.findOne({ user: validatedBody.user, group: groupId,type:{$ne:'REJECTED'},deleted:false})){
                 let arr = user.groups;
                 var found = arr.find((e) => e == groupId); 
@@ -316,12 +330,12 @@ export default {
             let group = await checkExistThenGet(groupParticipant.group, Group);
 
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
-                let admins = [group.owner]
-                admins.push(... group.admins)
-                if(!isInArray(admins,req.user._id))
+                if(!isInArray(group.admins,req.user._id))
                     return next(new ApiError(403,  i18n.__('notAllow')));
             }
             groupParticipant.status = "ACCEPTED";
+            group.usersCount = group.usersCount + 1
+            await group.save()
             await groupParticipant.save();
             sendNotifiAndPushNotifi({
                 targetUser: groupParticipant.user, 
@@ -387,6 +401,47 @@ export default {
                 "action":"reject group join request",
                 "type":"GROUP-REQUEST",
                 "deepId":groupParticipantId,
+                "user": req.user._id
+            };
+            await Report.create({...reports});
+            res.send({
+                success:true
+            });
+        } catch (err) {
+            next(err);
+        }
+    },
+    async removeUserFromGroup(req, res, next) {
+        try {
+            let { groupId,userId } = req.params;
+            let user = await checkExistThenGet(userId, User,{ deleted: false});
+            let group = await checkExistThenGet(groupId, Group);
+            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
+                let admins = [userId]
+                admins.push(... group.admins)
+                if(!isInArray(admins,req.user._id))
+                    return next(new ApiError(403,  i18n.__('notAllow')));
+            }
+            //remove user from participant
+            let groupParticipant = await GroupParticipant.findOne({deleted: false,user:userId})
+            groupParticipant.deleted = true;
+            await groupParticipant.save();
+            //reduce group users count
+            group.usersCount = group.usersCount - 1;
+            await group.save();
+            //remove group from user data
+            let arr = user.groups;
+            for(let i = 0;i<= arr.length;i=i+1){
+                if(arr[i] == groupId){
+                    arr.splice(i, 1);
+                }
+            }
+            user.groups = arr;
+            await user.save();
+            let reports = {
+                "action":"remove user from group",
+                "type":"GROUP",
+                "deepId":groupParticipant,
                 "user": req.user._id
             };
             await Report.create({...reports});

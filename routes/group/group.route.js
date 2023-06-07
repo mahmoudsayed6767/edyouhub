@@ -49,6 +49,10 @@ router.route('/:groupParticipantId/rejectMember')
         groupController.reject
     )
 
-
+router.route('/:groupId/removeUser/:userId')
+    .delete(
+        requireAuth,
+        groupController.removeUserFromGroup
+    )
 
 export default router;
