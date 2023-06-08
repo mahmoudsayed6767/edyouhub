@@ -164,7 +164,7 @@ export default {
                     query._id = myUser.groups
                 }
                 if(otherGroups == "true"){
-                    query._id = {$ne:myUser.groups}
+                    query._id = {$nin:myUser.groups}
                 }
             }
             if(type) query.type = type;
@@ -212,7 +212,7 @@ export default {
                     query._id = myUser.groups
                 }
                 if(otherGroups == "true"){
-                    query._id = {$ne:myUser.groups}
+                    query._id = {$nin:myUser.groups}
                 }
             }
             await Group.find(query).populate(populateQuery)
@@ -287,23 +287,28 @@ export default {
                 validatedBody.status = 'ACCEPTED'
                 group.usersCount = group.usersCount + 1
                 await group.save()
-            }
-            if(!await GroupParticipant.findOne({ user: validatedBody.user, group: groupId,type:{$ne:'REJECTED'},deleted:false})){
-                let arr = user.groups;
-                var found = arr.find((e) => e == groupId); 
-                if(!found){
-                    user.groups.push(groupId);
-                    await user.save();
+                if(!await GroupParticipant.findOne({ user: validatedBody.user, group: groupId,type:{$ne:'REJECTED'},deleted:false})){
+                    let arr = user.groups;
+                    var found = arr.find((e) => e == groupId); 
+                    if(!found){
+                        user.groups.push(groupId);
+                        await user.save();
+                        await GroupParticipant.create({ ...validatedBody });
+                    }
+                }
+            }else{
+                if(!await GroupParticipant.findOne({ user: validatedBody.user, group: groupId,type:{$ne:'REJECTED'},deleted:false})){
                     await GroupParticipant.create({ ...validatedBody });
-                    let reports = {
-                        "action":"user will attend to group",
-                        "type":"GROUP",
-                        "deepId":groupId,
-                        "user": req.user._id
-                    };
-                    await Report.create({...reports});
                 }
             }
+            let reports = {
+                "action":"user will attend to group",
+                "type":"GROUP",
+                "deepId":groupId,
+                "user": req.user._id
+            };
+            await Report.create({...reports});
+            
             res.status(201).send({
                 success:true,
             });
@@ -347,8 +352,16 @@ export default {
             }
             groupParticipant.status = "ACCEPTED";
             group.usersCount = group.usersCount + 1
+
             await group.save()
             await groupParticipant.save();
+            let user = await checkExistThenGet(groupParticipant.user, User);
+            let arr = user.groups;
+            var found = arr.find((e) => e == group._id); 
+            if(!found){
+                user.groups.push(group._id);
+                await user.save();
+            }
             sendNotifiAndPushNotifi({
                 targetUser: groupParticipant.user, 
                 fromUser: req.user, 
