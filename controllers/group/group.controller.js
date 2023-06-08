@@ -58,13 +58,19 @@ export default {
             let image = await handleImg(req);
             validatedBody.img = image;
             validatedBody.owner = req.user._id
+            //add group admins
             if(!validatedBody.admins){
                 validatedBody.admins = [req.user._id]
             }else{
                 validatedBody.admins.push(req.user._id)
             }
-            
+            validatedBody.usersCount = validatedBody.admins.length
             let group = await Group.create({ ...validatedBody});
+            //add owner to group members
+            let user = await checkExistThenGet(req.user._id,User)
+            user.groups.push(group._id);
+            await user.save();
+            await GroupParticipant.create({ user:req.user._id,status:'ACCEPTED',group:group._id });
             let reports = {
                 "action":"Create New group",
                 "type":"GROUP",
@@ -136,7 +142,7 @@ export default {
     async getAll(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
-            let {search,type,owner,userId,myGroups} = req.query;
+            let {search,type,owner,userId,myGroups,otherGroups} = req.query;
             let query = { deleted: false };
             if(search) {
                 query = {
@@ -156,6 +162,9 @@ export default {
                 myUser = await checkExistThenGet(userId,User)
                 if(myGroups == "true"){
                     query._id = myUser.groups
+                }
+                if(otherGroups == "true"){
+                    query._id = {$ne:myUser.groups}
                 }
             }
             if(type) query.type = type;
@@ -179,7 +188,7 @@ export default {
         try {    
             let lang = i18n.getLocale(req)       
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
-            let {search,type,owner,userId,myGroups} = req.query;
+            let {search,type,owner,userId,myGroups,otherGroups} = req.query;
             let query = { deleted: false };
             if(search) {
                 query = {
@@ -201,6 +210,9 @@ export default {
                 myUser = await checkExistThenGet(userId,User)
                 if(myGroups == "true"){
                     query._id = myUser.groups
+                }
+                if(otherGroups == "true"){
+                    query._id = {$ne:myUser.groups}
                 }
             }
             await Group.find(query).populate(populateQuery)
