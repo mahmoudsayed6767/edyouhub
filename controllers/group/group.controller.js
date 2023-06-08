@@ -66,11 +66,16 @@ export default {
             }
             validatedBody.usersCount = validatedBody.admins.length
             let group = await Group.create({ ...validatedBody});
-            //add owner to group members
+            //add admins to group members
             let user = await checkExistThenGet(req.user._id,User)
             user.groups.push(group._id);
             await user.save();
-            await GroupParticipant.create({ user:req.user._id,status:'ACCEPTED',group:group._id });
+            validatedBody.admins.forEach(async(element) => {
+                let admin = await checkExistThenGet(element,User)
+                admin.groups.push(group.id);
+                await admin.save();
+                await GroupParticipant.create({ user:element,status:'ACCEPTED',group:group._id });
+            });
             let reports = {
                 "action":"Create New group",
                 "type":"GROUP",
