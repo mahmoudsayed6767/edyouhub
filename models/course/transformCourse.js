@@ -53,7 +53,7 @@ export async function transformCourse(e,lang,myUser,userId) {
     index.instractors = instractors
     return index;
 }
-export async function transformCourseById(e,lang,myUser,userId) {
+export async function transformCourseById(e,lang,myUser,userId,owner = false) {
     let index = {
         title:lang=="ar"?e.title_ar:e.title_en,
         description:lang=="ar"?e.description_ar:e.description_en,
@@ -154,11 +154,15 @@ export async function transformCourseById(e,lang,myUser,userId) {
         let videos = []
         for (let video of val.videos) {
             let secretKey = e.secretKey + process.env.encryptSecret
-            videos.push({
+            let videoData = {
                 title:lang=="ar"?video.title_ar:video.title_en,
                 duration:video.duration,
-                link:index.isAttendance ==true ?await decryptedData(video.link,secretKey):video.link
-            })
+                link:video.link
+            }
+            if(index.isAttendance == true || owner == true){
+                videoData.link = await decryptedData(video.link,secretKey)
+            }
+            videos.push(videoData)
         }
         tutorial.videos = videos
         tutorials.push(tutorial)

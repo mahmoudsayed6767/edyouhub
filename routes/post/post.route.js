@@ -55,4 +55,8 @@ router.route('/:commentId/removeComment')
     )
 router.route('/:postId/getPostComments')
     .get(requireAuth,postController.getPostComments);
+router.route('/:postId/accept')
+    .get(requireAuth,postController.accept);
+router.route('/:postId/reject')
+    .get(requireAuth,postController.reject);
 export default router;

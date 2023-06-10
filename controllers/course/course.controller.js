@@ -237,15 +237,28 @@ export default {
             let lang = i18n.getLocale(req)
             let { courseId } = req.params;
             let {userId} = req.query
-            await checkExist(courseId, Course, { deleted: false });
+            let course = await checkExistThenGet(courseId, Course, { deleted: false });
+            let business = await checkExistThenGet(course.business,Business,{ deleted: false})
+            let businessManagement = await BusinessManagement.findOne({deleted:false,business:business._id})
             let myUser
+            let owner = false;
             if(userId) {
                 myUser = await checkExistThenGet(userId,User)
+                let supervisors = [business.owner]
+                if(businessManagement){
+                    if(businessManagement.courses){
+                        supervisors.push(...businessManagement.courses.supervisors)
+                    }
+                }
+                if(isInArray(["ADMIN","SUB-ADMIN"],myUser.type) || isInArray(supervisors,myUser._id)){
+                    owner = true;
+                }
             }
+            
             await Course.findById(courseId)
                 .populate(populateQueryById)
                 .then(async(e) => {
-                    let course = await transformCourseById(e,lang,myUser,userId)
+                    let course = await transformCourseById(e,lang,myUser,userId,owner)
                     res.send({
                         success:true,
                         data:course
@@ -412,6 +425,8 @@ export default {
         try {
             let { courseId } = req.params;
             let course = await checkExistThenGet(courseId, Course);
+            let business = await checkExistThenGet(course.business,Business,{ deleted: false})
+
             let businessManagement = await BusinessManagement.findOne({deleted:false,business:course._id})
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
                 let supervisors = [business.owner]

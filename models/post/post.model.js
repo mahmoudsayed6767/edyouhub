@@ -5,7 +5,11 @@ const postSchema=new Schema({
         type: Number,
         required: true
     },
-    
+    status:{
+        type: String,
+        enum:['PENDING', 'ACCEPTED','REJECTED'],
+        default:'ACCEPTED'
+    },
     owner: {
         type: Number,
         ref:'user',
@@ -51,7 +55,6 @@ const postSchema=new Schema({
         }, { _id: false })
         
     ],
-    
     options: {
         type: [Number],
         ref:'option',
@@ -60,6 +63,10 @@ const postSchema=new Schema({
         type: String,
         enum:['VACANCY','ADMISSION','EVENT', 'ANONCEMENT','GENERAL','EXPERICENCE','VOTE','REQUEST-RECOMMENDATION','GIVE-RECOMMENDATION','HELP','DISCUSSION'],
         default:'GENERAL',
+    },
+    group: {
+        type: Number,
+        ref:'group',
     },
     event: {
         type: Number,

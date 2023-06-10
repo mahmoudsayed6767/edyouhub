@@ -14,6 +14,7 @@ import { transformPost,transformPostById } from "../../models/post/transformPost
 import { transformComment } from "../../models/comment/transformComment";
 import Option from "../../models/post/option.model";
 import Event from "../../models/event/event.model";
+import Group from "../../models/group/group.model";
 const populateQuery = [
     {
         path: 'owner', model: 'user',
@@ -40,7 +41,7 @@ const populateQuery = [
     },
     {
         path: 'admission', model: 'admission',
-        populate: { path: 'faculties.faculty', model: 'faculty' },
+        populate: { path: 'faculties.group', model: 'group' },
     },
     {
         path: 'admission', model: 'admission',
@@ -60,8 +61,10 @@ export default {
         try {
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
-            let {owner,userId,type,business,ownerType,event,dataType} = req.query
-            let query = {deleted: false };
+            let {status,owner,userId,type,business,ownerType,event,dataType,group} = req.query
+            let query = {deleted: false,status:'ACCEPTED' };
+            if(group) query.group = group
+            if(status) query.status = status
             if(owner) query.owner = owner;
             if(dataType) query.dataType = dataType;
             if (type) {
@@ -95,8 +98,10 @@ export default {
     },
     async findSelection(req, res, next) {        
         try {
-            let {owner,type,business,ownerType,event,dataType} = req.query
-            let query = {deleted: false };
+            let {status,group,owner,type,business,ownerType,event,dataType} = req.query
+            let query = {deleted: false,status:'ACCEPTED' };
+            if(group) query.group = group
+            if(status) query.status = status
             if(event) query.event = event;
             if(owner) query.owner = owner;
             if(dataType) query.dataType = dataType;
@@ -171,7 +176,10 @@ export default {
                 return true;
             }),
             body('business').optional(),
-            body('ownerType').optional()
+            body('ownerType').optional(),
+            body('group').optional().isNumeric().withMessage((value, { req}) => {
+                return req.__('group.numeric', { value});
+            })
         ];
         return validations;
     },
@@ -180,7 +188,12 @@ export default {
             const validatedBody = checkValidations(req);
             validatedBody.owner = req.user._id;
             if(validatedBody.business) validatedBody.ownerType = 'BUSINESS'
-
+            if(validatedBody.group){
+                let group = await checkExistThenGet(validatedBody.group,Group)
+                if(group.postedType == "BY-REQUEST"){
+                    validatedBody.status == "PENDING"
+                }
+            }
             let createdPost = await Post.create({ ...validatedBody});
             let options = []
             if(validatedBody.theOptions){
@@ -264,9 +277,9 @@ export default {
         try {
             let { postId } = req.params;
             let post = await checkExistThenGet(postId, Post, { deleted: false });
-            if(!isInArray(["ADMIN","SUB-ADMIN","ARTIST"],req.user.type)){
-                //user is not the owner of live
-                if(req.user.type =="ARTIST" && req.user._id != post.owner)
+            if(!isInArray(["ADMIN","SUB-ADMIN","USER"],req.user.type)){
+                //user is not the owner of post
+                if(req.user.type =="USER" && req.user._id != post.owner)
                     return next(new ApiError(403, i18n.__('admin.auth')));
             }
             
@@ -476,6 +489,65 @@ export default {
                     res.send(new ApiResponse(newdata, page, pageCount, limit, count, req));
                 })
         } catch (err) {
+            next(err);
+        }
+    },
+    async accept(req, res, next) {        
+        try {
+            let { postId } = req.params;
+            let post = await checkExistThenGet(postId, Post, { deleted: false });
+            
+            if(!isInArray(["ADMIN","SUB-ADMIN","USER"],req.user.type)){
+                //user is not the owner of post
+                if(post.group){
+                    let group = await checkExistThenGet(post.group, Group, { deleted: false });
+                    if(!isInArray(group.admins,req.user._id))
+                        return next(new ApiError(403, i18n.__('admin.auth')));
+                }
+            }
+            
+            post.status = 'ACCEPTED';
+            await post.save();
+            let reports = {
+                "action":"Accept Post",
+                "type":"POSTS",
+                "deepId":postId,
+                "user": req.user._id
+            };
+            await Report.create({...reports});
+            res.status(200).send({success: true});
+
+        }
+        catch (err) {
+            next(err);
+        }
+    },
+    async reject(req, res, next) {        
+        try {
+            let { postId } = req.params;
+            let post = await checkExistThenGet(postId, Post, { deleted: false });
+            if(!isInArray(["ADMIN","SUB-ADMIN","USER"],req.user.type)){
+                //user is not the owner of post
+                if(post.group){
+                    let group = await checkExistThenGet(post.group, Group, { deleted: false });
+                    if(!isInArray(group.admins,req.user._id))
+                        return next(new ApiError(403, i18n.__('admin.auth')));
+                }
+            }
+            
+            post.status = 'REJECTED';
+            await post.save();
+            let reports = {
+                "action":"Reject Post",
+                "type":"POSTS",
+                "deepId":postId,
+                "user": req.user._id
+            };
+            await Report.create({...reports});
+            res.status(200).send({success: true});
+
+        }
+        catch (err) {
             next(err);
         }
     },
