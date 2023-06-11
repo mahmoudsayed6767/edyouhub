@@ -281,11 +281,7 @@ export default {
             const validatedBody = checkValidations(req);
             let {groupId} = req.params
             let group = await checkExistThenGet(groupId, Group);
-            //check permission
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
-                if(!isInArray(group.admins,req.user._id))
-                    return next(new ApiError(403,  i18n.__('notAllow')));
-            }
+
             validatedBody.group = groupId;
             //check if user is new or exist
             let user = await checkExistThenGet(validatedBody.user, User);
