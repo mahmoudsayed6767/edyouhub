@@ -4,7 +4,6 @@ import User from "../../models/user/user.model";
 import Follow from "../../models/follow/follow.model";
 import ApiError from '../../helpers/ApiError';
 import i18n from "i18n";
-import {convertLang} from "../shared/shared.controller";
 import {transformUser} from "../../models/user/transformUser";
 import Business from "../../models/business/business.model";
 import {transformBusiness} from "../../models/business/transformBusiness";

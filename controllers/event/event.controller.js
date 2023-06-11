@@ -161,13 +161,12 @@ export default {
         try {
             const validatedBody = checkValidations(req);
             if(validatedBody.business){
-                validatedBody.ownerType == "BUSINESS"
+                validatedBody.ownerType = "BUSINESS"
                 let business = await checkExistThenGet(validatedBody.business,Business,{ deleted: false})
                 validatedBody.educationInstitution = business.educationInstitution
             }else{
-                validatedBody.ownerType == "APP"
+                validatedBody.ownerType = "APP"
             }
-            
             validatedLocation(validatedBody.location);
             validatedBody.location = { type: 'Point', coordinates: [+req.body.location[0], +req.body.location[1]] };
             validatedBody.fromDateMillSec = Date.parse(validatedBody.fromDate)
