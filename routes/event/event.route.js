@@ -24,7 +24,16 @@ router.route('/:eventId')
     )
     .get(eventController.getById)
     .delete(requireAuth,eventController.delete);
-
+router.route('/:eventId/attend')
+    .put(
+        requireAuth,
+        eventController.attendEvent
+    )
+router.route('/:eventId/removeAttend')
+    .put(
+        requireAuth,
+        eventController.removeAttend
+    )
 router.route('/:eventId/getEventAttendance')
     .get(requireAuth,eventController.getEventAttendance);
 router.route('/:eventId/follow')

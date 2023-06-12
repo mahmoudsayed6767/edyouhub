@@ -303,6 +303,14 @@ export default {
                 if(!await GroupParticipant.findOne({ user: validatedBody.user, group: groupId,type:{$ne:'REJECTED'},deleted:false})){
                     await GroupParticipant.create({ ...validatedBody });
                 }
+                let arr = user.groupJoinRequests;
+                var found = arr.find((e) => e == groupId); 
+                if(!found){
+                    user.groupJoinRequests.push(groupId);
+                    await user.save();
+                    await GroupParticipant.create({ ...validatedBody });
+                }
+                
             }
             let reports = {
                 "action":"user will attend to group",
@@ -363,8 +371,15 @@ export default {
             var found = arr.find((e) => e == group._id); 
             if(!found){
                 user.groups.push(group._id);
-                await user.save();
             }
+            let arr2 = user.groupJoinRequests;
+            for(let i = 0;i<= arr2.length;i=i+1){
+                if(arr2[i] == group._id){
+                    arr2.splice(i, 1);
+                }
+            }
+            user.groupJoinRequests = arr2;
+            await user.save();
             sendNotifiAndPushNotifi({
                 targetUser: groupParticipant.user, 
                 fromUser: req.user, 
@@ -409,6 +424,15 @@ export default {
             }
             groupParticipant.status = "REJECTED";
             await groupParticipant.save();
+            let user = await checkExistThenGet(groupParticipant.user,User)
+            let arr2 = user.groupJoinRequests;
+            for(let i = 0;i<= arr2.length;i=i+1){
+                if(arr2[i] == group._id){
+                    arr2.splice(i, 1);
+                }
+            }
+            user.groupJoinRequests = arr2;
+            await user.save();
             sendNotifiAndPushNotifi({
                 targetUser: groupParticipant.user, 
                 fromUser: req.user, 
@@ -451,7 +475,7 @@ export default {
                     return next(new ApiError(403,  i18n.__('notAllow')));
             }
             //remove user from participant
-            let groupParticipant = await GroupParticipant.findOne({deleted: false,user:userId})
+            let groupParticipant = await GroupParticipant.findOne({group:groupId,deleted: false,user:userId})
             groupParticipant.deleted = true;
             await groupParticipant.save();
             //reduce group users count
@@ -465,6 +489,14 @@ export default {
                 }
             }
             user.groups = arr;
+            //remove from pending requests
+            let arr2 = user.groupJoinRequests;
+            for(let i = 0;i<= arr2.length;i=i+1){
+                if(arr2[i] == group._id){
+                    arr2.splice(i, 1);
+                }
+            }
+            user.groupJoinRequests = arr2;
             await user.save();
             let reports = {
                 "action":"remove user from group",

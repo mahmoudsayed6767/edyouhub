@@ -10,6 +10,7 @@ export async function transformGroup(e,lang,myUser,userId) {
         usersCount:e.usersCount,
         postedType:e.postedType,
         isParticipant:userId?isInArray(myUser.groups,e._id):false,
+        joinRequest:userId?isInArray(myUser.groupJoinRequests,e._id):false,
         createdAt:e.createdAt,
         id: e._id,                    
     }
@@ -41,6 +42,7 @@ export async function transformGroupById(e,lang,myUser,userId) {
         usersCount:e.usersCount,
         postedType:e.postedType,
         isParticipant:userId?isInArray(myUser.groups,e._id):false,
+        joinRequest:userId?isInArray(myUser.groupJoinRequests,e._id):false,
         createdAt:e.createdAt,
         id: e._id,                    
     }

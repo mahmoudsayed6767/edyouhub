@@ -102,42 +102,6 @@ const userSchema = new Schema({
         type: Boolean,
         default: false
     },
-    favourite: {
-        type:[Number],
-        ref:'offer'
-    },
-    offerCarts:{
-        type:[Number],
-        ref:'offer'
-    },
-    following: {
-        type:[Number],
-        ref:'business'
-    },
-    pendingConnections: {//who i send request to him
-        type:[Number],
-        ref:'user'
-    },
-    connections: {
-        type:[Number],
-        ref:'user'
-    },
-    recievedConnectionsList: {//who is sent request to me
-        type:[Number],
-        ref:'user'
-    },
-    balance: {
-        type: Number,
-        default: 0
-    },
-    usedCoupons: {
-        type:[Number],
-        ref:'coupons'
-    },
-    groups: {
-        type:[Number],
-        ref:'group'
-    },
     cashBack: {
         type: Boolean,
         default: false
@@ -292,10 +256,51 @@ const userSchema = new Schema({
             
         }, { _id: false })
     ],
+    
+    balance: {
+        type: Number,
+        default: 0
+    },
     attendedCourses:[{
         type:Number,
         ref:'courses',
     }],
+    favourite: {
+        type:[Number],
+        ref:'offer'
+    },
+    offerCarts:{
+        type:[Number],
+        ref:'offer'
+    },
+    following: {//business user follow it
+        type:[Number],
+        ref:'business'
+    },
+    pendingConnections: {//who i send request to himمين بعتله
+        type:[Number],
+        ref:'user'
+    },
+    connections: {//who i connect to himمين عندى 
+        type:[Number],
+        ref:'user'
+    },
+    recievedConnectionsList: {//who is sent request to me مين بعتلى
+        type:[Number],
+        ref:'user'
+    },
+    usedCoupons: {
+        type:[Number],
+        ref:'coupons'
+    },
+    groups: {
+        type:[Number],
+        ref:'group'
+    },
+    groupJoinRequests: {
+        type:[Number],
+        ref:'group'
+    },
     package: {
         type: Number,
         ref:'package',

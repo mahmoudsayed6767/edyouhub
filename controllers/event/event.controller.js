@@ -374,6 +374,56 @@ export default {
             next(err);
         }
     },
+    async attendEvent(req, res, next) {         
+        try {
+            let {eventId} = req.params
+            let event = await checkExistThenGet(eventId, Event, { deleted: false });
+            if(event.feesType == "WITH-FEES")
+                return next(new ApiError(422, i18n.__('sorryEventWithFees')));
+            //add client to event attendance
+            let arr = event.attendance;
+            var found = arr.find((e) => e == req.user._id); 
+            if(!found){
+                event.attendance.push(req.user._id);
+                await EventAttendance.create({ user: req.user._id, event: eventId });
+                let reports = {
+                    "action":"user will attend to event",
+                    "type":"EVENT",
+                    "deepId":eventId,
+                    "user": req.user._id
+                };
+                await Report.create({...reports});
+            }
+            await event.save();
+            res.status(200).send({success: true});
+        } catch (error) {
+            next(error)
+        }
+    },
+    async removeAttend(req, res, next) {         
+        try {
+            let {eventId} = req.params
+            let event = await checkExistThenGet(eventId, Event, { deleted: false });
+            let attend = await EventAttendance.findOne({ user: req.user._id, event: eventId });
+            attend.deleted = true;
+            await attend.save()
+            //remove user from event attendance
+            let arr2 = event.attendance;
+            var found2 = arr2.find((e) => e == req.user._id); 
+            if(found2){
+                for(let i = 0;i<= arr2.length;i=i+1){
+                    if(arr2[i] == req.user._id){
+                        arr2.splice(i, 1);
+                    }
+                }
+                event.attendance = arr2;
+            }
+            await event.save();
+            res.status(200).send({success: true});
+        } catch (error) {
+            next(error)
+        }
+    },
     async getEventAttendance(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)

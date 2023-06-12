@@ -312,5 +312,6 @@
 	"connectionRequest.notFound": "connectionRequest.notFound",
 	"user.required": "user.required",
 	"user.numeric": "user.numeric",
-	"user.invalid": "user.invalid"
+	"user.invalid": "user.invalid",
+	"sorryEventWithFees": "sorryEventWithFees"
 }
