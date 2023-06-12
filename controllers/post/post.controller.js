@@ -65,6 +65,7 @@ export default {
             let query = {deleted: false,status:'ACCEPTED' };
             if(group) query.group = group
             if(status) query.status = status
+            if(status == "ALL") query.status = {$nin:['PENDING', 'ACCEPTED','REJECTED']}
             if(owner) query.owner = owner;
             if(dataType) query.dataType = dataType;
             if (type) {

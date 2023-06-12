@@ -407,7 +407,7 @@ export default {
                 let arr = event.interesting;
                 var found = arr.find((e) => e == req.user._id); 
                 if(!found){
-                    event.interesting.push(eventId);
+                    event.interesting.push(req.user._id);
                     await event.save();
                     await FollowEvent.create({ user: req.user._id, event: eventId });
                     let reports = {

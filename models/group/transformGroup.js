@@ -9,7 +9,7 @@ export async function transformGroup(e,lang,myUser,userId) {
         img:e.img,
         usersCount:e.usersCount,
         postedType:e.postedType,
-        isParticipant:userId?isInArray(myUser.groups,userId):false,
+        isParticipant:userId?isInArray(myUser.groups,e._id):false,
         createdAt:e.createdAt,
         id: e._id,                    
     }
@@ -40,7 +40,7 @@ export async function transformGroupById(e,lang,myUser,userId) {
         img:e.img,
         usersCount:e.usersCount,
         postedType:e.postedType,
-        isParticipant:userId?isInArray(myUser.groups,userId):false,
+        isParticipant:userId?isInArray(myUser.groups,e._id):false,
         createdAt:e.createdAt,
         id: e._id,                    
     }
