@@ -401,7 +401,7 @@ export default {
                 "title_ar":' تم قبول الطلب الانضمام الخاص بك',
                 "type":'GROUP-REQUEST'
             }
-            await Notif.create({...notif,resource:req.user,target:groupParticipant.عسثق,groupParticipant:GROUPRequest.id});
+            await Notif.create({...notif,resource:req.user,target:groupParticipant.user,groupParticipant:groupParticipant.id});
             let reports = {
                 "action":"Accept group join request",
                 "type":"GROUP-REQUEST",
@@ -454,7 +454,7 @@ export default {
                 "title_ar":' تم رفض الطلب الانضمام الخاص بك',
                 "type":'GROUP-REQUEST'
             }
-            await Notif.create({...notif,resource:req.user,target:groupParticipant.عسثق,groupParticipant:GROUPRequest.id});
+            await Notif.create({...notif,resource:req.user,target:groupParticipant.user,groupParticipant:groupParticipant.id});
             let reports = {
                 "action":"reject group join request",
                 "type":"GROUP-REQUEST",
