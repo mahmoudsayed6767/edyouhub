@@ -15,6 +15,7 @@ import { transformComment } from "../../models/comment/transformComment";
 import Option from "../../models/post/option.model";
 import Event from "../../models/event/event.model";
 import Group from "../../models/group/group.model";
+
 const populateQuery = [
     {
         path: 'owner', model: 'user',

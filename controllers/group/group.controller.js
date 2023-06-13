@@ -9,7 +9,8 @@ import ApiResponse from "../../helpers/ApiResponse";
 import i18n from "i18n";
 import User from "../../models/user/user.model"
 import ApiError from '../../helpers/ApiError';
-
+import { sendNotifiAndPushNotifi } from "../../services/notification-service";
+import Notif from "../../models/notif/notif.model"
 const populateQuery = [
     { path: 'owner', model: 'user' },
     { path: 'admins', model: 'user' },
