@@ -96,22 +96,7 @@ export default {
             next(error);
         }
     },
-    async getById(req, res, next) {        
-        try {
-            let lang = i18n.getLocale(req)
-            let { groupId } = req.params;
-            await checkExist(groupId, Group, { deleted: false });
-            await Group.findById(groupId).populate(populateQuery).then(async(e) => {
-                let index = await transformGroupById(e,lang)
-                return res.send({
-                    success:true,
-                    data:index
-                });
-            })
-        } catch (error) {
-            next(error);
-        }
-    },
+   
     async update(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
@@ -145,7 +130,27 @@ export default {
             next(error);
         }
     },
-
+    async getById(req, res, next) {        
+        try {
+            let lang = i18n.getLocale(req)
+            let { groupId } = req.params;
+            let {userId,} = req.query;
+            await checkExist(groupId, Group, { deleted: false });
+            let myUser
+            if(userId) {
+                myUser = await checkExistThenGet(userId,User)
+            }
+            await Group.findById(groupId).populate(populateQuery).then(async(e) => {
+                let index = await transformGroupById(e,lang,myUser,userId)
+                return res.send({
+                    success:true,
+                    data:index
+                });
+            })
+        } catch (error) {
+            next(error);
+        }
+    },
     async getAll(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
@@ -164,6 +169,8 @@ export default {
                     ]
                 };
             }
+            if(type) query.type = type;
+            if(owner) query.owner = owner;
             let myUser
             if(userId) {
                 myUser = await checkExistThenGet(userId,User)
@@ -174,8 +181,6 @@ export default {
                     query._id = {$nin:myUser.groups}
                 }
             }
-            if(type) query.type = type;
-            if(owner) query.owner = owner;
             await Group.find(query).populate(populateQuery)
             .then(async (data) => {
                 var newdata = [];

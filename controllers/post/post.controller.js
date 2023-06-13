@@ -335,7 +335,7 @@ export default {
                 let arr = thePost.likedList;
                 var found = arr.find((e) => e == req.user._id); 
                 if(!found){
-                    thePost.likedList.push(postId);
+                    thePost.likedList.push(req.user._id);
                     thePost.likesCount = thePost.likesCount + 1;
                     let like = await Like.create({ user: req.user._id, post: postId });
                     await thePost.save();
