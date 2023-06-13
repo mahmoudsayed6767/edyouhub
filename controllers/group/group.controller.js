@@ -482,7 +482,7 @@ export default {
                     return next(new ApiError(403,  i18n.__('notAllow')));
             }
             //remove user from participant
-            let groupParticipant = await GroupParticipant.findOne({group:groupId,deleted: false,user:userId})
+            let groupParticipant = await GroupParticipant.findOne({group:groupId,user:userId})
             groupParticipant.deleted = true;
             await groupParticipant.save();
             //reduce group users count
