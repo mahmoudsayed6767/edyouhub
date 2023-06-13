@@ -296,7 +296,7 @@ export default {
                 validatedBody.status = 'ACCEPTED'
                 group.usersCount = group.usersCount + 1
                 await group.save()
-                if(!await GroupParticipant.findOne({ user: validatedBody.user, group: groupId,type:{$ne:'REJECTED'},deleted:false})){
+                if(!await GroupParticipant.findOne({ user: validatedBody.user, group: groupId,status:{$ne:'REJECTED'},deleted:false})){
                     let arr = user.groups;
                     var found = arr.find((e) => e == groupId); 
                     if(!found){
@@ -306,7 +306,7 @@ export default {
                     }
                 }
             }else{
-                if(!await GroupParticipant.findOne({ user: validatedBody.user, group: groupId,type:{$ne:'REJECTED'},deleted:false})){
+                if(!await GroupParticipant.findOne({ user: validatedBody.user, group: groupId,status:{$ne:'REJECTED'},deleted:false})){
                     await GroupParticipant.create({ ...validatedBody });
                 }
                 let arr = user.groupJoinRequests;

@@ -63,7 +63,7 @@ export default {
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
             let {status,owner,userId,type,business,ownerType,event,dataType,group} = req.query
-            let query = {deleted: false,status:'ACCEPTED' };
+            let query = {deleted: false,status:'ACCEPTED',group:null };
             if(group) query.group = group
             if(status) query.status = status
             if(status == "ALL") query.status = {$nin:['PENDING', 'ACCEPTED','REJECTED']}
@@ -101,7 +101,7 @@ export default {
     async findSelection(req, res, next) {        
         try {
             let {status,group,owner,type,business,ownerType,event,dataType} = req.query
-            let query = {deleted: false,status:'ACCEPTED' };
+            let query = {deleted: false,status:'ACCEPTED' ,group:null};
             if(group) query.group = group
             if(status) query.status = status
             if(event) query.event = event;
