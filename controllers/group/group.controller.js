@@ -474,8 +474,10 @@ export default {
             let user = await checkExistThenGet(userId, User,{ deleted: false});
             let group = await checkExistThenGet(groupId, Group);
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
-                let admins = [userId]
+                let admins = [parseInt(userId)]
                 admins.push(... group.admins)
+                console.log(admins)
+
                 if(!isInArray(admins,req.user._id))
                     return next(new ApiError(403,  i18n.__('notAllow')));
             }
