@@ -482,9 +482,11 @@ export default {
                     return next(new ApiError(403,  i18n.__('notAllow')));
             }
             //remove user from participant
-            let groupParticipant = await GroupParticipant.findOne({group:groupId,user:userId})
-            groupParticipant.deleted = true;
-            await groupParticipant.save();
+            let groupParticipant = await GroupParticipant.find({group:groupId,user:userId})
+            for (const id of groupParticipant) {
+                id.deleted = true;
+                await id.save();
+            }
             //reduce group users count
             group.usersCount = group.usersCount - 1;
             await group.save();
@@ -508,7 +510,7 @@ export default {
             let reports = {
                 "action":"remove user from group",
                 "type":"GROUP",
-                "deepId":groupParticipant,
+                "deepId":groupParticipant.group,
                 "user": req.user._id
             };
             await Report.create({...reports});
