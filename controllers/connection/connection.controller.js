@@ -238,7 +238,7 @@ export default {
                       ] 
                     },
                     {deleted: false},
-                    {status:'ACCEPTED'}
+                    {status:{$ne:'REJECTED'}}
                 ]
             }
             
