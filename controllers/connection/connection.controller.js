@@ -235,7 +235,7 @@ export default {
                 return next(new ApiError(500, i18n.__('connectionRequest.notFound')));
 
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
-                if(req.user._id != connection.from)
+                if(!isInArray([connection.from,connection.to],req.user._id))
                     return next(new ApiError(403, i18n.__('notAllow')));
             }
             connection.deleted = true;
