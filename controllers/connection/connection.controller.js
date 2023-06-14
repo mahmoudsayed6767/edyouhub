@@ -297,6 +297,7 @@ export default {
             let query = {
                 from: fromId,
                 to: req.user._id,
+                status:'PENDING',
                 deleted: false
             }
             console.log(query);
@@ -374,6 +375,7 @@ export default {
             let query = {
                 from: fromId,
                 to: req.user._id,
+                status:'PENDING',
                 deleted: false
             }
             
