@@ -267,7 +267,7 @@ export default {
             }
             reciever.recievedConnectionsList = arr3;
 
-            let arr4 = to.connections;
+            let arr4 = reciever.connections;
             for(let i = 0;i<= arr4.length;i=i+1){
                 if(arr4[i] == connection.from){
                     arr4.splice(i, 1);
@@ -417,7 +417,7 @@ export default {
             }
             reciever.recievedConnectionsList = arr3;
 
-            let arr4 = to.connections;
+            let arr4 = reciever.connections;
             for(let i = 0;i<= arr4.length;i=i+1){
                 if(arr4[i] == connection.from){
                     arr4.splice(i, 1);
