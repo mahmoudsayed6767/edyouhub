@@ -4,6 +4,7 @@ export async function transformPost(e,lang,myUser,userId) {
     let index = {
         content: e.content,
         group:e.group,
+        status:e.status,
         ownerType: e.ownerType,
         files:e.files,
         likesCount:e.likesCount,
@@ -165,6 +166,7 @@ export async function transformPostById(e,lang,myUser,userId) {
     let index = {
         content: e.content,
         group:e.group,
+        status:e.status,
         ownerType: e.ownerType,
         files:e.files,
         likesCount:e.likesCount,

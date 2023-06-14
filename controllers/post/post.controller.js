@@ -193,7 +193,7 @@ export default {
             if(validatedBody.group){
                 let group = await checkExistThenGet(validatedBody.group,Group)
                 if(group.postedType == "BY-REQUEST"){
-                    validatedBody.status == "PENDING"
+                    validatedBody.status = "PENDING"
                 }
             }
             let createdPost = await Post.create({ ...validatedBody});

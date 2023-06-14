@@ -239,35 +239,45 @@ export default {
                     return next(new ApiError(403, i18n.__('notAllow')));
             }
             connection.deleted = true;
-            await connection.save();
-            let user =  await checkExistThenGet(req.user._id,User)
-            //remove from  connection list
-            let arr1 = user.connections;
-            for(let i = 0;i<= arr1.length;i=i+1){
-                if(arr1[i] == connection.to){
-                    arr1.splice(i, 1);
-                }
-            }
-            user.connections = arr1;
-            //remove from pending connections list
-            let arr = user.pendingConnections;
+            let sender =  await checkExistThenGet(connection.from,User)
+            //remove receiver id from  pending connections list of sender
+            let arr = sender.pendingConnections;
             for(let i = 0;i<= arr.length;i=i+1){
                 if(arr[i] == connection.to){
                     arr.splice(i, 1);
                 }
             }
-            user.pendingConnections = arr;
-            await user.save();
-            let to = await checkExistThenGet(connection.to,User)
-            //remove from pending connections list
-            let arr2 = to.recievedConnectionsList;
+            sender.pendingConnections = arr;
+            let arr2 = sender.connections;
             for(let i = 0;i<= arr2.length;i=i+1){
-                if(arr2[i] == req.user._id){
+                if(arr2[i] == connection.to){
                     arr2.splice(i, 1);
                 }
             }
-            to.recievedConnectionsList = arr;
-            await to.save();
+            sender.connections = arr2;
+            await sender.save();
+            
+            let reciever = await checkExistThenGet(connection.to,User)
+            //remove sender id from pending connections list of sender
+            let arr3 = to.recievedConnectionsList;
+            for(let i = 0;i<= arr3.length;i=i+1){
+                if(arr3[i] == connection.from){
+                    arr3.splice(i, 1);
+                }
+            }
+            reciever.recievedConnectionsList = arr3;
+
+            let arr4 = to.connections;
+            for(let i = 0;i<= arr4.length;i=i+1){
+                if(arr4[i] == connection.from){
+                    arr4.splice(i, 1);
+                }
+            }
+            reciever.connections = arr4;
+
+            await reciever.save();
+            
+            await connection.save();
             let reports = {
                 "action":"Delete connection",
                 "type":"CONNECTION",
@@ -301,30 +311,32 @@ export default {
                     return next(new ApiError(403, i18n.__('notAllow')));
             }
             connection.status = 'ACCEPTED';
-            let user =  await checkExistThenGet(req.user._id,User)
+            let sender =  await checkExistThenGet(connection.from,User)
             //add to connection list
-            var found = user.connections.find(e => e == connection.to)
-            if(!found) user.connections.push(connection.to)
-            //remove from pending connections list
-            let arr = user.pendingConnections;
+            var found = sender.connections.find(e => e == connection.to)
+            if(!found) sender.connections.push(connection.to)
+            //remove receiver id from  pending connections list of sender
+            let arr = sender.pendingConnections;
             for(let i = 0;i<= arr.length;i=i+1){
                 if(arr[i] == connection.to){
                     arr.splice(i, 1);
                 }
             }
-            user.pendingConnections = arr;
-            await user.save();
+            sender.pendingConnections = arr;
+            await sender.save();
             
-            let to = await checkExistThenGet(connection.to,User)
-            //remove from pending connections list
+            let reciever = await checkExistThenGet(connection.to,User)
+            //remove sender id from pending connections list of sender
             let arr2 = to.recievedConnectionsList;
             for(let i = 0;i<= arr2.length;i=i+1){
-                if(arr2[i] == req.user._id){
+                if(arr2[i] == connection.from){
                     arr2.splice(i, 1);
                 }
             }
-            to.recievedConnectionsList = arr;
-            await to.save();
+            var found2 = reciever.connections.find(e => e == connection.from)
+            if(!found2) reciever.connections.push(connection.from)
+            reciever.recievedConnectionsList = arr;
+            await reciever.save();
             await connection.save();
             sendNotifiAndPushNotifi({
                 targetUser: connection.from, 
@@ -377,27 +389,44 @@ export default {
             }
             connection.status = 'REJECTED';
             
-            let user =  await checkExistThenGet(req.user._id,User)
-            //remove from pending connections list
-            let arr = user.pendingConnections;
+            let sender =  await checkExistThenGet(connection.from,User)
+            //remove receiver id from  pending connections list of sender
+            let arr = sender.pendingConnections;
             for(let i = 0;i<= arr.length;i=i+1){
                 if(arr[i] == connection.to){
                     arr.splice(i, 1);
                 }
             }
-            user.pendingConnections = arr;
-            await user.save();
-            
-            let to = await checkExistThenGet(connection.to,User)
-            //remove from pending connections list
-            let arr2 = to.recievedConnectionsList;
+            sender.pendingConnections = arr;
+            let arr2 = sender.connections;
             for(let i = 0;i<= arr2.length;i=i+1){
-                if(arr2[i] == req.user._id){
+                if(arr2[i] == connection.to){
                     arr2.splice(i, 1);
                 }
             }
-            to.recievedConnectionsList = arr;
-            await to.save();
+            sender.connections = arr2;
+            await sender.save();
+            
+            let reciever = await checkExistThenGet(connection.to,User)
+            //remove sender id from pending connections list of sender
+            let arr3 = to.recievedConnectionsList;
+            for(let i = 0;i<= arr3.length;i=i+1){
+                if(arr3[i] == connection.from){
+                    arr3.splice(i, 1);
+                }
+            }
+            reciever.recievedConnectionsList = arr3;
+
+            let arr4 = to.connections;
+            for(let i = 0;i<= arr4.length;i=i+1){
+                if(arr4[i] == connection.from){
+                    arr4.splice(i, 1);
+                }
+            }
+            reciever.connections = arr4;
+
+            await reciever.save();
+            
             await connection.save();
             sendNotifiAndPushNotifi({
                 targetUser: connection.from, 
