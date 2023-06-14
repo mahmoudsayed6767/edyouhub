@@ -259,7 +259,7 @@ export default {
             
             let reciever = await checkExistThenGet(connection.to,User)
             //remove sender id from pending connections list of sender
-            let arr3 = to.recievedConnectionsList;
+            let arr3 = reciever.recievedConnectionsList;
             for(let i = 0;i<= arr3.length;i=i+1){
                 if(arr3[i] == connection.from){
                     arr3.splice(i, 1);
@@ -327,7 +327,7 @@ export default {
             
             let reciever = await checkExistThenGet(connection.to,User)
             //remove sender id from pending connections list of sender
-            let arr2 = to.recievedConnectionsList;
+            let arr2 = reciever.recievedConnectionsList;
             for(let i = 0;i<= arr2.length;i=i+1){
                 if(arr2[i] == connection.from){
                     arr2.splice(i, 1);
@@ -409,7 +409,7 @@ export default {
             
             let reciever = await checkExistThenGet(connection.to,User)
             //remove sender id from pending connections list of sender
-            let arr3 = to.recievedConnectionsList;
+            let arr3 = reciever.recievedConnectionsList;
             for(let i = 0;i<= arr3.length;i=i+1){
                 if(arr3[i] == connection.from){
                     arr3.splice(i, 1);
