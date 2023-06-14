@@ -225,9 +225,21 @@ export default {
         try {
             let { toId } = req.params;
             let query = {
-                from: toId,
-                from: req.user._id,
-                deleted: false
+                $and: [
+                    { $or: [
+                        {$and: [
+                            {to: toId}, 
+                            {from: req.user._id}, 
+                        ]},
+                        {$and: [
+                            {to: req.user._id}, 
+                            {from: toId}, 
+                        ]},
+                      ] 
+                    },
+                    {deleted: false},
+                    {status:'ACCEPTED'}
+                ]
             }
             
             let connection = await Connection.findOne(query);
