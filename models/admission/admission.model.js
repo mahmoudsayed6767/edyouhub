@@ -86,6 +86,10 @@ const admissionSchema = new Schema({
         type:Boolean,
         default:false
     },
+    allFaculties:{
+        type:Boolean,
+        default:false
+    },
     deleted:{
         type:Boolean,
         default:false

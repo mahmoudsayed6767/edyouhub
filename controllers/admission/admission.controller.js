@@ -100,6 +100,7 @@ export default {
                 }
                 return true;
             }),
+            body('allFaculties').optional(),
             
         ];
         return validations;

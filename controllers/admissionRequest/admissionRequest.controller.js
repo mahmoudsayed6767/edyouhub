@@ -160,6 +160,8 @@ export default {
             validatedBody.business = admission.business
             validatedBody.owner = req.user._id
             let admissionRequest = await AdmissionRequest.create({ ...validatedBody });
+            admission.applications = admissionRequest.applications + 1;
+            await admission.save()
             let reports = {
                 "action":"Create New admissionRequest",
                 "type":"ADMISSION-REQUEST",
@@ -364,6 +366,7 @@ export default {
         try {
             let { admissionRequestId } = req.params;
             let admissionRequest = await checkExistThenGet(admissionRequestId, AdmissionRequest);
+            let admission = await checkExistThenGet(admissionRequest.admission,Admission,{ deleted: false})
             let business = await checkExistThenGet(admissionRequest.business,Business);
             let businessManagement = await BusinessManagement.findOne({deleted:false,business:business._id})
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
@@ -377,6 +380,8 @@ export default {
             admissionRequest.status = "ACCEPTED";
             admissionRequest.interviewDate = req.body.interviewDate
             await admissionRequest.save();
+            admission.acceptance = admission.acceptance + 1
+            await admission.save();
             sendNotifiAndPushNotifi({
                 targetUser: admissionRequest.owner, 
                 fromUser: req.user, 

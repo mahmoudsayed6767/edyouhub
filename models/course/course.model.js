@@ -37,7 +37,7 @@ const courseSchema=new Schema({
     },
     sessionsNo: {
         type: Number,
-        required: true
+        default:0
     },
     acceptanceNo:{
         type: Number,
@@ -72,7 +72,7 @@ const courseSchema=new Schema({
     },
     instractors: {
         type: [Number],
-        ref:'business',
+        ref:'user',
         required: true
     },
     dailyTimes: [
@@ -95,23 +95,23 @@ const courseSchema=new Schema({
     
     fromDate: {
         type: Date,
-        required: true
+        //required: true
     },
     toDate: {
         type: Date,
-        required: true
+        //required: true
     },
     toDateMillSec: {
         type: Number,
-        required: true
+        //required: true
     },
     maxApplications: {
         type: Number,
-        required: true
+        default:0
     },
     maxAcceptance: {
         type: Number,
-        required: true
+        default:0
     },
     feesType:{
         type: String,
@@ -130,6 +130,11 @@ const courseSchema=new Schema({
     },
     oldPrice:{
         type:Number,
+    },
+    
+    discount:{
+        type:Number,
+        default:0
     },
     totalDuration :{
         type:Number,
@@ -164,8 +169,15 @@ const courseSchema=new Schema({
         type:Boolean,
         default:false
     },
+    certificateName:{
+        type: String,
+    },
     secretKey: {
         type: String,
+    },
+    discount:{
+        type:Boolean,
+        default:false
     },
     deleted:{
         type:Boolean,

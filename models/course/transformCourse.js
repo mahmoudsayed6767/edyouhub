@@ -26,6 +26,12 @@ export async function transformCourse(e,lang,myUser,userId) {
         isAttendance:userId?isInArray(myUser.attendedCourses,e._id):false,
         createdAt:e.createdAt,
     }
+    if(e.discount){
+        let price = e.cashPrice;
+        if(e.paymentMethod == "INSTALLMENT") price = e.installmentPrice;
+        let discount = (e.discount * price) / 100
+        index.newPrice = e.cashPrice - discount
+    }
     if(e.business){
         index.business = {
             name:lang=="ar"?e.business.name_ar:e.business.name_en,
@@ -45,7 +51,7 @@ export async function transformCourse(e,lang,myUser,userId) {
     let instractors=[]
     for (let val of e.instractors) {
         instractors.push({
-            name:lang=="ar"?e.business.name_ar:e.business.name_en,
+            fullname: val.fullname,
             img:val.img,
             id:val._id,                         
         })
@@ -77,11 +83,18 @@ export async function transformCourseById(e,lang,myUser,userId,owner = false) {
         sessionsNo:e.sessionsNo,
         acceptanceNo:e.acceptanceNo,
         hasCertificate:e.hasCertificate,
+        certificateName:e.certificateName,
         type:e.type,
         oldPrice:e.oldPrice,
         totalDuration:e.totalDuration,
         isAttendance:userId?isInArray(myUser.attendedCourses,e._id):false,
         createdAt:e.createdAt,
+    }
+    if(e.discount){
+        let price = e.cashPrice;
+        if(e.paymentMethod == "INSTALLMENT") price = e.installmentPrice;
+        let discount = (e.discount * price) / 100
+        index.newPrice = e.cashPrice - discount
     }
     if(e.business){
         index.business = {
@@ -138,7 +151,7 @@ export async function transformCourseById(e,lang,myUser,userId,owner = false) {
     let instractors=[]
     for (let val of e.instractors) {
         instractors.push({
-            name:lang=="ar"?e.business.name_ar:e.business.name_en,
+            fullname: val.fullname,
             img:val.img,
             id:val._id,                         
         })

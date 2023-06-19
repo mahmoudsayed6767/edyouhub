@@ -25,12 +25,12 @@ import bcrypt from 'bcryptjs';
 const populateQuery = [
     { path: 'business', model: 'business' },
     { path: 'specializations', model: 'specialization'},
-    { path: 'instractors', model: 'business'},
+    { path: 'instractors', model: 'user'},
 ];
 const populateQueryById = [
     { path: 'business', model: 'business' },
     { path: 'specializations', model: 'specialization'},
-    { path: 'instractors', model: 'business'},
+    { path: 'instractors', model: 'user'},
     { path: 'tutorials', model: 'courseTutorial'},
     {
         path: 'branches', model: 'branch',
@@ -61,15 +61,9 @@ export default {
             body('description_ar').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('description_ar.required', { value});
             }),
-            body('sessionsNo').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('sessionsNo.required', { value});
-            }),
-            body('maxApplications').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('maxApplications.required', { value});
-            }),
-            body('maxAcceptance').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('maxAcceptance.required', { value});
-            }),
+            body('sessionsNo').optional(),
+            body('maxApplications').optional(),
+            body('maxAcceptance').optional(),
             body('type').optional().isIn(['ONLINE','ON-SITE']).withMessage((value, { req}) => {
                 return req.__('type.invalid', { value});
             }),
@@ -90,21 +84,17 @@ export default {
             })
             .custom(async (instractors, { req }) => {
                 for (let value of instractors) {
-                    if (!await Business.findOne({_id:value,deleted:false}))
+                    if (!await User.findOne({_id:value,deleted:false}))
                         throw new Error(req.__('instractor.invalid'));
                     else
                         return true;
                 }
                 return true;
             }),
-            body('fromDate').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('fromDate.required', { value});
-            }).isISO8601().withMessage((value, { req}) => {
+            body('fromDate').optional().isISO8601().withMessage((value, { req}) => {
                 return req.__('invalid.date', { value});
             }),
-            body('toDate').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('toDate.required', { value});
-            }).isISO8601().withMessage((value, { req}) => {
+            body('toDate').optional().isISO8601().withMessage((value, { req}) => {
                 return req.__('invalid.date', { value});
             }),
             body('business').not().isEmpty().withMessage((value, { req}) => {
@@ -112,9 +102,7 @@ export default {
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('business.numeric', { value});
             }),
-            body('branches').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('branches.required', { value});
-            })
+            body('branches').optional()
             .custom(async (branches, { req }) => {
                 for (let value of branches) {
                     if (!await Branch.findOne({_id:value,deleted:false}))
@@ -180,8 +168,10 @@ export default {
             }),
             body('imgs').optional(),
             body('hasCertificate').optional(),
+            body('certificateName').optional(),
             body('introVideo').optional(),
-            body('ownerType').optional()
+            body('ownerType').optional(),
+            body('discount').optional()
             
         ];
         return validations;
@@ -200,7 +190,16 @@ export default {
                 if(!isInArray(supervisors,req.user._id))
                     return next(new ApiError(403,  i18n.__('notAllow')));
             }
-            validatedBody.toDateMillSec = Date.parse(validatedBody.toDate)
+            if(validatedBody.type == "ON-SITE"){
+                if(!validatedBody.fromDate)
+                    return next(new ApiError(422, i18n.__('fromDate.required')));
+                if(!validatedBody.toDate)
+                    return next(new ApiError(422, i18n.__('toDate.required')));
+                if(!validatedBody.branches)
+                    return next(new ApiError(422, i18n.__('branches.required')));
+                validatedBody.toDateMillSec = Date.parse(validatedBody.toDate)
+
+            }
             if (validatedBody.feesType == 'WITH-FEES'){
                 if(!validatedBody.paymentMethod){
                     return next(new ApiError(422, i18n.__('paymentMethod.required')));
