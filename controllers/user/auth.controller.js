@@ -190,9 +190,7 @@ export default {
                 else
                     return true;
             }),
-            body('city').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('city.required', { value});
-            }).isNumeric().withMessage((value, { req}) => {
+            body('city').optional().isNumeric().withMessage((value, { req}) => {
                 return req.__('city.numeric', { value});
             }).custom(async (value, { req }) => {
                 if (!await City.findOne({_id:value,deleted:false}))
@@ -200,9 +198,7 @@ export default {
                 else
                     return true;
             }),
-            body('area').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('area.required', { value});
-            }).isNumeric().withMessage((value, { req}) => {
+            body('area').optional().isNumeric().withMessage((value, { req}) => {
                 return req.__('area.numeric', { value});
             }).custom(async (value, { req }) => {
                 if (!await Area.findOne({_id:value,deleted:false}))

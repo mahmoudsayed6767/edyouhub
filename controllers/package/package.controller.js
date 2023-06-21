@@ -15,7 +15,10 @@ export default {
         try {
             let lang = i18n.getLocale(req) 
             let page = +req.query.page || 1, limit = +req.query.limit || 20 ;
+            let {type} = req.query
+            
             let query = {deleted: false };
+            if(type) query.type = type
             await Package.find(query)
                 .sort({ _id: -1 })
                 .limit(limit)
@@ -41,7 +44,10 @@ export default {
     async findAllWithoutPagenation(req, res, next) {
         try {
             let lang = i18n.getLocale(req) 
+            let {type} = req.query
+            
             let query = {deleted: false };
+            if(type) query.type = type
             await Package.find(query)
                 .sort({ _id: -1 })
                 .then(async (data) => {
