@@ -15,6 +15,7 @@ import { transformComment } from "../../models/comment/transformComment";
 import Option from "../../models/post/option.model";
 import Event from "../../models/event/event.model";
 import Group from "../../models/group/group.model";
+import Activity from "../../models/user/activity.model";
 
 const populateQuery = [
     {
@@ -250,7 +251,7 @@ export default {
             }
             createdPost.options = options
             await createdPost.save();
-
+            await Activity.create({user:req.user._id,action:'CREATE-POST',post:createdPost._id});
             let reports = {
                 "action":"Add Post",
                 "type":"POSTS",
@@ -305,6 +306,8 @@ export default {
             let updatedPost = await Post.findByIdAndUpdate(postId, {
                 ...validatedBody,
             }, { new: true });
+            await Activity.create({user:req.user._id,action:'UPDATE-POST',post:postId});
+
             let reports = {
                 "action":"Update Post",
                 "type":"POSTS",
@@ -330,6 +333,8 @@ export default {
             
             post.deleted = true;
             await post.save();
+            await Activity.create({user:req.user._id,action:'REMOVE-POST',post:postId});
+
             let reports = {
                 "action":"Delete Post",
                 "type":"POSTS",
@@ -356,6 +361,8 @@ export default {
                 theOption.chosenCount = theOption.chosenCount + 1;
                 theOption.chosenUsers.push(req.user._id);
                 await theOption.save();
+                await Activity.create({user:req.user._id,action:'ANSWER-POST',post:theOption.post});
+
                 let reports = {
                     "action":"Answer On Post",
                     "type":"ANSWER",
@@ -383,6 +390,8 @@ export default {
                     thePost.likesCount = thePost.likesCount + 1;
                     let like = await Like.create({ user: req.user._id, post: postId });
                     await thePost.save();
+                    await Activity.create({user:req.user._id,action:'ADD-LIKE',post:postId});
+
                     let reports = {
                         "action":"Add Like",
                         "type":"LIKES",
@@ -425,6 +434,8 @@ export default {
             /*reduce the likes count */
             thePost.likesCount = thePost.likesCount - 1;
             await thePost.save();
+            await Activity.create({user:req.user._id,action:'REMOVE-LIKE',post:postId});
+
             let reports = {
                 "action":"Remove Like",
                 "type":"LIKES",
@@ -480,6 +491,8 @@ export default {
             thePost.commentsCount = thePost.commentsCount + 1;
             await thePost.save();
             let createdComment = await Comment.create({ ...validatedBody});
+            await Activity.create({user:req.user._id,action:'ADD-COMMENT',post:postId});
+
             let reports = {
                 "action":"Add Comment",
                 "type":"COMMENTS",
@@ -503,6 +516,8 @@ export default {
             let thePost = await checkExistThenGet(comment.post, Post);
             thePost.commentsCount = thePost.commentsCount - 1;
             await thePost.save();
+            await Activity.create({user:req.user._id,action:'REMOVE-COMMENT',post:comment.post});
+
             let reports = {
                 "action":"Remove Comment",
                 "type":"COMMENTS",

@@ -32,6 +32,15 @@ const PackageSchema=new Schema({
         type: Number,
         required: true,
     },
+    discount: {
+        type: Number,
+        default:0
+    },
+    oldCost: {
+        type: Number,
+        default:0,
+        required: true,
+    },
     badgeType:{
         type:String,
         enum:['GOLD','NORMAL','VERIFIED'],

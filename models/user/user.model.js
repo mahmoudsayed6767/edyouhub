@@ -202,9 +202,18 @@ const userSchema = new Schema({
     ],
     //work experience
     job:{
+        
         workType:{
             type: String, 
             enum: ['EDUCATION','OTHER'],
+            default:'OTHER'
+        },
+        educationField:{
+            type: String, 
+            enum: ['TEACHING','NON-TEACHING'],
+        },
+        subject:{
+            type: String, 
         },
         jobTitle:{
             type: String,
@@ -225,19 +234,6 @@ const userSchema = new Schema({
     },
     workExperiences: [
         new Schema({
-            workType:{
-                type: String, 
-                enum: ['EDUCATION','OTHER'],
-                default:'OTHER'
-            },
-            educationField:{
-                type: String, 
-                enum: ['TEACHING','NON-TEACHING'],
-            },
-            subject:{
-                type: String, 
-                
-            },
             jobTitle:{
                 type: String, 
                 required: true,

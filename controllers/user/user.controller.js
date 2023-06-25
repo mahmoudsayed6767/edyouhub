@@ -20,7 +20,8 @@ import {transformAddress} from "../../models/address/transformAddress"
 import Fund from "../../models/fund/fund.model";
 import HigherEducation from "../../models/higherEducation/higherEducation.model"
 import EducationSystem from "../../models/education system/education system.model"
-
+import Activity from "../../models/user/activity.model";
+import {transformActivity} from "../../models/user/transformActivity"
 const populateQuery = [
     { path: 'package', model: 'package' },
 ];
@@ -39,6 +40,13 @@ const populateQueryById = [
 const populateQuery2 = [
     { path: 'city', model: 'city' },
     { path: 'area', model: 'area' },    
+];
+const populateActivityQuery = [
+    {
+        path: 'user', model: 'user',
+        populate: { path: 'package', model: 'package' },
+    },
+    { path: 'post', model: 'post' },
 ];
 
 export default {
@@ -526,8 +534,14 @@ export default {
             body('job.workType').optional().isIn(['EDUCATION','OTHER']).withMessage((value, { req}) => {
                 return req.__('wrong.workType', { value});
             }),
+            body('job.educationField').optional().isIn(['TEACHING','NON-TEACHING']).withMessage((value, { req}) => {
+                return req.__('wrong.workType', { value});
+            }),
+            body('job.subject').optional(),
             body('job.organization').optional(),
             body('job.jobTitle').optional(),
+            
+            
             body('experiencesType').optional().isIn(['EDUCATION','OTHER']).withMessage((value, { req}) => {
                 return req.__('wrong.experiencesType', { value});
             }),
@@ -536,13 +550,6 @@ export default {
             body('workExperiences').optional()
             .custom(async (workExperiences, { req }) => {
                 for (let val of workExperiences) {
-                    body('workType').optional().isIn(['EDUCATION','OTHER']).withMessage((value, { req}) => {
-                        return req.__('wrong.workType', { value});
-                    }),
-                    body('educationField').optional().isIn(['TEACHING','NON-TEACHING']).withMessage((value, { req}) => {
-                        return req.__('wrong.workType', { value});
-                    }),
-                    body('subject').optional(),
                     body('organization').not().isEmpty().withMessage((value) => {
                         return req.__('organization.required', { value});
                     }),
@@ -689,6 +696,32 @@ export default {
                     var newdata = [];
                     await Promise.all(data.map(async(e) =>{
                         let index = await transformAddress(e,lang)
+                        newdata.push(index);
+                    }))
+                    const count = await Address.countDocuments(query);
+                    const pageCount = Math.ceil(count / limit);
+                    res.send(new ApiResponse(newdata, page, pageCount, limit, count, req));
+                })
+
+
+        } catch (err) {
+            next(err);
+        }
+    },
+    async getActivities(req, res, next){        
+        try {
+            let lang =i18n.getLocale(req)
+            let page = +req.query.page || 1, limit = +req.query.limit || 20;
+            let userId  = req.user._id;
+            let query = {deleted: false,user:userId};
+ 
+            await Activity.find(query).populate(populateActivityQuery)
+                .sort({createdAt: -1})
+                .limit(limit)
+                .skip((page - 1) * limit).then(async (data) => {
+                    var newdata = [];
+                    await Promise.all(data.map(async(e) =>{
+                        let index = await transformActivity(e,lang)
                         newdata.push(index);
                     }))
                     const count = await Address.countDocuments(query);

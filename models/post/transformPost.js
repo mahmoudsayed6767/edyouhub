@@ -11,6 +11,7 @@ export async function transformPost(e,lang,myUser,userId) {
         type:e.type,
         commentsCount:e.commentsCount,
         dataType:e.dataType,
+        viewPlaceType:e.viewPlaceType,
         isLike:userId?isInArray(e.likedList,userId):false,
         id:e._id,
         createdAt: e.createdAt
@@ -180,6 +181,7 @@ export async function transformPostById(e,lang,myUser,userId) {
         type:e.type,
         commentsCount:e.commentsCount,
         dataType:e.dataType,
+        viewPlaceType:e.viewPlaceType,
         isLike:userId?isInArray(e.likedList,userId):false,
         id:e._id,
         createdAt: e.createdAt

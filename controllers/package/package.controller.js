@@ -91,6 +91,12 @@ export default {
             }).isNumeric().withMessage((value) => {
                 return req.__('cost.numeric', { value});
             }),
+            body('oldCost').optional().isNumeric().withMessage((value) => {
+                return req.__('oldCost.numeric', { value});
+            }),
+            body('discount').optional().isNumeric().withMessage((value) => {
+                return req.__('discount.numeric', { value});
+            }),
 
             body('type').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('type.required', { value});
@@ -143,6 +149,7 @@ export default {
     async create(req, res, next) {        
         try {
             const validatedBody = checkValidations(req);
+            if(!validatedBody.oldCost) validatedBody.oldCost = validatedBody.cost
             let createdpackage = await Package.create({ ...validatedBody});
 
             let reports = {
@@ -186,6 +193,8 @@ export default {
             await checkExist(packageId, Package, { deleted: false });
 
             const validatedBody = checkValidations(req);
+            if(!validatedBody.oldCost) validatedBody.oldCost = validatedBody.cost
+
             let updatedpackage = await Package.findByIdAndUpdate(packageId, {
                 ...validatedBody,
             }, { new: true });

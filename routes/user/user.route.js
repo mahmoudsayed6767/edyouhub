@@ -118,4 +118,9 @@ router.route('/getAddresses')
         requireAuth,
         UserController.getAddress
     );
+router.route('/getActivities')
+    .get(
+        requireAuth,
+        UserController.getActivities
+    );
 export default router;
