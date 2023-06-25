@@ -254,7 +254,6 @@ export default {
         let validations = [
             body('fees').optional()
             .custom(async (fees, { req }) => {
-                
                 for (let feesId of fees) {
                     body('educationInstitution').not().isEmpty().withMessage((value, { req}) => {
                         return req.__('educationInstitution.required', { value});
@@ -385,11 +384,11 @@ export default {
             next(err);
         }
     },
+    //add new fees to exist students
     validateAddManyExistStudents(isUpdate = false) {
         let validations = [
             body('fees').optional()
             .custom(async (fees, { req }) => {
-                
                 for (let feesId of fees) {
                     await checkExist(feesId.educationInstitution,EducationInstitution, { deleted: false })
                     await checkExist(feesId.student, Student,{ deleted: false})

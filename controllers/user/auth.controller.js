@@ -251,9 +251,6 @@ export default {
             }
             theUser.verifycode = code
             await theUser.save();
-            let realPhone = "+2"+ validatedBody.phone;
-
-            sendSms(realPhone,message)
             let reports = {
                 "action":"User sign Up ",
                 "type":"USERS",

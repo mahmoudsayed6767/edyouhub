@@ -5,6 +5,11 @@ const postSchema=new Schema({
         type: Number,
         required: true
     },
+    viewPlaceType:{
+        type: String,
+        enum:['WALL', 'BOARD'],
+        default:'WALL'
+    },
     status:{
         type: String,
         enum:['PENDING', 'ACCEPTED','REJECTED'],

@@ -62,7 +62,7 @@ export default {
         try {
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
-            let {status,owner,userId,type,business,ownerType,event,dataType,group} = req.query
+            let {viewPlaceType,status,owner,userId,type,business,ownerType,event,dataType,group} = req.query
             let query = {deleted: false,status:'ACCEPTED',group:null };
             if(group) query.group = group
             if(status) query.status = status
@@ -80,6 +80,26 @@ export default {
             let myUser
             if(userId){
                 myUser = await checkExistThenGet(userId, User)
+            }
+            if(viewPlaceType){
+                query.viewPlaceType = viewPlaceType
+                if(viewPlaceType == "WALL"){
+                    if(!userId){
+                        return next(new ApiError(422, i18n.__('userId.required')));
+                    }
+                    let owners = myUser.connections
+                    let business = myUser.following
+                    Object.assign(query ,{
+                        $and: [
+                            { $or: [
+                                {business: {$in:business}}, 
+                                {owner: {$in:owners}}, 
+                              ] 
+                            },
+                            {deleted: false},
+                        ]
+                    })
+                }
             }
             await Post.find(query).populate(populateQuery)
                 .sort({ createdAt: -1 })
@@ -115,6 +135,23 @@ export default {
             if(business) query.business = business;
             if(ownerType) query.ownerType = ownerType;
             let myUser = await checkExistThenGet(req.user._id, User)
+            if(viewPlaceType){
+                query.viewPlaceType = viewPlaceType
+                if(viewPlaceType == "WALL"){
+                    let owners = myUser.connections
+                    let business = myUser.following
+                    Object.assign(query ,{
+                        $and: [
+                            { $or: [
+                                {business: {$in:business}}, 
+                                {owner: {$in:owners}}, 
+                              ] 
+                            },
+                            {deleted: false},
+                        ]
+                    })
+                }
+            }
             await Post.find(query).populate(populateQuery)
                 .sort({ createdAt: -1 }).then(async(data)=>{
                     let newdata =[]
@@ -181,7 +218,10 @@ export default {
             body('ownerType').optional(),
             body('group').optional().isNumeric().withMessage((value, { req}) => {
                 return req.__('group.numeric', { value});
-            })
+            }),
+            body('viewPlaceType').optional().isIn(['WALL', 'BOARD']).withMessage((value, { req}) => {
+                return req.__('viewPlaceType.invalid', { value});
+            }),
         ];
         return validations;
     },

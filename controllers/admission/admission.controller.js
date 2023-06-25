@@ -74,9 +74,7 @@ export default {
             body('faculties').optional()
             .custom(async (faculties, { req }) => {
                 for (let faculty of faculties) {
-                    body('grades').not().isEmpty().withMessage((value, { req}) => {
-                        return req.__('grades.required', { value});
-                    })
+                    body('grades')
                     .custom(async (grades, { req }) => {
                         
                         for (let value of grades) {

@@ -11,6 +11,8 @@ import i18n from "i18n";
 import Category from "../../models/category/category.model"
 import EducationInstitution from "../../models/education institution/education institution.model";
 import EducationSystem from "../../models/education system/education system.model";
+import Premium from "../../models/premium/premium.model";
+import { transformPremium } from "../../models/premium/transformPremium";
 const populateQuery = [
     { path: 'owner', model: 'user'},
     { path: 'sector', model: 'category' },
@@ -18,6 +20,13 @@ const populateQuery = [
     { path: 'educationSystem', model: 'educationSystem' },
     { path: 'educationInstitution', model: 'educationInstitution' }
 
+];
+const populatePremiumQuery = [
+    { path: 'fees', model: 'fees'},
+    {
+        path: 'student', model: 'student',
+        populate: { path: 'educationInstitution', model: 'educationInstitution' },
+    },
 ];
 export default {
     //validate body
@@ -112,6 +121,22 @@ export default {
 
             await Student.findById(studentId).populate(populateQuery).then(async(e) => {
                 let student = await transformStudent(e,lang)
+                let tuitionFees = [];
+                let busFees = [];
+                await Premium.find({deleted:false,student:studentId,type:'FEES'}).populate(populatePremiumQuery)
+                    .then(async(data)=>{
+                        await Promise.all(data.map(async(premium) =>{
+                            let thePremium = await transformPremium(premium,lang)
+                            if(thePremium.feesType == "BUS"){
+                                busFees.push(thePremium)
+                            }
+                            if(thePremium.feesType == "TUITION"){
+                                tuitionFees.push(thePremium)
+                            }
+                        }))
+                    })
+                student.busFees = busFees
+                student.tuitionFees = tuitionFees
                 res.send({
                     success:true,
                     data:student
@@ -212,6 +237,11 @@ export default {
             let student = await checkExistThenGet(studentId, Student);
             student.deleted = true;
             await student.save();
+            let premiums = await Premium.find({student:studentId})
+            for (let premium in premiums) {
+                premium.deleted = false;
+                await premium.save();
+            }
             let reports = {
                 "action":"Delete student",
                 "type":"STUDENTS",

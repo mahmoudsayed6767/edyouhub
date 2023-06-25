@@ -6,6 +6,7 @@ export async function transformCategory(e, lang) {
         img:e.img,
         type:e.type,
         hasChild:e.hasChild,
+        educationType:e.educationType,
         id: e._id,
         createdAt: e.createdAt,
     }
@@ -19,6 +20,7 @@ export async function transformCategory(e, lang) {
             type:val.type,
             parent:val.parent,
             hasChild:val.hasChild,
+            educationType:val.educationType,
             id: val._id,
             createdAt: val.createdAt,
         })
