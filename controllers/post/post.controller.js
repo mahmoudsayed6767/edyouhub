@@ -93,7 +93,8 @@ export default {
                         $and: [
                             { $or: [
                                 {business: {$in:business}}, 
-                                {owner: {$in:owners}}, 
+                                {owner: {$in:owners}},
+                                {ownerType: 'APP'}, 
                               ] 
                             },
                             {deleted: false},
@@ -145,6 +146,8 @@ export default {
                             { $or: [
                                 {business: {$in:business}}, 
                                 {owner: {$in:owners}}, 
+                                {ownerType: 'APP'}, 
+
                               ] 
                             },
                             {deleted: false},
