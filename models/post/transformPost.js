@@ -51,6 +51,13 @@ export async function transformPost(e,lang,myUser,userId) {
         }
         index.owner = owner
     }
+    if(ownerType == "APP"){
+        index.appData = {
+            fullname:'EdyouHub',
+            img:'https://api.staging.edyouhub.com/uploads/7ac20131-4671-4dde-8d84-768dd82e882d.jpg'
+        }
+
+    }
     /*options*/
     let options = []
     for (let val of e.options) {
@@ -176,6 +183,13 @@ export async function transformPostById(e,lang,myUser,userId) {
         isLike:userId?isInArray(e.likedList,userId):false,
         id:e._id,
         createdAt: e.createdAt
+    }
+    if(ownerType == "APP"){
+        index.appData = {
+            fullname:'EdyouHub',
+            img:'https://api.staging.edyouhub.com/uploads/7ac20131-4671-4dde-8d84-768dd82e882d.jpg'
+        }
+
     }
     if(e.business){
         let business = {
