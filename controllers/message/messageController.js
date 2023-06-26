@@ -67,7 +67,6 @@ var messageController = {
         Count = Count + 1 ;
         Message.updateMany({ $or: [query1, query2] }, { lastMessage: false })
             .then((result1) => {
-                // old v2  is  io.nsps['/chat'].adapter.rooms
                 if (io.sockets.adapter.rooms[toRoom]) { //room is open 
                     messData.delivered = true;
                 }
@@ -93,8 +92,6 @@ var messageController = {
                             },
                         }
                         nsp.to(toRoom).emit('newMessage', msg);
-                        notificationNSP.to(toRoom).emit('updateUnInformedMessage',{count : Count});
-
                         nsp.to(fromRoom).emit('newMessage', msg);
                         nsp.to(toRoom).emit('unseenCount',{count : Count});
                         if (io.sockets.adapter.rooms[toRoom]){
@@ -393,7 +390,18 @@ var messageController = {
     },
     async deleteAll(req, res, next) {        
         try {
-            let messages = await Message.find({target :req.user._id });
+            var query1 = {deleted: false };
+            var query2 = {deleted: false}
+            if (userId) {
+                query1.to= userId;
+                query2.from= userId;
+            }
+            if (friendId) {
+                query1.from= friendId;
+                query2.to= friendId;
+            }
+            
+            let messages = await Message.find({ $or: [query1, query2] });
             for (let message of messages ) {
                 message.deleted = true;
                 await message.save();
