@@ -125,6 +125,9 @@ const courseSchema=new Schema({
     price: {
         type:Number,
     },
+    oldPrice: {
+        type:Number,
+    },
     discount:{
         type:Number,
         default:0

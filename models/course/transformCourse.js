@@ -20,13 +20,10 @@ export async function transformCourse(e,lang,myUser,userId) {
         acceptanceNo:e.acceptanceNo,
         type:e.type,
         price:e.price,
+        oldPrice:e.oldPrice,
         totalDuration:e.totalDuration,
         isAttendance:userId?isInArray(myUser.attendedCourses,e._id):false,
         createdAt:e.createdAt,
-    }
-    if(e.discount){
-        let discount = (e.discount * e.price) / 100
-        index.newPrice = e.cashPrice - discount
     }
     if(e.business){
         index.business = {
@@ -79,14 +76,11 @@ export async function transformCourseById(e,lang,myUser,userId,owner = false) {
         hasCertificate:e.hasCertificate,
         certificateName:e.certificateName,
         type:e.type,
+        price:e.price,
         oldPrice:e.oldPrice,
         totalDuration:e.totalDuration,
         isAttendance:userId?isInArray(myUser.attendedCourses,e._id):false,
         createdAt:e.createdAt,
-    }
-    if(e.discount){
-        let discount = (e.discount * e.price) / 100
-        index.newPrice = e.cashPrice - discount
     }
     if(e.business){
         index.business = {

@@ -200,10 +200,9 @@ export default {
             if (validatedBody.feesType == 'WITH-FEES'){
                 if(!validatedBody.paymentMethod){
                     return next(new ApiError(422, i18n.__('paymentMethod.required')));
-                }else{
-                    if(!validatedBody.installmentPrice)
-                        return next(new ApiError(422, i18n.__('price.required')));
                 }
+                if(!validatedBody.price)
+                    return next(new ApiError(422, i18n.__('price.required')));
             }
             let course = await Course.create({ ...validatedBody });
             let secretKey = (await bcrypt.hash(course.id.toString(),bcrypt.genSaltSync())).substring(0,16)
@@ -282,12 +281,9 @@ export default {
             if (validatedBody.feesType == 'WITH-FEES'){
                 if(!validatedBody.paymentMethod){
                     return next(new ApiError(422, i18n.__('paymentMethod.required')));
-                }else{
-                    if(validatedBody.paymentMethod == "INSTALLMENT" && !validatedBody.installmentPrice)
-                        return next(new ApiError(422, i18n.__('installmentPrice.required')));
-                    if(validatedBody.paymentMethod == "CASH" && !validatedBody.cashPrice)
-                        return next(new ApiError(422, i18n.__('cashPrice.required')));
                 }
+                if(!validatedBody.price)
+                    return next(new ApiError(422, i18n.__('price.required')));
             }
             await Course.findByIdAndUpdate(courseId, {
                 ...validatedBody,
