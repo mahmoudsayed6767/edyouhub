@@ -22,6 +22,6 @@ router.route('/upload')
         )  
 router.route('/:messageId/delete')
     .delete(messageController.delete);
-router.route('/deleteAll')
+router.route('/:friendId/deleteAll')
     .delete(messageController.deleteAll);
 module.exports = router;

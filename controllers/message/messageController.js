@@ -390,11 +390,12 @@ var messageController = {
     },
     async deleteAll(req, res, next) {        
         try {
+            let {friendId} = req.params.friendId;
             var query1 = {deleted: false };
             var query2 = {deleted: false}
-            if (userId) {
-                query1.to= userId;
-                query2.from= userId;
+            if (req.user._id) {
+                query1.to= req.user._id;
+                query2.from= req.user._id;
             }
             if (friendId) {
                 query1.from= friendId;
