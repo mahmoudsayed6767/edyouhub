@@ -947,7 +947,8 @@ export default {
                 if (validatedBody.service == "VACANCY") arr = businessManagement.vacancy.supervisors;
                 if (validatedBody.service == "EVENT") arr = businessManagement.events.supervisors;
                 if (validatedBody.service == "COURSE") arr = businessManagement.courses.supervisors;
-                
+                let index = arr.findIndex(e=> e == req.body.supervisor);
+
                 for(var i = 0;i<= arr.length;i=i+1){
                     if(arr[i] === arr[index]){
                         arr.splice(index, 1);
