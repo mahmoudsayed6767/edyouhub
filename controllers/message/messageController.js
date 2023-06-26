@@ -7,6 +7,8 @@ import ApiResponse from "../../helpers/ApiResponse";
 import User from "../../models/user/user.model";
 import ApiError from '../../helpers/ApiError';
 import i18n from "i18n";
+import Report from "../../models/reports/report.model";
+
 import Logger from "../../services/logger";
 const logger = new Logger('message '+ new Date(Date.now()).toDateString())
 const populateQuery = [
@@ -370,6 +372,42 @@ var messageController = {
             .catch((err)=>{
                 next(err);
             });
+    },
+    async delete(req, res, next) {        
+        try {
+            let { messageId} = req.params;
+            let message = await checkExistThenGet(messageId, Message);
+            message.deleted = true;
+            await message.save();
+            let reports = {
+                "action":"Delete message",
+                "type":"MESSAGE",
+                "deepId":messageId,
+                "user": req.user._id
+            };
+            await Report.create({...reports });
+            res.send({success:true});
+        } catch (error) {
+            next(error);
+        }
+    },
+    async deleteAll(req, res, next) {        
+        try {
+            let messages = await Message.find({target :req.user._id });
+            for (let message of messages ) {
+                message.deleted = true;
+                await message.save();
+            }
+            let reports = {
+                "action":"Delete All messages",
+                "type":"MESSAGE",
+                "user": req.user._id
+            };
+            await Report.create({...reports });
+            res.send({success:true});
+        } catch (error) {
+            next(error);
+        }
     },
 };
 

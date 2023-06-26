@@ -491,7 +491,7 @@ export default {
             thePost.commentsCount = thePost.commentsCount + 1;
             await thePost.save();
             let createdComment = await Comment.create({ ...validatedBody});
-            await Activity.create({user:req.user._id,action:'ADD-COMMENT',post:postId});
+            await Activity.create({user:req.user._id,action:'ADD-COMMENT',post:req.params.postId});
 
             let reports = {
                 "action":"Add Comment",

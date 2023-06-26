@@ -17,6 +17,12 @@ export default {
             body('name_ar').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('name_ar.required', { value});
             }),
+            body('type').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('type.required', { value});
+            }).isIn(['SCHOOL','NURSERY'])
+            .withMessage((value, { req}) => {
+                return req.__('type.invalid', { value});
+            }),
             
         ];
         if (isUpdate)
@@ -64,6 +70,7 @@ export default {
                     name_ar:e.name_ar,
                     name_en:e.name_en,
                     img:e.img,
+                    type:e.type,
                     id: e._id,
                     createdAt: e.createdAt,
                 }
@@ -106,7 +113,7 @@ export default {
         try {
              //get lang
             let lang = i18n.getLocale(req)
-            let {name} = req.query;
+            let {name,type} = req.query;
 
             let query = {deleted: false }
              /*search by name */
@@ -123,6 +130,7 @@ export default {
                     ]
                 };
             }
+            if(type) query.type = type;
             await EducationSystem.find(query)
                 .sort({ _id: -1 })
                 .then( async(data) => {
@@ -133,6 +141,7 @@ export default {
                             name_ar:e.name_ar,
                             name_en:e.name_en,
                             img:e.img,
+                            type:e.type,
                             id: e._id,
                             createdAt: e.createdAt,
                         }
@@ -152,7 +161,7 @@ export default {
         try {
              //get lang
             let lang = i18n.getLocale(req)
-            let {name} = req.query
+            let {name,type} = req.query
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
             let query = {  deleted: false }
             /*search by name */
@@ -169,6 +178,8 @@ export default {
                     ]
                 };
             }
+            if(type) query.type = type;
+
             await EducationSystem.find(query)
                 .sort({ _id: -1 })
                 .limit(limit)
@@ -181,6 +192,7 @@ export default {
                             name_ar:e.name_ar,
                             name_en:e.name_en,
                             img:e.img,
+                            type:e.type,
                             id: e._id,
                             createdAt: e.createdAt,
                         }

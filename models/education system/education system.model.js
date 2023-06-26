@@ -21,6 +21,11 @@ const educationSystemSchema = new Schema({
         type: String,
         required: true,
     },
+    type: {
+        type: String,
+        enum:['SCHOOL','NURSERY'],
+        default: 'SCHOOL'
+    },
     deleted:{
         type:Boolean,
         default:false

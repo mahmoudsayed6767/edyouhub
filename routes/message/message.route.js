@@ -20,4 +20,8 @@ router.route('/upload')
             multerSaveTo('chats').single('img'),
             messageController.uploadFile
         )  
+router.route('/:messageId/delete')
+    .delete(messageController.delete);
+router.route('/deleteAll')
+    .delete(messageController.deleteAll);
 module.exports = router;
