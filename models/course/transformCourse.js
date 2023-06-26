@@ -13,23 +13,19 @@ export async function transformCourse(e,lang,myUser,userId) {
         maxAcceptance:e.maxAcceptance,
         feesType:e.feesType,
         paymentMethod:e.paymentMethod,
-        cashPrice:e.cashPrice,
-        installmentPrice:e.installmentPrice,
         rate:e.rate,
         rateCount:e.rateCount,
         rateNumbers:e.rateNumbers,
         sessionsNo:e.sessionsNo,
         acceptanceNo:e.acceptanceNo,
         type:e.type,
-        oldPrice:e.oldPrice,
+        price:e.price,
         totalDuration:e.totalDuration,
         isAttendance:userId?isInArray(myUser.attendedCourses,e._id):false,
         createdAt:e.createdAt,
     }
     if(e.discount){
-        let price = e.cashPrice;
-        if(e.paymentMethod == "INSTALLMENT") price = e.installmentPrice;
-        let discount = (e.discount * price) / 100
+        let discount = (e.discount * e.price) / 100
         index.newPrice = e.cashPrice - discount
     }
     if(e.business){
@@ -74,9 +70,7 @@ export async function transformCourseById(e,lang,myUser,userId,owner = false) {
         maxAcceptance:e.maxAcceptance,
         feesType:e.feesType,
         paymentMethod:e.paymentMethod,
-        cashPrice:e.cashPrice,
         installments:e.installments,
-        installmentPrice:e.installmentPrice,
         rate:e.rate,
         rateCount:e.rateCount,
         rateNumbers:e.rateNumbers,
@@ -91,9 +85,7 @@ export async function transformCourseById(e,lang,myUser,userId,owner = false) {
         createdAt:e.createdAt,
     }
     if(e.discount){
-        let price = e.cashPrice;
-        if(e.paymentMethod == "INSTALLMENT") price = e.installmentPrice;
-        let discount = (e.discount * price) / 100
+        let discount = (e.discount * e.price) / 100
         index.newPrice = e.cashPrice - discount
     }
     if(e.business){

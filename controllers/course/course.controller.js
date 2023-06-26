@@ -142,11 +142,8 @@ export default {
             .withMessage((value, { req}) => {
                 return req.__('feesType.invalid', { value});
             }),
-            body('cashPrice').optional().isNumeric().withMessage((value, { req}) => {
-                return req.__('cashPrice.numeric', { value});
-            }),
-            body('installmentPrice').optional().isNumeric().withMessage((value, { req}) => {
-                return req.__('installmentPrice.numeric', { value});
+            body('price').optional().isNumeric().withMessage((value, { req}) => {
+                return req.__('price.numeric', { value});
             }),
             body('totalDuration').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('totalDuration.required', { value});
@@ -204,10 +201,8 @@ export default {
                 if(!validatedBody.paymentMethod){
                     return next(new ApiError(422, i18n.__('paymentMethod.required')));
                 }else{
-                    if(validatedBody.paymentMethod == "INSTALLMENT" && !validatedBody.installmentPrice)
-                        return next(new ApiError(422, i18n.__('installmentPrice.required')));
-                    if(validatedBody.paymentMethod == "CASH" && !validatedBody.cashPrice)
-                        return next(new ApiError(422, i18n.__('cashPrice.required')));
+                    if(!validatedBody.installmentPrice)
+                        return next(new ApiError(422, i18n.__('price.required')));
                 }
             }
             let course = await Course.create({ ...validatedBody });

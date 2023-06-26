@@ -122,16 +122,9 @@ const courseSchema=new Schema({
         type: String,
         enum:['CASH','INSTALLMENT'],
     },
-    cashPrice: {
+    price: {
         type:Number,
     },
-    installmentPrice :{
-        type:Number,
-    },
-    oldPrice:{
-        type:Number,
-    },
-    
     discount:{
         type:Number,
         default:0
