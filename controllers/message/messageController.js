@@ -71,10 +71,8 @@ var messageController = {
                     messData.delivered = true;
                 }
                 var message = new Message(messData);
-                logger.info(`messData ${JSON.stringify(messData)}`);
                 message.save()
                     .then(async(result2) => {
-                        logger.info(`messData ${JSON.stringify(data)}`);
                         let theMessage = await Message.findById(result2._id).populate('from to')
                         let msg = {
                             seen: theMessage.seen,
