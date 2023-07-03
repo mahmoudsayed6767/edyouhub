@@ -5,6 +5,11 @@ const CouponSchema = new Schema({
         type: Number,
         required: true
     },
+    type: {
+        type: String,
+        enum:['GLOBAL','PACKAGE','EDUCATION'],
+        default:'GLOBAL',
+    },
     educationInstitution:{
         type: Number,
         ref: 'educationInstitution',

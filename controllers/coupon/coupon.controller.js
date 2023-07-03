@@ -1,9 +1,8 @@
 import ApiResponse from "../../helpers/ApiResponse";
 import Coupon from "../../models/coupon/coupon.model";
 import Report from "../../models/reports/report.model";
-import ApiError from '../../helpers/ApiError';
 import User from "../../models/user/user.model";
-import { checkExist, checkExistThenGet ,isInArray} from "../../helpers/CheckMethods";
+import { checkExist, checkExistThenGet } from "../../helpers/CheckMethods";
 import {  checkValidations } from "../shared/shared.controller";
 import { body } from "express-validator";
 import i18n from "i18n";
@@ -15,7 +14,7 @@ export default {
         try {
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
             let query = {deleted: false };
-            let {search} = req.query
+            let {search,type} = req.query
             if(search) {
                 query = {
                     $and: [
@@ -27,6 +26,7 @@ export default {
                     ]
                 };
             }
+            if(type) query.type = type;
             await Coupon.find(query)
                 .limit(limit)
                 .skip((page - 1) * limit).sort({ _id: -1 })
@@ -40,6 +40,7 @@ export default {
                             expireDateMillSec:e.expireDateMillSec,
                             couponNumber:e.couponNumber,
                             singleTime:e.singleTime,
+                            type:e.type,
                             end:e.end,
                             id:e._id,
                         });
@@ -60,7 +61,7 @@ export default {
     async findAllWithoutPagenation(req, res, next) {        
         try {
             let query = {deleted: false };
-            let {search} = req.query
+            let {search,type} = req.query
             if(search) {
                 query = {
                     $and: [
@@ -72,6 +73,8 @@ export default {
                     ]
                 };
             }
+            if(type) query.type = type;
+
             await Coupon.find(query)
                 .sort({ _id: -1 }).then(async(data) => {
                     let newdata = [];
@@ -83,6 +86,7 @@ export default {
                             expireDateMillSec:e.expireDateMillSec,
                             couponNumber:e.couponNumber,
                             singleTime:e.singleTime,
+                            type:e.type,
                             end:e.end,
                             id:e._id,
                         }
@@ -131,6 +135,7 @@ export default {
                 else
                     return true;
             }),
+            body('type').optional(),
          
         ];
 
