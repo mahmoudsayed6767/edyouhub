@@ -31,9 +31,12 @@ module.exports = {
                 id: myId,
                 users : clients
             };
-            MessageController.getOnlineUsers(nsp,onlineData);
-            await User.findByIdAndUpdate(myId, {lastSeen:Date.parse(new Date()),online:true}, { new: true });
-            
+            if(myId){
+                MessageController.getOnlineUsers(nsp,onlineData);
+                await User.findByIdAndUpdate(myId, {lastSeen:Date.parse(new Date()),online:true}, { new: true });
+                
+            }
+           
             socket.on('newMessage', function (data) { 
                 console.log(data);
                 MessageController.addnewMessage(io,nsp,data);
