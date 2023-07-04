@@ -213,7 +213,7 @@ var messageController = {
                 var Count = await Message.countDocuments(countquery);
                 //emit to update message informed
                 notificationNSP.to(toRoom).emit('updateUnInformedMessage',{count : Count});
-                res.status(200).send('Updated.');
+                res.status(200).send({success:true});
             })
             .catch((err) => {
                 next(err);
