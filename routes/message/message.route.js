@@ -21,7 +21,7 @@ router.route('/upload')
             messageController.uploadFile
         )  
 router.route('/:messageId/delete')
-    .delete(messageController.delete);
+    .delete(requireAuth,messageController.delete);
 router.route('/:friendId/deleteAll')
-    .delete(messageController.deleteAll);
+    .delete(requireAuth,messageController.deleteAll);
 module.exports = router;
