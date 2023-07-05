@@ -255,7 +255,7 @@ export default {
             let reports = {
                 "action":"Add Post",
                 "type":"POSTS",
-                "deepId":createdPost,
+                "deepId":createdPost._id,
                 "user": req.user._id
             };
             await Report.create({...reports});
@@ -296,7 +296,7 @@ export default {
                         await Option.findByIdAndUpdate(val.optionId, { ...val });
                         options.push(val.optionId)
                     }else{
-                        val.post = createdPost.id
+                        val.post = postId
                         let createdRow = await Option.create({...val})
                         options.push(createdRow.id)
                     }

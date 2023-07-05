@@ -277,7 +277,16 @@ export default {
                 if(!isInArray(supervisors,req.user._id))
                     return next(new ApiError(403,  i18n.__('notAllow')));
             }
-            validatedBody.toDateMillSec = Date.parse(validatedBody.toDate)
+            if(validatedBody.type == "ON-SITE"){
+                if(!validatedBody.fromDate)
+                    return next(new ApiError(422, i18n.__('fromDate.required')));
+                if(!validatedBody.toDate)
+                    return next(new ApiError(422, i18n.__('toDate.required')));
+                if(!validatedBody.branches)
+                    return next(new ApiError(422, i18n.__('branches.required')));
+                validatedBody.toDateMillSec = Date.parse(validatedBody.toDate)
+
+            }
             if (validatedBody.feesType == 'WITH-FEES'){
                 if(!validatedBody.paymentMethod){
                     return next(new ApiError(422, i18n.__('paymentMethod.required')));

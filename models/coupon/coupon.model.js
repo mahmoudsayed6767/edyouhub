@@ -7,7 +7,7 @@ const CouponSchema = new Schema({
     },
     type: {
         type: String,
-        enum:['GLOBAL','PACKAGE','EDUCATION'],
+        enum:['GLOBAL','BUSINESS-PACKAGES','USER-PACKAGES','SCHOOL-SUPPLIES','ONLINE-COURSES','ONSITE-COURSES','EVENTS'],
         default:'GLOBAL',
     },
     educationInstitution:{

@@ -55,7 +55,11 @@ export async function transformCourse(e,lang,myUser,userId) {
 export async function transformCourseById(e,lang,myUser,userId,owner = false) {
     let index = {
         title:lang=="ar"?e.title_ar:e.title_en,
+        title_ar:e.title_ar,
+        title_en:e.title_en,
         description:lang=="ar"?e.description_ar:e.description_en,
+        description_ar:e.description_ar,
+        description_en:e.description_en,
         introVideo:e.introVideo,
         status:e.status,
         id:e._id,
