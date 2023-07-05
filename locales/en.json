@@ -313,5 +313,6 @@
 	"user.required": "user.required",
 	"user.numeric": "user.numeric",
 	"user.invalid": "user.invalid",
-	"sorryEventWithFees": "sorryEventWithFees"
+	"sorryEventWithFees": "sorryEventWithFees",
+	"chatRequestRequest.notFound": "chatRequestRequest.notFound"
 }

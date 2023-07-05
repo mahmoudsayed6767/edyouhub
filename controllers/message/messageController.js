@@ -416,6 +416,7 @@ var messageController = {
             next(error);
         }
     },
+    
 };
 
 module.exports = messageController;

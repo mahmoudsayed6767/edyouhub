@@ -285,6 +285,14 @@ const userSchema = new Schema({
         type:[Number],
         ref:'user'
     },
+    pendingChatRequests:{//who i send request to himمين بعتله
+        type:[Number],
+        ref:'user'
+    },
+    recievedChatRequestsList:{//who is sent request to me مين بعتلى
+        type:[Number],
+        ref:'user'
+    },
     usedCoupons: {
         type:[Number],
         ref:'coupons'

@@ -54,8 +54,10 @@ import courseRoute from "./course/course.route"
 import cashbackPackageRoute from "./cashbackPackage/cashbackPackage.route"
 import subscribeServiceRoute from "./subscribeService/subscribeService.route"
 import groupRoute from "./group/group.route"
-
+import chatRequestRoute from "./chatRequest/chatRequest.route"
 const router = express.Router();
+router.use('/chatRequests', chatRequestRoute);
+
 router.use('/subscribeService', subscribeServiceRoute);
 router.use('/groups', groupRoute);
 router.use('/cashbackPackages', cashbackPackageRoute);
