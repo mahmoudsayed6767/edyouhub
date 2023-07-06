@@ -238,7 +238,7 @@ export default {
                 let group = await checkExistThenGet(validatedBody.group,Group)
                 if(group.postedType == "BY-REQUEST"){
                     let arr = group.admins;
-                    var found = arr.find((e) => e == groupId); 
+                    var found = arr.find((e) => e == validatedBody.group); 
                     if(!found){
                         validatedBody.status = "PENDING"
                     }
