@@ -7,6 +7,7 @@ import {  checkValidations } from "../shared/shared.controller";
 import { body } from "express-validator";
 import i18n from "i18n";
 import EducationInstitution from "../../models/education institution/education institution.model";
+import ApiError from "../../helpers/ApiError";
 
 export default {
 //get with pagenation
@@ -180,14 +181,26 @@ export default {
                 var found = theUser.usedCoupons.find((e) => e == coupon)
                     if(found){
                         if(coupon.singleTime == true){
-                            res.send({success: true,msg:i18n.__('coupon.used')});
+                            return next(new ApiError(422, i18n.__('coupon.used')));
                         }
                     }else{
-                        res.send({success: true,msg:i18n.__('Valid.coupon')});
+                        if(req.body.cost){
+                            let cost = req.body.cost
+                            if(coupon.discountType == "FIXED"){
+                                cost = req.body.cost - coupon.discount;
+                            }else{
+                                cost = req.body.cost - (coupon.discount * req.body.cost) / 100;
+                            }
+                            
+                            res.send({success: true,msg:i18n.__('Valid.coupon'),cost:cost}); 
+                        }else{
+                            
+                            res.send({success: true,msg:i18n.__('Valid.coupon')});
+                        }
                     }
                 
             }else{
-                res.send({success: true, msg:i18n.__('InValid.coupon')});
+                return next(new ApiError(422, i18n.__('InValid.coupon')));
             }
             
         } catch (err) {

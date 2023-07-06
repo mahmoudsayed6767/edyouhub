@@ -308,13 +308,12 @@ export default {
             }else{
                 if(!await GroupParticipant.findOne({ user: validatedBody.user, group: groupId,status:{$ne:'REJECTED'},deleted:false})){
                     await GroupParticipant.create({ ...validatedBody });
-                }
-                let arr = user.groupJoinRequests;
-                var found = arr.find((e) => e == groupId); 
-                if(!found){
-                    user.groupJoinRequests.push(groupId);
-                    await user.save();
-                    await GroupParticipant.create({ ...validatedBody });
+                    let arr = user.groupJoinRequests;
+                    var found = arr.find((e) => e == groupId); 
+                    if(!found){
+                        user.groupJoinRequests.push(groupId);
+                        await user.save();
+                    }
                 }
                 
             }

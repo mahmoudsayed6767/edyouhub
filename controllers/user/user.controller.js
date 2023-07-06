@@ -234,7 +234,7 @@ export default {
         try {
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20,
-            {userId,cashBack,phoneVerify,search,accountType,type, active,place} = req.query;
+            {name,email,phone,userId,cashBack,phoneVerify,search,accountType,type, active,place} = req.query;
             
             let query = {deleted: false };
             if (place) query.place = place
@@ -256,6 +256,21 @@ export default {
                         },
                         {deleted: false},
                     ]
+                })
+            }
+            if(name) {
+                Object.assign(query ,{
+                    fullname: { $regex: '.*' + name + '.*' , '$options' : 'i'  }, 
+                })
+            }
+            if(email) {
+                Object.assign(query ,{
+                    email: { $regex: '.*' + email + '.*' , '$options' : 'i'  }, 
+                })
+            }
+            if(phone) {
+                Object.assign(query ,{
+                    phone: { $regex: '.*' + phone + '.*' , '$options' : 'i'  }, 
                 })
             }
             let sortd = {createdAt: -1}
@@ -286,7 +301,7 @@ export default {
     async getAll(req, res, next) {        
         try {
             let lang = i18n.getLocale(req) 
-            let {userId,cashBack,phoneVerify,search,accountType,type, active,place} = req.query;
+            let {name,email,phone,userId,cashBack,phoneVerify,search,accountType,type, active,place} = req.query;
             
             let query = {deleted: false };
             if (phoneVerify=="true") query.phoneVerify = true;
@@ -308,6 +323,21 @@ export default {
                         },
                         {deleted: false},
                     ]
+                })
+            }
+            if(name) {
+                Object.assign(query ,{
+                    fullname: { $regex: '.*' + name + '.*' , '$options' : 'i'  }, 
+                })
+            }
+            if(email) {
+                Object.assign(query ,{
+                    email: { $regex: '.*' + email + '.*' , '$options' : 'i'  }, 
+                })
+            }
+            if(phone) {
+                Object.assign(query ,{
+                    phone: { $regex: '.*' + phone + '.*' , '$options' : 'i'  }, 
                 })
             }
             let sortd = {createdAt: -1}

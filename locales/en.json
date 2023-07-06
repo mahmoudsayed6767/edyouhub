@@ -314,5 +314,6 @@
 	"user.numeric": "user.numeric",
 	"user.invalid": "user.invalid",
 	"sorryEventWithFees": "sorryEventWithFees",
-	"chatRequestRequest.notFound": "chatRequestRequest.notFound"
+	"chatRequestRequest.notFound": "chatRequestRequest.notFound",
+	"Valid.coupon": "Valid.coupon"
 }

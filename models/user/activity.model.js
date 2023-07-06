@@ -12,7 +12,7 @@ const activitySchema = new Schema({
     },
     action:{
         type: String,
-        enum:['CREATE-POST','UPDATE-POST','REMOVE-POST','ADD-COMMENT','REMOVE-COMMENT','ADD-LIKE','REOMVE-LIKE','ANSWER-POST'],
+        enum:['CREATE-POST','UPDATE-POST','REMOVE-POST','ADD-COMMENT','REMOVE-COMMENT','ADD-LIKE','REMOVE-LIKE','ANSWER-POST'],
         default: 'POST'
     },
     user: {
