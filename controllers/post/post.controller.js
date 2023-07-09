@@ -83,9 +83,7 @@ export default {
             if(viewPlaceType){
                 query.viewPlaceType = viewPlaceType
                 if(viewPlaceType == "WALL"){
-                    if(!userId){
-                        return next(new ApiError(422, i18n.__('userId.required')));
-                    }
+
                     let owners = myUser.connections
                     let business = myUser.following
                     Object.assign(query ,{
