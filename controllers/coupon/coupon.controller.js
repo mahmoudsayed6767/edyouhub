@@ -191,11 +191,9 @@ export default {
                             }else{
                                 cost = req.body.cost - (coupon.discount * req.body.cost) / 100;
                             }
-                            
-                            res.send({success: true,msg:i18n.__('Valid.coupon'),cost:cost}); 
+                            res.send({success: true,msg:i18n.__('Valid.coupon'),cost:cost,coupon:coupon}); 
                         }else{
-                            
-                            res.send({success: true,msg:i18n.__('Valid.coupon')});
+                            res.send({success: true,msg:i18n.__('Valid.coupon'),coupon:coupon});
                         }
                     }
                 
