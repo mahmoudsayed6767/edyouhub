@@ -108,12 +108,7 @@ export default {
                     let newdata =[]
                     await Promise.all( data.map(async(e)=>{
                         let index = await transformPost(e,lang,myUser,req.user._id)
-                        index.show = true;
-                        if(group){
-                            if(!await GroupParticipant.findOne({ user: req.user._id, group: group,status:'ACCEPTED',deleted:false})){
-                                index.show = false
-                            }
-                        }
+                        
                         newdata.push(index)
                     }))
                     const count = await Post.countDocuments(query);
@@ -128,7 +123,14 @@ export default {
         try {
             let {status,group,owner,type,business,ownerType,event,dataType} = req.query
             let query = {deleted: false,status:'ACCEPTED' ,group:null};
-            if(group) query.group = group
+            if(group){
+                query.group = group;
+                if(group){
+                    if(!await GroupParticipant.findOne({ user: req.user._id, group: group,status:'ACCEPTED',deleted:false})){
+                        return next(new ApiError(403, i18n.__('notIn.group')));
+                    }
+                }
+            }
             if(status) query.status = status
             if(event) query.event = event;
             if(owner) query.owner = owner;
@@ -165,12 +167,6 @@ export default {
                     let newdata =[]
                     await Promise.all( data.map(async(e)=>{
                         let index = await transformPost(e,lang,myUser)
-                        index.show = true;
-                        if(group){
-                            if(!await GroupParticipant.findOne({ user: req.user._id, group: group,status:'ACCEPTED',deleted:false})){
-                                index.show = false
-                            }
-                        }
                         newdata.push(index)
                     }))
                     res.send({success:true,data:newdata});
