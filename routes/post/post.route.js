@@ -10,7 +10,7 @@ router.route('/')
         postController.validateBody(),
         postController.create
     )
-    .get(postController.findAll);
+    .get( requireAuth,postController.findAll);
 
 router.route('/withoutPagenation/get')
     .get(requireAuth,postController.findSelection);
