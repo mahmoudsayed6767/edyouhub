@@ -73,6 +73,8 @@ export async function transformEventById(e,lang,userId) {
         isInterest:userId?isInArray(e.interesting,userId):false,
         isAttendance:userId?isInArray(e.attendance,userId):false,
         waitToPaid:userId?isInArray(e.waitToPaid,userId):false,
+        discount:e.discount,
+        discountType:e.discountType,
         id: e._id,
         createdAt: e.createdAt,                       
     }

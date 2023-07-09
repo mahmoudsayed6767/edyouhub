@@ -97,6 +97,9 @@ export default {
             body('discount').optional().isNumeric().withMessage((value) => {
                 return req.__('discount.numeric', { value});
             }),
+            body('discountType').optional().isNumeric().withMessage((value) => {
+                return req.__('discount.numeric', { value});
+            }),
 
             body('type').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('type.required', { value});

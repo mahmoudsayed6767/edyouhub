@@ -318,6 +318,72 @@ const payCourse = async (theCourse,userId) => {
     }
     return true;
 };
+const callBack = async (merchantRefNumber,status,paymentMethod,data) => {
+   
+    let theTransaction = await Transaction.findOne({transactionId:merchantRefNumber})
+    if(!theTransaction)
+        return next(new ApiError(400, i18n.__('transaction not exist')))
+
+    let doneTransaction = await Transaction.findOne({status:{$ne:'PENDING'},transactionId:merchantRefNumber})
+    if(doneTransaction)
+        return next(new ApiError(400, i18n.__('transaction is done')))
+
+    if(status == "PAID"){
+        theTransaction.status = "SUCCESS"
+        theTransaction.paymentMethod = paymentMethod
+        theTransaction.paymentObject = data?JSON.stringify(data):null
+        let userId = theTransaction.user
+
+        let user = await checkExistThenGet(userId, User)
+        console.log("user",user)
+        if(theTransaction.type =="CASHBACK-PACKAGE"){
+            let cashbackPackage = await checkExistThenGet(theTransaction.cashbackPackage, CashbackPackage, { deleted: false });
+            user.balance  = user.balance + cashbackPackage.coins
+            await user.save();
+        }
+        if(theTransaction.type =="PACKAGE"){
+            await payPackage(theTransaction.package,userId,theTransaction.business)
+        }
+        if(theTransaction.type =="EVENT"){
+            await payEvent(theTransaction.event,userId)
+        }
+        if(theTransaction.type =="COURSE"){
+            await payCourse(theTransaction.course,userId)
+        }
+        if(theTransaction.type =="OFFER"){
+            await payOfferBooking(theTransaction.offerBooking,userId)
+
+        }
+        if(theTransaction.type =="PREMIUM"){
+            await payPremium(theTransaction.premiums,userId)
+        }
+        if(theTransaction.type =="FUND-FIRSTPAID"){
+            await payFirstPaid(theTransaction.fund,userId)
+        }
+        if(theTransaction.type =="ORDER"){
+            let order = await checkExistThenGet(theTransaction.order, Order, { deleted: false });
+            order.status  = 'ACCEPTED'
+            await order.save();
+        }
+        console.log("kkk",process.env.Securitykey)
+        let transactionId = theTransaction.id;
+        let encryptedId = await encryptedData(transactionId.toString(),process.env.Securitykey)
+        let url = 'https://edyouhub.com/tax-invoice/'+encryptedId;
+        let text = 'رابط الفاتوره الضريبيه الخاصه بك هو : '
+        //sendEmail(user.email,url, text)
+        theTransaction.billUrl = url;
+        await theTransaction.save();
+        console.log("url",url)
+        let reports = {
+            "action":"Payment Process 2",
+            "type":"PAYMENT",
+            "deepId":theTransaction._id,
+            "user": theTransaction.user
+        };
+        await Report.create({...reports });
+    }
+    return true;
+};
 export default {
     
     async payment(req,res,next){
@@ -339,6 +405,7 @@ export default {
                 "transactionId":data.id,
                 "paymentObject":JSON.stringify(data)
             }
+            if(validatedBody.coupon) transactionData.coupon = validatedBody.coupon
             if(validatedBody.type =="CASHBACK-PACKAGE"){
                 transactionData.cashbackPackage = validatedBody.cashbackPackage
             }
@@ -403,6 +470,11 @@ export default {
                 "user": validatedBody.client
             };
             await Report.create({...reports });
+
+            if(validatedBody.totalCost == 0 &&validatedBody.coupon){
+                console.log("Payment free : ", data.id)
+                await callBack(data.id,'PAID',null)
+            }
             await Transaction.findById(createdTransaction.id).populate(populateQuery2)
             .then(async(e)=>{
                 let index = await transformTransaction(e,lang)
@@ -504,69 +576,7 @@ export default {
         try{
             let data = req.body
             console.log("data",data)
-            let theTransaction = await Transaction.findOne({transactionId:data.merchantRefNumber})
-            if(!theTransaction)
-                return next(new ApiError(400, i18n.__('transaction not exist')))
-
-            let doneTransaction = await Transaction.findOne({status:{$ne:'PENDING'},transactionId:data.merchantRefNumber})
-            if(doneTransaction)
-                return next(new ApiError(400, i18n.__('transaction is done')))
-
-            if(data.orderStatus == "PAID"){
-                console.log("paymentObject",JSON.stringify(data))
-                theTransaction.status = "SUCCESS"
-                theTransaction.paymentMethod = data.paymentMethod
-                theTransaction.paymentObject = JSON.stringify(data)
-                let userId = theTransaction.user
-                let user = await checkExistThenGet(userId, User, { deleted: false })
-                if(theTransaction.type =="CASHBACK-PACKAGE"){
-                    let cashbackPackage = await checkExistThenGet(theTransaction.cashbackPackage, CashbackPackage, { deleted: false });
-                    user.balance  = user.balance + cashbackPackage.coins
-                    await user.save();
-                }
-                if(theTransaction.type =="PACKAGE"){
-                    await payPackage(theTransaction.package,userId,theTransaction.business)
-                }
-                if(theTransaction.type =="EVENT"){
-                    await payEvent(theTransaction.event,userId)
-                }
-                if(theTransaction.type =="COURSE"){
-                    await payCourse(theTransaction.course,userId)
-                }
-                if(theTransaction.type =="OFFER"){
-                    await payOfferBooking(theTransaction.offerBooking,userId)
-
-                }
-                if(theTransaction.type =="PREMIUM"){
-                    await payPremium(theTransaction.premiums,userId)
-                }
-                if(theTransaction.type =="FUND-FIRSTPAID"){
-                    await payFirstPaid(theTransaction.fund,userId)
-                }
-                if(theTransaction.type =="ORDER"){
-                    let order = await checkExistThenGet(theTransaction.order, Order, { deleted: false });
-                    order.status  = 'ACCEPTED'
-                    await order.save();
-                }
-                console.log("kkk",process.env.Securitykey)
-                let transactionId = theTransaction.id;
-                let encryptedId = await encryptedData(transactionId.toString(),process.env.Securitykey)
-                //console.log(req.originalUrl)
-                let url = req.protocol + '://edyouhub.com/tax-invoice/'+encryptedId;
-                let text = 'رابط الفاتوره الضريبيه الخاصه بك هو : '
-                //sendEmail(user.email,url, text)
-                theTransaction.billUrl = url;
-                await theTransaction.save();
-                console.log("url",url)
-                let reports = {
-                    "action":"Payment Process 2",
-                    "type":"PAYMENT",
-                    "deepId":theTransaction._id,
-                    "user": theTransaction.user
-                };
-                await Report.create({...reports });
-            }
-            
+            await callBack(data.merchantRefNumber,data.orderStatus,data.paymentMethod,data)
             res.send({
                 success: true,
             });

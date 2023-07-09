@@ -128,6 +128,11 @@ const courseSchema=new Schema({
     oldPrice: {
         type:Number,
     },
+    discountType: {
+        type: String,
+        enum:['FIXED','RATIO'],
+        default:'RATIO',
+    },
     discount:{
         type:Number,
         default:0

@@ -168,7 +168,12 @@ export default {
             body('certificateName').optional(),
             body('introVideo').optional(),
             body('ownerType').optional(),
-            body('discount').optional()
+            body('discount').optional().isNumeric().withMessage((value) => {
+                return req.__('discount.numeric', { value});
+            }),
+            body('discountType').optional().isNumeric().withMessage((value) => {
+                return req.__('discount.numeric', { value});
+            })
             
         ];
         return validations;

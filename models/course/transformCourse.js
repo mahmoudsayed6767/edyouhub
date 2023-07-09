@@ -84,6 +84,8 @@ export async function transformCourseById(e,lang,myUser,userId,owner = false) {
         oldPrice:e.oldPrice,
         totalDuration:e.totalDuration,
         isAttendance:userId?isInArray(myUser.attendedCourses,e._id):false,
+        discount:e.discount,
+        discountType:e.discountType,
         createdAt:e.createdAt,
     }
     if(e.business){

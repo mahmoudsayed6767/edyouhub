@@ -32,8 +32,13 @@ const PackageSchema=new Schema({
         type: Number,
         required: true,
     },
-    discount: {
-        type: Number,
+    discountType: {
+        type: String,
+        enum:['FIXED','RATIO'],
+        default:'RATIO',
+    },
+    discount:{
+        type:Number,
         default:0
     },
     oldCost: {

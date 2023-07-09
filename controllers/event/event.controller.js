@@ -151,7 +151,13 @@ export default {
                 return true;
             }),
             body('imgs').optional(),
-            body('ownerType').optional()
+            body('ownerType').optional(),
+            body('discount').optional().isNumeric().withMessage((value) => {
+                return req.__('discount.numeric', { value});
+            }),
+            body('discountType').optional().isNumeric().withMessage((value) => {
+                return req.__('discount.numeric', { value});
+            })
             
         ];
         return validations;

@@ -8,6 +8,7 @@ export async function transformPackage(e,lang) {
         duration: e.duration,
         cost:e.cost,
         discount:e.discount,
+        discountType:e.discountType,
         oldCost:e.oldCost,
         type:e.type,
         badgeType:e.badgeType,

@@ -63,7 +63,7 @@ export default {
         try {
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
-            let {viewPlaceType,status,owner,userId,type,business,ownerType,event,dataType,group} = req.query
+            let {viewPlaceType,status,owner,type,business,ownerType,event,dataType,group} = req.query
             let query = {deleted: false,status:'ACCEPTED',group:null };
             if(group) query.group = group
             if(status) query.status = status
@@ -78,10 +78,8 @@ export default {
             if(business) query.business = business;
             if(ownerType) query.ownerType = ownerType;
             if(event) query.event = event;
-            let myUser
-            if(userId){
-                myUser = await checkExistThenGet(userId, User)
-            }
+            let myUser = await checkExistThenGet(req.user._id, User)
+            
             if(viewPlaceType){
                 query.viewPlaceType = viewPlaceType
                 if(viewPlaceType == "WALL"){
@@ -109,7 +107,13 @@ export default {
                 .skip((page - 1) * limit).then(async(data)=>{
                     let newdata =[]
                     await Promise.all( data.map(async(e)=>{
-                        let index = await transformPost(e,lang,myUser,userId)
+                        let index = await transformPost(e,lang,myUser,req.user._id)
+                        index.show = true;
+                        if(group){
+                            if(!await GroupParticipant.findOne({ user: req.user._id, group: group,status:'ACCEPTED',deleted:false})){
+                                index.show = false
+                            }
+                        }
                         newdata.push(index)
                     }))
                     const count = await Post.countDocuments(query);
@@ -161,6 +165,12 @@ export default {
                     let newdata =[]
                     await Promise.all( data.map(async(e)=>{
                         let index = await transformPost(e,lang,myUser)
+                        index.show = true;
+                        if(group){
+                            if(!await GroupParticipant.findOne({ user: req.user._id, group: group,status:'ACCEPTED',deleted:false})){
+                                index.show = false
+                            }
+                        }
                         newdata.push(index)
                     }))
                     res.send({success:true,data:newdata});

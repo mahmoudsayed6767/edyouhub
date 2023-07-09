@@ -57,6 +57,10 @@ const transactionSchema = new Schema({
         type:Number,
         ref:'course',
     },
+    coupon:{
+        type:Number,
+        ref:'coupon',
+    },
     type:{
         type:String,
         required:true,
