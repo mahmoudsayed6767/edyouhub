@@ -1,6 +1,7 @@
 
 export async function transformStory(e,lang) {
     let index ={
+        title:e.title,
         content:e.content,
         preview:e.preview,
         video:e.video,

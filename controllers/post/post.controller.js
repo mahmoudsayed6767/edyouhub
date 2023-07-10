@@ -90,9 +90,11 @@ export default {
             if(viewPlaceType){
                 query.viewPlaceType = viewPlaceType
                 if(viewPlaceType == "WALL"){
-
                     let owners = myUser.connections
+                    console.log("owners",owners)
                     let business = myUser.following
+                    console.log("business",business)
+
                     Object.assign(query ,{
                         $and: [
                             { $or: [

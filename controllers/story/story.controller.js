@@ -82,6 +82,7 @@ export default {
 
     validateBody(isUpdate = false) {
         let validations = [
+            body('title').optional(),
             body('content').optional(),
             body('business').optional().isNumeric().withMessage((value, { req}) => {
                 return req.__('business.numeric', { value});
