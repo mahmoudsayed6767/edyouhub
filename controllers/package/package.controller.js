@@ -116,36 +116,16 @@ export default {
             }).isIn(['FIRST','TOP','NORMAL']).withMessage((value, { req}) => {
                 return req.__('dataView.invalid', { value});
             }),
-            body('createEvents').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('createEvents.required', { value});
-            }),
-            body('createReels').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('createReels.required', { value});
-            }),
-            body('createGroups').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('createGroups.required', { value});
-            }),
-            body('createBusiness').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('createBusiness.required', { value});
-            }),
-            body('createPosts').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('createPosts.required', { value});
-            }),
-            body('createCourses').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('createCourses.required', { value});
-            }),
-            body('createVacancies').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('createVacancies.required', { value});
-            }),
-            body('createAdmissions').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('createAdmissions.required', { value});
-            }),
-            body('enableFollow').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('enableFollow.required', { value});
-            }),
-            body('sendingMessages').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('sendingMessages.required', { value});
-            }),
+            body('createEvents').optional(),
+            body('createReels').optional(),
+            body('createGroups').optional(),
+            body('createBusiness').optional(),
+            body('createPosts').optional(),
+            body('createCourses').optional(),
+            body('createVacancies').optional(),
+            body('createAdmissions').optional(),
+            body('enableFollow').optional(),
+            body('sendingMessages').optional(),
         ];
     },
     //add package

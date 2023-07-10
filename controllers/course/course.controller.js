@@ -130,9 +130,7 @@ export default {
                 }
                 return true;
             }),
-            body('paymentMethod').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('paymentMethod.required', { value});
-            }).isIn(['CASH','INSTALLMENT'])
+            body('paymentMethod').optional().isIn(['CASH','INSTALLMENT'])
             .withMessage((value, { req}) => {
                 return req.__('paymentMethod.invalid', { value});
             }),

@@ -28,12 +28,14 @@ export default {
                 };
             }
             if(type) query.type = type;
+            console.log(query);
             await Coupon.find(query)
                 .limit(limit)
                 .skip((page - 1) * limit).sort({ _id: -1 })
                 .then(async (data) => {
                     var newdata = [];
                     await Promise.all(data.map(async(e) =>{
+                        console.log(e._id)
                         newdata.push({
                             discount:e.discount,
                             discountType:e.discountType,
@@ -46,14 +48,10 @@ export default {
                             id:e._id,
                         });
                     }))
-                    const count = await Coupon.countDocuments({deleted: false });
+                    const count = await Coupon.countDocuments(query);
                     const pageCount = Math.ceil(count / limit);
                     res.send(new ApiResponse(newdata, page, pageCount, limit, count, req));
                 })
-          
-
-
-           
         } catch (err) {
             next(err);
         }
@@ -123,7 +121,7 @@ export default {
 
                     let coupon = await Coupon.findOne(query).lean();
                     if (coupon)
-                        throw  req.__('couponNumber.duplicated')
+                        throw req.__('couponNumber.duplicated')
 
                     return true;
                 }),
@@ -166,9 +164,9 @@ export default {
     async findById(req, res, next) {        
         try {
             let { couponId } = req.params;
-            await checkExist(couponId, Coupon, { deleted: false });
-            let Coupon = await Coupon.findById(couponId);
-            res.send({success: true,data:Coupon});
+            await checkExist(couponId, Coupon);
+            let coupon = await Coupon.findById(couponId);
+            res.send({success: true,data:coupon});
         } catch (err) {
             next(err);
         }
