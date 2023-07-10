@@ -94,12 +94,10 @@ export default {
             body('oldCost').optional().isNumeric().withMessage((value) => {
                 return req.__('oldCost.numeric', { value});
             }),
-            body('discount').optional().isNumeric().withMessage((value) => {
+            body('discount').optional().isNumeric().withMessage((value, { req}) => {
                 return req.__('discount.numeric', { value});
             }),
-            body('discountType').optional().isNumeric().withMessage((value) => {
-                return req.__('discount.numeric', { value});
-            }),
+            body('discountType').optional(),
 
             body('type').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('type.required', { value});

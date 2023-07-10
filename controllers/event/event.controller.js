@@ -152,12 +152,10 @@ export default {
             }),
             body('imgs').optional(),
             body('ownerType').optional(),
-            body('discount').optional().isNumeric().withMessage((value) => {
+            body('discount').optional().isNumeric().withMessage((value, { req}) => {
                 return req.__('discount.numeric', { value});
             }),
-            body('discountType').optional().isNumeric().withMessage((value) => {
-                return req.__('discount.numeric', { value});
-            })
+            body('discountType').optional()
             
         ];
         return validations;
