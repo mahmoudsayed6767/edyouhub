@@ -65,7 +65,14 @@ export default {
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
             let {viewPlaceType,status,owner,type,business,ownerType,event,dataType,group} = req.query
             let query = {deleted: false,status:'ACCEPTED',group:null };
-            if(group) query.group = group
+            if(group){
+                query.group = group;
+                if(group){
+                    if(!await GroupParticipant.findOne({ user: req.user._id, group: group,status:'ACCEPTED',deleted:false})){
+                        return next(new ApiError(403, i18n.__('notIn.group')));
+                    }
+                }
+            }
             if(status) query.status = status
             if(status == "ALL") query.status = {$nin:['PENDING', 'ACCEPTED','REJECTED']}
             if(owner) query.owner = owner;
