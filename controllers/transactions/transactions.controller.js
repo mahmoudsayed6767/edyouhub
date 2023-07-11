@@ -28,6 +28,7 @@ import moment from "moment";
 import EventAttendance from "../../models/event/eventAttendance.model"
 import Business from "../../models/business/business.model"
 import CourseParticipant from "../../models/course/courseParticipant.model";
+import Course from "../../models/course/course.model";
 
 const populateQuery2 = [
     {path: 'package', model: 'package'},
@@ -50,14 +51,14 @@ const populateQuery2 = [
 const payPremium = async (premiums,client) => {
     for (let thePremium of premiums) {
         console.log("thePremium",thePremium)
-        let premium = await checkExistThenGet(thePremium, Premium);
+        let premium = await checkExistThenGet(thePremium, Premium,{deleted:false});
         if(premium.status == "PAID")
             throw new ApiError(500, i18n.__('premium.paid'));
         premium.status = 'PAID';
         premium.paidDate = premium.installmentDate;
         await premium.save();
         if(premium.fund){
-            let fund = await checkExistThenGet(premium.fund, Fund);
+            let fund = await checkExistThenGet(premium.fund, Fund,{deleted:false});
             if(premium.lastMonth == true){
                 fund.status = "COMPLETED"
                 await fund.save();
@@ -80,11 +81,11 @@ const payPremium = async (premiums,client) => {
             await Notif.create({...notif,resource:client,target:fund.owner,premium:premium.id});
         }
         if(premium.fees){
-            let fees = await checkExistThenGet(premium.fees, Fees);
+            let fees = await checkExistThenGet(premium.fees, Fees,{deleted:false});
             let setting = await Setting.findOne({deleted: false})
             let cashBack = (premium.cost * setting.feesCashBackRatio) / 100 
             console.log("cashBack",cashBack)
-            let fundOwner = await checkExistThenGet(client, User)
+            let fundOwner = await checkExistThenGet(client, User,{deleted:false})
             fundOwner.balance = fundOwner.balance + cashBack
             fundOwner.cashBack = true
             await fundOwner.save();
@@ -111,6 +112,37 @@ const payPremium = async (premiums,client) => {
             }
             await Notif.create({...notif,resource:client,target:client,premium:premium.id});
         }
+        if(premium.course){
+            let courseParticipant = await CourseParticipant.findOne({ user: client, course: premium.course,deleted:false})
+            if(courseParticipant){
+                if(premium.lastMonth == true){
+                    courseParticipant.status = "DONE"
+                    await courseParticipant.save();
+                }
+            }else{
+                let attendedUser = await checkExistThenGet(client, User,{deleted:false});
+                let arr = attendedUser.attendedCourses;
+                var found = arr.find((e) => e == premium.course); 
+                if(!found){
+                    attendedUser.attendedCourses.push(premium.course);
+                    await attendedUser.save();
+                    await CourseParticipant.create({
+                        user:client,
+                        course:premium.course,
+                        status:'PAID',
+                        paymentMethod:'CASH'
+                    });
+                    let reports = {
+                        "action":"user will attend to course",
+                        "type":"COURSE",
+                        "deepId":premium.course,
+                        "user": client
+                    };
+                    await Report.create({...reports});
+                }
+            }
+            
+        }
         let reports = {
             "action":"Pay Premium",
             "type":"PREMIUMS",
@@ -123,7 +155,7 @@ const payPremium = async (premiums,client) => {
     return true
 };
 const payFirstPaid = async (theFund,client) => {
-    let fund = await checkExistThenGet(theFund, Fund);
+    let fund = await checkExistThenGet(theFund, Fund,{deleted:false});
     if(fund.status != "PENDING")
         throw new ApiError(500, i18n.__('fund.pending'));
     fund.status = 'STARTED';
@@ -135,14 +167,14 @@ const payFirstPaid = async (theFund,client) => {
     console.log("cashBack",cashBack)
     
     //add cashBack to fund owner
-    let fundOwner = await checkExistThenGet(fund.owner, User)
+    let fundOwner = await checkExistThenGet(fund.owner, User,{deleted:false})
     fundOwner.balance = fundOwner.balance + cashBack
     fundOwner.cashBack = true
     await fundOwner.save();
     //add cashBack to affiliate
     if(fundOwner.affiliate){
         let affiliateCashBack = (fund.totalFees * setting.affiliateRatio) / 100 
-        let affiliate = await checkExistThenGet(fundOwner.affiliate, User)
+        let affiliate = await checkExistThenGet(fundOwner.affiliate, User,{deleted:false})
         affiliate.balance = affiliate.balance + affiliateCashBack
         await affiliate.save();
     }
@@ -167,6 +199,7 @@ const payFirstPaid = async (theFund,client) => {
         
         await Premium.create({
             fund:fund.id,
+            owner: fund.user,
             receiptNum:i+1,
             student: fund.students,
             installmentDate:installmentDate,
@@ -184,7 +217,7 @@ const payFirstPaid = async (theFund,client) => {
     await Report.create({...reports});
 };
 const payOfferBooking = async (theOfferBooking,client) => {
-    let offerBooking = await checkExistThenGet(theOfferBooking, OfferBooking, { deleted: false})
+    let offerBooking = await checkExistThenGet(theOfferBooking, OfferBooking,{deleted:false}, { deleted: false})
     console.log(offerBooking)
     let user = await checkExistThenGet(client, User, { deleted: false})
     for (let theOffer of offerBooking.offers) {
@@ -295,23 +328,54 @@ const payEvent = async (theEvent,userId) => {
     await event.save();
     return true;
 };
-const payCourse = async (theCourse,userId) => {
-    let attendedUser = await checkExistThenGet(userId, User);
+const payCourse = async (courseId,userId,paymentMethod) => {
+    let theCourse = await checkExistThenGet(courseId, Course,{deleted:false});
+    let attendedUser = await checkExistThenGet(userId, User,{deleted:false});
     let arr = attendedUser.attendedCourses;
-    var found = arr.find((e) => e == theCourse); 
+    var found = arr.find((e) => e == courseId); 
     if(!found){
-        attendedUser.attendedCourses.push(theCourse);
-        await attendedUser.save();
+        attendedUser.attendedCourses.push(courseId);
+        
         await CourseParticipant.create({
             user:userId,
-            course:theCourse,
+            course:courseId,
             status:'PAID',
-            paymentMethod:'CASH'
+            paymentMethod:paymentMethod
         });
+        if(paymentMethod == "INSTALLMENT"){
+            //create premuims
+            console.log(theCourse.installments)
+            let payments = theCourse.installments
+            for(var i=0; i < payments.length; i++) {
+                let payment = payments[i];
+                let paidDate = new Date()
+                let installmentDate = new Date(paidDate.setMonth(paidDate.getMonth() + i));
+                console.log(installmentDate)
+                let lastMonth = false
+                if(payments.length - 1 == i) lastMonth = true
+                let thePremium = await Premium.create({
+                    course:courseId,
+                    type:'COURSE',
+                    receiptNum:i+1,
+                    owner: userId,
+                    installmentDate:installmentDate,
+                    cost:payment.price,
+                    lastPremium:lastMonth
+                });
+                let reports = {
+                    "action":"Create premium",
+                    "type":"PREMIUMS",
+                    "deepId":thePremium.id,
+                    "user": userId
+                };
+                await Report.create({...reports });
+            }
+        }
+        await attendedUser.save();
         let reports = {
             "action":"user will attend to course",
             "type":"COURSE",
-            "deepId":theCourse,
+            "deepId":courseId,
             "user": userId
         };
         await Report.create({...reports});
@@ -334,8 +398,7 @@ const callBack = async (merchantRefNumber,status,paymentMethod,data) => {
         theTransaction.paymentObject = data?JSON.stringify(data):null
         let userId = theTransaction.user
 
-        let user = await checkExistThenGet(userId, User)
-        console.log("user",user)
+        let user = await checkExistThenGet(userId, User,{deleted:false})
         if(theTransaction.type =="CASHBACK-PACKAGE"){
             let cashbackPackage = await checkExistThenGet(theTransaction.cashbackPackage, CashbackPackage, { deleted: false });
             user.balance  = user.balance + cashbackPackage.coins
@@ -348,7 +411,8 @@ const callBack = async (merchantRefNumber,status,paymentMethod,data) => {
             await payEvent(theTransaction.event,userId)
         }
         if(theTransaction.type =="COURSE"){
-            await payCourse(theTransaction.course,userId)
+            console.log("course")
+            await payCourse(theTransaction.course,userId,theTransaction.coursePaymentMethod)
         }
         if(theTransaction.type =="OFFER"){
             await payOfferBooking(theTransaction.offerBooking,userId)
@@ -365,7 +429,6 @@ const callBack = async (merchantRefNumber,status,paymentMethod,data) => {
             order.status  = 'ACCEPTED'
             await order.save();
         }
-        console.log("kkk",process.env.Securitykey)
         let transactionId = theTransaction.id;
         let encryptedId = await encryptedData(transactionId.toString(),process.env.Securitykey)
         let url = 'https://edyouhub.com/tax-invoice/'+encryptedId;
@@ -373,7 +436,6 @@ const callBack = async (merchantRefNumber,status,paymentMethod,data) => {
         //sendEmail(user.email,url, text)
         theTransaction.billUrl = url;
         await theTransaction.save();
-        console.log("url",url)
         let reports = {
             "action":"Payment Process 2",
             "type":"PAYMENT",
@@ -451,11 +513,16 @@ export default {
             }
             if(validatedBody.type =="COURSE"){
                 transactionData.course = validatedBody.course
+                if(validatedBody.coursePaymentMethod){
+                    transactionData.coursePaymentMethod = validatedBody.coursePaymentMethod;
+                }else{
+                    transactionData.coursePaymentMethod = 'CASH'
+                }
             }
             
             if(validatedBody.type =="FUND-FIRSTPAID"){
                 transactionData.fund = validatedBody.fund
-                let fund = await checkExistThenGet(validatedBody.fund, Fund);
+                let fund = await checkExistThenGet(validatedBody.fund, Fund,{deleted:false});
                 fund.active = true;
                 await fund.save();
             }

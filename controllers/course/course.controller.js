@@ -21,6 +21,7 @@ import Area from "../../models/area/area.model"
 import CourseTutorial from "../../models/course/courseTutorial.model";
 import { toImgUrl } from "../../utils";
 import bcrypt from 'bcryptjs';
+import Premium from "../../models/premium/premium.model";
 
 const populateQuery = [
     { path: 'business', model: 'business' },
@@ -598,6 +599,34 @@ export default {
                     attendedUser.attendedCourses.push(courseId);
                     await attendedUser.save();
                     await CourseParticipant.create({ ...validatedBody });
+                    if(validatedBody.paymentMethod == "INSTALLMENT"){
+                        //create premuims
+                        let payments = course.installments
+                        for(var i=0; i < payments.length; i++) {
+                            let payment = payments[i];
+                            let paidDate = new Date()
+                            let installmentDate = new Date(paidDate.setMonth(paidDate.getMonth() + i));
+                            console.log(installmentDate)
+                            let lastMonth = false
+                            if(payments.length - 1 == i) lastMonth = true
+                            let thePremium = await Premium.create({
+                                course:course.id,
+                                type:'COURSE',
+                                receiptNum:i+1,
+                                owner: validatedBody.user,
+                                installmentDate:installmentDate,
+                                cost:payment.price ,
+                                lastPremium:lastMonth
+                            });
+                            let reports = {
+                                "action":"Create premium",
+                                "type":"PREMIUMS",
+                                "deepId":thePremium.id,
+                                "user": req.user._id
+                            };
+                            await Report.create({...reports });
+                        }
+                    }
                     let reports = {
                         "action":"user will attend to course",
                         "type":"COURSE",

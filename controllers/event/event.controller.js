@@ -363,6 +363,19 @@ export default {
             let { eventId } = req.params;
             let event = await checkExistThenGet(eventId, Event);
             event.deleted = true;
+            /*delete posts under event */
+            let posts = await Post.find({ event: eventId });
+            for (let id of posts) {
+                id.deleted = true;
+                await id.save();
+            }
+            /*delete attendance under event */
+            let eventAttendances = await EventAttendance.find({ event: eventId });
+            for (let id of eventAttendances) {
+                id.deleted = true;
+                await id.save();
+            }
+            
             await event.save();
             let reports = {
                 "action":"Delete event",

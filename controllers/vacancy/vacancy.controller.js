@@ -10,6 +10,7 @@ import { transformVacancy,transformVacancyById } from "../../models/vacancy/tran
 import Business from "../../models/business/business.model";
 import Post from "../../models/post/post.model";
 import BusinessManagement from "../../models/business/businessManagement.model"
+import VacancyRequest from "../../models/vacancyRequest/vacancyRequest.model";
 
 const populateQuery = [
     { path: 'educationSystem', model: 'educationSystem' },
@@ -235,6 +236,18 @@ export default {
                 }
                 if(!isInArray(supervisors,req.user._id))
                     return next(new ApiError(403,  i18n.__('notAllow')));
+            }
+            /*delete posts under vacancy */
+            let posts = await Post.find({ vacancy: vacancyId });
+            for (let id of posts) {
+                id.deleted = true;
+                await id.save();
+            }
+            /*delete vacancyRequests under group */
+            let vacancyRequests = await VacancyRequest.find({ vacancy: vacancyId });
+            for (let id of vacancyRequests) {
+                id.deleted = true;
+                await id.save();
             }
             vacancy.deleted = true;
             await Vacancy.save();

@@ -26,10 +26,11 @@ export default {
     async findAll(req, res, next) {        
         try {
             let lang = i18n.getLocale(req) 
-            let {fund,student,fees,type} = req.query
+            let {fund,student,fees,type,course} = req.query
             let query = {deleted: false};
             if(fund) query.fund = fund
             if(fees) query.fees = fees
+            if(course) query.course = course
             if(type) query.type = type
             if(student) query.student = student
             let sortd = {createdAt: -1}
@@ -56,10 +57,11 @@ export default {
         try {
             let lang = i18n.getLocale(req) 
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
-            let {fund,student,fees,type} = req.query
+            let {fund,student,fees,type,course} = req.query
             let query = {deleted: false};
             if(fund) query.fund = fund
             if(fees) query.fees = fees
+            if(course) query.course = course
             if(type) query.type = type
             if(student) query.student = student
             let sortd = {createdAt: -1}
@@ -123,6 +125,7 @@ export default {
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
                 return next(new ApiError(403, i18n.__('admin.auth')));
             const validatedBody = checkValidations(req);
+            validatedBody.owner = req.user._id
             let thePremium = await Premium.create({ ...validatedBody});
             let reports = {
                 "action":"Create premium",

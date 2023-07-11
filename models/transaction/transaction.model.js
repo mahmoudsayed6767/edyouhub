@@ -57,6 +57,10 @@ const transactionSchema = new Schema({
         type:Number,
         ref:'course',
     },
+    coursePaymentMethod:{
+        type:String,
+        enum:['CASH','INSTALLMENT']
+    },
     coupon:{
         type:Number,
         ref:'coupon',

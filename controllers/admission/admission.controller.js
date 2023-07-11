@@ -12,6 +12,7 @@ import Business from "../../models/business/business.model";
 import Post from "../../models/post/post.model";
 import Faculty from "../../models/faculty/faculty.model";
 import BusinessManagement from "../../models/business/businessManagement.model"
+import AdmissionRequest from "../../models/admissionRequest/admissionRequest.model";
 
 const populateQuery = [
     { path: 'educationSystem', model: 'educationSystem' },
@@ -300,6 +301,7 @@ export default {
             let { admissionId } = req.params;
             
             let admission = await checkExistThenGet(admissionId, Admission);
+            let business = await checkExistThenGet(admission.business,Business);
             let businessManagement = await BusinessManagement.findOne({deleted:false,business:admission.business})
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
                 let supervisors = [business.owner]
@@ -308,6 +310,18 @@ export default {
                 }
                 if(!isInArray(supervisors,req.user._id))
                     return next(new ApiError(403,  i18n.__('notAllow')));
+            }
+            /*delete posts under admission */
+            let posts = await Post.find({ admission: admissionId });
+            for (let id of posts) {
+                id.deleted = true;
+                await id.save();
+            }
+            /*delete admissionRequests under group */
+            let admissionRequests = await AdmissionRequest.find({ admission: admissionId });
+            for (let id of admissionRequests) {
+                id.deleted = true;
+                await id.save();
             }
             admission.deleted = true;
             await Admission.save();

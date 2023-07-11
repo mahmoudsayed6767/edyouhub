@@ -1,6 +1,5 @@
 import Connection from "../../models/connection/connection.model";
 import {transformConnection} from "../../models/connection/transformConnection"
-import { convertLang} from "../shared/shared.controller";
 import ApiError from "../../helpers/ApiError";
 import Report from "../../models/reports/report.model";
 import ApiResponse from "../../helpers/ApiResponse";

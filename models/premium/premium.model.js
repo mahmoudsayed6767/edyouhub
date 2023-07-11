@@ -7,6 +7,10 @@ const premiumSchema = new Schema({
         type: Number,
         required: true
     },
+    owner: {
+        type: Number,
+        ref: 'user',
+    },
     fund: {
         type: Number,
         ref: 'fund',
@@ -15,9 +19,13 @@ const premiumSchema = new Schema({
         type: Number,
         ref: 'fees',
     },
+    course: {
+        type: Number,
+        ref: 'course',
+    },
     type:{
         type: String,
-        enum:['FUND','FEES'],
+        enum:['FUND','FEES','COURSE'],
         default: 'FUND'
     },
     feesType:{
@@ -27,7 +35,7 @@ const premiumSchema = new Schema({
     student: {
         type: [Number],
         ref: 'student',
-        required: true,
+        //required: true,
     },
     cost: {
         type: Number,

@@ -176,10 +176,6 @@ const courseSchema=new Schema({
     secretKey: {
         type: String,
     },
-    discount:{
-        type:Boolean,
-        default:false
-    },
     deleted:{
         type:Boolean,
         default:false

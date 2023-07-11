@@ -890,6 +890,7 @@ export default {
                     receiptNum:i+1,
                     student: fund.students,
                     installmentDate:installmentDate,
+                    owner: fund.owner,
                     cost:cost ,
                     lastPremium:lastMonth
                 });

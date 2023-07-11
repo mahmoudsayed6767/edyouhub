@@ -11,6 +11,8 @@ import User from "../../models/user/user.model"
 import ApiError from '../../helpers/ApiError';
 import { sendNotifiAndPushNotifi } from "../../services/notification-service";
 import Notif from "../../models/notif/notif.model"
+import Post from "../../models/post/post.model";
+
 const populateQuery = [
     { path: 'owner', model: 'user' },
     { path: 'admins', model: 'user' },
@@ -252,6 +254,18 @@ export default {
             let { groupId } = req.params;
             let group = await checkExistThenGet(groupId, Group);
             group.deleted = true;
+            /*delete posts under group */
+            let posts = await Post.find({ group: groupId });
+            for (let id of posts) {
+                id.deleted = true;
+                await id.save();
+            }
+            //remove user from participant
+            let groupParticipant = await GroupParticipant.find({group:groupId})
+            for (const id of groupParticipant) {
+                id.deleted = true;
+                await id.save();
+            }
             await group.save();
             let reports = {
                 "action":"Delete group",
