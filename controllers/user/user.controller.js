@@ -22,6 +22,13 @@ import HigherEducation from "../../models/higherEducation/higherEducation.model"
 import EducationSystem from "../../models/education system/education system.model"
 import Activity from "../../models/user/activity.model";
 import {transformActivity} from "../../models/user/transformActivity"
+import AdmissionRequest from "../../models/admissionRequest/admissionRequest.model";
+import Follow from "../../models/follow/follow.model";
+import VacancyRequest from "../../models/vacancyRequest/vacancyRequest.model";
+import Post from "../../models/post/post.model";
+import Connection from "../../models/connection/connection.model";
+import Notif from "../../models/notif/notif.model";
+
 const populateQuery = [
     { path: 'package', model: 'package' },
 ];
@@ -366,6 +373,48 @@ export default {
             //place delete SUBERVISOR
             if(req.user.type=="PLACE" && req.user.place != user.place){
                 return next(new ApiError(403, i18n.__('admin.auth'))); 
+            }
+            /*delete posts under event */
+            let posts = await Post.find({ event: eventId });
+            for (let id of posts) {
+                id.deleted = true;
+                await id.save();
+            }
+            /*delete admissionRequests under group */
+            let admissionRequests = await AdmissionRequest.find({ owner: userId });
+            for (let id of admissionRequests) {
+                id.deleted = true;
+                await id.save();
+            }
+            /*delete vacancyRequests under group */
+            let vacancyRequests = await VacancyRequest.find({ owner: userId });
+            for (let id of vacancyRequests) {
+                id.deleted = true;
+                await id.save();
+            }
+            //remove messages
+            let msgs = await Message.find({$or: [{to:userId},{from:userId}]});
+            for (let id of msgs) {
+                id.deleted = true;
+                await id.save();
+            }
+            //remove connection
+            let connections = await Connection.find({$or: [{to:userId},{from:userId}]});
+            for (let id of connections) {
+                id.deleted = true;
+                await id.save();
+            }
+            //remove follow
+            let follows = await Follow.find({user:userId});
+            for (let id of follows) {
+                id.deleted = true;
+                await id.save();
+            }
+            //remove notifs
+            let notifs = await Notif.find({$or: [{resource:userId},{target:userId}]});
+            for (let id7 of notifs) {
+                id7.deleted = true;
+                await id7.save();
             }
             user.deleted = true
             await user.save();
