@@ -360,7 +360,8 @@ const payCourse = async (courseId,userId,paymentMethod) => {
                     owner: userId,
                     installmentDate:installmentDate,
                     cost:payment.price,
-                    lastPremium:lastMonth
+                    lastPremium:lastMonth,
+                    status:i==0?'PAID':'PENDING'
                 });
                 let reports = {
                     "action":"Create premium",
