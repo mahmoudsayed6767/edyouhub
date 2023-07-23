@@ -651,11 +651,9 @@ export default {
             if(course.feesType =="WITH-FEES")
                 return next(new ApiError(500,  i18n.__('courseNotFree')));
             validatedBody.course = courseId;
-            //check if user is new or exist
-            let attendedUser = await checkExistThenGet(validatedBody.user, User);
-            
-            validatedBody.user = attendedUser.id
-            if(!await CourseParticipant.findOne({ user: validatedBody.user, course: courseId,deleted:false})){
+            //check if user is new or exist            
+            validatedBody.user = req.user._id
+            if(!await CourseParticipant.findOne({ user: req.user._id, course: courseId,deleted:false})){
                 let arr = attendedUser.attendedCourses;
                 var found = arr.find((e) => e == courseId); 
                 if(!found){
