@@ -651,14 +651,16 @@ export default {
             if(course.feesType =="WITH-FEES")
                 return next(new ApiError(500,  i18n.__('courseNotFree')));
             validatedBody.course = courseId;
-            //check if user is new or exist            
+            //check if user is new or exist
+            let user = await checkExistThenGet(req.user._id, User);
+            
             validatedBody.user = req.user._id
             if(!await CourseParticipant.findOne({ user: req.user._id, course: courseId,deleted:false})){
-                let arr = attendedUser.attendedCourses;
+                let arr = user.attendedCourses;
                 var found = arr.find((e) => e == courseId); 
                 if(!found){
-                    attendedUser.attendedCourses.push(courseId);
-                    await attendedUser.save();
+                    user.attendedCourses.push(courseId);
+                    await user.save();
                     await CourseParticipant.create({ ...validatedBody });
                     let reports = {
                         "action":"user enrolled to course",
