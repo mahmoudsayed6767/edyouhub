@@ -350,7 +350,7 @@ export default {
             
             post.deleted = true;
             await post.save();
-            await Activity.create({user:req.user._id,action:'REMOVE-POST',post:postId});
+            //await Activity.create({user:req.user._id,action:'REMOVE-POST',post:postId});
 
             let reports = {
                 "action":"Delete Post",

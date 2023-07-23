@@ -643,6 +643,41 @@ export default {
             next(error);
         }
     },
+    async enrollFreeCourse(req, res, next) {        
+        try {
+            const validatedBody = checkValidations(req);
+            let {courseId} = req.params
+            let course = await checkExistThenGet(courseId, Course);
+            if(course.feesType =="WITH-FEES")
+                return next(new ApiError(500,  i18n.__('courseNotFree')));
+            validatedBody.course = courseId;
+            //check if user is new or exist
+            let attendedUser = await checkExistThenGet(validatedBody.user, User);
+            
+            validatedBody.user = attendedUser.id
+            if(!await CourseParticipant.findOne({ user: validatedBody.user, course: courseId,deleted:false})){
+                let arr = attendedUser.attendedCourses;
+                var found = arr.find((e) => e == courseId); 
+                if(!found){
+                    attendedUser.attendedCourses.push(courseId);
+                    await attendedUser.save();
+                    await CourseParticipant.create({ ...validatedBody });
+                    let reports = {
+                        "action":"user enrolled to course",
+                        "type":"COURSE",
+                        "deepId":courseId,
+                        "user": req.user._id
+                    };
+                    await Report.create({...reports});
+                }
+            }
+            res.status(201).send({
+                success:true,
+            });
+        } catch (error) {
+            next(error);
+        }
+    },
     async getCourseParticipants(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
@@ -723,6 +758,7 @@ export default {
                 videos.push(val)
             }
             validatedBody.videos = videos;
+            course.sessionsNo =  course.sessionsNo + videos.length
             let courseToturial = await CourseTutorial.create({ ...validatedBody });
             let tutorials = course.tutorials
             tutorials.push(courseToturial.id)
@@ -843,6 +879,7 @@ export default {
                             duration:validatedBody.duration,
                         })
                     }
+                    course.sessionsNo = course.sessionsNo + 1
                 }
             }else{
                 //remove from video
@@ -852,9 +889,11 @@ export default {
                         arr.splice(index, 1);
                     }
                 }
+                course.sessionsNo = course.sessionsNo - 1
             }
             section.videos = arr;
             await section.save();
+            await course.save();
             let reports = {
                 "action":"Update section video",
                 "type":"COURSES",
@@ -892,6 +931,7 @@ export default {
                     arr.splice(i, 1);
                 }
             }
+            course.sessionsNo = course.sessionsNo + section.videos.length
             course.tutorials = arr;
             await course.save();
             section.deleted = true;

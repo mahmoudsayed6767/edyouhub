@@ -230,6 +230,7 @@ export default {
                 });
                 index.totalFunds = totalFunds
                 index.business = await Business.countDocuments({deleted: false,status:'ACCEPTED',owner:id})
+                index.connections = e.connections.length
                 res.send({success:true,data:index});
             })
             
@@ -259,6 +260,7 @@ export default {
                         { $or: [
                             {fullname: { $regex: '.*' + search + '.*' , '$options' : 'i'  }}, 
                             {phone: { $regex: '.*' + search + '.*', '$options' : 'i'  }}, 
+                            {email: { $regex: '.*' + search + '.*', '$options' : 'i'  }}, 
                           ] 
                         },
                         {deleted: false},
@@ -326,6 +328,8 @@ export default {
                         { $or: [
                             {fullname: { $regex: '.*' + search + '.*' , '$options' : 'i'  }}, 
                             {phone: { $regex: '.*' + search + '.*', '$options' : 'i'  }}, 
+                            {email: { $regex: '.*' + search + '.*', '$options' : 'i'  }}, 
+
                           ] 
                         },
                         {deleted: false},

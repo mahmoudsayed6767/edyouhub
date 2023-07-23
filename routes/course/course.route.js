@@ -43,6 +43,11 @@ router.route('/:courseId/addNewUserParticipant')
         courseController.validateAddParticipantBody(true),
         courseController.addParticipant
     )
+router.route('/:courseId/enroll')
+    .put(
+        requireAuth,
+        courseController.enrollFreeCourse
+    )
 router.route('/:courseId/getCourseParticipates')
     .get(requireAuth,courseController.getCourseParticipants);
 

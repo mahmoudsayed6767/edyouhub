@@ -25,6 +25,7 @@ import Subject from "../../models/subject/subject.model";
 import {transformUser } from '../../models/user/transformUser';
 import User from "../../models/user/user.model";
 import { ValidationError } from "mongoose";
+import Follow from "../../models/follow/follow.model";
 
 //validate location
 function validatedLocation(location) {
@@ -416,6 +417,7 @@ export default {
                 .then(async(e) => {
                     let business = await transformBusinessById(e,lang,myUser,userId)
                     business.management = await BusinessManagement.findOne({deleted:false,business:e._id})
+                    business.followersCount = await Follow.countDocuments({business:e._id,deleted:false})
                     res.send({
                         success:true,
                         data:business
