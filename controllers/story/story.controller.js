@@ -144,9 +144,11 @@ export default {
             let { storyId } = req.params;
             let story = await checkExistThenGet(storyId, Story, { deleted: false });
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
-                let business = await checkExistThenGet(story.business,Business,{deleted:false})
-                if(business.owner != req.user._id)
-                    return next(new ApiError(403,  i18n.__('notAllow')));
+                if(story.type =="BUSINESS"){
+                    let business = await checkExistThenGet(story.business,Business,{deleted:false})
+                    if(business.owner != req.user._id)
+                        return next(new ApiError(403,  i18n.__('notAllow')));
+                }
             }
             const validatedBody = checkValidations(req);
             //upload video
@@ -192,9 +194,11 @@ export default {
             let { storyId } = req.params;
             let story = await checkExistThenGet(storyId, Story, { deleted: false });
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
-                let business = await checkExistThenGet(Story.business,Business,{deleted:false})
-                if(business.owner != req.user._id)
-                    return next(new ApiError(403,  i18n.__('notAllow')));
+                if(story.type =="BUSINESS"){
+                    let business = await checkExistThenGet(story.business,Business,{deleted:false})
+                    if(business.owner != req.user._id)
+                        return next(new ApiError(403,  i18n.__('notAllow')));
+                }
             }
             story.deleted = true;
             await story.save();
