@@ -351,7 +351,12 @@ export default {
                 if(req.user.type =="USER" && req.user._id != post.owner)
                     return next(new ApiError(403, i18n.__('admin.auth')));
             }
-            
+            /*delete activites under post */
+            let activites = await Activity.find({ post: postId });
+            for (let id of activites) {
+                id.deleted = true;
+                await id.save();
+            }
             post.deleted = true;
             await post.save();
             //await Activity.create({user:req.user._id,action:'REMOVE-POST',post:postId});
