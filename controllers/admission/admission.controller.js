@@ -17,7 +17,10 @@ import AdmissionRequest from "../../models/admissionRequest/admissionRequest.mod
 const populateQuery = [
     { path: 'educationSystem', model: 'educationSystem' },
     { path: 'educationInstitution', model: 'educationInstitution' },
-    { path: 'business', model: 'business' },
+    {
+        path: 'business', model: 'business',
+        populate: { path: 'package', model: 'package' },
+    },
     { path: 'grades', model: 'grade' },
     { path: 'faculties.grades', model: 'grade' },
     { path: 'faculties.faculty', model: 'faculty' },

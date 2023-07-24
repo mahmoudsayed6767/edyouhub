@@ -15,7 +15,10 @@ import VacancyRequest from "../../models/vacancyRequest/vacancyRequest.model";
 const populateQuery = [
     { path: 'educationSystem', model: 'educationSystem' },
     { path: 'educationInstitution', model: 'educationInstitution' },
-    { path: 'business', model: 'business' },
+    {
+        path: 'business', model: 'business',
+        populate: { path: 'package', model: 'package' },
+    },
 ];
 export default {
     //validate body

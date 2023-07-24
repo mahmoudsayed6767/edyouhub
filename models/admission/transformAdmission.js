@@ -23,10 +23,19 @@ export async function transformAdmission(e,lang) {
         }
     }
     if(e.business){
-        index.business = {
+        let business = {
             name:lang=="ar"?e.business.name_ar:e.business.name_en,
             img:e.business.img,
             id: e.business._id,
+        }
+        if(e.business.package){
+            business.package = {
+                title:lang=="ar"?e.business.package.title_ar:e.business.package.title_en,
+                type:e.business.package.type,
+                badgeType:e.business.package.badgeType,
+                dataView:e.business.package.dataView,
+                id: e.business.package._id,
+            }
         }
     }
     if(e.educationInstitution){
@@ -97,10 +106,19 @@ export async function transformAdmissionById(e,lang) {
         }
     }
     if(e.business){
-        index.business = {
+        let business = {
             name:lang=="ar"?e.business.name_ar:e.business.name_en,
             img:e.business.img,
             id: e.business._id,
+        }
+        if(e.business.package){
+            business.package = {
+                title:lang=="ar"?e.business.package.title_ar:e.business.package.title_en,
+                type:e.business.package.type,
+                badgeType:e.business.package.badgeType,
+                dataView:e.business.package.dataView,
+                id: e.business.package._id,
+            }
         }
     }
     /*grades*/
