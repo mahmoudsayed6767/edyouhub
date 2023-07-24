@@ -256,8 +256,8 @@ export default {
                 if(group.postedType == "BY-REQUEST"){
                     let arr = group.admins;
                     var found = arr.find((e) => e == validatedBody.group); 
-                    if(!found){
-                        validatedBody.status = "PENDING"
+                    if(found){
+                        validatedBody.status = "ACCEPTED"
                     }
                 }
             }
