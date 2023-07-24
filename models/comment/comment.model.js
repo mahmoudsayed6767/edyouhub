@@ -5,17 +5,27 @@ const commentSchema = new Schema({
         type: Number,
         required: true
     },
-    type: {
+    ownerType: {
         type: String,
-        enum:['MAIN','REPLY'],
-        required: true,
-        default: 'MAIN'
+        enum:['USER','BUSINESS'],
+        default: 'USER'
     },
     user: {
         type: Number,
         ref: 'user',
         required: true
     },
+    business: {
+        type: Number,
+        ref: 'business',
+    },
+    type: {
+        type: String,
+        enum:['MAIN','REPLY'],
+        required: true,
+        default: 'MAIN'
+    },
+    
     comment: {
         type: String,
         required: true

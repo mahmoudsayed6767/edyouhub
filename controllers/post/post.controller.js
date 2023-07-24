@@ -57,6 +57,10 @@ const populateQueryUser =[
 ]
 const populateQueryComment = [
     { path: 'user', model: 'user'},
+    {
+        path: 'business', model: 'business',
+        populate: { path: 'package', model: 'package' },
+    },
 ];
 export default {
     async findAll(req, res, next) {        
@@ -496,6 +500,7 @@ export default {
             body('comment').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('comment.required', { value});
             }),
+            body('business').optional()
         ];
         return validations;
     },
@@ -504,6 +509,7 @@ export default {
             const validatedBody = checkValidations(req);
             validatedBody.user = req.user._id;
             validatedBody.post = req.params.postId
+            if(validatedBody.business) validatedBody.ownerType = 'BUSINESS'
             let thePost = await checkExistThenGet(req.params.postId, Post);
             thePost.commentsCount = thePost.commentsCount + 1;
             await thePost.save();
