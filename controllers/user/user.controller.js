@@ -437,6 +437,7 @@ export default {
     },
     validateUpdatedUser(isUpdate = true) {
         let validation = [
+            body('bio').optional(),
             body('affiliateCode').optional(),
             body('fullname').optional(),
             body('phone').optional()

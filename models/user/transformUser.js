@@ -50,6 +50,7 @@ export async function transformUserById(e,lang,myUser,userId) {
         phone:e.phone,
         affiliate:e.affiliate,
         id:e._id,
+        bio:e.bio,
         type:e.type,
         accountType:e.accountType,
         phoneVerify:e.phoneVerify,

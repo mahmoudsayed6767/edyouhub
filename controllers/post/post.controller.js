@@ -460,7 +460,7 @@ export default {
             /*reduce the likes count */
             thePost.likesCount = thePost.likesCount - 1;
             await thePost.save();
-            await Activity.create({user:req.user._id,action:'REMOVE-LIKE',post:postId});
+            //await Activity.create({user:req.user._id,action:'REMOVE-LIKE',post:postId});
 
             let reports = {
                 "action":"Remove Like",
@@ -544,7 +544,7 @@ export default {
             let thePost = await checkExistThenGet(comment.post, Post);
             thePost.commentsCount = thePost.commentsCount - 1;
             await thePost.save();
-            await Activity.create({user:req.user._id,action:'REMOVE-COMMENT',post:comment.post});
+            //await Activity.create({user:req.user._id,action:'REMOVE-COMMENT',post:comment.post});
 
             let reports = {
                 "action":"Remove Comment",
