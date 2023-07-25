@@ -56,6 +56,8 @@ export async function transformVacancyById(e,lang) {
                 id: e.business.package._id,
             }
         }
+        index.business = business
+
     }
     if(e.educationInstitution){
         index.educationInstitution = {
