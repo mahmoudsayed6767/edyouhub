@@ -121,6 +121,8 @@ export async function transformAdmissionById(e,lang) {
                 id: e.business.package._id,
             }
         }
+        index.business = business
+
     }
     /*grades*/
     let grades=[]

@@ -15,7 +15,10 @@ import ApiError from "../../helpers/ApiError";
 
 const populateQuery = [
     { path: 'owner', model: 'user' },
-    { path: 'business', model: 'business' },
+    {
+        path: 'business', model: 'business',
+        populate: { path: 'package', model: 'package' },
+    },
     { path: 'vacancy', model: 'vacancy' },
 
 ];

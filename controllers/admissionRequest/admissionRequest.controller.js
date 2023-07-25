@@ -22,7 +22,10 @@ const populateQuery = [
     { path: 'country', model: 'country' },
     { path: 'city', model: 'city' },
     { path: 'area', model: 'area' },
-    { path: 'business', model: 'business' },
+    {
+        path: 'business', model: 'business',
+        populate: { path: 'package', model: 'package' },
+    },
     { path: 'faculty', model: 'faculty' },
     { path: 'grade', model: 'grade' },
     { path: 'owner', model: 'user' },
