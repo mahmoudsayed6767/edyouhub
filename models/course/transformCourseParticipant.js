@@ -10,6 +10,7 @@ export async function transformCourseParticipant(e,lang) {
     }
     if(e.course){
         let course={
+            feesType: e.course.feesType,
             price:e.course.price,
             id:e.course._id,
         }
