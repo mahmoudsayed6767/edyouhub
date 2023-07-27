@@ -17,6 +17,10 @@ var message={
         ref:'user',
         required:true
     },
+    business:{
+        type:Number,
+        ref:'business',
+    },
     content:{
         type:String,
         default:""

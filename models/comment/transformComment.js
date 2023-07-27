@@ -5,6 +5,7 @@ export async function transformComment(e,lang) {
         type:e.type,
         post:e.post,
         replies:e.replies,
+        ownerType:e.ownerType,
         id:e._id,
         createdAt: e.createdAt
     }
@@ -23,6 +24,7 @@ export async function transformComment(e,lang) {
                 id: e.business.package._id,
             }
         }
+        index.business = business
     }
     if(e.user){
         let user={

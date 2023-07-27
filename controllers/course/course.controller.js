@@ -12,7 +12,6 @@ import { checkExist, checkExistThenGet,isInArray} from "../../helpers/CheckMetho
 import Branch from "../../models/branch/branch.model";
 import Specialization from "../../models/specialization/specialization.model"
 import CourseParticipant from "../../models/course/courseParticipant.model";
-import {transformUser} from "../../models/user/transformUser"
 import ApiError from "../../helpers/ApiError";
 import BusinessManagement from "../../models/business/businessManagement.model"
 import City from "../../models/city/city.model"
@@ -22,7 +21,7 @@ import CourseTutorial from "../../models/course/courseTutorial.model";
 import { toImgUrl } from "../../utils";
 import bcrypt from 'bcryptjs';
 import Premium from "../../models/premium/premium.model";
-
+import {transformCourseParticipant} from "../../models/course/transformCourseParticipant";
 const populateQuery = [
     { path: 'business', model: 'business' },
     { path: 'specializations', model: 'specialization'},
@@ -46,6 +45,10 @@ const populateQueryById = [
         populate: { path: 'area', model: 'area' },
     },
 ];
+const populateParticipantQuery =[
+    { path: 'user', model: 'user'},
+    { path: 'course', model: 'course'}
+]
 export default {
     //validate body
     validateBody(isUpdate = false) {
@@ -683,19 +686,17 @@ export default {
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
             
-            let ids = await CourseParticipant.find({course:req.params.courseId})
-                .distinct('user')
-            let query = {deleted: false,_id:ids };
-            await User.find(query)
+            let query = {deleted:false,course:req.params.courseId}
+            await CourseParticipant.find(query).populate(populateParticipantQuery)
                 .sort({ createdAt: -1 })
                 .limit(limit)
                 .skip((page - 1) * limit).then(async(data)=>{
                     let newdata =[]
                     await Promise.all( data.map(async(e)=>{
-                        let index = await transformUser(e,lang)
+                        let index = await transformCourseParticipant(e,lang)
                         newdata.push(index)
                     }))
-                    const count = await User.countDocuments(query);
+                    const count = await CourseParticipant.countDocuments(query);
                     const pageCount = Math.ceil(count / limit);
                     res.send(new ApiResponse(newdata, page, pageCount, limit, count, req));
                 })

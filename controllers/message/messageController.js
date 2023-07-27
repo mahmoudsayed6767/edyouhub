@@ -46,6 +46,9 @@ var messageController = {
         if(data.duration != null) {
             messData.duration = data.duration;
         }
+        if(data.business != null) {
+            messData.business = data.business;
+        }
         var query1 = { 
             to: data.toId,
             from: data.fromId,
@@ -81,6 +84,7 @@ var messageController = {
                             dataType: theMessage.dataType?theMessage.dataType:"",
                             createdAt: theMessage.incommingDate,
                             duration: theMessage.duration,
+                            business:theMessage.business,
                             user: {
                                 id: theMessage.from._id,
                                 fullname:theMessage.from.fullname,
@@ -124,7 +128,7 @@ var messageController = {
     },
     async getAllMessages(req, res, next) {
         let page = +req.query.page || 1, limit = +req.query.limit || 20;
-        let {userId, friendId,out} = req.query;
+        let {userId, friendId,business} = req.query;
         //user try to get other users chat
         if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
             if(req.user._id != userId && req.user._id != friendId)
@@ -140,6 +144,10 @@ var messageController = {
         if (friendId) {
             query1.from= friendId;
             query2.to= friendId;
+        }
+        if (business) {
+            query1.business= business;
+            query2.to= business;
         }
         
         Message.find({ $or: [query1, query2] })
@@ -158,6 +166,7 @@ var messageController = {
                         dataType:element.dataType,
                         createdAt: element.incommingDate,
                         duration:element.duration,
+                        business:element.business,
                         user: {
                             id: element.from._id,
                             fullname:element.from.fullname,
@@ -255,6 +264,10 @@ var messageController = {
             if (id) query1.to = id;
             let query2 = { deleted: false , lastMessage: true };
             if (id) query2.from = id;
+            if(business){
+                query1.business = business;
+                query2.business = business
+            }
             //user try to get other users chat
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
                 if(req.user._id != id)
