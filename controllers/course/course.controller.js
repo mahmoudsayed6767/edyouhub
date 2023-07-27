@@ -200,7 +200,7 @@ export default {
                 if(!validatedBody.branches)
                     return next(new ApiError(422, i18n.__('branches.required')));
                 validatedBody.toDateMillSec = Date.parse(validatedBody.toDate)
-
+                validatedBody.fromDateMillSec = Date.parse(validatedBody.fromDate)
             }
             if (validatedBody.feesType == 'WITH-FEES'){
                 if(!validatedBody.paymentMethod){

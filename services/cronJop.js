@@ -4,6 +4,7 @@ import Offer from "../models/offer/offer.model";
 import Event from "../models/event/event.model";
 import Story from "../models/story/story.model";
 import User from "../models/user/user.model";
+import Course from '../models/course/course.model';
 
 export function cronJop() {
     try { //    */2 * * * *
@@ -41,6 +42,20 @@ export function cronJop() {
                     if(now > e.toDateMillSec) status = 'PASS'
                     Event.findByIdAndUpdate(e.id,{status:status},{new:true}).then((docs)=>{
                         console.log('done update event')
+                        
+                    }).catch((err)=>{
+                        console.log(err);
+                    })
+                })
+            })
+            Course.find({deleted:false,status:{$ne:'DONE'}})
+            .then(async(data)=>{
+                data.map(async(e) =>{
+                    let status = e.status;
+                    if(now > e.fromDateMillSec) status = 'CURRENT'
+                    if(now > e.toDateMillSec) status = 'DONE'
+                    Course.findByIdAndUpdate(e.id,{status:status},{new:true}).then((docs)=>{
+                        console.log('done update course')
                         
                     }).catch((err)=>{
                         console.log(err);

@@ -23,7 +23,7 @@ const courseSchema=new Schema({
     status: {
         type: String,
         enum: ['CURRENT','COMING','DONE'],
-        default:'CURRENT',
+        default:'COMING',
     },
     description_en: {
         type: String,
@@ -95,6 +95,10 @@ const courseSchema=new Schema({
     
     fromDate: {
         type: Date,
+        //required: true
+    },
+    fromDateMillSec: {
+        type: Number,
         //required: true
     },
     toDate: {

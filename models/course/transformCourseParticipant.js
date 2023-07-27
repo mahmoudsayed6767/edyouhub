@@ -20,6 +20,8 @@ export async function transformCourseParticipant(e,lang) {
         let user={
             fullname:e.user.fullname,
             username:e.user.username,
+            phone:e.user.phone,
+            email:e.user.email,
             img:e.user.img,
             id:e.user._id,
         }
