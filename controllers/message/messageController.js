@@ -259,7 +259,7 @@ var messageController = {
     async findLastContacts(req, res, next) {        
         try {
             let page = +req.query.page || 1, limit = +req.query.limit || 20,
-            { id } = req.query;
+            { id,business } = req.query;
             let query1 = { deleted: false ,lastMessage: true };
             if (id) query1.to = id;
             let query2 = { deleted: false , lastMessage: true };
