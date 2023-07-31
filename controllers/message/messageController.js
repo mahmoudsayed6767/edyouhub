@@ -8,12 +8,13 @@ import User from "../../models/user/user.model";
 import ApiError from '../../helpers/ApiError';
 import i18n from "i18n";
 import Report from "../../models/reports/report.model";
-
+import { transformMessage } from "../../models/message/transformMessage";
 import Logger from "../../services/logger";
 const logger = new Logger('message '+ new Date(Date.now()).toDateString())
 const populateQuery = [
     { path: 'from', model: 'user'},
     { path: 'to', model: 'user'},
+    { path: 'business', model: 'business'},
 ];
 
 var messageController = {
@@ -76,23 +77,8 @@ var messageController = {
                 var message = new Message(messData);
                 message.save()
                     .then(async(result2) => {
-                        let theMessage = await Message.findById(result2._id).populate('from to')
-                        let msg = {
-                            seen: theMessage.seen,
-                            id: theMessage._id,
-                            content: theMessage.content,
-                            dataType: theMessage.dataType?theMessage.dataType:"",
-                            createdAt: theMessage.incommingDate,
-                            duration: theMessage.duration,
-                            business:theMessage.business,
-                            user: {
-                                id: theMessage.from._id,
-                                fullname:theMessage.from.fullname,
-                                username:theMessage.from.username,
-                                type:theMessage.from.type,
-                                img: theMessage.from.img
-                            },
-                        }
+                        let theMessage = await Message.findById(result2._id).populate('from to business')
+                        let msg = await transformMessage(theMessage)
                         nsp.to(toRoom).emit('newMessage', msg);
                         nsp.to(fromRoom).emit('newMessage', msg);
                         nsp.to(toRoom).emit('unseenCount',{count : Count});
@@ -157,25 +143,10 @@ var messageController = {
             .sort({ _id: -1 })
             .then(async data => {
                 var newdata = [];
-                //res.status(200).send(data);
-                data.map(function (element) {
-                    newdata.push({
-                        seen: element.seen,
-                        id: element._id,
-                        content: element.content,
-                        dataType:element.dataType,
-                        createdAt: element.incommingDate,
-                        duration:element.duration,
-                        business:element.business,
-                        user: {
-                            id: element.from._id,
-                            fullname:element.from.fullname,
-                            username:element.from.username,
-                            img: element.from.img,
-                            type:element.from.type
-                        },
-                    });
-                })
+                await Promise.all(data.map(async(e)=>{
+                    let index = await transformMessage(theMessage)
+                    newdata.push(index);
+                }));
                 const count = await Message.countDocuments({ $or: [query1, query2] });
                 const pageCount = Math.ceil(count / limit);
                 res.send(new ApiResponse(newdata, page, pageCount, limit, count, req));
@@ -274,7 +245,7 @@ var messageController = {
                     return next(new ApiError(403, i18n.__('admin.auth')));
             }
 
-            Message.find({ $or: [query1, query2] })
+            await Message.find({ $or: [query1, query2] })
                 .sort({ _id: -1 })
                 .skip((page - 1) * limit)
                 .limit(limit)
@@ -282,36 +253,23 @@ var messageController = {
                 .then(async (data) => {
                     const messagesCount = await Message.find({ $or: [query1, query2] }).countDocuments();
                     const pageCount = Math.ceil(messagesCount / limit);
-                    var data1 = [];
-                    var unseenCount = 0;
                     var queryCount = {
                         deleted: false,
                         to: id,
                         seen: false
                     }
-                    data1 = await Promise.all(data.map(async (element) => {
-                        if (element.from._id === id) {
-                            queryCount.from = element.to._id;
+                    var newdata = [];
+                    await Promise.all(data.map(async (e) => {
+                        if (e.from._id === id) {
+                            queryCount.from = e.to._id;
                         } else {
-                            queryCount.from = element.from._id;
+                            queryCount.from = e.from._id;
                         }
-                        unseenCount = await Message.countDocuments(queryCount);
-                        
-                        element = {
-                            seen: element.seen,
-                            incommingDate: element.incommingDate,
-                            lastMessage: element.lastMessage,
-                            duration:element.duration,
-                            id: element._id,
-                            to: element.to,
-                            from: element.from,
-                            content: element.content,
-                            dataType:element.dataType,
-                            unseenCount: unseenCount
-                        };
-                        return element;
+                        let index = await transformMessage(e)
+                        index.unseenCount = await Message.countDocuments(queryCount);
+                        newdata.push(index);
                     }));
-                    res.send(new ApiResponse(data1, page, pageCount, limit, messagesCount, req));
+                    res.send(new ApiResponse(newdata, page, pageCount, limit, messagesCount, req));
                 })
 
         } catch (err) {
