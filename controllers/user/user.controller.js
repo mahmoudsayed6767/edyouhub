@@ -379,7 +379,7 @@ export default {
                 return next(new ApiError(403, i18n.__('admin.auth'))); 
             }
             /*delete posts under event */
-            let posts = await Post.find({ event: eventId });
+            let posts = await Post.find({ owner: userId });
             for (let id of posts) {
                 id.deleted = true;
                 await id.save();
