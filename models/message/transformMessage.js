@@ -1,14 +1,14 @@
-import {isInArray } from "../../helpers/CheckMethods";
 
 export async function transformMessage(e,lang) {
     let index = {
+        content:e.content,
         dataType: e.dataType,
         createdAt: e.incommingDate,
         duration: e.duration,
         sent:e.sent,
         delivered:e.delivered,
         seen: e.seen,
-        seenDate:e.seenDate,
+        seendate:e.seendate,
         createdAt:e.createdAt,
         id:e._id
     }
