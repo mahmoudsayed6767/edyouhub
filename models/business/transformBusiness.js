@@ -21,6 +21,14 @@ export async function transformBusiness(e,lang,myUser,userId) {
             id: e.sector._id,
         }
     }
+    if (e.subSector) {
+        index.subSector = {
+            name: lang == "ar" ? e.subSector.name_ar : e.subSector.name_en,
+            educationType: e.subSector.educationType,
+            img: e.subSector.img,
+            id: e.subSector._id,
+        }
+    }
     if (e.package) {
         index.package = {
             title:lang=="ar"?e.package.title_ar:e.package.title_en,

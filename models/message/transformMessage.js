@@ -25,7 +25,7 @@ export async function transformMessage(e,lang) {
         let to = {
             fullname:e.to.fullname,
             phone:e.to.phone,
-            img:e.from.to,
+            img:e.to.img,
             id:e.to._id
         }
         index.to = to
