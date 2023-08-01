@@ -3,7 +3,7 @@ export async function transformMessage(e,lang) {
     let index = {
         content:e.content,
         dataType: e.dataType,
-        createdAt: e.incommingDate,
+        incommingDate: e.incommingDate,
         duration: e.duration,
         sent:e.sent,
         delivered:e.delivered,

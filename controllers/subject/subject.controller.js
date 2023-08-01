@@ -67,7 +67,7 @@ export default {
 
             await Subject.findById(subjectId).then( e => {
                 let subject = {
-                    nmae:lang=="ar"?e.name_ar:e.name_en,
+                    name:lang=="ar"?e.name_ar:e.name_en,
                     name_ar:e.name_ar,
                     name_en:e.name_en,
                     educationSystem:e.educationSystem,
@@ -99,7 +99,7 @@ export default {
             await Report.create({...reports });
             await Subject.findById(subjectId).then((e) => {
                 let subject = {
-                    nmae:lang=="ar"?e.name_ar:e.name_en,
+                    name:lang=="ar"?e.name_ar:e.name_en,
                     name_ar:e.name_ar,
                     name_en:e.name_en,
                     educationSystem:e.educationSystem,
@@ -140,7 +140,7 @@ export default {
                 var newdata = [];
                 await Promise.all(data.map(async(e) =>{
                     let index ={
-                        nmae:lang=="ar"?e.name_ar:e.name_en,
+                        name:lang=="ar"?e.name_ar:e.name_en,
                         name_ar:e.name_ar,
                         name_en:e.name_en,
                         educationSystem:e.educationSystem,
@@ -183,7 +183,7 @@ export default {
                     var newdata = [];
                     await Promise.all(data.map(async(e) =>{
                         let index ={
-                            nmae:lang=="ar"?e.name_ar:e.name_en,
+                            name:lang=="ar"?e.name_ar:e.name_en,
                             name_ar:e.name_ar,
                             name_en:e.name_en,
                             educationSystem:e.educationSystem,

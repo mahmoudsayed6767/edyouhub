@@ -63,7 +63,7 @@ export default {
 
             await Specialization.findById(specializationId).then( e => {
                 let specialization = {
-                    nmae:lang=="ar"?e.name_ar:e.name_en,
+                    name:lang=="ar"?e.name_ar:e.name_en,
                     name_ar:e.name_ar,
                     name_en:e.name_en,
                     type:e.type,
@@ -96,7 +96,7 @@ export default {
             await Report.create({...reports });
             await Specialization.findById(specializationId).then((e) => {
                 let specialization = {
-                    nmae:lang=="ar"?e.name_ar:e.name_en,
+                    name:lang=="ar"?e.name_ar:e.name_en,
                     name_ar:e.name_ar,
                     name_en:e.name_en,
                     type:e.type,
@@ -137,7 +137,7 @@ export default {
                 var newdata = [];
                 await Promise.all(data.map(async(e) =>{
                     let index ={
-                        nmae:lang=="ar"?e.name_ar:e.name_en,
+                        name:lang=="ar"?e.name_ar:e.name_en,
                         name_ar:e.name_ar,
                         name_en:e.name_en,
                         type:e.type,
@@ -181,7 +181,7 @@ export default {
                     var newdata = [];
                     await Promise.all(data.map(async(e) =>{
                         let index ={
-                            nmae:lang=="ar"?e.name_ar:e.name_en,
+                            name:lang=="ar"?e.name_ar:e.name_en,
                             name_ar:e.name_ar,
                             name_en:e.name_en,
                             type:e.type,

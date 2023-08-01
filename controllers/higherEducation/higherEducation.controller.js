@@ -57,7 +57,7 @@ export default {
 
             await HigherEducation.findById(higherEducationId).then( e => {
                 let higherEducation = {
-                    nmae:lang=="ar"?e.name_ar:e.name_en,
+                    name:lang=="ar"?e.name_ar:e.name_en,
                     name_ar:e.name_ar,
                     name_en:e.name_en,
                     id: e._id,
@@ -89,7 +89,7 @@ export default {
             await Report.create({...reports });
             await HigherEducation.findById(higherEducationId).then((e) => {
                 let higherEducation = {
-                    nmae:lang=="ar"?e.name_ar:e.name_en,
+                    name:lang=="ar"?e.name_ar:e.name_en,
                     name_ar:e.name_ar,
                     name_en:e.name_en,
                     id: e._id,
@@ -128,7 +128,7 @@ export default {
                 var newdata = [];
                 await Promise.all(data.map(async(e) =>{
                     let index ={
-                        nmae:lang=="ar"?e.name_ar:e.name_en,
+                        name:lang=="ar"?e.name_ar:e.name_en,
                         name_ar:e.name_ar,
                         name_en:e.name_en,
                         id: e._id,
@@ -170,7 +170,7 @@ export default {
                     var newdata = [];
                     await Promise.all(data.map(async(e) =>{
                         let index ={
-                            nmae:lang=="ar"?e.name_ar:e.name_en,
+                            name:lang=="ar"?e.name_ar:e.name_en,
                             name_ar:e.name_ar,
                             name_en:e.name_en,
                             id: e._id,

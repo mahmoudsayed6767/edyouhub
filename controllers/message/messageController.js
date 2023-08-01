@@ -144,7 +144,7 @@ var messageController = {
             .then(async data => {
                 var newdata = [];
                 await Promise.all(data.map(async(e)=>{
-                    let index = await transformMessage(theMessage)
+                    let index = await transformMessage(e)
                     newdata.push(index);
                 }));
                 const count = await Message.countDocuments({ $or: [query1, query2] });
