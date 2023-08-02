@@ -62,10 +62,16 @@ var messageController = {
             lastMessage: true,
             deleted: false
         }
+
         var countquery = {
             to : data.toId , 
             deleted : false , 
             seen : false 
+        }
+        if(data.business != null) {
+            query1.business = data.business;
+            query2.business = data.business;
+            countquery.business = data.business;
         }
         var Count = await Message.countDocuments(countquery);
         Count = Count + 1 ;
@@ -132,8 +138,11 @@ var messageController = {
             query2.to= friendId;
         }
         if (business) {
-            query1.business= business;
-            query2.to= business;
+            query1.business = business;
+            query2.business = business;
+        }else{
+            query1.business = null;
+            query2.business = null;
         }
         
         Message.find({ $or: [query1, query2] })
