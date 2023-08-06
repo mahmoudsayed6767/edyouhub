@@ -72,6 +72,10 @@ var messageController = {
             query1.business = data.business;
             query2.business = data.business;
             countquery.business = data.business;
+        }else{
+            query1.business = null;
+            query2.business = null;
+            countquery.business = null;
         }
         var Count = await Message.countDocuments(countquery);
         Count = Count + 1 ;
