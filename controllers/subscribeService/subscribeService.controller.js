@@ -16,6 +16,21 @@ export default {
         return [
             body('service').optional().isIn(['FEES-PAYMENT','FEES-INSTALLMENT','SUPPLIES','COURSES']).withMessage((value, { req}) => {
                 return req.__('service.invalid', { value});
+            }),
+            body('contactPersonName').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('contactPersonName.required', { value});
+            }),
+            body('contactPersonTitle').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('startDate.required', { value});
+            }),
+            body('email').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('email.required', { value});
+            }),
+            body('phone').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('phone.required', { value});
+            }),
+            body('discount').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('discount.required', { value});
             })
         ]
     },

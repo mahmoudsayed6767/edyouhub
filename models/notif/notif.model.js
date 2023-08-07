@@ -19,6 +19,9 @@ const NotifSchema = new Schema({
     description_ar:{
         type:String
     },
+    img:{
+        type:String
+    },
     type:{
         type:String,
         enum: ['CHAT-REQUEST','VACANCY-REQUEST','GROUP-REQUEST','GROUP','POST','ADMISSION-REQUEST','MESSAGE','CONNECTION','OFFER','ORDER','BUSINESS','USER','APP','BILL','FAVOURITE','RATE','FUND','PREMIUM','FEES']

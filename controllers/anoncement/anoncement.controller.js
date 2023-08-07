@@ -229,3 +229,6 @@ export default {
         }
     },
 };
+//fund programs
+//fund service provider : name, logo, admin-fees(percent) can be zero, monthly percent
+//subscribe service

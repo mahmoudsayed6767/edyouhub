@@ -1,10 +1,10 @@
 import User from "../../models/user/user.model";
-import { checkExistThenGet, checkExist} from "../../helpers/CheckMethods";
+import { checkExistThenGet, checkExist,istence} from "../../helpers/CheckMethods";
 import Notif from "../../models/notif/notif.model";
 import ApiResponse from "../../helpers/ApiResponse";
 import Report from "../../models/reports/report.model";
 import i18n from "i18n";
-import {convertLang,checkValidations} from "../shared/shared.controller";
+import {checkValidations,handleImg} from "../shared/shared.controller";
 import { body } from "express-validator";
 import { sendNotifiAndPushNotifi } from "../../services/notification-service";
 
@@ -181,9 +181,11 @@ export default {
     },
     async SendNotif(req, res, next) {        
         try { 
-            if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type))
-                 return next(new ApiError(403, i18n.__('admin.auth'))); 
             const validatedBody = checkValidations(req);
+            if (req.file) {
+                let image = await handleImg(req, { attributeName: 'img', isUpdate: true });
+                validatedBody.img = image;
+            }
             //if determine the user type to send notifs to them
             let adminNotif = true
             if(validatedBody.userType){
@@ -205,6 +207,7 @@ export default {
                         "adminNotif":adminNotif,
                         "type":"APP"
                     }
+                    if(validatedBody.img) notif.img = validatedBody.img
                     adminNotif = false
                     Notif.create({...notif,resource:req.user._id,target:user.id});
                     
@@ -228,6 +231,7 @@ export default {
                         "title_ar":validatedBody.title,
                         "type":"APP"
                     }
+                    if(validatedBody.img) notif.img = validatedBody.img
                     Notif.create({...notif,resource:req.user._id,target:user.id});
                 });
             }

@@ -1,6 +1,7 @@
 import mongoose,{ Schema} from "mongoose";
+import { isImgUrl } from "../../helpers/CheckMethods";
 import autoIncrement from 'mongoose-auto-increment';
-const specializationSchema = new Schema({
+const fundProviderSchema = new Schema({
     _id: {
         type: Number,
         required: true
@@ -15,10 +16,17 @@ const specializationSchema = new Schema({
         trim: true,
         required: true,
     },
-    type: {
+    logo: {
         type: String,
-        enum:['FOR-EDUCATION','FOR-HIGH-EDUCATION','FOR-BASIC-EDUCATION','FOR-SERVICE-PROVIDER','FOR-COURSE'],
-        default: 'FOR-EDUCATION'
+        required: true,
+    },
+    adminFees: {
+        type: Number,
+        required: true,
+    },
+    monthlyPercent: {
+        type: Number,
+        required: true,
     },
     deleted:{
         type:Boolean,
@@ -26,7 +34,7 @@ const specializationSchema = new Schema({
     }
 }, { timestamps: true });
 
-specializationSchema.set('toJSON', {
+fundProviderSchema.set('toJSON', {
     transform: function (doc, ret, options) {
         ret.id = ret._id;
         delete ret._id;
@@ -34,6 +42,6 @@ specializationSchema.set('toJSON', {
     }
 });
 autoIncrement.initialize(mongoose.connection);
-specializationSchema.plugin(autoIncrement.plugin, { model: 'specialization', startAt: 1 });
+fundProviderSchema.plugin(autoIncrement.plugin, { model: 'fundProvider', startAt: 1 });
 
-export default mongoose.model('specialization', specializationSchema);
+export default mongoose.model('fundProvider', fundProviderSchema);

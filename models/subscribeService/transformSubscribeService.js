@@ -2,6 +2,11 @@
 export async function transformSubscribeService(e,lang) {
     let index ={
         sevice:e.sevice,
+        contactPersonName:e.contactPersonName,
+        contactPersonTitle:e.contactPersonTitle,
+        email:e.email,
+        phone:e.phone,
+        discount:e.discount,
         status:e.status,
         id: e._id,
         createdAt: e.createdAt,

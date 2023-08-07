@@ -1,6 +1,7 @@
 import express from 'express';
 import NotifController from '../../controllers/notif/notif.controller';
-import { cache } from '../../services/caching';
+import { permissions } from '../../services/permissions';
+import { multerSaveTo } from '../../services/multer-service';
 
 const router = express.Router();
 
@@ -18,6 +19,8 @@ router.route('/:notifId/read')
 router.route('/:notifId/unread')
     .put(NotifController.unread)
 router.post('/sendNotifs',
+    permissions('ADMIN'),
+    multerSaveTo('notifs').single('img'),
     NotifController.validateNotif(),
     NotifController.SendNotif);
 export default router;
