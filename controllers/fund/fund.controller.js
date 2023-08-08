@@ -20,7 +20,7 @@ import User from "../../models/user/user.model";
 import Country from "../../models/country/country.model";
 import City from "../../models/city/city.model";
 import Area from "../../models/area/area.model";
-import FundProvider from "../../models/fund/fund.model";
+import FundProvider from "../../models/fundProvider/fundProvider.model";
 import FundProgram from "../../models/fundProgram/fundProgram.model";
 
 const populateQuery = [
@@ -356,7 +356,7 @@ export default {
             //مبلغ الفائده
             let providerMonthlyPercentCost = (fund.totalFees * fundProvider.monthlyPercent) / 100;
             //الاجمالى مع مبلغ الفايده
-            fund.totalWithMonthlyPercent = totalFees + providerMonthlyPercentCost * fundProgram.monthCount;
+            fund.totalWithMonthlyPercent = fund.totalFees + providerMonthlyPercentCost * fundProgram.monthCount;
             //firstpaid
             let platformExpensesRatio = (fund.totalFees * fundProvider.platformExpensesRatio) / 100
             let providerExpensesRatio = (fund.totalFees * fundProvider.expensesRatio) / 100
@@ -421,7 +421,7 @@ export default {
             //مبلغ الفائده
             let providerMonthlyPercentCost = (fund.totalFees * fundProvider.monthlyPercent) / 100;
             //الاجمالى مع مبلغ الفايده
-            fund.totalWithMonthlyPercent = totalFees + providerMonthlyPercentCost * fundProgram.monthCount;
+            fund.totalWithMonthlyPercent = fund.totalFees + providerMonthlyPercentCost * fundProgram.monthCount;
             //firstpaid
             let platformExpensesRatio = (fund.totalFees * fundProvider.platformExpensesRatio) / 100
             let providerExpensesRatio = (fund.totalFees * fundProvider.expensesRatio) / 100
@@ -601,7 +601,7 @@ export default {
             //مبلغ الفائده
             let providerMonthlyPercentCost = (fund.totalFees * fundProvider.monthlyPercent) / 100;
             //الاجمالى مع مبلغ الفايده
-            fund.totalWithMonthlyPercent = totalFees + providerMonthlyPercentCost * fundProgram.monthCount;
+            fund.totalWithMonthlyPercent = fund.totalFees + providerMonthlyPercentCost * fundProgram.monthCount;
             await fund.save();
             sendNotifiAndPushNotifi({
                 targetUser: fund.owner, 
@@ -757,7 +757,7 @@ export default {
             //مبلغ الفائده
             let providerMonthlyPercentCost = (fund.totalFees * fundProvider.monthlyPercent) / 100;
             //الاجمالى مع مبلغ الفايده
-            fund.totalWithMonthlyPercent = totalFees + providerMonthlyPercentCost * fundProgram.monthCount;
+            fund.totalWithMonthlyPercent = fund.totalFees + providerMonthlyPercentCost * fundProgram.monthCount;
             await fund.save();
             sendNotifiAndPushNotifi({
                 targetUser: fund.owner, 
@@ -908,6 +908,9 @@ export default {
         try {
             let { fundId } = req.params;
             let fund = await checkExistThenGet(fundId, Fund);
+            if(fund.status != "ACCEPTED")
+                return next(new ApiError(500, i18n.__('fund.accepted')));
+            
             fund.status = 'STARTED';
             let fundProgram = await checkExistThenGet(fund.fundProgram,FundProgram)
             let setting = await Setting.findOne({deleted: false})

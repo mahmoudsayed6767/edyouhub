@@ -157,8 +157,8 @@ const payPremium = async (premiums,client) => {
 };
 const payFirstPaid = async (theFund,client) => {
     let fund = await checkExistThenGet(theFund, Fund,{deleted:false});
-    if(fund.status != "PENDING")
-        throw new ApiError(500, i18n.__('fund.pending'));
+    if(fund.status != "ACCEPTED")
+        throw new ApiError(500, i18n.__('fund.accepted'));
     fund.status = 'STARTED';
     
     let fundProgram = await checkExistThenGet(fund.fundProgram,FundProgram)
