@@ -1,7 +1,6 @@
 import mongoose,{ Schema} from "mongoose";
-import { isImgUrl } from "../../helpers/CheckMethods";
 import autoIncrement from 'mongoose-auto-increment';
-const fundProviderSchema = new Schema({
+const fundProgramSchema = new Schema({
     _id: {
         type: Number,
         required: true
@@ -16,19 +15,7 @@ const fundProviderSchema = new Schema({
         trim: true,
         required: true,
     },
-    logo: {
-        type: String,
-        required: true,
-    },
-    platformExpensesRatio: {
-        type: Number,
-        default: 0
-    },
-    expensesRatio: {
-        type: Number,
-        default: 0
-    },
-    monthlyPercent: {//نسبه الفائده
+    monthCount: {
         type: Number,
         required: true,
     },
@@ -38,7 +25,7 @@ const fundProviderSchema = new Schema({
     }
 }, { timestamps: true });
 
-fundProviderSchema.set('toJSON', {
+fundProgramSchema.set('toJSON', {
     transform: function (doc, ret, options) {
         ret.id = ret._id;
         delete ret._id;
@@ -46,6 +33,6 @@ fundProviderSchema.set('toJSON', {
     }
 });
 autoIncrement.initialize(mongoose.connection);
-fundProviderSchema.plugin(autoIncrement.plugin, { model: 'fundProvider', startAt: 1 });
+fundProgramSchema.plugin(autoIncrement.plugin, { model: 'fundProgram', startAt: 1 });
 
-export default mongoose.model('fundProvider', fundProviderSchema);
+export default mongoose.model('fundProgram', fundProgramSchema);

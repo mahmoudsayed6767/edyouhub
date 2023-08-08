@@ -1,6 +1,6 @@
-import FundProvider from "../../models/fundProvider/fundProvider.model";
+import FundProgram from "../../models/fundProgram/fundProgram.model";
 import { body } from "express-validator";
-import { checkValidations ,handleImg} from "../shared/shared.controller";
+import { checkValidations } from "../shared/shared.controller";
 import Report from "../../models/reports/report.model";
 import { checkExist } from "../../helpers/CheckMethods";
 import ApiResponse from "../../helpers/ApiResponse";
@@ -16,23 +16,10 @@ export default {
             body('name_en').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('name_en.required', { value});
             }),
-            body('platformExpensesRatio').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('platformExpensesRatio.required', { value});
+            body('monthCount').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('monthCount.required', { value});
             }),
-            body('monthlyPercent').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('monthlyPercent.required', { value});
-            }),
-            body('expensesRatio').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('expensesRatio.required', { value});
-            }),
-            
         ];
-        if (isUpdate)
-        validations.push([
-            body('logo').optional().custom(val => isImgUrl(val)).withMessage((value, { req}) => {
-                return req.__('logo.syntax', { value});
-            })
-        ]);
 
         return validations;
     },
@@ -40,32 +27,26 @@ export default {
         try {
             let lang = i18n.getLocale(req)
             const validatedBody = checkValidations(req);
-            //upload img
-            let image = await handleImg(req);
-            validatedBody.logo = image;
-            let fundProvider = await FundProvider.create({ ...validatedBody});
+            let fundProgram = await FundProgram.create({ ...validatedBody});
             let reports = {
-                "action":"Create New fundProvider",
-                "type":"FUND-PROVIDER",
-                "deepId":fundProvider.id,
+                "action":"Create New fundProgram",
+                "type":"FUND-PROGRAM",
+                "deepId":fundProgram.id,
                 "user": req.user._id
             };
             await Report.create({...reports });
-            await FundProvider.findById(fundProvider.id).then((e) => {
-                let fundProvider = {
+            await FundProgram.findById(fundProgram.id).then((e) => {
+                let fundProgram = {
                     name:lang=="ar"?e.name_ar:e.name_en,
                     name_ar:e.name_ar,
                     name_en:e.name_en,
-                    platformExpensesRatio:e.platformExpensesRatio,
-                    monthlyPercent:e.monthlyPercent,
-                    expensesRatio:e.expensesRatio,
-                    logo: e.logo,
+                    monthCount:e.monthCount,
                     id: e._id,
                     createdAt: e.createdAt,
                 }
                 return res.status(201).send({
                     success:true,
-                    data:fundProvider
+                    data:fundProgram
                 });
             })
         } catch (error) {
@@ -75,25 +56,22 @@ export default {
     async getById(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
-            let { fundProviderId } = req.params;
+            let { fundProgramId } = req.params;
             
-            await checkExist(fundProviderId, FundProvider, { deleted: false });
+            await checkExist(fundProgramId, FundProgram, { deleted: false });
 
-            await FundProvider.findById(fundProviderId).then( e => {
-                let fundProvider = {
+            await FundProgram.findById(fundProgramId).then( e => {
+                let fundProgram = {
                     name:lang=="ar"?e.name_ar:e.name_en,
                     name_ar:e.name_ar,
                     name_en:e.name_en,
-                    platformExpensesRatio:e.platformExpensesRatio,
-                    monthlyPercent:e.monthlyPercent,
-                    expensesRatio:e.expensesRatio,
-                    logo: e.logo,
+                    monthCount:e.monthCount,
                     id: e._id,
                     createdAt: e.createdAt,
                 }
                 return res.send({
                     success:true,
-                    data:fundProvider
+                    data:fundProgram
                 });
             })
         } catch (error) {
@@ -103,36 +81,29 @@ export default {
     async update(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
-            let { fundProviderId } = req.params;
-            await checkExist(fundProviderId, FundProvider, { deleted: false });
+            let { fundProgramId } = req.params;
+            await checkExist(fundProgramId, FundProgram, { deleted: false });
             const validatedBody = checkValidations(req);
-            if (req.file) {
-                let image = await handleImg(req, { attributeName: 'logo', isUpdate: true });
-                validatedBody.img = image;
-            }
-            await FundProvider.findByIdAndUpdate(fundProviderId, { ...validatedBody });
+            await FundProgram.findByIdAndUpdate(fundProgramId, { ...validatedBody });
             let reports = {
-                "action":"Update fundProvider",
-                "type":"FUND-PROVIDER",
-                "deepId":fundProviderId,
+                "action":"Update fundProgram",
+                "type":"FUND-PROGRAM",
+                "deepId":fundProgramId,
                 "user": req.user._id
             };
             await Report.create({...reports });
-            await FundProvider.findById(fundProviderId).then((e) => {
-                let fundProvider = {
+            await FundProgram.findById(fundProgramId).then((e) => {
+                let fundProgram = {
                     name:lang=="ar"?e.name_ar:e.name_en,
                     name_ar:e.name_ar,
                     name_en:e.name_en,
-                    platformExpensesRatio:e.platformExpensesRatio,
-                    monthlyPercent:e.monthlyPercent,
-                    expensesRatio:e.expensesRatio,
-                    logo: e.logo,
+                    monthCount:e.monthCount,
                     id: e._id,
                     createdAt: e.createdAt,
                 }
                 return res.status(200).send({
                     success:true,
-                    data:fundProvider
+                    data:fundProgram
                 });
             })
         } catch (error) {
@@ -158,7 +129,7 @@ export default {
                     ]
                 };
             }
-            await FundProvider.find(query)
+            await FundProgram.find(query)
             .then(async (data) => {
                 var newdata = [];
                 await Promise.all(data.map(async(e) =>{
@@ -166,10 +137,7 @@ export default {
                         name:lang=="ar"?e.name_ar:e.name_en,
                         name_ar:e.name_ar,
                         name_en:e.name_en,
-                        platformExpensesRatio:e.platformExpensesRatio,
-                        monthlyPercent:e.monthlyPercent,
-                        expensesRatio:e.expensesRatio,
-                        logo: e.logo,
+                        monthCount:e.monthCount,
                         id: e._id,
                         createdAt: e.createdAt,
                     }
@@ -202,7 +170,7 @@ export default {
                     ]
                 };
             }
-            await FundProvider.find(query)
+            await FundProgram.find(query)
                 .limit(limit)
                 .skip((page - 1) * limit).sort({ _id: -1 })
                 .then(async (data) => {
@@ -212,16 +180,13 @@ export default {
                             name:lang=="ar"?e.name_ar:e.name_en,
                             name_ar:e.name_ar,
                             name_en:e.name_en,
-                            platformExpensesRatio:e.platformExpensesRatio,
-                            monthlyPercent:e.monthlyPercent,
-                            expensesRatio:e.expensesRatio,
-                            logo: e.logo,
+                            monthCount:e.monthCount,
                             id: e._id,
                             createdAt: e.createdAt,
                         }
                         newdata.push(index);
                     }))
-                    const count = await FundProvider.countDocuments({deleted: false });
+                    const count = await FundProgram.countDocuments({deleted: false });
                     const pageCount = Math.ceil(count / limit);
                     res.send(new ApiResponse(newdata, page, pageCount, limit, count, req));
                 })
@@ -233,14 +198,14 @@ export default {
 
     async delete(req, res, next) {        
         try {
-            let { fundProviderId } = req.params;
-            let fundProvider = await checkExistThenGet(fundProviderId, FundProvider);
-            fundProvider.deleted = true;
-            await fundProvider.save();
+            let { fundProgramId } = req.params;
+            let fundProgram = await checkExistThenGet(fundProgramId, FundProgram);
+            fundProgram.deleted = true;
+            await fundProgram.save();
             let reports = {
-                "action":"Delete fundProvider",
-                "type":"FUND-PROVIDER",
-                "deepId":fundProviderId,
+                "action":"Delete fundProgram",
+                "type":"FUND-PROGRAM",
+                "deepId":fundProgramId,
                 "user": req.user._id
             };
             await Report.create({...reports });

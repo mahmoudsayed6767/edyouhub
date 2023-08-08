@@ -120,11 +120,24 @@ const fundSchema = new Schema({
         type: [Number],
         ref: 'educationInstitution',
     },
+    fundProgram:{
+        type: Number,
+        ref: 'fundProgram',
+        required: true
+    },
+    fundProvider:{
+        type: Number,
+        ref: 'fundProvider',
+        required: true
+    },
     totalFees:{
         type: Number,
         required: true
     },
     oldTotalFees:{
+        type: Number,
+    },
+    totalWithMonthlyPercent:{
         type: Number,
     },
     //if accept

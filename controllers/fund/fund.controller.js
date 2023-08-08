@@ -20,6 +20,9 @@ import User from "../../models/user/user.model";
 import Country from "../../models/country/country.model";
 import City from "../../models/city/city.model";
 import Area from "../../models/area/area.model";
+import FundProvider from "../../models/fund/fund.model";
+import FundProgram from "../../models/fundProgram/fundProgram.model";
+
 const populateQuery = [
     { path: 'owner', model: 'user'},
     {
@@ -32,6 +35,8 @@ const populateQueryById = [
     { path: 'country', model: 'country'},
     { path: 'city', model: 'city'},
     { path: 'area', model: 'area'},
+    { path: 'fundProvider', model: 'fundProvider'},
+    { path: 'fundProgram', model: 'fundProgram'},
     {
         path: 'students', model: 'student',
         populate: { path: 'sector', model: 'category' },
@@ -223,7 +228,26 @@ export default {
                 else
                     return true;
             }),
-            
+            body('fundProvider').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('fundProvider.required', { value});
+            }).isNumeric().withMessage((value, { req}) => {
+                return req.__('fundProvider.numeric', { value});
+            }).custom(async (value, { req }) => {
+                if (!await FundProvider.findOne({_id:value,deleted:false}))
+                    throw new Error(req.__('fundProvider.invalid'));
+                else
+                    return true;
+            }),
+            body('fundProgram').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('fundProgram.required', { value});
+            }).isNumeric().withMessage((value, { req}) => {
+                return req.__('fundProgram.numeric', { value});
+            }).custom(async (value, { req }) => {
+                if (!await FundProgram.findOne({_id:value,deleted:false}))
+                    throw new Error(req.__('fundProgram.invalid'));
+                else
+                    return true;
+            }),
         ];
         return validations;
     },
@@ -313,9 +337,7 @@ export default {
         try {
             const validatedBody = checkValidations(req);
             
-            if(!validatedBody.owner){
-                validatedBody.owner = req.user._id;
-            }
+            if(!validatedBody.owner) validatedBody.owner = req.user._id;
             let fund = await Fund.create({ ...validatedBody });
             let educationInstitutions = []
             if(validatedBody.theStudents){
@@ -327,8 +349,19 @@ export default {
                 }));  
                 
                 fund.students = students
-                await fund.save();
             }
+            let fundProvider =  await checkExistThenGet(fund.fundProvider,FundProvider,{deleted:false})
+            let fundProgram =  await checkExistThenGet(fund.fundProgram,FundProgram,{deleted:false})
+
+            //مبلغ الفائده
+            let providerMonthlyPercentCost = (fund.totalFees * fundProvider.monthlyPercent) / 100;
+            //الاجمالى مع مبلغ الفايده
+            fund.totalWithMonthlyPercent = totalFees + providerMonthlyPercentCost * fundProgram.monthCount;
+            //firstpaid
+            let platformExpensesRatio = (fund.totalFees * fundProvider.platformExpensesRatio) / 100
+            let providerExpensesRatio = (fund.totalFees * fundProvider.expensesRatio) / 100
+            fund.firstPaid = platformExpensesRatio + providerExpensesRatio;
+            await fund.save();
             let reports = {
                 "action":"Create New fund",
                 "type":"FUND",
@@ -383,6 +416,17 @@ export default {
                 
                 validatedBody.students = students
             }
+            let fundProvider =  await checkExistThenGet(fund.fundProvider,FundProvider,{deleted:false})
+            let fundProgram =  await checkExistThenGet(fund.fundProgram,FundProgram,{deleted:false})
+            //مبلغ الفائده
+            let providerMonthlyPercentCost = (fund.totalFees * fundProvider.monthlyPercent) / 100;
+            //الاجمالى مع مبلغ الفايده
+            fund.totalWithMonthlyPercent = totalFees + providerMonthlyPercentCost * fundProgram.monthCount;
+            //firstpaid
+            let platformExpensesRatio = (fund.totalFees * fundProvider.platformExpensesRatio) / 100
+            let providerExpensesRatio = (fund.totalFees * fundProvider.expensesRatio) / 100
+            fund.firstPaid = platformExpensesRatio + providerExpensesRatio;
+
             await Fund.findByIdAndUpdate(fundId, { ...validatedBody });
             let reports = {
                 "action":"Update fund",
@@ -403,12 +447,14 @@ export default {
         try {
              //get lang
             let lang = i18n.getLocale(req)
-            let {student,owner,status,educationInstitution} = req.query;
+            let {student,owner,status,educationInstitution,fundProgram,fundProvider} = req.query;
             let query = {  deleted: false }
             if(student) query.students = student
             if(educationInstitution) query.educationInstitutions = educationInstitution
             if(owner) query.owner = owner
             if(status) query.status = status
+            if(fundProgram) query.fundProgram = fundProgram
+            if(fundProvider) query.fundProvider = fundProvider
             await Fund.find(query).populate(populateQuery)
                 .sort({ _id: -1 })
                 .then( async(data) => {
@@ -432,12 +478,14 @@ export default {
              //get lang
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20,
-            {student,owner,status,educationInstitution} = req.query;
+            {student,owner,status,educationInstitution,fundProgram,fundProvider} = req.query;
             let query = {  deleted: false }
             if(student) query.students = student
             if(owner) query.owner = owner
             if(educationInstitution) query.educationInstitutions = educationInstitution
             if(status) query.status = status
+            if(fundProgram) query.fundProgram = fundProgram
+            if(fundProvider) query.fundProvider = fundProvider
             await Fund.find(query).populate(populateQuery)
                 .sort({ _id: -1 })
                 .limit(limit)
@@ -540,13 +588,20 @@ export default {
             fund.status = 'ACCEPTED';
             const validatedBody = checkValidations(req);
             if(validatedBody.startDate) fund.startDate = validatedBody.startDate
-            let setting = await Setting.findOne({deleted: false})
+            let fundProvider = await checkExistThenGet(fund.fundProvider,FundProvider) 
+            let fundProgram =  await checkExistThenGet(fund.fundProgram,FundProgram,{deleted:false})
+
             if(validatedBody.firstPaid) {
                 fund.firstPaid = validatedBody.firstPaid
             }else{
-                fund.firstPaid = (fund.totalFees * setting.expensesRatio) / 100
+                let platformExpensesRatio = (fund.totalFees * fundProvider.platformExpensesRatio) / 100
+                let providerExpensesRatio = (fund.totalFees * fundProvider.expensesRatio) / 100
+                fund.firstPaid = platformExpensesRatio + providerExpensesRatio;
             }
-            
+            //مبلغ الفائده
+            let providerMonthlyPercentCost = (fund.totalFees * fundProvider.monthlyPercent) / 100;
+            //الاجمالى مع مبلغ الفايده
+            fund.totalWithMonthlyPercent = totalFees + providerMonthlyPercentCost * fundProgram.monthCount;
             await fund.save();
             sendNotifiAndPushNotifi({
                 targetUser: fund.owner, 
@@ -694,8 +749,15 @@ export default {
             fund.oldTotalFees = fund.totalFees
             fund.totalFees  = validatedBody.totalFees
             fund.partialAcceptReason = validatedBody.partialAcceptReason
-            let setting = await Setting.findOne({deleted: false})
-            fund.firstPaid = (fund.totalFees * setting.expensesRatio) / 100
+            
+            let fundProvider = await checkExistThenGet(fund.fundProvider,FundProvider)
+            let platformExpensesRatio = (fund.totalFees * fundProvider.platformExpensesRatio) / 100
+            let providerExpensesRatio = (fund.totalFees * fundProvider.expensesRatio) / 100
+            fund.firstPaid = platformExpensesRatio + providerExpensesRatio;
+            //مبلغ الفائده
+            let providerMonthlyPercentCost = (fund.totalFees * fundProvider.monthlyPercent) / 100;
+            //الاجمالى مع مبلغ الفايده
+            fund.totalWithMonthlyPercent = totalFees + providerMonthlyPercentCost * fundProgram.monthCount;
             await fund.save();
             sendNotifiAndPushNotifi({
                 targetUser: fund.owner, 
@@ -847,12 +909,11 @@ export default {
             let { fundId } = req.params;
             let fund = await checkExistThenGet(fundId, Fund);
             fund.status = 'STARTED';
-            //12 months - 10% firstpaid
-            //15 % cashBack
+            let fundProgram = await checkExistThenGet(fund.fundProgram,FundProgram)
             let setting = await Setting.findOne({deleted: false})
-            
-            let total = fund.totalFees + (fund.totalFees * setting.expensesRatio) / 100
+            let total = fund.totalWithMonthlyPercent + fund.firstPaid 
             console.log("total",total)
+
             let cashBack = (total * setting.cashBackRatio) / 100 
             console.log("cashBack",cashBack)
             //add cashBack to fund owner
@@ -861,7 +922,7 @@ export default {
             await fundOwner.save();
             //add cashBack to affiliate
             if(fundOwner.affiliate){
-                let affiliateCashBack = (fund.totalFees * setting.affiliateRatio) / 100 
+                let affiliateCashBack = (fund.totalWithMonthlyPercent * setting.affiliateRatio) / 100 
                 let affiliate = await checkExistThenGet(fundOwner.affiliate, User)
                 affiliate.balance = affiliate.balance + affiliateCashBack
                 await affiliate.save();
@@ -873,10 +934,10 @@ export default {
             }else{
                 date = new Date(date.setMonth(date.getMonth() + 2));
             }
-            let monthCount = setting.monthCount;
+            let monthCount = fundProgram.monthCount;
             let endDate = new Date(date.setMonth(date.getMonth() + monthCount));
             fund.endDate = endDate;
-            let cost = (fund.totalFees * monthCount) / 12
+            let cost = (fund.totalWithMonthlyPercent * monthCount) / 12
             //////////////////////////create premiums////////////////////////////
             for(var i=0; i < monthCount; i++){
                 let installmentDate = new Date(date.setMonth(date.getMonth() + i));

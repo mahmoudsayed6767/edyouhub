@@ -104,6 +104,20 @@ export async function transformFundById(e,lang) {
             id:e.owner._id
         }
     }
+    if(e.fundProgram){
+        index.fundProgram = {
+            name:lang=="ar"?e.fundProgram.name_ar:e.fundProgram.name_en,
+            monthCount: e.fundProgram.monthCount,
+            id: e.fundProgram._id,
+        }
+    }
+    if(e.fundProvider){
+        index.fundProvider = {
+            name:lang=="ar"?e.fundProvider.name_ar:e.fundProvider.name_en,
+            log: e.fundProvider.logo,
+            id: e.fundProvider._id,
+        }
+    }
     /* students*/
     let students=[]
     for (let val of e.students) {

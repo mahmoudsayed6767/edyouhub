@@ -55,9 +55,12 @@ import cashbackPackageRoute from "./cashbackPackage/cashbackPackage.route"
 import subscribeServiceRoute from "./subscribeService/subscribeService.route"
 import groupRoute from "./group/group.route"
 import anoncementRoute from "./anoncement/anoncement.route"
+import fundProgramRoute from "./fundProgram/fundProgram.route"
 import fundProviderRoute from "./fundProvider/fundProvider.route"
 
 const router = express.Router();
+router.use('/fundPrograms', fundProgramRoute);
+
 router.use('/fundProviders', fundProviderRoute);
 router.use('/anoncements', anoncementRoute);
 

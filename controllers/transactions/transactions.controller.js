@@ -29,6 +29,7 @@ import EventAttendance from "../../models/event/eventAttendance.model"
 import Business from "../../models/business/business.model"
 import CourseParticipant from "../../models/course/courseParticipant.model";
 import Course from "../../models/course/course.model";
+import FundProgram from "../../models/fundProgram/fundProgram.model";
 
 const populateQuery2 = [
     {path: 'package', model: 'package'},
@@ -159,9 +160,11 @@ const payFirstPaid = async (theFund,client) => {
     if(fund.status != "PENDING")
         throw new ApiError(500, i18n.__('fund.pending'));
     fund.status = 'STARTED';
+    
+    let fundProgram = await checkExistThenGet(fund.fundProgram,FundProgram)
     let setting = await Setting.findOne({deleted: false})
     
-    let total = fund.totalFees + (fund.totalFees * setting.expensesRatio) / 100
+    let total = fund.totalWithMonthlyPercent + fund.firstPaid 
     console.log("total",total)
     let cashBack = (total * setting.cashBackRatio) / 100 
     console.log("cashBack",cashBack)
@@ -173,7 +176,7 @@ const payFirstPaid = async (theFund,client) => {
     await fundOwner.save();
     //add cashBack to affiliate
     if(fundOwner.affiliate){
-        let affiliateCashBack = (fund.totalFees * setting.affiliateRatio) / 100 
+        let affiliateCashBack = (fund.totalWithMonthlyPercent * setting.affiliateRatio) / 100 
         let affiliate = await checkExistThenGet(fundOwner.affiliate, User,{deleted:false})
         affiliate.balance = affiliate.balance + affiliateCashBack
         await affiliate.save();
@@ -185,10 +188,10 @@ const payFirstPaid = async (theFund,client) => {
     }else{
         date = new Date(date.setMonth(date.getMonth() + 2));
     }
-    let monthCount = setting.monthCount;
+    let monthCount = fundProgram.monthCount;
     let endDate = new Date(date.setMonth(date.getMonth() + monthCount));
     fund.endDate = endDate;
-    let cost = (fund.totalFees * monthCount) / 12
+    let cost = (fund.totalWithMonthlyPercent * monthCount) / 12
     //////////////////////////create premiums////////////////////////////
     for(var i=0; i < monthCount; i++){
         let installmentDate = new Date(date.setMonth(date.getMonth() + i));
