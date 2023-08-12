@@ -11,9 +11,8 @@ const subscribeServiceSchema=new Schema({
         required: true
     },
     service: {
-        type: [String],
+        type: String,
         enum:['FEES-PAYMENT','FEES-INSTALLMENT','SUPPLIES','COURSES'],
-        default:"NORMAL",
         required: true
     },
     status: {

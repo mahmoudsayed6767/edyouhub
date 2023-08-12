@@ -316,5 +316,6 @@
 	"sorryEventWithFees": "sorryEventWithFees",
 	"chatRequestRequest.notFound": "chatRequestRequest.notFound",
 	"Valid.coupon": "Valid.coupon",
-	"fundProvider.invalid": "fundProvider.invalid"
+	"fundProvider.invalid": "fundProvider.invalid",
+	"contactPersonName.required": "contactPersonName.required"
 }
