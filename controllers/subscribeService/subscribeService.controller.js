@@ -131,6 +131,16 @@ export default {
             let { subscribeServiceId } = req.params;
             let subscribeService = await checkExistThenGet(subscribeServiceId, SubscribeService);
             subscribeService.status = "ACCEPTED";
+            let business = await checkExistThenGet(subscribeService.business,Business,{deleted:false})
+            subscribeService.service.forEach(service => {
+                var found = arr.find(function(element) {
+                    return element == service;
+                }); 
+                if(!found){
+                    business.services.push(service);
+                }
+            });
+            await business.save();
             await subscribeService.save();
             let reports = {
                 "action":"accept Subscribe Service request",

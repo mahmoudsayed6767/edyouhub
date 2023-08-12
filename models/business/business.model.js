@@ -147,6 +147,10 @@ const businessSchema = new Schema({
         type: Boolean,
         default: false
     },
+    services:{
+        type: [String],
+        enum: ['FEES-PAYMENT','FEES-INSTALLMENT','SUPPLIES','COURSES'],
+    },
     deleted:{
         type:Boolean,
         default:false

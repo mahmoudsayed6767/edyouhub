@@ -16,6 +16,11 @@ const subscribeServiceSchema=new Schema({
         default:"NORMAL",
         required: true
     },
+    status: {
+        type: String,
+        enum:['PENDING','ACCEPTED','REJECTED'],
+        default:"PENDING",
+    },
     contactPersonName: {
         type: String,
         required: true
