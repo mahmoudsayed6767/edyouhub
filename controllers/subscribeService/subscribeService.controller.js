@@ -133,10 +133,10 @@ export default {
             subscribeService.status = "ACCEPTED";
             let business = await checkExistThenGet(subscribeService.business,Business,{deleted:false})
             var found = business.services.find(function(element) {
-                return element == service;
+                return element == subscribeService.service;
             }); 
             if(!found){
-                business.services.push(service);
+                business.services.push(subscribeService.service);
             }
             await business.save();
             await subscribeService.save();
