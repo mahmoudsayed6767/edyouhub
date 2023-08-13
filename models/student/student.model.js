@@ -39,16 +39,9 @@ const studentSchema = new Schema({
     educationInstitutionName:{
         type: String,
     },
-    year: {
-        type: String,
-        //required: true
-    },
-    busFees:{
+    grade: {
         type: Number,
-        //required: true
-    },
-    tuitionFees:{//مصاريف دراسيه
-        type: Number,
+        ref:'grade',
         //required: true
     },
     feesLetter: {//مستند مالى

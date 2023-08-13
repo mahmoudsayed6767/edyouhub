@@ -362,7 +362,7 @@ export default {
                     }),
                     body('count').not().isEmpty().withMessage((value, { req}) => {
                         return req.__('count.required', { value});
-                    }).isNumeric().withMessage((value) => {
+                    }).isNumeric().withMessage((value,{req}) => {
                         return req.__('count.numeric', { value});
                     })
                 }

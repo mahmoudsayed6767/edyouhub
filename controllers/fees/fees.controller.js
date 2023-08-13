@@ -11,7 +11,9 @@ import EducationInstitution from "../../models/education institution/education i
 import EducationSystem from "../../models/education system/education system.model";
 import Student from "../../models/student/student.model"
 import Category from "../../models/category/category.model"
-
+import FeesType from "../../models/feesType/feesType.model";
+import AcademicYear from "../../models/academicYear/academicYear.model"
+import Grade from "../../models/grade/grade.model"
 const populateQuery = [
     { path: 'educationInstitution', model: 'educationInstitution'},
     {
@@ -104,6 +106,14 @@ export default {
     },
     validateBody(isUpdate = false) {
         let validations = [
+            body('academicYear').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('academicYear.required', { value});
+            }).custom(async (value, { req }) => {
+                if (!await AcademicYear.findOne({_id:value,deleted:false}))
+                    throw new Error(req.__('academicYear.invalid'));
+                else
+                    return true;
+            }),
             body('educationInstitution').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('educationInstitution.required', { value});
             }).custom(async (value, { req }) => {
@@ -112,7 +122,7 @@ export default {
                 else
                     return true;
             }),
-            body('studentName').not().isEmpty().withMessage((value) => {
+            body('studentName').not().isEmpty().withMessage((value,{req}) => {
                 return req.__('studentName.required', { value});
             }),
             body('sector').not().isEmpty().withMessage((value, { req}) => {
@@ -145,43 +155,72 @@ export default {
                 else
                     return true;
             }),
-            body('year').not().isEmpty().withMessage((value) => {
-                return req.__('year.required', { value});
+            body('grade').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('grade.required', { value});
+            }).isNumeric().withMessage((value, { req}) => {
+                return req.__('grade.numeric', { value});
+            }).custom(async (value, { req }) => {
+                if (!await Grade.findOne({_id:value,deleted:false}))
+                    throw new Error(req.__('grade.invalid'));
+                else
+                    return true;
             }),
             
-            body('busFees').not().isEmpty().withMessage((value) => {
-                return req.__('busFees.required', { value});
-            }).isNumeric().withMessage((value) => {
-                return req.__('busFees.numeric', { value});
+            body('totalFees').not().isEmpty().withMessage((value,{req}) => {
+                return req.__('totalFees.required', { value});
+            }).isNumeric().withMessage((value,{req}) => {
+                return req.__('totalFees.numeric', { value});
             }),
-            body('tuitionFees').not().isEmpty().withMessage((value) => {
-                return req.__('tuitionFees.required', { value});
-            }).isNumeric().withMessage((value) => {
-                return req.__('tuitionFees.numeric', { value});
-            }),
-            //payments
-            body('payments').optional()
-            .custom(async (payments, { req }) => {
-                
-                for (let payment of payments) {
-                    body('cost').not().isEmpty().withMessage((value) => {
-                        return req.__('cost.required', { value});
-                    }).isNumeric().withMessage((value) => {
-                        return req.__('cost.numeric', { value});
+            body('feesDetails').not().isEmpty().withMessage((value,{req}) => {
+                return req.__('feesDetails.required', { value});
+            })
+            .custom(async (feesDetails, { req }) => {
+                for (let fees of feesDetails) {
+                    body('feesCost').not().isEmpty().withMessage((value,{req}) => {
+                        return req.__('feesCost.required', { value});
+                    }).isNumeric().withMessage((value,{req}) => {
+                        return req.__('feesCost.numeric', { value});
                     }),
                     body('feesType').not().isEmpty().withMessage((value, { req}) => {
                         return req.__('feesType.required', { value});
-                    }).isIn(['BUS','TUITION']).withMessage((value, { req}) => {
-                        return req.__('feesType.invalid', { value});
-                    }),
-                    body('installmentDate').not().isEmpty().withMessage((value) => {
-                        return req.__('installmentDate.required', { value});
-                    }).isISO8601().withMessage((value) => {
-                        return req.__('installmentDate.invalid', { value});
+                    }).isNumeric().withMessage((value, { req}) => {
+                        return req.__('feesType.numeric', { value});
+                    }).custom(async (value, { req }) => {
+                        if (!await FeesType.findOne({_id:value,deleted:false}))
+                            throw new Error(req.__('feesType.invalid'));
+                        else
+                            return true;
                     })
                 }
                 return true;
             }),
+            //payments
+            body('payments').optional()
+            .custom(async (payments, { req }) => {
+                for (let payment of payments) {
+                    body('cost').not().isEmpty().withMessage((value,{req}) => {
+                        return req.__('cost.required', { value});
+                    }).isNumeric().withMessage((value,{req}) => {
+                        return req.__('cost.numeric', { value});
+                    }),
+                    body('feesType').not().isEmpty().withMessage((value, { req}) => {
+                        return req.__('feesType.required', { value});
+                    }).isNumeric().withMessage((value, { req}) => {
+                        return req.__('feesType.numeric', { value});
+                    }).custom(async (value, { req }) => {
+                        if (!await FeesType.findOne({_id:value,deleted:false}))
+                            throw new Error(req.__('feesType.invalid'));
+                        else
+                            return true;
+                    }),
+                    body('installmentDate').not().isEmpty().withMessage((value,{req}) => {
+                        return req.__('installmentDate.required', { value});
+                    }).isISO8601().withMessage((value,{req}) => {
+                        return req.__('installmentDate.invalid', { value});
+                    })
+                }
+                return true;
+            })
            
         ];
         return validations;
@@ -196,9 +235,7 @@ export default {
                 sector:validatedBody.sector,
                 subSector:validatedBody.subSector,
                 educationSystem:validatedBody.educationSystem,
-                year:validatedBody.year,
-                busFees:validatedBody.busFees,
-                tuitionFees:validatedBody.tuitionFees,
+                grade:validatedBody.grade,
 
             });
             let reports1 = {
@@ -209,7 +246,13 @@ export default {
             };
             await Report.create({...reports1 });
             //create fees
-            let fees = await Fees.create({student:theStudent._id,educationInstitution:validatedBody.educationInstitution})
+            let fees = await Fees.create({
+                student:theStudent._id,
+                educationInstitution:validatedBody.educationInstitution,
+                totalFees:validatedBody.totalFees,
+                feesDetails:validatedBody.feesDetails,
+                academicYear:validatedBody.academicYear,
+            })
             //////////////////////////create premiums////////////////////////////
             let payments = validatedBody.payments
             for(var i=0; i < payments.length; i++) {
@@ -222,6 +265,7 @@ export default {
 
                 let thePremium = await Premium.create({
                     fees:fees.id,
+                    academicYear:fees.academicYear,
                     type:'FEES',
                     feesType:payment.feesType,
                     receiptNum:i+1,
@@ -255,58 +299,116 @@ export default {
             body('fees').optional()
             .custom(async (fees, { req }) => {
                 for (let feesId of fees) {
+                    body('academicYear').not().isEmpty().withMessage((value, { req}) => {
+                        return req.__('academicYear.required', { value});
+                    }).custom(async (value, { req }) => {
+                        if (!await AcademicYear.findOne({_id:value,deleted:false}))
+                            throw new Error(req.__('academicYear.invalid'));
+                        else
+                            return true;
+                    }),
                     body('educationInstitution').not().isEmpty().withMessage((value, { req}) => {
                         return req.__('educationInstitution.required', { value});
+                    }).custom(async (value, { req }) => {
+                        if (!await EducationInstitution.findOne({_id:value,deleted:false}))
+                            throw new Error(req.__('educationInstitution.invalid'));
+                        else
+                            return true;
                     }),
-                    body('studentName').not().isEmpty().withMessage((value) => {
+                    body('studentName').not().isEmpty().withMessage((value,{req}) => {
                         return req.__('studentName.required', { value});
                     }),
                     body('sector').not().isEmpty().withMessage((value, { req}) => {
                         return req.__('sector.required', { value});
                     }).isNumeric().withMessage((value, { req}) => {
                         return req.__('sector.numeric', { value});
+                    }).custom(async (value, { req }) => {
+                        if (!await Category.findOne({_id:value,deleted:false}))
+                            throw new Error(req.__('sector.invalid'));
+                        else
+                            return true;
                     }),
                     body('subSector').not().isEmpty().withMessage((value, { req}) => {
                         return req.__('subSector.required', { value});
                     }).isNumeric().withMessage((value, { req}) => {
                         return req.__('subSector.numeric', { value});
+                    }).custom(async (value, { req }) => {
+                        if (!await Category.findOne({_id:value,deleted:false}))
+                            throw new Error(req.__('subSector.invalid'));
+                        else
+                            return true;
                     }),
-                    body('educationSystem').not().isEmpty().withMessage((value) => {
+                    body('educationSystem').not().isEmpty().withMessage((value, { req}) => {
                         return req.__('educationSystem.required', { value});
-                    }).isNumeric().withMessage((value) => {
+                    }).isNumeric().withMessage((value, { req}) => {
                         return req.__('educationSystem.numeric', { value});
+                    }).custom(async (value, { req }) => {
+                        if (!await EducationSystem.findOne({_id:value,deleted:false}))
+                            throw new Error(req.__('educationSystem.invalid'));
+                        else
+                            return true;
                     }),
-                    body('year').not().isEmpty().withMessage((value) => {
-                        return req.__('year.required', { value});
+                    body('grade').not().isEmpty().withMessage((value, { req}) => {
+                        return req.__('grade.required', { value});
+                    }).isNumeric().withMessage((value, { req}) => {
+                        return req.__('grade.numeric', { value});
+                    }).custom(async (value, { req }) => {
+                        if (!await Grade.findOne({_id:value,deleted:false}))
+                            throw new Error(req.__('grade.invalid'));
+                        else
+                            return true;
                     }),
-                    body('busFees').not().isEmpty().withMessage((value) => {
-                        return req.__('busFees.required', { value});
-                    }).isNumeric().withMessage((value) => {
-                        return req.__('busFees.numeric', { value});
+                    
+                    body('totalFees').not().isEmpty().withMessage((value,{req}) => {
+                        return req.__('totalFees.required', { value});
+                    }).isNumeric().withMessage((value,{req}) => {
+                        return req.__('totalFees.numeric', { value});
                     }),
-                    body('tuitionFees').not().isEmpty().withMessage((value) => {
-                        return req.__('tuitionFees.required', { value});
-                    }).isNumeric().withMessage((value) => {
-                        return req.__('tuitionFees.numeric', { value});
+                    body('feesDetails').not().isEmpty().withMessage((value,{req}) => {
+                        return req.__('feesDetails.required', { value});
+                    })
+                    .custom(async (feesDetails, { req }) => {
+                        for (let fees of feesDetails) {
+                            body('feesCost').not().isEmpty().withMessage((value,{req}) => {
+                                return req.__('feesCost.required', { value});
+                            }).isNumeric().withMessage((value,{req}) => {
+                                return req.__('feesCost.numeric', { value});
+                            }),
+                            body('feesType').not().isEmpty().withMessage((value, { req}) => {
+                                return req.__('feesType.required', { value});
+                            }).isNumeric().withMessage((value, { req}) => {
+                                return req.__('feesType.numeric', { value});
+                            }).custom(async (value, { req }) => {
+                                if (!await FeesType.findOne({_id:value,deleted:false}))
+                                    throw new Error(req.__('feesType.invalid'));
+                                else
+                                    return true;
+                            })
+                        }
+                        return true;
                     }),
                     //payments
                     body('payments').optional()
                     .custom(async (payments, { req }) => {
-                        
                         for (let payment of payments) {
-                            body('cost').not().isEmpty().withMessage((value) => {
+                            body('cost').not().isEmpty().withMessage((value,{req}) => {
                                 return req.__('cost.required', { value});
-                            }).isNumeric().withMessage((value) => {
+                            }).isNumeric().withMessage((value,{req}) => {
                                 return req.__('cost.numeric', { value});
                             }),
-                            body('educationSystem').not().isEmpty().withMessage((value) => {
-                                return req.__('educationSystem.required', { value});
-                            }).isNumeric().withMessage((value) => {
-                                return req.__('educationSystem.numeric', { value});
+                            body('feesType').not().isEmpty().withMessage((value, { req}) => {
+                                return req.__('feesType.required', { value});
+                            }).isNumeric().withMessage((value, { req}) => {
+                                return req.__('feesType.numeric', { value});
+                            }).custom(async (value, { req }) => {
+                                if (!await FeesType.findOne({_id:value,deleted:false}))
+                                    throw new Error(req.__('feesType.invalid'));
+                                else
+                                    return true;
                             }),
-                            body('installmentDate').not().isEmpty().withMessage((value) => {
+                            body('installmentDate').not().isEmpty().withMessage((value,{req}) => {
                                 return req.__('installmentDate.required', { value});
-                            }).isISO8601().withMessage((value) => {
+                            }).isISO8601().withMessage((value,{req}) => {
                                 return req.__('installmentDate.invalid', { value});
                             })
                         }
@@ -324,10 +426,6 @@ export default {
         try {
             const data = checkValidations(req);
             for (let validatedBody of data.fees) {
-                await checkExist(validatedBody.educationInstitution, EducationInstitution,{ deleted: false})
-                await checkExist(validatedBody.sector, Category,{ deleted: false});
-                await checkExist(validatedBody.subSector, Category,{ deleted: false});
-                await checkExist(validatedBody.educationSystem, EducationSystem,{ deleted: false});
                 //create student
                 let theStudent = await Student.create({
                     educationInstitution:validatedBody.educationInstitution,
@@ -335,9 +433,7 @@ export default {
                     sector:validatedBody.sector,
                     subSector:validatedBody.subSector,
                     educationSystem:validatedBody.educationSystem,
-                    year:validatedBody.year,
-                    busFees:validatedBody.busFees,
-                    tuitionFees:validatedBody.tuitionFees,
+                    grade:validatedBody.grade,
 
                 });
                 let reports1 = {
@@ -348,7 +444,13 @@ export default {
                 };
                 await Report.create({...reports1 });
                 //create fees
-                let fees = await Fees.create({student:theStudent._id,educationInstitution:validatedBody.educationInstitution})
+                let fees = await Fees.create({
+                    student:theStudent._id,
+                    educationInstitution:validatedBody.educationInstitution,
+                    totalFees:validatedBody.totalFees,
+                    feesDetails:validatedBody.feesDetails,
+                    academicYear:validatedBody.academicYear,
+                })
                 //////////////////////////create premiums////////////////////////////
                 let payments = validatedBody.payments
                 for(var i=0; i < payments.length; i++) {
@@ -361,6 +463,7 @@ export default {
 
                     await Premium.create({
                         fees:fees.id,
+                        academicYear:fees.academicYear,
                         type:'FEES',
                         feesType:payment.feesType,
                         receiptNum:i+1,
@@ -390,34 +493,123 @@ export default {
             body('fees').optional()
             .custom(async (fees, { req }) => {
                 for (let feesId of fees) {
-                    await checkExist(feesId.educationInstitution,EducationInstitution, { deleted: false })
-                    await checkExist(feesId.student, Student,{ deleted: false})
+                    body('academicYear').not().isEmpty().withMessage((value, { req}) => {
+                        return req.__('academicYear.required', { value});
+                    }).custom(async (value, { req }) => {
+                        if (!await AcademicYear.findOne({_id:value,deleted:false}))
+                            throw new Error(req.__('academicYear.invalid'));
+                        else
+                            return true;
+                    }),
+                    body('student').not().isEmpty().withMessage((value,{req}) => {
+                        return req.__('student.required', { value});
+                    }).isNumeric().withMessage((value, { req}) => {
+                        return req.__('student.numeric', { value});
+                    }).custom(async (value, { req }) => {
+                        if (!await Student.findOne({_id:value,deleted:false}))
+                            throw new Error(req.__('student.invalid'));
+                        else
+                            return true;
+                    }),
                     body('educationInstitution').not().isEmpty().withMessage((value, { req}) => {
                         return req.__('educationInstitution.required', { value});
+                    }).custom(async (value, { req }) => {
+                        if (!await EducationInstitution.findOne({_id:value,deleted:false}))
+                            throw new Error(req.__('educationInstitution.invalid'));
+                        else
+                            return true;
                     }),
-                    body('student').not().isEmpty().withMessage((value) => {
-                        return req.__('student.required', { value});
-                    }).isNumeric().withMessage((value) => {
-                        return req.__('student.numeric', { value});
+                    body('sector').not().isEmpty().withMessage((value, { req}) => {
+                        return req.__('sector.required', { value});
+                    }).isNumeric().withMessage((value, { req}) => {
+                        return req.__('sector.numeric', { value});
+                    }).custom(async (value, { req }) => {
+                        if (!await Category.findOne({_id:value,deleted:false}))
+                            throw new Error(req.__('sector.invalid'));
+                        else
+                            return true;
+                    }),
+                    body('subSector').not().isEmpty().withMessage((value, { req}) => {
+                        return req.__('subSector.required', { value});
+                    }).isNumeric().withMessage((value, { req}) => {
+                        return req.__('subSector.numeric', { value});
+                    }).custom(async (value, { req }) => {
+                        if (!await Category.findOne({_id:value,deleted:false}))
+                            throw new Error(req.__('subSector.invalid'));
+                        else
+                            return true;
+                    }),
+                    body('educationSystem').not().isEmpty().withMessage((value, { req}) => {
+                        return req.__('educationSystem.required', { value});
+                    }).isNumeric().withMessage((value, { req}) => {
+                        return req.__('educationSystem.numeric', { value});
+                    }).custom(async (value, { req }) => {
+                        if (!await EducationSystem.findOne({_id:value,deleted:false}))
+                            throw new Error(req.__('educationSystem.invalid'));
+                        else
+                            return true;
+                    }),
+                    body('grade').not().isEmpty().withMessage((value, { req}) => {
+                        return req.__('grade.required', { value});
+                    }).isNumeric().withMessage((value, { req}) => {
+                        return req.__('grade.numeric', { value});
+                    }).custom(async (value, { req }) => {
+                        if (!await Grade.findOne({_id:value,deleted:false}))
+                            throw new Error(req.__('grade.invalid'));
+                        else
+                            return true;
+                    }),
+                    
+                    body('totalFees').not().isEmpty().withMessage((value,{req}) => {
+                        return req.__('totalFees.required', { value});
+                    }).isNumeric().withMessage((value,{req}) => {
+                        return req.__('totalFees.numeric', { value});
+                    }),
+                    body('feesDetails').not().isEmpty().withMessage((value,{req}) => {
+                        return req.__('feesDetails.required', { value});
+                    })
+                    .custom(async (feesDetails, { req }) => {
+                        for (let fees of feesDetails) {
+                            body('feesCost').not().isEmpty().withMessage((value,{req}) => {
+                                return req.__('feesCost.required', { value});
+                            }).isNumeric().withMessage((value,{req}) => {
+                                return req.__('feesCost.numeric', { value});
+                            }),
+                            body('feesType').not().isEmpty().withMessage((value, { req}) => {
+                                return req.__('feesType.required', { value});
+                            }).isNumeric().withMessage((value, { req}) => {
+                                return req.__('feesType.numeric', { value});
+                            }).custom(async (value, { req }) => {
+                                if (!await FeesType.findOne({_id:value,deleted:false}))
+                                    throw new Error(req.__('feesType.invalid'));
+                                else
+                                    return true;
+                            })
+                        }
+                        return true;
                     }),
                     //payments
                     body('payments').optional()
                     .custom(async (payments, { req }) => {
-                        
                         for (let payment of payments) {
-                            body('cost').not().isEmpty().withMessage((value) => {
+                            body('cost').not().isEmpty().withMessage((value,{req}) => {
                                 return req.__('cost.required', { value});
-                            }).isNumeric().withMessage((value) => {
+                            }).isNumeric().withMessage((value,{req}) => {
                                 return req.__('cost.numeric', { value});
                             }),
-                            body('educationSystem').not().isEmpty().withMessage((value) => {
-                                return req.__('educationSystem.required', { value});
-                            }).isNumeric().withMessage((value) => {
-                                return req.__('educationSystem.numeric', { value});
+                            body('feesType').not().isEmpty().withMessage((value, { req}) => {
+                                return req.__('feesType.required', { value});
+                            }).isNumeric().withMessage((value, { req}) => {
+                                return req.__('feesType.numeric', { value});
+                            }).custom(async (value, { req }) => {
+                                if (!await FeesType.findOne({_id:value,deleted:false}))
+                                    throw new Error(req.__('feesType.invalid'));
+                                else
+                                    return true;
                             }),
-                            body('installmentDate').not().isEmpty().withMessage((value) => {
+                            body('installmentDate').not().isEmpty().withMessage((value,{req}) => {
                                 return req.__('installmentDate.required', { value});
-                            }).isISO8601().withMessage((value) => {
+                            }).isISO8601().withMessage((value,{req}) => {
                                 return req.__('installmentDate.invalid', { value});
                             })
                         }
@@ -435,10 +627,15 @@ export default {
         try {
             const data = checkValidations(req);
             for (let validatedBody of data.fees) {
-                await checkExist(validatedBody.educationInstitution, EducationInstitution,{ deleted: false})
                 let theStudent = await checkExistThenGet(validatedBody.student, Student,{ deleted: false});
                 //create fees
-                let fees = await Fees.create({student:theStudent._id,educationInstitution:validatedBody.educationInstitution})
+                let fees = await Fees.create({
+                    student:theStudent._id,
+                    educationInstitution:validatedBody.educationInstitution,
+                    totalFees:validatedBody.totalFees,
+                    feesDetails:validatedBody.feesDetails,
+                    academicYear:validatedBody.academicYear,
+                })
                 //////////////////////////create premiums////////////////////////////
                 let payments = validatedBody.payments
                 for(var i=0; i < payments.length; i++) {
@@ -451,6 +648,7 @@ export default {
 
                     await Premium.create({
                         fees:fees.id,
+                        academicYear:fees.academicYear,
                         type:'FEES',
                         receiptNum:i+1,
                         student: theStudent._id,

@@ -235,23 +235,23 @@ export default {
             .custom(async (sizes, { req }) => {
                 
                 for (let size of sizes) {
-                    body('name_en').not().isEmpty().withMessage((value) => {
+                    body('name_en').not().isEmpty().withMessage((value,{req}) => {
                         return req.__('name_en.required', { value});
                     }),
-                    body('name_ar').not().isEmpty().withMessage((value) => {
+                    body('name_ar').not().isEmpty().withMessage((value,{req}) => {
                         return req.__('name_ar.required', { value});
                     })
-                    body('retailPrice').not().isEmpty().withMessage((value) => {
+                    body('retailPrice').not().isEmpty().withMessage((value,{req}) => {
                         return req.__('retailPrice.required', { value});
-                    }).isLength({ max: 10 }).withMessage((value) => {
+                    }).isLength({ max: 10 }).withMessage((value,{req}) => {
                         return req.__('retailPrice.invalid', { value});
                     }),
-                    body('costPrice').not().isEmpty().withMessage((value) => {
+                    body('costPrice').not().isEmpty().withMessage((value,{req}) => {
                         return req.__('costPrice.required', { value});
-                    }).isLength({ max: 10 }).withMessage((value) => {
+                    }).isLength({ max: 10 }).withMessage((value,{req}) => {
                         return req.__('costPrice.invalid', { value});
                     }),
-                    body('count').optional().isLength({ max: 10 }).withMessage((value) => {
+                    body('count').optional().isLength({ max: 10 }).withMessage((value,{req}) => {
                         return req.__('count.invalid', { value});
                     })
                     return true

@@ -75,23 +75,23 @@ export default {
             body('title_en').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('title_en.required', { value});
             }),
-            body('durationType').trim().not().isEmpty().withMessage((value) => {
+            body('durationType').trim().not().isEmpty().withMessage((value,{req}) => {
                 return req.__('durationType.required', { value});
             })
-            .isIn(['MONTHLY','YEARLY','DAILY']).withMessage((value) => {
+            .isIn(['MONTHLY','YEARLY','DAILY']).withMessage((value,{req}) => {
                 return req.__('durationType.invalid', { value});
             }),
-            body('duration').trim().not().isEmpty().withMessage((value) => {
+            body('duration').trim().not().isEmpty().withMessage((value,{req}) => {
                 return req.__('duration.required', { value});
-            }).isNumeric().withMessage((value) => {
+            }).isNumeric().withMessage((value,{req}) => {
                 return req.__('duration.numeric', { value});
             }),
-            body('cost').trim().not().isEmpty().withMessage((value) => {
+            body('cost').trim().not().isEmpty().withMessage((value,{req}) => {
                 return req.__('cost.required', { value});
-            }).isNumeric().withMessage((value) => {
+            }).isNumeric().withMessage((value,{req}) => {
                 return req.__('cost.numeric', { value});
             }),
-            body('oldCost').optional().isNumeric().withMessage((value) => {
+            body('oldCost').optional().isNumeric().withMessage((value,{req}) => {
                 return req.__('oldCost.numeric', { value});
             }),
             body('discount').optional().isNumeric().withMessage((value, { req}) => {

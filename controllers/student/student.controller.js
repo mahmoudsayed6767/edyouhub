@@ -13,6 +13,8 @@ import EducationInstitution from "../../models/education institution/education i
 import EducationSystem from "../../models/education system/education system.model";
 import Premium from "../../models/premium/premium.model";
 import { transformPremium } from "../../models/premium/transformPremium";
+import FeesType from "../../models/feesType/feesType.model";
+import Grade from "../../models/grade/grade.model";
 const populateQuery = [
     { path: 'owner', model: 'user'},
     { path: 'sector', model: 'category' },
@@ -40,7 +42,7 @@ export default {
                 else
                     return true;
             }),
-            body('studentName').not().isEmpty().withMessage((value) => {
+            body('studentName').not().isEmpty().withMessage((value,{req}) => {
                 return req.__('studentName.required', { value});
             }),
             body('sector').not().isEmpty().withMessage((value, { req}) => {
@@ -73,20 +75,16 @@ export default {
                 else
                     return true;
             }),
-            body('year').not().isEmpty().withMessage((value) => {
-                return req.__('year.required', { value});
-            }),
-            
-            body('busFees').not().isEmpty().withMessage((value) => {
-                return req.__('busFees.required', { value});
-            }).isNumeric().withMessage((value) => {
-                return req.__('busFees.numeric', { value});
-            }),
-            body('tuitionFees').not().isEmpty().withMessage((value) => {
-                return req.__('tuitionFees.required', { value});
-            }).isNumeric().withMessage((value) => {
-                return req.__('tuitionFees.numeric', { value});
-            }),
+            body('grade').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('grade.required', { value});
+            }).isNumeric().withMessage((value, { req}) => {
+                return req.__('grade.numeric', { value});
+            }).custom(async (value, { req }) => {
+                if (!await Grade.findOne({_id:value,deleted:false}))
+                    throw new Error(req.__('grade.invalid'));
+                else
+                    return true;
+            })
            
         ];
         return validations;
@@ -117,26 +115,30 @@ export default {
             let lang = i18n.getLocale(req)
             let { studentId } = req.params;
             
-            await checkExist(studentId, Student, { deleted: false });
-
+            await checkExist(studentId, Student, { deleted: false })
+            let feesTypes = await FeesType.find({deleted:false})
+            let fees = [];
+            for (let feesType of feesTypes) {
+                let premiums = []
+                await Premium.find({deleted:false,student:studentId,type:'FEES',feesType:feesType._id})
+                .populate(populatePremiumQuery)
+                .then(async(data)=>{
+                    await Promise.all(data.map(async(premium) =>{
+                        let thePremium = await transformPremium(premium,lang)
+                        premiums.push(thePremium)
+                    }))
+                });
+                fees.push({
+                    feesType:{
+                        id:feesType._id,
+                        name:lang=="ar"?feesType.name_en:feesType.name_en
+                    },
+                    premiums:premiums
+                })
+            }
             await Student.findById(studentId).populate(populateQuery).then(async(e) => {
                 let student = await transformStudent(e,lang)
-                let tuitionFees = [];
-                let busFees = [];
-                await Premium.find({deleted:false,student:studentId,type:'FEES'}).populate(populatePremiumQuery)
-                    .then(async(data)=>{
-                        await Promise.all(data.map(async(premium) =>{
-                            let thePremium = await transformPremium(premium,lang)
-                            if(thePremium.feesType == "BUS"){
-                                busFees.push(thePremium)
-                            }
-                            if(thePremium.feesType == "TUITION"){
-                                tuitionFees.push(thePremium)
-                            }
-                        }))
-                    })
-                student.busFees = busFees
-                student.tuitionFees = tuitionFees
+                student.fees = fees
                 res.send({
                     success:true,
                     data:student

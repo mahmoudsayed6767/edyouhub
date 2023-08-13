@@ -317,5 +317,8 @@
 	"chatRequestRequest.notFound": "chatRequestRequest.notFound",
 	"Valid.coupon": "Valid.coupon",
 	"fundProvider.invalid": "fundProvider.invalid",
-	"contactPersonName.required": "contactPersonName.required"
+	"contactPersonName.required": "contactPersonName.required",
+	"academicYear.required": "academicYear.required",
+	"academicYear.invalid": "academicYear.invalid",
+	"totalFees.numeric": "totalFees.numeric"
 }

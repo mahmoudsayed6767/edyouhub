@@ -586,7 +586,7 @@ export default {
             body('higherEducation').optional()
             .custom(async (higherEducation, { req }) => {
                 for (let val of higherEducation) {
-                    body('higherEducation').not().isEmpty().withMessage((value) => {
+                    body('higherEducation').not().isEmpty().withMessage((value,{req}) => {
                         return req.__('higherEducation.required', { value});
                     }).isNumeric().withMessage((value, { req}) => {
                         return req.__('higherEducation.numeric', { value});
@@ -596,7 +596,7 @@ export default {
                         else
                             return true;
                     }),
-                    body('faculty').not().isEmpty().withMessage((value) => {
+                    body('faculty').not().isEmpty().withMessage((value,{req}) => {
                         return req.__('faculty.required', { value});
                     })
                 }
@@ -606,10 +606,10 @@ export default {
             .custom(async (courses, { req }) => {
                 
                 for (let course of courses) {
-                    body('organization').not().isEmpty().withMessage((value) => {
+                    body('organization').not().isEmpty().withMessage((value,{req}) => {
                         return req.__('organization.required', { value});
                     }),
-                    body('courseName').not().isEmpty().withMessage((value) => {
+                    body('courseName').not().isEmpty().withMessage((value,{req}) => {
                         return req.__('courseName.required', { value});
                     })
                 }
@@ -634,13 +634,13 @@ export default {
             body('workExperiences').optional()
             .custom(async (workExperiences, { req }) => {
                 for (let val of workExperiences) {
-                    body('organization').not().isEmpty().withMessage((value) => {
+                    body('organization').not().isEmpty().withMessage((value,{req}) => {
                         return req.__('organization.required', { value});
                     }),
-                    body('jobTitle').not().isEmpty().withMessage((value) => {
+                    body('jobTitle').not().isEmpty().withMessage((value,{req}) => {
                         return req.__('jobTitle.required', { value});
                     }),
-                    body('startDate').not().isEmpty().withMessage((value) => {
+                    body('startDate').not().isEmpty().withMessage((value,{req}) => {
                         return req.__('startDate.required', { value});
                     }),
                     body('endDate').optional()
@@ -651,13 +651,13 @@ export default {
             .custom(async (kids, { req }) => {
                 
                 for (let kid of kids) {
-                    body('fullname').not().isEmpty().withMessage((value) => {
+                    body('fullname').not().isEmpty().withMessage((value,{req}) => {
                         return req.__('fullname.required', { value});
                     }),
-                    body('age').not().isEmpty().withMessage((value) => {
+                    body('age').not().isEmpty().withMessage((value,{req}) => {
                         return req.__('age.required', { value});
                     }),
-                    body('educationSystem').not().isEmpty().withMessage((value) => {
+                    body('educationSystem').not().isEmpty().withMessage((value,{req}) => {
                         return req.__('educationSystem.required', { value});
                     }).isNumeric().withMessage((value, { req}) => {
                         return req.__('educationSystem.numeric', { value});

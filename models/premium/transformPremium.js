@@ -33,26 +33,27 @@ export async function transformPremium(e,lang) {
         },
         index.feesType = e.feesType
     }
+    if(e.feesType){
+        index.feesType = lang=="ar"?e.feesType.name_ar:e.feesType.name_en
+    }
     /* students*/
     let students=[]
     for (let val of e.student) {
-    let student = {
-        studentName:val.studentName,
-        type:val.type,
-        year:val.year,
-        busFees:val.busFees,
-        tuitionFees:val.tuitionFees,
-        feesLetter:val.feesLetter,
-        id:val._id,                         
-    }
-    if(val.educationInstitutionName){
-        student.educationInstitutionName = val.educationInstitutionName
-    }else{
-        if(val.educationInstitution){
-            student.educationInstitutionName = lang=="ar"?val.educationInstitution.name_ar:val.educationInstitution.name_en
+        let student = {
+            studentName:val.studentName,
+            type:val.type,
+            grade:val.grade,
+            feesLetter:val.feesLetter,
+            id:val._id,                         
         }
-    }
-    students.push(student)
+        if(val.educationInstitutionName){
+            student.educationInstitutionName = val.educationInstitutionName
+        }else{
+            if(val.educationInstitution){
+                student.educationInstitutionName = lang=="ar"?val.educationInstitution.name_ar:val.educationInstitution.name_en
+            }
+        }
+        students.push(student)
     }
     index.students = students;
     return index

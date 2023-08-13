@@ -210,7 +210,7 @@ export default {
             body('theOptions').optional()
             .custom(async (options, { req }) => {
                 for (let option of options) {
-                    body('title').not().isEmpty().withMessage((value) => {
+                    body('title').not().isEmpty().withMessage((value,{req}) => {
                         return req.__('title.required', { value});
                     }),
                     body('optionId').optional()
@@ -223,10 +223,10 @@ export default {
                     body('dataType').optional().isIn(['IMAGE', 'VIDEO','FILE']).withMessage((value, { req}) => {
                         return req.__('dataType.invalid', { value});
                     }),
-                    body('link').not().isEmpty().withMessage((value) => {
+                    body('link').not().isEmpty().withMessage((value,{req}) => {
                         return req.__('link.required', { value});
                     }),
-                    body('link').not().isEmpty().withMessage((value) => {
+                    body('link').not().isEmpty().withMessage((value,{req}) => {
                         return req.__('link.required', { value});
                     }),
                     body('preview').optional(),

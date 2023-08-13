@@ -28,9 +28,13 @@ const premiumSchema = new Schema({
         enum:['FUND','FEES','COURSE'],
         default: 'FUND'
     },
+    academicYear: {
+        type: Number,
+        ref:'academicYear',
+    },
     feesType:{
-        type: String,
-        default: 'TUITION'
+        type: Number,
+        ref:'feesType'
     },
     student: {
         type: [Number],

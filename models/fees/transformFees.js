@@ -16,9 +16,7 @@ export async function transformFees(e,lang) {
         let student = {
             studentName:e.student.studentName,
             type:e.student.type,
-            year:e.student.year,
-            busFees:e.student.busFees,
-            tuitionFees:e.student.tuitionFees,
+            grade:e.student.grade,
             id:e.student._id,                         
         }
         if(e.student.educationSystem){

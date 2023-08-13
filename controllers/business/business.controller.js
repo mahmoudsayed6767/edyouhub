@@ -162,13 +162,13 @@ export default {
             .custom(async (grades, { req }) => {
                 
                 for (let grade of grades) {
-                    body('name_en').not().isEmpty().withMessage((value) => {
+                    body('name_en').not().isEmpty().withMessage((value,{req}) => {
                         return req.__('name_en.required', { value});
                     }),
-                    body('name_ar').not().isEmpty().withMessage((value) => {
+                    body('name_ar').not().isEmpty().withMessage((value,{req}) => {
                         return req.__('name_ar.required', { value});
                     }),
-                    body('cost').not().isEmpty().withMessage((value) => {
+                    body('cost').not().isEmpty().withMessage((value,{req}) => {
                         return req.__('cost.required', { value});
                     }),
                     body('gradeId').optional()
@@ -180,23 +180,23 @@ export default {
             .custom(async (faculties, { req }) => {
                 
                 for (let faculty of faculties) {
-                    body('name_en').not().isEmpty().withMessage((value) => {
+                    body('name_en').not().isEmpty().withMessage((value,{req}) => {
                         return req.__('name_en.required', { value});
                     }),
-                    body('name_ar').not().isEmpty().withMessage((value) => {
+                    body('name_ar').not().isEmpty().withMessage((value,{req}) => {
                         return req.__('name_ar.required', { value});
                     }),
                     body('theGrades').optional()
                     .custom(async (grades, { req }) => {
                         
                         for (let grade of grades) {
-                            body('name_en').not().isEmpty().withMessage((value) => {
+                            body('name_en').not().isEmpty().withMessage((value,{req}) => {
                                 return req.__('name_en.required', { value});
                             }),
-                            body('name_ar').not().isEmpty().withMessage((value) => {
+                            body('name_ar').not().isEmpty().withMessage((value,{req}) => {
                                 return req.__('name_ar.required', { value});
                             }),
-                            body('cost').not().isEmpty().withMessage((value) => {
+                            body('cost').not().isEmpty().withMessage((value,{req}) => {
                                 return req.__('cost.required', { value});
                             }),
                             body('gradeId').optional()
@@ -265,12 +265,12 @@ export default {
             body('sessionsPrices').optional()
             .custom(async (sessions, { req }) => {
                 for (let val of sessions) {
-                    body('studentGroup').not().isEmpty().withMessage((value) => {
+                    body('studentGroup').not().isEmpty().withMessage((value,{req}) => {
                         return req.__('studentGroup.required', { value});
                     }).isIn(['FOR-ONE','FOR-TWO','FOR-THREE','FOR-FOUR']).withMessage((value, { req}) => {
                         return req.__('studentGroup.invalid', { value});
                     }),
-                    body('price').not().isEmpty().withMessage((value) => {
+                    body('price').not().isEmpty().withMessage((value,{req}) => {
                         return req.__('price.required', { value});
                     })
                 }

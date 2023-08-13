@@ -4,9 +4,7 @@ export async function transformStudent(e,lang) {
         studentName:e.studentName,
         educationInstitutionName:e.educationInstitutionName,
         type:e.type,
-        year:e.year,
-        busFees:e.busFees,
-        tuitionFees:e.tuitionFees,
+        grade:e.grade,
         feesLetter:e.feesLetter,
         id:e._id,                         
     }

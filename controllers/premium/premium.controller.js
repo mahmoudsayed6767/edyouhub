@@ -16,6 +16,7 @@ import Setting from "../../models/setting/setting.model";
 const populateQuery = [
     { path: 'fund', model: 'fund'},
     { path: 'fees', model: 'fees'},
+    { path: 'feesType', model: 'feesType'},
     {
         path: 'student', model: 'student',
         populate: { path: 'educationInstitution', model: 'educationInstitution' },

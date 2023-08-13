@@ -57,8 +57,13 @@ import groupRoute from "./group/group.route"
 import anoncementRoute from "./anoncement/anoncement.route"
 import fundProgramRoute from "./fundProgram/fundProgram.route"
 import fundProviderRoute from "./fundProvider/fundProvider.route"
+import academicYearRoute from "./academicYear/academicYear.route"
+import feesTypeRoute from "./feesType/feesType.route"
 
 const router = express.Router();
+router.use('/academicYears', academicYearRoute);
+router.use('/feesTypes', feesTypeRoute);
+
 router.use('/fundPrograms', fundProgramRoute);
 
 router.use('/fundProviders', fundProviderRoute);

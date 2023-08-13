@@ -22,6 +22,29 @@ const feesSchema = new Schema({
         enum:['PENDING','STARTED','COMPLETED'],
         default:'PENDING'
     },
+    academicYear: {
+        type: Number,
+        ref:'academicYear',
+        required: true,
+    },
+    feesDetails: [
+        new Schema({
+            feesType: {
+                type: Number,
+                ref:'totalFees',
+                required: true,
+            },
+            feesCost: {
+                type: Number,
+                required: true
+            },
+        }, { _id: false })
+        
+    ],
+    totalFees: {
+        type: Number,
+        required: true
+    },
     deleted:{
         type:Boolean,
         default:false
