@@ -225,34 +225,13 @@ export default {
             }
             if(premium.fees){
                 let fees = await checkExistThenGet(premium.fees, Fees);
-                let setting = await Setting.findOne({deleted: false})
-                let cashBack = (premium.cost * setting.feesCashBackRatio) / 100 
-                console.log("cashBack",cashBack)
-                let fundOwner = await checkExistThenGet(req.user._id, User)
-                fundOwner.balance = fundOwner.balance + cashBack
-                await fundOwner.save();
                 if(premium.lastMonth == true){
                     fees.status = "COMPLETED"
-                    await fees.save();
                 }else{
                     fees.status = "STARTED"
                 }
-                sendNotifiAndPushNotifi({
-                    targetUser: fees.owner, 
-                    fromUser: fees.owner, 
-                    text: 'EdHub',
-                    subject: fees.id,
-                    subjectType: 'Fees Premium Paid',
-                    info:'PREMIUM'
-                });
-                let notif = {
-                    "description_en":'Your Fees Premium Has Been Paid ',
-                    "description_ar":'  تم دفع قسط المصاريف الخاصه بك',
-                    "title_en":'Your Fees Premium Has Been Paid ',
-                    "title_ar":' تم دف عقسط المصاريف الخاصه بك',
-                    "type":'PREMIUM'
-                }
-                await Notif.create({...notif,resource:req.user,target:req.user._id,premium:premium.id});
+                await fees.save();
+               
             }
             let reports = {
                 "action":"Pay Premium",

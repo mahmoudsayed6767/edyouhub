@@ -92,13 +92,13 @@ const payPremium = async (premiums,client) => {
             await fundOwner.save();
             if(premium.lastMonth == true){
                 fees.status = "COMPLETED"
-                await fees.save();
             }else{
                 fees.status = "STARTED"
             }
+            await fees.save();
             sendNotifiAndPushNotifi({
                 targetUser: fees.owner, 
-                fromUser: fees.owner, 
+                fromUser: client, 
                 text: 'EdHub',
                 subject: fees.id,
                 subjectType: 'Fees Premium Paid',
