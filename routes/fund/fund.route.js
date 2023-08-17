@@ -1,12 +1,12 @@
 import express from 'express';
-import {  requireAuth} from '../../services/passport';
+import { requireAuth } from '../../services/passport';
 import fundController from '../../controllers/fund/fund.controller';
 import { multerSaveTo } from '../../services/multer-service';
 import { permissions } from '../../services/permissions';
 
 const router = express.Router();
 router.route('/uploads')
-    .post(  
+    .post(
         requireAuth,
         multerSaveTo('funds').fields([
             { name: 'personalIdImgs', maxCount: 4, options: false },
@@ -19,21 +19,27 @@ router.route('/uploads')
         fundController.uploadImgs
     )
 router.route('/')
-    .post(  
+    .post(
         requireAuth,
         fundController.validateBody(),
         fundController.create
-    ).get(requireAuth,fundController.getAllPaginated);
+    ).get(requireAuth, fundController.getAllPaginated);
+router.route('/Completed')
+    .post(
+        requireAuth,
+        fundController.validateCompletedBody(),
+        fundController.createCompleted
+    )
 router.route('/withoutPagenation/get')
-    .get(requireAuth,fundController.getAll);
+    .get(requireAuth, fundController.getAll);
 router.route('/:fundId')
     .put(
         requireAuth,
         fundController.validateBody(true),
         fundController.update
     )
-    .get(requireAuth,fundController.findById)
-    .delete(requireAuth,fundController.delete);
+    .get(requireAuth, fundController.findById)
+    .delete(requireAuth, fundController.delete);
 router.route('/:fundId/reviewing')
     .put(
         requireAuth,
@@ -50,7 +56,7 @@ router.route('/:fundId/needAction')
     .put(
         requireAuth,
         permissions('ADMIN'),
-        fundController.validateTakeActionBody(),
+        fundController.validateNeedActionBody(),
         fundController.needAction
     )
 router.route('/:fundId/actionReply')
@@ -63,7 +69,7 @@ router.route('/:fundId/reject')
     .put(
         requireAuth,
         permissions('ADMIN'),
-        fundController.validateTakeActionBody(),
+        fundController.validateRejectBody(),
         fundController.reject
     )
 router.route('/:fundId/partialAcceptance')
@@ -77,7 +83,7 @@ router.route('/:fundId/accept')
     .put(
         requireAuth,
         permissions('ADMIN'),
-        fundController.validateTakeActionBody(),
+        fundController.validateAcceptBody(),
         fundController.accept
     )
 router.route('/:fundId/active')

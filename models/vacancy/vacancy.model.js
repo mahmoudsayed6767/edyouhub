@@ -22,24 +22,34 @@ const vacancySchema = new Schema({
         type: String,
         required: true,
     },
-    educationInstitution:{
+    educationInstitution: {
         type: Number,
         ref: 'educationInstitution',
         required: true,
     },
     business: {
         type: Number,
-        ref:'business',
+        ref: 'business',
         required: true,
     },
-    deleted:{
-        type:Boolean,
-        default:false
+    sector: {
+        type: Number,
+        ref: 'category',
+        required: true,
+    },
+    subSector: {
+        type: Number,
+        ref: 'category',
+        required: true,
+    },
+    deleted: {
+        type: Boolean,
+        default: false
     }
 });
 
 vacancySchema.set('toJSON', {
-    transform: function (doc, ret) {
+    transform: function(doc, ret) {
         ret.id = ret._id;
         delete ret._id;
         delete ret.__v;

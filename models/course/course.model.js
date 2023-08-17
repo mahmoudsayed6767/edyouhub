@@ -1,6 +1,6 @@
-import mongoose,{ Schema } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 import autoIncrement from 'mongoose-auto-increment';
-const courseSchema=new Schema({
+const courseSchema = new Schema({
     _id: {
         type: Number,
         required: true
@@ -17,13 +17,13 @@ const courseSchema=new Schema({
     },
     type: {
         type: String,
-        enum: ['ONLINE','ON-SITE'],
-        default:'ON-SITE',
+        enum: ['ONLINE', 'ON-SITE'],
+        default: 'ON-SITE',
     },
     status: {
         type: String,
-        enum: ['CURRENT','COMING','DONE'],
-        default:'COMING',
+        enum: ['CURRENT', 'COMING', 'DONE'],
+        default: 'COMING',
     },
     description_en: {
         type: String,
@@ -37,49 +37,57 @@ const courseSchema=new Schema({
     },
     sessionsNo: {
         type: Number,
-        default:0
+        default: 0
     },
-    acceptanceNo:{
+    acceptanceNo: {
         type: Number,
-        default:0
+        default: 0
     },
     imgs: [{
         type: String,
         required: true
     }],
-    introVideo:{
+    introVideo: {
         type: String,
     },
     specializations: {
         type: [Number],
-        ref:'specialization',
+        ref: 'specialization',
         required: true
     },
     business: {
         type: Number,
-        ref:'business',
+        ref: 'business',
         //required: true
     },
     branches: {
         type: [Number],
-        ref:'branch',
+        ref: 'branch',
         //required: true
     },
-    ownerType:{
+    cities: {
+        type: [Number],
+        ref: 'city',
+    },
+    areas: {
+        type: [Number],
+        ref: 'area',
+    },
+    ownerType: {
         type: String,
-        enum:['BUSINESS','APP'],
-        default:'BUSINESS'
+        enum: ['BUSINESS', 'APP'],
+        default: 'BUSINESS'
     },
     instractors: {
         type: [Number],
-        ref:'user',
+        ref: 'user',
         required: true
     },
     dailyTimes: [
         new Schema({
-            day:{
+            day: {
                 type: String,
-                enum: ['SATURDAY','SUNDAY', 'MONDAY','WEDNESDAY','TUESDAY','THURSDAY','FRIDAY'],
+                enum: ['SATURDAY', 'SUNDAY', 'MONDAY', 'WEDNESDAY', 'TUESDAY', 'THURSDAY', 'FRIDAY'],
                 required: true,
             },
             fromDate: {
@@ -92,7 +100,7 @@ const courseSchema=new Schema({
             },
         }, { _id: false })
     ],
-    
+
     fromDate: {
         type: Date,
         //required: true
@@ -111,40 +119,40 @@ const courseSchema=new Schema({
     },
     maxApplications: {
         type: Number,
-        default:0
+        default: 0
     },
     maxAcceptance: {
         type: Number,
-        default:0
+        default: 0
     },
-    feesType:{
+    feesType: {
         type: String,
-        enum:['NO-FEES','WITH-FEES'],
-        default:'WITH-FEES'
+        enum: ['NO-FEES', 'WITH-FEES'],
+        default: 'WITH-FEES'
     },
-    paymentMethod:{
+    paymentMethod: {
         type: String,
-        enum:['CASH','INSTALLMENT'],
+        enum: ['CASH', 'INSTALLMENT'],
     },
     price: {
-        type:Number,
+        type: Number,
     },
     oldPrice: {
-        type:Number,
+        type: Number,
     },
     discountType: {
         type: String,
-        enum:['FIXED','RATIO'],
-        default:'RATIO',
+        enum: ['FIXED', 'RATIO'],
+        default: 'RATIO',
     },
-    discount:{
-        type:Number,
-        default:0
+    discount: {
+        type: Number,
+        default: 0
     },
-    totalDuration :{
-        type:Number,
+    totalDuration: {
+        type: Number,
         required: true,
-        default:0,
+        default: 0,
     },
     installments: [
         new Schema({
@@ -156,37 +164,37 @@ const courseSchema=new Schema({
     ],
     rateCount: {
         type: Number,
-        default:0
+        default: 0
     },
     rateNumbers: {
         type: Number,
-        default:0
+        default: 0
     },
     rate: {
         type: Number,
-        default:0
+        default: 0
     },
     tutorials: {
         type: [Number],
-        ref:'courseTutorial'
+        ref: 'courseTutorial'
     },
-    hasCertificate:{
-        type:Boolean,
-        default:false
+    hasCertificate: {
+        type: Boolean,
+        default: false
     },
-    certificateName:{
+    certificateName: {
         type: String,
     },
     secretKey: {
         type: String,
     },
-    deleted:{
-        type:Boolean,
-        default:false
+    deleted: {
+        type: Boolean,
+        default: false
     }
-},{timestamps:true});
+}, { timestamps: true });
 courseSchema.set('toJSON', {
-    transform: function (doc, ret, options) {
+    transform: function(doc, ret, options) {
         ret.id = ret._id;
         delete ret._id;
         delete ret.__v;

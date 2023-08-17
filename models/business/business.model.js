@@ -10,13 +10,13 @@ const businessSchema = new Schema({
     },
     owner: {
         type: Number,
-        ref:'user',
+        ref: 'user',
         required: true,
     },
-    status:{
+    status: {
         type: String,
-        enum:['PENDING','ACCEPTED','REJECTED'],
-        default:'PENDING'
+        enum: ['PENDING', 'ACCEPTED', 'REJECTED'],
+        default: 'PENDING'
     },
     name_en: {
         type: String,
@@ -54,20 +54,20 @@ const businessSchema = new Schema({
     },
     sector: {
         type: Number,
-        ref:'category',
+        ref: 'category',
         required: true,
     },
     subSector: {
         type: Number,
-        ref:'category',
+        ref: 'category',
         required: true,
     },
     educationSystem: {
         type: Number,
-        ref:'educationSystem',
+        ref: 'educationSystem',
         //required: true,
     },
-    educationInstitution: {//if accepted
+    educationInstitution: { //if accepted
         type: Number,
         ref: 'educationInstitution',
     },
@@ -90,10 +90,10 @@ const businessSchema = new Schema({
         type: String,
     },
 
-    studyType:{
+    studyType: {
         type: String,
-        enum:['LOCAL','ABROAD'],
-        default:'LOCAL'
+        enum: ['LOCAL', 'ABROAD'],
+        default: 'LOCAL'
     },
     gallery: {
         type: [String]
@@ -101,6 +101,14 @@ const businessSchema = new Schema({
     branches: {
         type: [Number],
         ref: 'branche',
+    },
+    cities: {
+        type: [Number],
+        ref: 'city',
+    },
+    areas: {
+        type: [Number],
+        ref: 'area',
     },
     faculties: {
         type: [Number],
@@ -125,9 +133,9 @@ const businessSchema = new Schema({
             studentGroup: {
                 type: String,
                 required: true,
-                enum:['FOR-ONE','FOR-TWO','FOR-THREE','FOR-FOUR']
+                enum: ['FOR-ONE', 'FOR-TWO', 'FOR-THREE', 'FOR-FOUR']
             },
-            price:{
+            price: {
                 type: Number,
                 required: true,
             },
@@ -135,29 +143,29 @@ const businessSchema = new Schema({
     ],
     package: {
         type: Number,
-        ref:'package',
+        ref: 'package',
     },
-    packageStartDateMillSec:{
+    packageStartDateMillSec: {
         type: Number,
     },
-    packageEndDateMillSec:{
+    packageEndDateMillSec: {
         type: Number,
     },
     hasPackage: {
         type: Boolean,
         default: false
     },
-    services:{
+    services: {
         type: [String],
-        enum: ['FEES-PAYMENT','FEES-INSTALLMENT','SUPPLIES','COURSES'],
+        enum: ['FEES-PAYMENT', 'FEES-INSTALLMENT', 'SUPPLIES', 'COURSES'],
     },
-    deleted:{
-        type:Boolean,
-        default:false
+    deleted: {
+        type: Boolean,
+        default: false
     }
 });
 businessSchema.set('toJSON', {
-    transform: function (doc, ret) {
+    transform: function(doc, ret) {
         ret.id = ret._id;
         delete ret._id;
         delete ret.__v;

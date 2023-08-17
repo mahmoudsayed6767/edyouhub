@@ -10,7 +10,7 @@ const placeSchema = new Schema({
     },
     owner: {
         type: Number,
-        ref:'user',
+        ref: 'user',
         required: true
     },
     name_ar: {
@@ -23,26 +23,26 @@ const placeSchema = new Schema({
         trim: true,
         required: true
     },
-    phone:{
+    phone: {
         type: String,
         trim: true,
         required: true
     },
-    categories: {//shop
+    categories: { //shop
         type: [Number],
-        ref:'categories',
+        ref: 'categories',
     },
-    subCategories: {//shop
+    subCategories: { //shop
         type: [Number],
-        ref:'categories',
+        ref: 'categories',
     },
-    city: {
+    cities: {
         type: [Number],
-        ref:'city',
+        ref: 'city',
     },
-    area: {
+    areas: {
         type: [Number],
-        ref:'area',
+        ref: 'area',
     },
     logo: {
         type: String,
@@ -52,19 +52,19 @@ const placeSchema = new Schema({
         type: String,
         required: true,
     },
-    branches: {//shop
+    branches: { //shop
         type: [Number],
-        ref:'branch',
+        ref: 'branch',
     },
-    deleted:{
-        type:Boolean,
-        default:false
+    deleted: {
+        type: Boolean,
+        default: false
     }
 }, { timestamps: true, discriminatorKey: 'kind' });
 placeSchema.index({ location: '2dsphere' });
 
 placeSchema.set('toJSON', {
-    transform: function (doc, ret) {
+    transform: function(doc, ret) {
         ret.id = ret._id;
         delete ret._id;
         delete ret.__v;

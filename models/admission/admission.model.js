@@ -8,10 +8,10 @@ const admissionSchema = new Schema({
         type: Number,
         required: true
     },
-    status:{
+    status: {
         type: String,
-        enum:['PENDING','STARTED','ENDED'],
-        default:'PENDING'
+        enum: ['PENDING', 'STARTED', 'ENDED'],
+        default: 'PENDING'
     },
     title: {
         type: String,
@@ -41,20 +41,30 @@ const admissionSchema = new Schema({
     },
     educationSystem: {
         type: Number,
-        ref:'educationSystem',
+        ref: 'educationSystem',
         required: true,
     },
-    educationInstitution:{
+    educationInstitution: {
         type: Number,
         ref: 'educationInstitution',
         required: true,
     },
     business: {
         type: Number,
-        ref:'business',
+        ref: 'business',
         required: true,
     },
-    grades:{
+    sector: {
+        type: Number,
+        ref: 'category',
+        required: true,
+    },
+    subSector: {
+        type: Number,
+        ref: 'category',
+        required: true,
+    },
+    grades: {
         type: [Number],
         ref: 'grade',
     },
@@ -65,14 +75,14 @@ const admissionSchema = new Schema({
                 ref: 'faculty',
                 required: true,
             },
-            grades:{
+            grades: {
                 type: [Number],
                 ref: 'grade',
                 required: true,
             },
-            
+
         }, { _id: false })
-        
+
     ],
     applications: {
         type: Number,
@@ -82,22 +92,22 @@ const admissionSchema = new Schema({
         type: Number,
         default: 0,
     },
-    allGrades:{
-        type:Boolean,
-        default:false
+    allGrades: {
+        type: Boolean,
+        default: false
     },
-    allFaculties:{
-        type:Boolean,
-        default:false
+    allFaculties: {
+        type: Boolean,
+        default: false
     },
-    deleted:{
-        type:Boolean,
-        default:false
+    deleted: {
+        type: Boolean,
+        default: false
     }
 });
 
 admissionSchema.set('toJSON', {
-    transform: function (doc, ret) {
+    transform: function(doc, ret) {
         ret.id = ret._id;
         delete ret._id;
         delete ret.__v;

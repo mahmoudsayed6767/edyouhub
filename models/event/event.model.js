@@ -1,27 +1,27 @@
 import mongoose, { Schema } from "mongoose";
 import autoIncrement from 'mongoose-auto-increment';
-const eventSchema=new Schema({
+const eventSchema = new Schema({
     _id: {
         type: Number,
         required: true
     },
-    business:{
-        type:Number,
-        ref:'business',
+    business: {
+        type: Number,
+        ref: 'business',
     },
-    educationInstitution:{
-        type:Number,
-        ref:'educationInstitution',
+    educationInstitution: {
+        type: Number,
+        ref: 'educationInstitution',
     },
     status: {
         type: String,
-        enum:['COMING','CURRENT','PASS'],
-        default:'COMING'
+        enum: ['COMING', 'CURRENT', 'PASS'],
+        default: 'COMING'
     },
-    ownerType:{
+    ownerType: {
         type: String,
-        enum:['BUSINESS','APP'],
-        default:'BUSINESS'
+        enum: ['BUSINESS', 'APP'],
+        default: 'BUSINESS'
     },
     title: {
         type: String,
@@ -47,17 +47,15 @@ const eventSchema=new Schema({
         type: { type: String, enum: ['Point'] },
         coordinates: { type: [Number] },
     },
-    city:{
-        type:Number,
-        ref:'city',
-        required:true,
-        default:1
+    city: {
+        type: Number,
+        ref: 'city',
+        required: true,
     },
-    area:{
-        type:Number,
-        ref:'area',
-        required:true,
-        default:1
+    area: {
+        type: Number,
+        ref: 'area',
+        required: true,
     },
     contactNumbers: {
         type: [String],
@@ -96,30 +94,30 @@ const eventSchema=new Schema({
         }, { _id: false })
     ],
     usersParticipants: [{
-        type:Number,
-        ref:'user',
+        type: Number,
+        ref: 'user',
     }],
     businessParticipants: [{
-        type:Number,
-        ref:'business',
+        type: Number,
+        ref: 'business',
     }],
     imgs: [{
-        type:String,
+        type: String,
     }],
-    feesType:{
+    feesType: {
         type: String,
-        enum:['NO-FEES','WITH-FEES'],
-        default:'NO-FEES'
+        enum: ['NO-FEES', 'WITH-FEES'],
+        default: 'NO-FEES'
     },
-    paymentMethod:{
+    paymentMethod: {
         type: String,
-        enum:['CASH','INSTALLMENT','BOTH'],
+        enum: ['CASH', 'INSTALLMENT', 'BOTH'],
     },
     cashPrice: {
-        type:Number,
+        type: Number,
     },
-    installmentPrice :{
-        type:Number,
+    installmentPrice: {
+        type: Number,
     },
     installments: [
         new Schema({
@@ -130,34 +128,34 @@ const eventSchema=new Schema({
         }, { _id: false })
     ],
     attendance: [{
-        type:Number,
-        ref:'user',
+        type: Number,
+        ref: 'user',
     }],
     interesting: [{
-        type:Number,
-        ref:'user',
+        type: Number,
+        ref: 'user',
     }],
     waitToPaid: [{
-        type:Number,
-        ref:'user',
+        type: Number,
+        ref: 'user',
     }],
     discountType: {
         type: String,
-        enum:['FIXED','RATIO'],
-        default:'RATIO',
+        enum: ['FIXED', 'RATIO'],
+        default: 'RATIO',
     },
-    discount:{
-        type:Number,
-        default:0
+    discount: {
+        type: Number,
+        default: 0
     },
-    deleted:{
-        type:Boolean,
-        default:false
+    deleted: {
+        type: Boolean,
+        default: false
     },
 
-},{ timestamps: true });
+}, { timestamps: true });
 eventSchema.set('toJSON', {
-    transform: function (doc, ret, options) {
+    transform: function(doc, ret, options) {
         ret.id = ret._id;
         delete ret._id;
         delete ret.__v;

@@ -5,10 +5,10 @@ const fundSchema = new Schema({
         type: Number,
         required: true
     },
-    status:{
+    status: {
         type: String,
-        enum:['NEW','PENDING','PARTIAL-ACCEPTANCE','ACCEPTED','CANCELED','NEED-ACTION','REJECTED','STARTED','COMPLETED'],
-        default:'NEW'
+        enum: ['UNCOMPLETED', 'NEW', 'PENDING', 'PARTIAL-ACCEPTANCE', 'ACCEPTED', 'CANCELED', 'NEED-ACTION', 'REJECTED', 'STARTED', 'COMPLETED'],
+        default: 'UNCOMPLETED'
     },
     owner: {
         type: Number,
@@ -17,19 +17,19 @@ const fundSchema = new Schema({
     },
     firstName: {
         type: String,
-        required: true
+        //required: true
     },
     secondName: {
         type: String,
-        required: true
+        //required: true
     },
     thirdName: {
         type: String,
-        required: true
+        //required: true
     },
     fourthName: {
         type: String,
-        required: true
+        //required: true
     },
     country: {
         type: Number,
@@ -45,137 +45,141 @@ const fundSchema = new Schema({
     },
     address: {
         type: String,
-        required: true
+        //required: true
     },
     phone: {
         type: String,
-        required: true
+        //required: true
     },
     job: {
         type: String,
-        required: true
+        //required: true
     },
-    jobAddress : {
+    jobAddress: {
         type: String,
     },
     workPosition: {
         type: String,
-        enum:['EMPLOYEE','BUSINESS-OWNER'],
-        required: true
+        enum: ['EMPLOYEE', 'BUSINESS-OWNER'],
+        //required: true
     },
     workStartDate: {
         type: Date,
     },
-    personalId:{
+    personalId: {
         type: String,
-        enum:['EGYPTIAN','NON-EGYPTIAN'],
-        default:'EGYPTIAN'
+        enum: ['EGYPTIAN', 'NON-EGYPTIAN'],
+        default: 'EGYPTIAN'
     },
-    
+
     personalIdImgs: {
         type: [String],
-        required: true
+        //required: true
     },
-    utilityBills:{
+    utilityBills: {
         type: String,
-        enum:['OWNER','RENTER'],
+        enum: ['OWNER', 'RENTER'],
         default: 'RENTER'
     },
-    billType:{
+    billType: {
         type: String,
-        enum: ["WATER","GAS","TELEPHONE","ELECTRICITY","RENT-CONTRACT"]
+        enum: ["WATER", "GAS", "TELEPHONE", "ELECTRICITY", "RENT-CONTRACT"]
     },
     utilityBillsImgs: {
         type: [String],
-        required: true
+        //required: true
     },
-    proofIncome:{
+    proofIncome: {
         type: String,
-        enum:['EMPLOYEE','BUSINESS-OWNER'],
+        enum: ['EMPLOYEE', 'BUSINESS-OWNER'],
         default: 'EMPLOYEE'
     },
-    proofIncomeCost:{
+    proofIncomeCost: {
         type: String
     },
     proofIncomeImgs: [
         new Schema({
             type: {
                 type: String,
-                enum:['WORK-ID','HR-LETTER','WORK-CONTRACT','BANK-ACCOUNT','COMMERCIAL-REGISTRATION','TAX-ID'],
+                enum: ['WORK-ID', 'HR-LETTER', 'WORK-CONTRACT', 'BANK-ACCOUNT', 'COMMERCIAL-REGISTRATION', 'TAX-ID'],
             },
             img: {
                 type: [String],
                 required: true,
             },
         }, { _id: false })
-        
+
     ],
-    
+
     students: {
         type: [Number],
         ref: 'student',
-        required: true
+        //required: true
     },
-    educationInstitutions:{
+    educationInstitutions: {
         type: [Number],
         ref: 'educationInstitution',
     },
-    fundProgram:{
+    fundProgram: {
         type: Number,
         ref: 'fundProgram',
         required: true
     },
-    fundProvider:{
+    fundProvider: {
         type: Number,
+        ref: 'fundProvider',
+    },
+    selectedFundProviders: {
+        type: [Number],
         ref: 'fundProvider',
         required: true
     },
-    totalFees:{
+    totalFees: {
         type: Number,
         required: true
     },
-    oldTotalFees:{
+    oldTotalFees: {
         type: Number,
     },
-    totalWithMonthlyPercent:{
+    totalWithMonthlyPercent: {
         type: Number,
     },
     //if accept
-    firstPaid:{
+    firstPaid: {
         type: Number,
     },
-    startDate:{
+    startDate: {
         type: Date,
     },
-    endDate:{
+    endDate: {
         type: Date,
     },
     //if reject
-    reason:{
+    reason: {
         type: String,
     },
-    partialAcceptReason:{
+    partialAcceptReason: {
         type: String,
     },
     //if action need
     actionType: {
         type: [String],
-        enum:['WORK-ID','CLUB-ID','HR-LETTER','WORK-CONTRACT','BANK-ACCOUNT','BANK DEPOSIT','COMMERCIAL-REGISTRATION','TAX-ID']
+        enum: ['WORK-ID', 'CLUB-ID', 'HR-LETTER', 'WORK-CONTRACT', 'BANK-ACCOUNT', 'BANK DEPOSIT', 'COMMERCIAL-REGISTRATION', 'TAX-ID']
     },
     actionFile: [
         new Schema({
             type: {
                 type: String,
-                enum:['WORK-ID','CLUB-ID','HR-LETTER','WORK-CONTRACT','BANK-ACCOUNT','BANK DEPOSIT','COMMERCIAL-REGISTRATION','TAX-ID'],
+                enum: ['WORK-ID', 'CLUB-ID', 'HR-LETTER', 'WORK-CONTRACT', 'BANK-ACCOUNT', 'BANK DEPOSIT', 'COMMERCIAL-REGISTRATION', 'TAX-ID'],
             },
             file: {
                 type: [String],
                 required: true,
             },
         }, { _id: false })
-        
+
     ],
-    actionReply:{
+    actionReply: {
         type: Boolean,
         default: false
     },
@@ -183,16 +187,16 @@ const fundSchema = new Schema({
         new Schema({
             type: {
                 type: String,
-                enum:['BIRTH-CERTIFICATE','EDUCATION-LETTER'],
+                enum: ['BIRTH-CERTIFICATE', 'EDUCATION-LETTER'],
             },
             file: {
                 type: [String],
                 required: true,
             },
         }, { _id: false })
-        
+
     ],
-    active:{
+    active: {
         type: Boolean,
         default: false
     },
@@ -203,7 +207,7 @@ const fundSchema = new Schema({
 }, { timestamps: true });
 
 fundSchema.set('toJSON', {
-    transform: function (doc, ret, options) {
+    transform: function(doc, ret, options) {
         ret.id = ret._id;
         delete ret._id;
         delete ret.__v;
