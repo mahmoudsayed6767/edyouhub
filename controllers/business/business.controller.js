@@ -550,7 +550,7 @@ export default {
         try {
             //get lang
             let lang = i18n.getLocale(req)
-            let { city, area, userId, educationType, owner, search, sector, subSector, educationSystem, status } = req.query;
+            let {specializations, city, area, userId, educationType, owner, search, sector, subSector, educationSystem, status } = req.query;
 
             let query = { deleted: false }
                 /*search by name */
@@ -567,6 +567,8 @@ export default {
                     ]
                 };
             }
+            if (specialization) query.specializations = specialization
+
             if (city) query.cities = city
             if (area) query.areas = area
             if (owner) query.owner = owner
@@ -609,7 +611,7 @@ export default {
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1,
                 limit = +req.query.limit || 20;
-            let { city, area, userId, educationType, owner, search, sector, subSector, educationSystem, status } = req.query;
+            let {specialization, city, area, userId, educationType, owner, search, sector, subSector, educationSystem, status } = req.query;
 
             let query = { deleted: false }
                 /*search by name */
@@ -626,6 +628,8 @@ export default {
                     ]
                 };
             }
+            if (specialization) query.specializations = specialization
+
             if (city) query.cities = city
             if (area) query.areas = area
             if (owner) query.owner = owner

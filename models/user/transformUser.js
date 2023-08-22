@@ -43,6 +43,15 @@ export async function transformUserShort(e,lang,myUser,userId) {
     return index;
 }
 export async function transformUserById(e,lang,myUser,userId) {
+    function isEmptyObject(obj) {
+        for (let key in obj) {
+          if (obj.hasOwnProperty(key)) {
+            return false;
+          }
+        }
+        return true;
+    }
+      
     let index = {
         username:e.username,
         fullname:e.fullname,
@@ -61,9 +70,7 @@ export async function transformUserById(e,lang,myUser,userId) {
         cashBack:e.cashBack,
         maritalStatus:e.maritalStatus,
         educationPhase:e.educationPhase,
-        schoolInfo:e.schoolInfo,
-        universityInfo:e.universityInfo,
-        job:e.job,
+
         experiencesType:e.experiencesType,
         experiencesProfession:e.experiencesProfession,
         experiencesOrganization:e.experiencesOrganization,
@@ -74,6 +81,16 @@ export async function transformUserById(e,lang,myUser,userId) {
         createdAt: e.createdAt,
         
     }
+    if(!isEmptyObject(e.schoolInfo)){
+        index.schoolInfo = e.schoolInfo
+    }
+    if(!isEmptyObject(e.universityInfo)){
+        index.universityInfo = e.universityInfo
+    }
+    if(!isEmptyObject(e.job)){
+        index.job = e.job
+    }
+    
     if (e.package) {
         index.package = {
             title:lang=="ar"?e.package.title_ar:e.package.title_en,
