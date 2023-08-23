@@ -12,7 +12,10 @@ import { transformService } from "../../models/service/transformService";
 import { toImgUrl } from "../../utils";
 
 const populateQuery = [
-    { path: 'business', model: 'business'},
+    {
+        path: 'business',model: 'business',
+        populate: { path: 'package', model: 'package' },
+    },
     { path: 'specialization', model: 'specialization'},
 ];
 export default {

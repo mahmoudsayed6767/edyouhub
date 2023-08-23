@@ -322,9 +322,10 @@ export default {
                     cities.push(val.city)
                     areas.push(val.area)
                 }));
-                validatedBody.cities = cities
-                validatedBody.areas = areas
+                business.cities = cities
+                business.areas = areas
             }
+
             let grades = []
             if (validatedBody.theGrades) {
                 await Promise.all(validatedBody.theGrades.map(async(val) => {

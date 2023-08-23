@@ -67,7 +67,7 @@ export default {
         try {
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
-            let {viewPlaceType,status,owner,type,business,ownerType,event,dataType,group} = req.query
+            let {city,area,viewPlaceType,status,owner,type,business,ownerType,event,dataType,group} = req.query
             let query = {deleted: false,status:'ACCEPTED',group:null };
             if(group){
                 query.group = group;
@@ -83,8 +83,17 @@ export default {
             if(dataType) query.dataType = dataType;
             if (type) {
                 let values = type.split(",");
-                console.log(values)
                 query.type = {$in:values};
+                var found = values.find(function(element) {
+                    return element == 'EVENT';
+                }); 
+                if(found){
+                    let eventQuery = {deleted:false}
+                    if(city) eventQuery.city = city;
+                    if(area) eventQuery.area = area;
+                    let eventsIds = await Event.find(eventQuery).distinct('_id')
+                    query.event = {$in:eventsIds}
+                }
             };
             if(business) query.business = business;
             if(ownerType) query.ownerType = ownerType;
@@ -132,7 +141,7 @@ export default {
     },
     async findSelection(req, res, next) {        
         try {
-            let {status,group,owner,type,business,ownerType,event,dataType} = req.query
+            let {city,area,status,group,owner,type,business,ownerType,event,dataType} = req.query
             let query = {deleted: false,status:'ACCEPTED' ,group:null};
             if(group){
                 query.group = group;
@@ -150,6 +159,16 @@ export default {
                 let values = type.split(",");
                 console.log(values)
                 query.type = {$in:values};
+                var found = values.find(function(element) {
+                    return element == 'EVENT';
+                }); 
+                if(found){
+                    let eventQuery = {deleted:false}
+                    if(city) eventQuery.city = city;
+                    if(area) eventQuery.area = area;
+                    let eventsIds = await Event.find(eventQuery).distinct('_id')
+                    query.event = {$in:eventsIds}
+                }
             };
             if(business) query.business = business;
             if(ownerType) query.ownerType = ownerType;
