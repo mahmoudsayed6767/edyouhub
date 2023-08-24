@@ -17,6 +17,7 @@ import Grade from "../../models/grade/grade.model"
 const populateQuery = [
     { path: 'educationInstitution', model: 'educationInstitution' },
     { path: 'academicYear', model: 'academicYear' },
+    { path: 'feesDetails.feesType', model: 'feesType' },
     {
         path: 'student',
         model: 'student',

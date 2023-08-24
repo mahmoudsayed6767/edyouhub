@@ -1,6 +1,7 @@
 import express from 'express';
 import { requireAuth } from '../../services/passport';
 import premiumController from '../../controllers/premium/premium.controller';
+import { multerSaveTo } from '../../services/multer-service';
 
 const router = express.Router();
 
@@ -31,6 +32,7 @@ router.route('/:premiumId')
 router.route('/:premiumId/paid')
     .put(
         requireAuth,
+        multerSaveTo('premuims').single('paymentProof'),
         premiumController.paid
     )
 

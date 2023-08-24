@@ -62,6 +62,9 @@ const premiumSchema = new Schema({
     paidDate: {
         type: Date,
     },
+    paymentProof: {
+        type: String
+    },
     lastPremium:{
         type:Boolean,
         default:false

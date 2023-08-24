@@ -4,7 +4,7 @@ import Fees from "../../models/fees/fees.model"
 import Report from "../../models/reports/report.model";
 import ApiError from '../../helpers/ApiError';
 import { checkExist, checkExistThenGet,isInArray} from "../../helpers/CheckMethods";
-import { checkValidations } from "../shared/shared.controller";
+import { checkValidations,handleImg } from "../shared/shared.controller";
 import { body } from "express-validator";
 import i18n from "i18n";
 import {transformPremium} from "../../models/premium/transformPremium"
@@ -15,12 +15,14 @@ import User from "../../models/user/user.model";
 import Setting from "../../models/setting/setting.model";
 const populateQuery = [
     { path: 'fund', model: 'fund'},
-    { path: 'fees', model: 'fees'},
-    { path: 'feesType', model: 'feesType'},
     {
         path: 'student', model: 'student',
         populate: { path: 'educationInstitution', model: 'educationInstitution' },
     },
+    {
+        path: 'fees',model: 'fees',
+        populate: { path: 'feesDetails.feesType', model: 'feesType' } ,
+    }
 ];
 export default {
 
@@ -199,6 +201,10 @@ export default {
             let premium = await checkExistThenGet(premiumId, Premium);
             premium.status = 'PAID';
             premium.paidDate = req.body.paidDate?req.body.paidDate:premium.installmentDate;
+            if (req.file) {
+                let image = await handleImg(req, { attributeName: 'paymentProof', isUpdate: true });
+                validatedBody.paymentProof = image;
+            }
             await premium.save();
             if(premium.fund){
                 let fund = await checkExistThenGet(premium.fund, Fund);
@@ -254,6 +260,7 @@ export default {
                 let premium = await checkExistThenGet(premiumId, Premium);
                 premium.status = 'PAID';
                 premium.paidDate = req.body.paidDate?req.body.paidDate:premium.installmentDate;
+
                 await premium.save();
                 if(premium.fund){
                     let fund = await checkExistThenGet(premium.fund, Fund);

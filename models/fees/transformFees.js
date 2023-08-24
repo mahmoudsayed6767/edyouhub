@@ -1,11 +1,24 @@
 export async function transformFees(e, lang) {
     let index = {
         totalFees: e.totalFees,
-        feesDetails: e.feesDetails,
         status: e.status,
         createdAt: e.createdAt,
         id: e._id,
     }
+    let feesDetails=[]
+    for (let val of e.feesDetails) {
+        let feesDetail = {
+            feesCost:val.feesCost,
+        }
+        if(val.feesType){
+            feesDetail.feesType = {
+                name:lang=="ar"?val.feesType.name_ar:val.feesType.name_en,
+                id:val.feesType._id
+            }
+        }
+        feesDetails.push(feesDetail)
+    }
+    index.feesDetails = feesDetails
     if (e.academicYear) {
         index.academicYear = {
             name: lang == "ar" ? e.academicYear.name_ar : e.academicYear.name_en,

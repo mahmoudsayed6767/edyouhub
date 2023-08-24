@@ -9,6 +9,7 @@ export async function transformPremium(e,lang) {
         receiptNum:e.receiptNum,
         paidDate:e.paidDate,
         lastPremium:e.lastPremium,
+        paymentProof:e.paymentProof,
         id:e._id,                         
     }
     if(now > Date.parse(e.installmentDate) && e.status == "PENDING"){
@@ -27,14 +28,25 @@ export async function transformPremium(e,lang) {
         }
     }
     if(e.fees){
-        index.fees = {
+        let fees = {
             status:e.fees.status,
             id:e.fees._id
-        },
-        index.feesType = e.feesType
-    }
-    if(e.feesType){
-        index.feesType = lang=="ar"?e.feesType.name_ar:e.feesType.name_en
+        }
+        let feesDetails=[]
+        for (let val of e.fees.feesDetails) {
+            let feesDetail = {
+                feesCost:val.feesCost,
+            }
+            if(val.feesType){
+                feesDetail.feesType = {
+                    name:lang=="ar"?val.feesType.name_ar:val.feesType.name_en,
+                    id:val.feesType._id
+                }
+            }
+            feesDetails.push(feesDetail)
+        }
+        fees.feesDetails = feesDetails
+        index.fees = fees
     }
     /* students*/
     let students=[]

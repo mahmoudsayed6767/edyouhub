@@ -31,7 +31,7 @@ const feesSchema = new Schema({
         new Schema({
             feesType: {
                 type: Number,
-                ref:'totalFees',
+                ref:'feesType',
                 required: true,
             },
             feesCost: {

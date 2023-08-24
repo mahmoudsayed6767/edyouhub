@@ -81,20 +81,6 @@ export default {
             if(status == "ALL") query.status = {$nin:['PENDING', 'ACCEPTED','REJECTED']}
             if(owner) query.owner = owner;
             if(dataType) query.dataType = dataType;
-            if (type) {
-                let values = type.split(",");
-                query.type = {$in:values};
-                var found = values.find(function(element) {
-                    return element == 'EVENT';
-                }); 
-                if(found){
-                    let eventQuery = {deleted:false}
-                    if(city) eventQuery.city = city;
-                    if(area) eventQuery.area = area;
-                    let eventsIds = await Event.find(eventQuery).distinct('_id')
-                    query.event = {$in:eventsIds}
-                }
-            };
             if(business) query.business = business;
             if(ownerType) query.ownerType = ownerType;
             if(event) query.event = event;
@@ -121,6 +107,22 @@ export default {
                     })
                 }
             }
+            if (type) {
+                let values = type.split(",");
+                console.log(values)
+                query.type = {$in:values};
+                var found = values.find(function(element) {
+                    return element == 'EVENT';
+                }); 
+                if(found){
+                    let eventQuery = {deleted:false}
+                    if(city) eventQuery.city = city;
+                    if(area) eventQuery.area = area;
+                    let eventsIds = await Event.find(eventQuery).distinct('_id')
+                    let query2 = {event:{$in:eventsIds}}
+                    query = { $or: [query, query2] }
+                }
+            };
             await Post.find(query).populate(populateQuery)
                 .sort({ createdAt: -1 })
                 .limit(limit)
@@ -155,21 +157,7 @@ export default {
             if(event) query.event = event;
             if(owner) query.owner = owner;
             if(dataType) query.dataType = dataType;
-            if (type) {
-                let values = type.split(",");
-                console.log(values)
-                query.type = {$in:values};
-                var found = values.find(function(element) {
-                    return element == 'EVENT';
-                }); 
-                if(found){
-                    let eventQuery = {deleted:false}
-                    if(city) eventQuery.city = city;
-                    if(area) eventQuery.area = area;
-                    let eventsIds = await Event.find(eventQuery).distinct('_id')
-                    query.event = {$in:eventsIds}
-                }
-            };
+            
             if(business) query.business = business;
             if(ownerType) query.ownerType = ownerType;
             let myUser = await checkExistThenGet(req.user._id, User)
@@ -192,6 +180,22 @@ export default {
                     })
                 }
             }
+            if (type) {
+                let values = type.split(",");
+                console.log(values)
+                query.type = {$in:values};
+                var found = values.find(function(element) {
+                    return element == 'EVENT';
+                }); 
+                if(found){
+                    let eventQuery = {deleted:false}
+                    if(city) eventQuery.city = city;
+                    if(area) eventQuery.area = area;
+                    let eventsIds = await Event.find(eventQuery).distinct('_id')
+                    let query2 = {event:{$in:eventsIds}}
+                    query = { $or: [query, query2] }
+                }
+            };
             await Post.find(query).populate(populateQuery)
                 .sort({ createdAt: -1 }).then(async(data)=>{
                     let newdata =[]
