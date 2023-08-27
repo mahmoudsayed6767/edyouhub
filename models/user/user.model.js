@@ -76,6 +76,7 @@ const userSchema = new Schema({
         type: Number,
         ref:'place',
     },
+    
     block:{
         type: Boolean,
         default: false
@@ -169,7 +170,6 @@ const userSchema = new Schema({
         },
         graduated:{
             type: Boolean, 
-            default:true
         },
         graduationDate:{
             type: Date, 
@@ -209,7 +209,6 @@ const userSchema = new Schema({
         workType:{
             type: String, 
             enum: ['EDUCATION','OTHER'],
-            default:'OTHER'
         },
         educationField:{
             type: String, 

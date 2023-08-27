@@ -20,10 +20,6 @@ const fundProviderSchema = new Schema({
         type: String,
         required: true,
     },
-    platformExpensesRatio: {
-        type: Number,
-        default: 0
-    },
     expensesRatio: {
         type: Number,
         default: 0

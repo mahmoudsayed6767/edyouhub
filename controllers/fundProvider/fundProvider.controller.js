@@ -16,9 +16,6 @@ export default {
             body('name_en').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('name_en.required', { value});
             }),
-            body('platformExpensesRatio').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('platformExpensesRatio.required', { value});
-            }),
             body('monthlyPercent').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('monthlyPercent.required', { value});
             }),
@@ -56,7 +53,6 @@ export default {
                     name:lang=="ar"?e.name_ar:e.name_en,
                     name_ar:e.name_ar,
                     name_en:e.name_en,
-                    platformExpensesRatio:e.platformExpensesRatio,
                     monthlyPercent:e.monthlyPercent,
                     expensesRatio:e.expensesRatio,
                     logo: e.logo,
@@ -84,7 +80,6 @@ export default {
                     name:lang=="ar"?e.name_ar:e.name_en,
                     name_ar:e.name_ar,
                     name_en:e.name_en,
-                    platformExpensesRatio:e.platformExpensesRatio,
                     monthlyPercent:e.monthlyPercent,
                     expensesRatio:e.expensesRatio,
                     logo: e.logo,
@@ -123,7 +118,6 @@ export default {
                     name:lang=="ar"?e.name_ar:e.name_en,
                     name_ar:e.name_ar,
                     name_en:e.name_en,
-                    platformExpensesRatio:e.platformExpensesRatio,
                     monthlyPercent:e.monthlyPercent,
                     expensesRatio:e.expensesRatio,
                     logo: e.logo,
@@ -166,7 +160,6 @@ export default {
                         name:lang=="ar"?e.name_ar:e.name_en,
                         name_ar:e.name_ar,
                         name_en:e.name_en,
-                        platformExpensesRatio:e.platformExpensesRatio,
                         monthlyPercent:e.monthlyPercent,
                         expensesRatio:e.expensesRatio,
                         logo: e.logo,
@@ -212,7 +205,6 @@ export default {
                             name:lang=="ar"?e.name_ar:e.name_en,
                             name_ar:e.name_ar,
                             name_en:e.name_en,
-                            platformExpensesRatio:e.platformExpensesRatio,
                             monthlyPercent:e.monthlyPercent,
                             expensesRatio:e.expensesRatio,
                             logo: e.logo,

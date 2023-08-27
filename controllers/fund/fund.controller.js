@@ -440,13 +440,13 @@ export default {
             }
             let fundProvider = await checkExistThenGet(fund.fundProvider, FundProvider, { deleted: false })
             let fundProgram = await checkExistThenGet(fund.fundProgram, FundProgram, { deleted: false })
-
+            let setting = await Setting.findOne({deleted: false})
             //مبلغ الفائده
             let providerMonthlyPercentCost = (fund.totalFees * fundProvider.monthlyPercent) / 100;
             //الاجمالى مع مبلغ الفايده
             fund.totalWithMonthlyPercent = fund.totalFees + providerMonthlyPercentCost * fundProgram.monthCount;
             //firstpaid
-            let platformExpensesRatio = (fund.totalFees * fundProvider.platformExpensesRatio) / 100
+            let platformExpensesRatio = (fund.totalFees * setting.expensesRatio) / 100
             let providerExpensesRatio = (fund.totalFees * fundProvider.expensesRatio) / 100
             fund.firstPaid = platformExpensesRatio + providerExpensesRatio;
             await fund.save();
@@ -682,12 +682,13 @@ export default {
             if (validatedBody.startDate) fund.startDate = validatedBody.startDate
             let fundProvider = await checkExistThenGet(fund.fundProvider, FundProvider)
             let fundProgram = await checkExistThenGet(fund.fundProgram, FundProgram, { deleted: false })
+            let setting = await Setting.findOne({deleted: false})
 
             if (validatedBody.firstPaid) {
                 fund.firstPaid = validatedBody.firstPaid
             } else {
                 let platformExpensesRatio = (fund.totalFees * fundProvider.platformExpensesRatio) / 100
-                let providerExpensesRatio = (fund.totalFees * fundProvider.expensesRatio) / 100
+                let providerExpensesRatio = (fund.totalFees * setting.expensesRatio) / 100
                 fund.firstPaid = platformExpensesRatio + providerExpensesRatio;
             }
             //مبلغ الفائده
@@ -864,7 +865,9 @@ export default {
             fund.partialAcceptReason = validatedBody.partialAcceptReason
 
             let fundProvider = await checkExistThenGet(fund.fundProvider, FundProvider)
-            let platformExpensesRatio = (fund.totalFees * fundProvider.platformExpensesRatio) / 100
+            let setting = await Setting.findOne({deleted: false})
+
+            let platformExpensesRatio = (fund.totalFees * setting.expensesRatio) / 100
             let providerExpensesRatio = (fund.totalFees * fundProvider.expensesRatio) / 100
             fund.firstPaid = platformExpensesRatio + providerExpensesRatio;
             //مبلغ الفائده

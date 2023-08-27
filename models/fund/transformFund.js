@@ -113,7 +113,6 @@ export async function transformFundById(e, lang) {
     if (e.fundProvider) {
         index.fundProvider = {
             name: lang == "ar" ? e.fundProvider.name_ar : e.fundProvider.name_en,
-            platformExpensesRatio: e.fundProvider.platformExpensesRatio,
             expensesRatio: e.fundProvider.expensesRatio,
             monthlyPercent: e.fundProvider.monthlyPercent,
             log: e.fundProvider.logo,
@@ -125,7 +124,6 @@ export async function transformFundById(e, lang) {
     for (let val of e.selectedFundProviders) {
         fundProviders.push({
             name: lang == "ar" ? val.name_ar : val.name_en,
-            platformExpensesRatio: val.platformExpensesRatio,
             expensesRatio: val.expensesRatio,
             monthlyPercent: val.monthlyPercent,
             log: val.logo,

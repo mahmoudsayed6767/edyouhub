@@ -50,4 +50,9 @@ router.route('/:businessId/updateServiceSupervisors')
         businessController.validateUpdateServiceSupervisorsBody(),
         businessController.updateServiceSupervisors
     )
+router.route('/:businessId/getSupervisorPermissions')
+    .get(  
+        requireAuth,
+        businessController.getSupervisorPermissions
+    )
 export default router;

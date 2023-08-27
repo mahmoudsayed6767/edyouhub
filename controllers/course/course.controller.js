@@ -78,47 +78,47 @@ export default {
             body('specializations').not().isEmpty().withMessage((value, { req }) => {
                 return req.__('specializations.required', { value });
             })
-            .custom(async(specializations, { req }) => {
-                for (let value of specializations) {
-                    if (!await Specialization.findOne({ _id: value, deleted: false }))
-                        throw new Error(req.__('specialization.invalid'));
-                    else
-                        return true;
-                }
-                return true;
-            }),
+                .custom(async (specializations, { req }) => {
+                    for (let value of specializations) {
+                        if (!await Specialization.findOne({ _id: value, deleted: false }))
+                            throw new Error(req.__('specialization.invalid'));
+                        else
+                            return true;
+                    }
+                    return true;
+                }),
             body('instractors').not().isEmpty().withMessage((value, { req }) => {
                 return req.__('instractors.required', { value });
             })
-            .custom(async(instractors, { req }) => {
-                for (let value of instractors) {
-                    if (!await User.findOne({ _id: value, deleted: false }))
-                        throw new Error(req.__('instractor.invalid'));
-                    else
-                        return true;
-                }
-                return true;
-            }),
+                .custom(async (instractors, { req }) => {
+                    for (let value of instractors) {
+                        if (!await User.findOne({ _id: value, deleted: false }))
+                            throw new Error(req.__('instractor.invalid'));
+                        else
+                            return true;
+                    }
+                    return true;
+                }),
             body('cities').optional()
-            .custom(async(cities, { req }) => {
-                for (let value of cities) {
-                    if (!await City.findOne({ _id: value, deleted: false }))
-                        throw new Error(req.__('city.invalid'));
-                    else
-                        return true;
-                }
-                return true;
-            }),
+                .custom(async (cities, { req }) => {
+                    for (let value of cities) {
+                        if (!await City.findOne({ _id: value, deleted: false }))
+                            throw new Error(req.__('city.invalid'));
+                        else
+                            return true;
+                    }
+                    return true;
+                }),
             body('areas').optional()
-            .custom(async(areas, { req }) => {
-                for (let value of areas) {
-                    if (!await Area.findOne({ _id: value, deleted: false }))
-                        throw new Error(req.__('area.invalid'));
-                    else
-                        return true;
-                }
-                return true;
-            }),
+                .custom(async (areas, { req }) => {
+                    for (let value of areas) {
+                        if (!await Area.findOne({ _id: value, deleted: false }))
+                            throw new Error(req.__('area.invalid'));
+                        else
+                            return true;
+                    }
+                    return true;
+                }),
             body('fromDate').optional().isISO8601().withMessage((value, { req }) => {
                 return req.__('invalid.date', { value });
             }),
@@ -131,11 +131,11 @@ export default {
                 return req.__('business.numeric', { value });
             }),
             body('branches').optional(),
-            body('dailyTimes').optional().custom(async(dailyTimes, { req }) => {
+            body('dailyTimes').optional().custom(async (dailyTimes, { req }) => {
                 for (let val of dailyTimes) {
                     body('day').not().isEmpty().withMessage((value, { req }) => {
-                            return req.__('day.required', { value });
-                        }),
+                        return req.__('day.required', { value });
+                    }),
                         body('fromDate').not().isEmpty().withMessage((value, { req }) => {
                             return req.__('fromDate.required', { value });
                         }).isISO8601().withMessage((value, { req }) => {
@@ -150,15 +150,15 @@ export default {
                 return true;
             }),
             body('paymentMethod').optional().isIn(['CASH', 'INSTALLMENT'])
-            .withMessage((value, { req }) => {
-                return req.__('paymentMethod.invalid', { value });
-            }),
+                .withMessage((value, { req }) => {
+                    return req.__('paymentMethod.invalid', { value });
+                }),
             body('feesType').not().isEmpty().withMessage((value, { req }) => {
                 return req.__('feesType.required', { value });
             }).isIn(['NO-FEES', 'WITH-FEES'])
-            .withMessage((value, { req }) => {
-                return req.__('feesType.invalid', { value });
-            }),
+                .withMessage((value, { req }) => {
+                    return req.__('feesType.invalid', { value });
+                }),
             body('price').optional().isNumeric().withMessage((value, { req }) => {
                 return req.__('price.numeric', { value });
             }),
@@ -172,14 +172,14 @@ export default {
             }),
 
             body('installments').optional()
-            .custom(async(installments, { req }) => {
-                for (let val of installments) {
-                    body('price').not().isEmpty().withMessage((value, { req }) => {
-                        return req.__('price.required', { value });
-                    })
-                }
-                return true;
-            }),
+                .custom(async (installments, { req }) => {
+                    for (let val of installments) {
+                        body('price').not().isEmpty().withMessage((value, { req }) => {
+                            return req.__('price.required', { value });
+                        })
+                    }
+                    return true;
+                }),
             body('imgs').optional(),
             body('hasCertificate').optional(),
             body('certificateName').optional(),
@@ -225,7 +225,7 @@ export default {
                 if (!validatedBody.price)
                     return next(new ApiError(422, i18n.__('price.required')));
             }
-            let course = await Course.create({...validatedBody });
+            let course = await Course.create({ ...validatedBody });
             let secretKey = (await bcrypt.hash(course.id.toString(), bcrypt.genSaltSync())).substring(0, 16)
             course.secretKey = secretKey
             await course.save()
@@ -235,7 +235,7 @@ export default {
                 "deepId": course.id,
                 "user": req.user._id
             };
-            await Report.create({...reports });
+            await Report.create({ ...reports });
             res.status(201).send({
                 success: true,
                 data: course
@@ -271,7 +271,7 @@ export default {
 
             await Course.findById(courseId)
                 .populate(populateQueryById)
-                .then(async(e) => {
+                .then(async (e) => {
                     let course = await transformCourseById(e, lang, myUser, userId, owner)
                     res.send({
                         success: true,
@@ -326,7 +326,7 @@ export default {
                 "deepId": courseId,
                 "user": req.user._id
             };
-            await Report.create({...reports });
+            await Report.create({ ...reports });
             res.send({
                 success: true
             });
@@ -339,22 +339,23 @@ export default {
         try {
             //get lang
             let lang = i18n.getLocale(req)
-            let { city, area, userId, myCourses, type, search, instractor, paymentMethod, specialization, business, status, ownerType } = req.query;
+            let { feesType, city, area, userId, myCourses, type, search, instractor, paymentMethod, specialization, business, status, ownerType } = req.query;
 
             let query = { deleted: false }
-                /*search  */
+            /*search  */
             if (search) {
                 query = {
                     $and: [{
-                            $or: [
-                                { title: { $regex: '.*' + search + '.*', '$options': 'i' } },
-                                { description: { $regex: '.*' + search + '.*', '$options': 'i' } },
-                            ]
-                        },
-                        { deleted: false },
+                        $or: [
+                            { title: { $regex: '.*' + search + '.*', '$options': 'i' } },
+                            { description: { $regex: '.*' + search + '.*', '$options': 'i' } },
+                        ]
+                    },
+                    { deleted: false },
                     ]
                 };
             }
+            if (feesType) query.feesType = feesType;
             if (city) query.cities = city
             if (area) query.areas = area
             if (instractor) query.instractors = instractor
@@ -373,9 +374,9 @@ export default {
             }
             await Course.find(query).populate(populateQuery)
                 .sort({ _id: -1 })
-                .then(async(data) => {
+                .then(async (data) => {
                     var newdata = [];
-                    await Promise.all(data.map(async(e) => {
+                    await Promise.all(data.map(async (e) => {
                         let index = await transformCourse(e, lang, myUser, userId)
                         newdata.push(index)
                     }))
@@ -395,22 +396,24 @@ export default {
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1,
                 limit = +req.query.limit || 20;
-            let { city, area, myCourses, userId, type, search, instractor, paymentMethod, specialization, business, status, ownerType } = req.query;
+            let { feesType, city, area, myCourses, userId, type, search, instractor, paymentMethod, specialization, business, status, ownerType } = req.query;
 
             let query = { deleted: false }
-                /*search  */
+            /*search  */
             if (search) {
                 query = {
                     $and: [{
-                            $or: [
-                                { title: { $regex: '.*' + search + '.*', '$options': 'i' } },
-                                { description: { $regex: '.*' + search + '.*', '$options': 'i' } },
-                            ]
-                        },
-                        { deleted: false },
+                        $or: [
+                            { title: { $regex: '.*' + search + '.*', '$options': 'i' } },
+                            { description: { $regex: '.*' + search + '.*', '$options': 'i' } },
+                        ]
+                    },
+                    { deleted: false },
                     ]
                 };
             }
+            if (feesType) query.feesType = feesType;
+
             if (type) query.type = type
             if (city) query.cities = city
             if (area) query.areas = area
@@ -431,9 +434,9 @@ export default {
                 .sort({ _id: -1 })
                 .limit(limit)
                 .skip((page - 1) * limit)
-                .then(async(data) => {
+                .then(async (data) => {
                     var newdata = [];
-                    await Promise.all(data.map(async(e) => {
+                    await Promise.all(data.map(async (e) => {
                         let index = await transformCourse(e, lang, myUser, userId)
                         newdata.push(index)
                     }))
@@ -470,7 +473,7 @@ export default {
                 "deepId": courseId,
                 "user": req.user._id
             };
-            await Report.create({...reports });
+            await Report.create({ ...reports });
             res.send({
                 success: true
             });
@@ -483,16 +486,16 @@ export default {
             body('paymentMethod').not().isEmpty().withMessage((value, { req }) => {
                 return req.__('paymentMethod.required', { value });
             }).isIn(['CASH', 'INSTALLMENT'])
-            .withMessage((value, { req }) => {
-                return req.__('paymentMethod.invalid', { value });
-            }),
+                .withMessage((value, { req }) => {
+                    return req.__('paymentMethod.invalid', { value });
+                }),
             body('fawryCode').optional()
         ];
         if (!newUser)
             validations.push([
                 body('user').optional().isNumeric().withMessage((value, { req }) => {
                     return req.__('user.numeric', { value });
-                }).custom(async(value, { req }) => {
+                }).custom(async (value, { req }) => {
                     if (!await User.findOne({ _id: value, deleted: false }))
                         throw new Error(req.__('user.invalid'));
                     else
@@ -508,7 +511,7 @@ export default {
                     return req.__('password.required', { value });
                 }).isLength({ min: 8 }).withMessage((value, { req }) => {
                     return req.__('password.invalid', { value });
-                }).custom(async(value, { req }) => {
+                }).custom(async (value, { req }) => {
                     var exp = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/
                     if (!exp.test(value)) {
                         throw new Error(req.__('password.invalid'));
@@ -518,34 +521,34 @@ export default {
                 body('phone').not().isEmpty().withMessage((value, { req }) => {
                     return req.__('phone.required', { value });
                 })
-                .custom(async(value, { req }) => {
-                    var exp = /^[+]*[(]{0,1}[0-9]{1,3}[)]{0,1}[s/./0-9]*$/g
-                    if (!exp.test(value)) {
-                        throw new Error(req.__('phone.syntax'));
-                    }
-                    let userQuery = { phone: value, deleted: false, accountType: 'ACTIVE' };
+                    .custom(async (value, { req }) => {
+                        var exp = /^[+]*[(]{0,1}[0-9]{1,3}[)]{0,1}[s/./0-9]*$/g
+                        if (!exp.test(value)) {
+                            throw new Error(req.__('phone.syntax'));
+                        }
+                        let userQuery = { phone: value, deleted: false, accountType: 'ACTIVE' };
 
-                    if (await User.findOne(userQuery))
-                        throw new Error(req.__('phone.duplicated'));
-                    else
-                        return true;
+                        if (await User.findOne(userQuery))
+                            throw new Error(req.__('phone.duplicated'));
+                        else
+                            return true;
 
-                }),
+                    }),
                 body('email').optional().isEmail().withMessage('email.syntax')
-                .custom(async(value, { req }) => {
-                    let userQuery = { email: value, deleted: false, accountType: 'ACTIVE' };
+                    .custom(async (value, { req }) => {
+                        let userQuery = { email: value, deleted: false, accountType: 'ACTIVE' };
 
-                    if (await User.findOne(userQuery))
-                        throw new Error(req.__('email.duplicated'));
-                    else
-                        return true;
+                        if (await User.findOne(userQuery))
+                            throw new Error(req.__('email.duplicated'));
+                        else
+                            return true;
 
-                }),
+                    }),
                 body('country').not().isEmpty().withMessage((value, { req }) => {
                     return req.__('country.required', { value });
                 }).isNumeric().withMessage((value, { req }) => {
                     return req.__('country.numeric', { value });
-                }).custom(async(value, { req }) => {
+                }).custom(async (value, { req }) => {
                     if (!await Country.findOne({ _id: value, deleted: false }))
                         throw new Error(req.__('country.invalid'));
                     else
@@ -555,7 +558,7 @@ export default {
                     return req.__('city.required', { value });
                 }).isNumeric().withMessage((value, { req }) => {
                     return req.__('city.numeric', { value });
-                }).custom(async(value, { req }) => {
+                }).custom(async (value, { req }) => {
                     if (!await City.findOne({ _id: value, deleted: false }))
                         throw new Error(req.__('city.invalid'));
                     else
@@ -565,7 +568,7 @@ export default {
                     return req.__('area.required', { value });
                 }).isNumeric().withMessage((value, { req }) => {
                     return req.__('area.numeric', { value });
-                }).custom(async(value, { req }) => {
+                }).custom(async (value, { req }) => {
                     if (!await Area.findOne({ _id: value, deleted: false }))
                         throw new Error(req.__('area.invalid'));
                     else
@@ -601,12 +604,12 @@ export default {
                     id.deleted = true;
                     await id.save();
                 }
-                attendedUser = await User.create({...validatedBody });
+                attendedUser = await User.create({ ...validatedBody });
             } else {
                 attendedUser = await checkExistThenGet(validatedBody.user, User);
             }
             validatedBody.user = attendedUser.id
-                //upload imgs
+            //upload imgs
             if (req.files) {
                 if (req.files['receipt']) {
                     let imagesList = [];
@@ -622,7 +625,7 @@ export default {
                 if (!found) {
                     attendedUser.attendedCourses.push(courseId);
                     await attendedUser.save();
-                    await CourseParticipant.create({...validatedBody });
+                    await CourseParticipant.create({ ...validatedBody });
                     if (validatedBody.paymentMethod == "INSTALLMENT") {
                         //create premuims
                         let payments = course.installments
@@ -648,7 +651,7 @@ export default {
                                 "deepId": thePremium.id,
                                 "user": req.user._id
                             };
-                            await Report.create({...reports });
+                            await Report.create({ ...reports });
                         }
                     }
                     let reports = {
@@ -657,7 +660,7 @@ export default {
                         "deepId": courseId,
                         "user": req.user._id
                     };
-                    await Report.create({...reports });
+                    await Report.create({ ...reports });
                 }
             }
             res.status(201).send({
@@ -685,14 +688,14 @@ export default {
                 if (!found) {
                     user.attendedCourses.push(courseId);
                     await user.save();
-                    await CourseParticipant.create({...validatedBody });
+                    await CourseParticipant.create({ ...validatedBody });
                     let reports = {
                         "action": "user enrolled to course",
                         "type": "COURSE",
                         "deepId": courseId,
                         "user": req.user._id
                     };
-                    await Report.create({...reports });
+                    await Report.create({ ...reports });
                 }
             }
             res.status(201).send({
@@ -712,9 +715,9 @@ export default {
             await CourseParticipant.find(query).populate(populateParticipantQuery)
                 .sort({ createdAt: -1 })
                 .limit(limit)
-                .skip((page - 1) * limit).then(async(data) => {
+                .skip((page - 1) * limit).then(async (data) => {
                     let newdata = []
-                    await Promise.all(data.map(async(e) => {
+                    await Promise.all(data.map(async (e) => {
                         let index = await transformCourseParticipant(e, lang)
                         newdata.push(index)
                     }))
@@ -735,11 +738,11 @@ export default {
             body('section_ar').not().isEmpty().withMessage((value, { req }) => {
                 return req.__('section_ar.required', { value });
             }),
-            body('videos').optional().custom(async(videos, { req }) => {
+            body('videos').optional().custom(async (videos, { req }) => {
                 for (let val of videos) {
                     body('title_en').not().isEmpty().withMessage((value, { req }) => {
-                            return req.__('title_en.required', { value });
-                        }),
+                        return req.__('title_en.required', { value });
+                    }),
                         body('title_ar').not().isEmpty().withMessage((value, { req }) => {
                             return req.__('title_ar.required', { value });
                         })
@@ -782,7 +785,7 @@ export default {
             }
             validatedBody.videos = videos;
             course.sessionsNo = course.sessionsNo + videos.length
-            let courseToturial = await CourseTutorial.create({...validatedBody });
+            let courseToturial = await CourseTutorial.create({ ...validatedBody });
             let tutorials = course.tutorials
             tutorials.push(courseToturial.id)
             course.tutorials = [...new Set(tutorials)];
@@ -793,7 +796,7 @@ export default {
                 "deepId": courseToturial.id,
                 "user": req.user._id
             };
-            await Report.create({...reports });
+            await Report.create({ ...reports });
             res.status(201).send({
                 success: true,
                 data: courseToturial
@@ -827,7 +830,7 @@ export default {
                 videos.push(val)
             }
             validatedBody.videos = videos;
-            let courseToturial = await CourseTutorial.findByIdAndUpdate(sectionId, {...validatedBody });
+            let courseToturial = await CourseTutorial.findByIdAndUpdate(sectionId, { ...validatedBody });
 
             let reports = {
                 "action": "update New course tutorial",
@@ -835,7 +838,7 @@ export default {
                 "deepId": courseToturial.id,
                 "user": req.user._id
             };
-            await Report.create({...reports });
+            await Report.create({ ...reports });
             res.status(201).send({
                 success: true,
                 data: courseToturial
@@ -923,7 +926,7 @@ export default {
                 "deepId": course.id,
                 "user": req.user._id
             };
-            await Report.create({...reports });
+            await Report.create({ ...reports });
 
             res.send({ success: true });
         } catch (err) {
@@ -961,10 +964,10 @@ export default {
             let reports = {
                 "action": "Delete course section",
                 "type": "COURSE",
-                "deepId": courseId,
+                "deepId": section.course,
                 "user": req.user._id
             };
-            await Report.create({...reports });
+            await Report.create({ ...reports });
             res.send({
                 success: true
             });

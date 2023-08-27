@@ -1019,5 +1019,42 @@ export default {
             next(err);
         }
     },
-
+    async getSupervisorPermissions(req, res, next) {
+        try {
+            let { businessId } = req.params
+            let business = await checkExistThenGet(businessId, Business, { deleted: false })
+            let businessManagement = await BusinessManagement.findOne({ business: businessId, deleted: false })
+            let services = []
+            if (businessManagement.vacancy.supervisors) {
+                let supervisors = [... businessManagement.vacancy.supervisors,business.owner]
+                supervisors = [business.owner]
+                if (!isInArray(supervisors, req.user._id))
+                    services.push('VACANCY')
+            }
+            if (businessManagement.admission.supervisors) {
+                let supervisors = [... businessManagement.admission.supervisors,business.owner]
+                supervisors = [business.owner]
+                if (!isInArray(supervisors, req.user._id))
+                    services.push('ADMISSION')
+            }
+            if (businessManagement.events.supervisors) {
+                let supervisors = [... businessManagement.events.supervisors,business.owner]
+                supervisors = [business.owner]
+                if (!isInArray(supervisors, req.user._id))
+                    services.push('EVENTS')
+            }
+            if (businessManagement.courses.supervisors) {
+                let supervisors = [... businessManagement.courses.supervisors,business.owner]
+                supervisors = [business.owner]
+                if (!isInArray(supervisors, req.user._id))
+                    services.push('COURSES')
+            }
+            res.status(201).send({
+                success: true,
+                services:services,
+            });
+        } catch (error) {
+            next(error);
+        }
+    },
 }
