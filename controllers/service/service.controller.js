@@ -104,7 +104,7 @@ export default {
             }).isIn(['BY-CONTACT','FIXED']).withMessage((value, { req}) => {
                 return req.__('priceType.invalid', { value});
             }),
-            body('priceType').optional(),
+            body('price').optional(),
             body('specialization').optional().isNumeric().withMessage((value, { req}) => {
                 return req.__('specialization.numeric', { value});
             }).custom(async (value, { req }) => {
