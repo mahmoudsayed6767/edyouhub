@@ -15,7 +15,6 @@ const serviceSchema = new Schema({
     specialization:{
         type: Number,
         ref:'specialization',
-        required: true
     },
     imgs: {
         type: [String],
