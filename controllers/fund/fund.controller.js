@@ -169,13 +169,21 @@ export default {
                 else
                     return true;
             }),
+            body('owner').optional().isNumeric().withMessage((value, { req }) => {
+                return req.__('owner.numeric', { value });
+            }).custom(async(value, { req }) => {
+                if (!await User.findOne({ _id: value, deleted: false }))
+                    throw new Error(req.__('owner.invalid'));
+                else
+                    return true;
+            }),
         ];
         return validations;
     },
     async create(req, res, next) {
         try {
             const validatedBody = checkValidations(req);
-            validatedBody.owner = req.user._id
+            if(!validatedBody.owner) validatedBody.owner = req.user._id
             let fund = await Fund.create({...validatedBody });
             let reports = {
                 "action": "Create New fund",

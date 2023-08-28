@@ -15,14 +15,12 @@ import User from "../../models/user/user.model";
 import Setting from "../../models/setting/setting.model";
 const populateQuery = [
     { path: 'fund', model: 'fund'},
+    { path: 'feesType', model: 'feesType' } ,
     {
         path: 'student', model: 'student',
         populate: { path: 'educationInstitution', model: 'educationInstitution' },
     },
-    {
-        path: 'fees',model: 'fees',
-        populate: { path: 'feesDetails.feesType', model: 'feesType' } ,
-    }
+    { path: 'fees',model: 'fees',}
 ];
 export default {
 
@@ -203,7 +201,7 @@ export default {
             premium.paidDate = req.body.paidDate?req.body.paidDate:premium.installmentDate;
             if (req.file) {
                 let image = await handleImg(req, { attributeName: 'paymentProof', isUpdate: true });
-                validatedBody.paymentProof = image;
+                premium.paymentProof = image;
             }
             await premium.save();
             if(premium.fund){
