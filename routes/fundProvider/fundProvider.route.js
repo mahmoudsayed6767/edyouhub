@@ -4,6 +4,7 @@ import fundProviderController from '../../controllers/fundProvider/fundProvider.
 import { multerSaveTo } from '../../services/multer-service';
 import { requireAuth } from '../../services/passport';
 import { permissions } from '../../services/permissions';
+import { parseStringToArrayOfObjectsMw } from '../../utils';
 
 const router = express.Router();
 
@@ -12,6 +13,7 @@ router.route('/')
         requireAuth,
         permissions('ADMIN'),
         multerSaveTo('fundProviders').single('logo'),
+        parseStringToArrayOfObjectsMw('programsPercent'),
         fundProviderController.validateBody(),
         fundProviderController.create
     ).get(fundProviderController.getAllPaginated)
@@ -23,6 +25,7 @@ router.route('/:fundProviderId')
         requireAuth,
         permissions('ADMIN'),
         multerSaveTo('fundProviders').single('logo'),
+        parseStringToArrayOfObjectsMw('programsPercent'),
         fundProviderController.validateBody(true),
         fundProviderController.update
     )

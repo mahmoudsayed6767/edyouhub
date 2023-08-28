@@ -6,7 +6,10 @@ import { checkExist } from "../../helpers/CheckMethods";
 import ApiResponse from "../../helpers/ApiResponse";
 import { checkExistThenGet } from "../../helpers/CheckMethods";
 import i18n from "i18n";
-
+import { transformFundProvider } from "../../models/fundProvider/transformFundProvider";
+const populateQuery = [
+    { path: 'programsPercent.fundProgram', model: 'fundProgram' },
+];
 export default {
     validateBody(isUpdate = false) {
         let validations = [
@@ -16,11 +19,33 @@ export default {
             body('name_en').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('name_en.required', { value});
             }),
-            body('monthlyPercent').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('monthlyPercent.required', { value});
-            }),
             body('expensesRatio').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('expensesRatio.required', { value});
+            }),
+            body('monthlyPercent').optional(),
+            body('monthlyPercentType').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('monthlyPercentType.required', { value});
+            }),
+            body('programsPercent').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('programsPercent.required', { value});
+            })
+            .custom(async(programsPercent, { req }) => {
+                for (let fundProgram of programsPercent) {
+                    body('fundProgram').not().isEmpty().withMessage((value, { req }) => {
+                        return req.__('fundProgram.required', { value });
+                    }).isNumeric().withMessage((value, { req }) => {
+                        return req.__('fundProgram.numeric', { value });
+                    }).custom(async(value, { req }) => {
+                        if (!await FundProgram.findOne({ _id: value, deleted: false }))
+                            throw new Error(req.__('fundProgram.invalid'));
+                        else
+                            return true;
+                    }),
+                    body('monthlyPercent').not().isEmpty().withMessage((value, { req}) => {
+                        return req.__('monthlyPercent.required', { value});
+                    })
+                }
+                return true;
             }),
             
         ];
@@ -48,20 +73,12 @@ export default {
                 "user": req.user._id
             };
             await Report.create({...reports });
-            await FundProvider.findById(fundProvider.id).then((e) => {
-                let fundProvider = {
-                    name:lang=="ar"?e.name_ar:e.name_en,
-                    name_ar:e.name_ar,
-                    name_en:e.name_en,
-                    monthlyPercent:e.monthlyPercent,
-                    expensesRatio:e.expensesRatio,
-                    logo: e.logo,
-                    id: e._id,
-                    createdAt: e.createdAt,
-                }
+            await FundProvider.findById(fundProvider.id).populate(populateQuery)
+            .then(async(e) => {
+                let index = await transformFundProvider(e,lang)
                 return res.status(201).send({
                     success:true,
-                    data:fundProvider
+                    data:index
                 });
             })
         } catch (error) {
@@ -75,20 +92,12 @@ export default {
             
             await checkExist(fundProviderId, FundProvider, { deleted: false });
 
-            await FundProvider.findById(fundProviderId).then( e => {
-                let fundProvider = {
-                    name:lang=="ar"?e.name_ar:e.name_en,
-                    name_ar:e.name_ar,
-                    name_en:e.name_en,
-                    monthlyPercent:e.monthlyPercent,
-                    expensesRatio:e.expensesRatio,
-                    logo: e.logo,
-                    id: e._id,
-                    createdAt: e.createdAt,
-                }
+            await FundProvider.findById(fundProviderId).populate(populateQuery)
+            .then( async(e) => {
+                let index = await transformFundProvider(e,lang)
                 return res.send({
                     success:true,
-                    data:fundProvider
+                    data:index
                 });
             })
         } catch (error) {
@@ -113,20 +122,13 @@ export default {
                 "user": req.user._id
             };
             await Report.create({...reports });
-            await FundProvider.findById(fundProviderId).then((e) => {
-                let fundProvider = {
-                    name:lang=="ar"?e.name_ar:e.name_en,
-                    name_ar:e.name_ar,
-                    name_en:e.name_en,
-                    monthlyPercent:e.monthlyPercent,
-                    expensesRatio:e.expensesRatio,
-                    logo: e.logo,
-                    id: e._id,
-                    createdAt: e.createdAt,
-                }
+            await FundProvider.findById(fundProviderId).populate(populateQuery)
+            .then(async(e) => {
+                let index = await transformFundProvider(e,lang)
+
                 return res.status(200).send({
                     success:true,
-                    data:fundProvider
+                    data:index
                 });
             })
         } catch (error) {
@@ -137,7 +139,7 @@ export default {
     async getAll(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
-            let {search} = req.query;
+            let {fundProgram,search} = req.query;
             let query = { deleted: false };
             if(search) {
                 query = {
@@ -152,20 +154,14 @@ export default {
                     ]
                 };
             }
-            await FundProvider.find(query)
+            if(fundProgram){
+                Object.assign(query, {"programsPercent.fundProgram": fundProgram});
+            } 
+            await FundProvider.find(query).populate(populateQuery)
             .then(async (data) => {
                 var newdata = [];
                 await Promise.all(data.map(async(e) =>{
-                    let index ={
-                        name:lang=="ar"?e.name_ar:e.name_en,
-                        name_ar:e.name_ar,
-                        name_en:e.name_en,
-                        monthlyPercent:e.monthlyPercent,
-                        expensesRatio:e.expensesRatio,
-                        logo: e.logo,
-                        id: e._id,
-                        createdAt: e.createdAt,
-                    }
+                    let index = await transformFundProvider(e,lang)
                     newdata.push(index);
                     
                 }))
@@ -180,7 +176,7 @@ export default {
         try {    
             let lang = i18n.getLocale(req)       
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
-            let {search} = req.query;
+            let {search,fundProgram} = req.query;
             let query = { deleted: false };
             if(search) {
                 query = {
@@ -195,22 +191,18 @@ export default {
                     ]
                 };
             }
-            await FundProvider.find(query)
+            if(fundProgram){
+                Object.assign(query, {"programsPercent.fundProgram": fundProgram});
+            } 
+
+            await FundProvider.find(query).populate(populateQuery)
                 .limit(limit)
                 .skip((page - 1) * limit).sort({ _id: -1 })
                 .then(async (data) => {
                     var newdata = [];
                     await Promise.all(data.map(async(e) =>{
-                        let index ={
-                            name:lang=="ar"?e.name_ar:e.name_en,
-                            name_ar:e.name_ar,
-                            name_en:e.name_en,
-                            monthlyPercent:e.monthlyPercent,
-                            expensesRatio:e.expensesRatio,
-                            logo: e.logo,
-                            id: e._id,
-                            createdAt: e.createdAt,
-                        }
+                        let index = await transformFundProvider(e,lang)
+
                         newdata.push(index);
                     }))
                     const count = await FundProvider.countDocuments({deleted: false });

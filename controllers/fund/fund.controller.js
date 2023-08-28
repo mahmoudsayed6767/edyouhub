@@ -442,7 +442,13 @@ export default {
             let fundProgram = await checkExistThenGet(fund.fundProgram, FundProgram, { deleted: false })
             let setting = await Setting.findOne({deleted: false})
             //مبلغ الفائده
-            let providerMonthlyPercentCost = (fund.totalFees * fundProvider.monthlyPercent) / 100;
+            let providerMonthlyPercent = 0
+            let arr = fundProvider.programsPercent;
+            var found = arr.find(element => element.fundProgram === fund.fundProgram);
+            if(!found){
+                providerMonthlyPercent = found.monthlyPercent;
+            }
+            let providerMonthlyPercentCost = (fund.totalFees * providerMonthlyPercent) / 100;
             //الاجمالى مع مبلغ الفايده
             fund.totalWithMonthlyPercent = fund.totalFees + providerMonthlyPercentCost * fundProgram.monthCount;
             //firstpaid
@@ -692,7 +698,13 @@ export default {
                 fund.firstPaid = platformExpensesRatio + providerExpensesRatio;
             }
             //مبلغ الفائده
-            let providerMonthlyPercentCost = (fund.totalFees * fundProvider.monthlyPercent) / 100;
+            let providerMonthlyPercent = 0
+            let arr = fundProvider.programsPercent;
+            var found = arr.find(element => element.fundProgram === fund.fundProgram);
+            if(!found){
+                providerMonthlyPercent = found.monthlyPercent;
+            }
+            let providerMonthlyPercentCost = (fund.totalFees * providerMonthlyPercent) / 100;
             //الاجمالى مع مبلغ الفايده
             fund.totalWithMonthlyPercent = fund.totalFees + providerMonthlyPercentCost * fundProgram.monthCount;
             await fund.save();
@@ -863,17 +875,6 @@ export default {
             fund.oldTotalFees = fund.totalFees
             fund.totalFees = validatedBody.totalFees
             fund.partialAcceptReason = validatedBody.partialAcceptReason
-
-            let fundProvider = await checkExistThenGet(fund.fundProvider, FundProvider)
-            let setting = await Setting.findOne({deleted: false})
-
-            let platformExpensesRatio = (fund.totalFees * setting.expensesRatio) / 100
-            let providerExpensesRatio = (fund.totalFees * fundProvider.expensesRatio) / 100
-            fund.firstPaid = platformExpensesRatio + providerExpensesRatio;
-            //مبلغ الفائده
-            let providerMonthlyPercentCost = (fund.totalFees * fundProvider.monthlyPercent) / 100;
-            //الاجمالى مع مبلغ الفايده
-            fund.totalWithMonthlyPercent = fund.totalFees + providerMonthlyPercentCost * fundProgram.monthCount;
             await fund.save();
             sendNotifiAndPushNotifi({
                 targetUser: fund.owner,
