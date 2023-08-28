@@ -44,6 +44,7 @@ const populateQueryById = [
     { path: 'owner', model: 'user' },
     { path: 'package', model: 'package' },
     { path: 'educationSystem', model: 'educationSystem' },
+    { path: 'educationInstitution', model: 'educationInstitution' },
     { path: 'sector', model: 'category' },
     { path: 'subSector', model: 'category' },
     { path: 'specializations', model: 'specialization' },

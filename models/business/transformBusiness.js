@@ -128,6 +128,13 @@ export async function transformBusinessById(e, lang,myUser,userId) {
             id: e.educationSystem._id,
         }
     }
+    /*educationInstitution*/
+    if (e.educationInstitution) {
+        index.educationInstitution = {
+            name: lang == "ar" ? e.educationInstitution.name_ar : e.educationInstitution.name_en,
+            id: e.educationInstitution._id,
+        }
+    }
     /* branches*/
     if (e.branches.length > 0) {
         let branches = []
