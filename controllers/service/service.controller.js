@@ -99,9 +99,7 @@ export default {
             body('details').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('details.required', { value});
             }),
-            body('priceType').not().isEmpty().withMessage((value, { req}) => {
-                return req.__('priceType.required', { value});
-            }).isIn(['BY-CONTACT','FIXED']).withMessage((value, { req}) => {
+            body('priceType').optional().isIn(['BY-CONTACT','FIXED']).withMessage((value, { req}) => {
                 return req.__('priceType.invalid', { value});
             }),
             body('price').optional(),
