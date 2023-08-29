@@ -7,6 +7,7 @@ export async function transformFundProvider(e, lang) {
         expensesRatio:e.expensesRatio,
         monthlyPercentType:e.monthlyPercentType,
         logo: e.logo,
+        fundProviderOffer:e.fundProviderOffer,
         id: e._id,
         createdAt: e.createdAt,
     }

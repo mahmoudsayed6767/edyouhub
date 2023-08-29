@@ -28,7 +28,7 @@ import VacancyRequest from "../../models/vacancyRequest/vacancyRequest.model";
 import Post from "../../models/post/post.model";
 import Connection from "../../models/connection/connection.model";
 import Notif from "../../models/notif/notif.model";
-
+import Message from "../../models/message/message.model";
 const populateQuery = [
     { path: 'package', model: 'package' },
 ];

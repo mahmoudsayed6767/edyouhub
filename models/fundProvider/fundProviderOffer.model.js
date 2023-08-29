@@ -1,44 +1,33 @@
 import mongoose,{ Schema} from "mongoose";
 import { isImgUrl } from "../../helpers/CheckMethods";
 import autoIncrement from 'mongoose-auto-increment';
-const fundProviderSchema = new Schema({
+const fundProviderOfferSchema = new Schema({
     _id: {
         type: Number,
         required: true
     },
-    name_en: {
+    title_en: {
         type: String,
         trim: true,
         required: true,
     },
-    name_ar: {
+    title_ar: {
         type: String,
         trim: true,
         required: true,
     },
-    logo: {
+    offerType: {
         type: String,
+        enum:['ALL-PROGRAM','BY-PROGRAM'],
+        default: 'ALL-PROGRAM'
+    },
+    fundProvider: {
+        type: Number,
+        ref:'fundProvider',
         required: true,
-    },
-    expensesRatio: {
-        type: Number,
-        default: 0
-    },
-    monthlyPercentType: {
-        type: String,
-        enum:['FIXED','BY-PROGRAM'],
-        default: 'FIXED'
-    },
-    monthlyPercent: {//نسبه الفائده
-        type: Number,
     },
     programsPercent: [
         new Schema({
-            oldMonthlyPercent: {
-                type: Number,
-                required: true,
-                default:0
-            },
             monthlyPercent: {
                 type: Number,
                 required: true,
@@ -48,16 +37,29 @@ const fundProviderSchema = new Schema({
                 ref:'fundProgram',
                 required: true,
             },
-            hasOffer:{
-                type:Boolean,
-                default:false
-            }
             
         }, { _id: false })
     ],
-    fundProviderOffer: {
+    status: {
+        type: String,
+        enum:['PENDING','ACTIVE','ENDED'],
+        default: 'PENDING'
+    },
+    startDate: {
+        type: Date,
+        required: true,
+    },
+    startDateMillSec: {
         type: Number,
-        ref:'fundProviderOffer'
+        required: true,
+    },
+    endDate: {
+        type: Date,
+        required: true,
+    },
+    endDateMillSec: {
+        type: Number,
+        required: true,
     },
     deleted:{
         type:Boolean,
@@ -65,7 +67,7 @@ const fundProviderSchema = new Schema({
     }
 }, { timestamps: true });
 
-fundProviderSchema.set('toJSON', {
+fundProviderOfferSchema.set('toJSON', {
     transform: function (doc, ret, options) {
         ret.id = ret._id;
         delete ret._id;
@@ -73,6 +75,6 @@ fundProviderSchema.set('toJSON', {
     }
 });
 autoIncrement.initialize(mongoose.connection);
-fundProviderSchema.plugin(autoIncrement.plugin, { model: 'fundProvider', startAt: 1 });
+fundProviderOfferSchema.plugin(autoIncrement.plugin, { model: 'fundProviderOffer', startAt: 1 });
 
-export default mongoose.model('fundProvider', fundProviderSchema);
+export default mongoose.model('fundProviderOffer', fundProviderOfferSchema);

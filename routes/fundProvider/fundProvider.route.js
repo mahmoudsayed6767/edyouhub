@@ -33,8 +33,15 @@ router.route('/:fundProviderId')
     .delete(requireAuth,permissions('ADMIN'),fundProviderController.delete);
 
 
+router.route('/:fundProviderId/addOffer')
+    .post(
+        requireAuth,
+        permissions('ADMIN'),
+        fundProviderController.validateOfferBody(),
+        fundProviderController.addOffer
+    )
 
-
-
+router.route('/:fundProviderOfferId/removeOffer')
+    .delete(requireAuth,permissions('ADMIN'),fundProviderController.removeOffer);
 
 export default router;

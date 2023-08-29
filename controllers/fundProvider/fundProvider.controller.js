@@ -7,6 +7,8 @@ import ApiResponse from "../../helpers/ApiResponse";
 import { checkExistThenGet } from "../../helpers/CheckMethods";
 import i18n from "i18n";
 import { transformFundProvider } from "../../models/fundProvider/transformFundProvider";
+import FundProgram from "../../models/fundProgram/fundProgram.model"
+import FundProviderOffer from "../../models/fundProvider/fundProviderOffer.model";
 const populateQuery = [
     { path: 'programsPercent.fundProgram', model: 'fundProgram' },
 ];
@@ -234,6 +236,150 @@ export default {
             next(err);
         }
     },
+    validateOfferBody(isUpdate = false) {
+        let validations = [
+            body('title_ar').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('title_ar.required', { value});
+            }),
+            body('title_en').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('title_en.required', { value});
+            }),
+            body('startDate').not().isEmpty().withMessage((value, { req }) => {
+                return req.__('startDate.required', { value });
+            })
+            .isISO8601().withMessage((value, { req }) => {
+                return req.__('startDate.invalid', { value });
+            }),
+            body('endDate').not().isEmpty().withMessage((value, { req }) => {
+                return req.__('endDate.required', { value });
+            })
+            .isISO8601().withMessage((value, { req }) => {
+                return req.__('endDate.invalid', { value });
+            }),
+            body('MonthlyPercent').optional(),
+            body('programsPercent').optional()
+            .custom(async(programsPercent, { req }) => {
+                for (let fundProgram of programsPercent) {
+                    body('fundProgram').not().isEmpty().withMessage((value, { req }) => {
+                        return req.__('fundProgram.required', { value });
+                    }).isNumeric().withMessage((value, { req }) => {
+                        return req.__('fundProgram.numeric', { value });
+                    }).custom(async(value, { req }) => {
+                        if (!await FundProgram.findOne({ _id: value, deleted: false }))
+                            throw new Error(req.__('fundProgram.invalid'));
+                        else
+                            return true;
+                    }),
+                    body('monthlyPercent').not().isEmpty().withMessage((value, { req}) => {
+                        return req.__('monthlyPercent.required', { value});
+                    })
+                }
+                return true;
+            }),
+        ];
 
+        return validations;
+    },
+    async addOffer(req, res, next) {        
+        try {
+            const validatedBody = checkValidations(req);
+            let {fundProviderId} = req.params 
+            validatedBody.fundProvider = fundProviderId
+            validatedBody.startDateMillSec = Date.parse(validatedBody.startDate);
+            validatedBody.endDateMillSec = Date.parse(validatedBody.endDate);
+            let current = Date.parse(new Date());
+            if(current >= validatedBody.startDateMillSec) validatedBody.status = 'ACTIVE'
+            let fundProvider = await checkExistThenGet(fundProviderId,FundProvider,{deleted:false})
+           
+            if(validatedBody.programsPercent) validatedBody.offerType = 'BY-PROGRAM';
+            //if fixed in all programs
+            if(!validatedBody.programsPercent){
+                let programsPercent = [];
+                fundProvider.programsPercent.forEach(element => {
+                    let programPercent = {
+                        monthlyPercent:validatedBody.monthlyPercent,
+                        fundProgram:element.fundProgram
+                    }
+                    programsPercent.push(programPercent)
+                });
+                validatedBody.programsPercent = programsPercent
+            }
+            let fundProviderOffer = await FundProviderOffer.create({ ...validatedBody});
+            fundProvider.fundProviderOffer = fundProviderOffer._id;
+            if(current >= validatedBody.startDateMillSec){
+                //update fun provider program
+                let programsPercent = [];
+                let arr = fundProvider.programsPercent;
+                let arr2 = fundProviderOffer.programsPercent;
+                arr.forEach(element => {
+                    let newPercent = {
+                        oldMonthlyPercent:element.monthlyPercent,
+                        fundProgram:element.fundProgram
+                    }
+                    var found = arr2.find(function(val) {
+                        return val.fundProgram == element.fundProgram;
+                    }); 
+                    if(found){
+                        newPercent.monthlyPercent = found.monthlyPercent
+                        newPercent.hasOffer = true
+                    }else{
+                        newPercent.monthlyPercent = element.monthlyPercent
+                        newPercent.hasOffer = false
+                    }
+                    programsPercent.push(newPercent)
+                });
+                fundProvider.programsPercent = programsPercent
+            }
+            await fundProvider.save();
+            let reports = {
+                "action":"Create Fud Provider Offer",
+                "type":"FUND-PROVIDER",
+                "deepId":validatedBody.id,
+                "user": req.user._id
+            };
+            await Report.create({...reports });
+            return res.status(201).send({
+                success:true,
+            });
+        } catch (error) {
+            next(error);
+        }
+    },
+    async removeOffer(req, res, next) {        
+        try {
+            let {fundProviderOfferId} = req.params
+            let fundProviderOffer = await checkExistThenGet(fundProviderOfferId,FundProviderOffer,{deleted:false})
+            fundProviderOffer.deleted = true
+
+            let fundProvider = await checkExistThenGet(fundProviderOffer.fundProvider,FundProvider,{deleted:false})
+            fundProvider.fundProviderOffer = null;
+            let programsPercent = [];
+            let arr = fundProvider.programsPercent;
+            arr.forEach(element => {
+                let newPercent = {
+                    oldMonthlyPercent:element.oldMonthlyPercent,
+                    monthlyPercent: element.oldMonthlyPercent,
+                    fundProgram:element.fundProgram,
+                    hasOffer:false
+                }
+                programsPercent.push(newPercent)
+            });
+            fundProvider.programsPercent = programsPercent
+            await fundProvider.save();
+            await fundProvider.save();
+            let reports = {
+                "action":"Delete Fud Provider Offer",
+                "type":"FUND-PROVIDER",
+                "deepId":fundProvider.id,
+                "user": req.user._id
+            };
+            await Report.create({...reports });
+            return res.status(201).send({
+                success:true,
+            });
+        } catch (error) {
+            next(error);
+        }
+    },
 
 }
