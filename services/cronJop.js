@@ -6,7 +6,7 @@ import Story from "../models/story/story.model";
 import User from "../models/user/user.model";
 import Course from '../models/course/course.model';
 import FundProviderOffer from "../models/fundProvider/fundProviderOffer.model"
-import FundProvider from "../models/fundProvider/fundProvider"
+import FundProvider from "../models/fundProvider/fundProvider.model"
 export function cronJop() {
     try { //    */2 * * * *
         //sec min hour day month year
