@@ -329,6 +329,8 @@ export default {
                     programsPercent.push(newPercent)
                 });
                 fundProvider.programsPercent = programsPercent
+                fundProvider.hasOffer = true;
+
             }
             await fundProvider.save();
             let reports = {
@@ -353,6 +355,7 @@ export default {
 
             let fundProvider = await checkExistThenGet(fundProviderOffer.fundProvider,FundProvider,{deleted:false})
             fundProvider.fundProviderOffer = null;
+            fundProvider.hasOffer = false;
             let programsPercent = [];
             let arr = fundProvider.programsPercent;
             arr.forEach(element => {

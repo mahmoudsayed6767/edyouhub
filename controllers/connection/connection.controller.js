@@ -119,15 +119,21 @@ export default {
             let lang = i18n.getLocale(req)       
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
             let query = { deleted: false };
-            let {status,from,to} = req.query
+            let {status,from,to,userId} = req.query
             if(from) query.from = from
             if(to) query.to = to
+            if(userId) {
+                query.userId = userId
+            }else{
+                userId = req.user._id
+            }
+
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
                 query = {
                     $and: [
                         { $or: [
-                            {to: req.user._id}, 
-                            {from: req.user._id}, 
+                            {to: userId}, 
+                            {from: userId}, 
                           ] 
                         },
                         {deleted: false},

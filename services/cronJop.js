@@ -75,7 +75,7 @@ export function cronJop() {
                     })
                 })
             })
-            FundProviderOffer.find({deleted:false,status:{$ne:'PASS'}})
+            FundProviderOffer.find({deleted:false,status:{$ne:'ENDED'}})
             .then(async(data)=>{
                 data.map(async(e) =>{
                     let fundProvider = await checkExistThenGet(e.fundProvider,FundProvider,{deleted:false})
@@ -103,6 +103,7 @@ export function cronJop() {
                             }
                             programsPercent.push(newPercent)
                         });
+                        fundProvider.hasOffer = true;
                         fundProvider.programsPercent = programsPercent
                     }
                     if(now > e.endDateMillSec){
@@ -119,6 +120,8 @@ export function cronJop() {
                             }
                             programsPercent.push(newPercent)
                         });
+                        fundProvider.hasOffer = false;
+
                         fundProvider.programsPercent = programsPercent
                     }
                     await fundProvider.save();
