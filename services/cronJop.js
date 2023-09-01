@@ -5,7 +5,8 @@ import Event from "../models/event/event.model";
 import Story from "../models/story/story.model";
 import User from "../models/user/user.model";
 import Course from '../models/course/course.model';
-
+import FundProviderOffer from "../models/fundProvider/fundProviderOffer.model"
+import FundProvider from "../models/fundProvider/fundProvider"
 export function cronJop() {
     try { //    */2 * * * *
         //sec min hour day month year
@@ -68,6 +69,61 @@ export function cronJop() {
                 data.map(async(e) =>{
                     User.findByIdAndUpdate(e.id,{hasPackage:false},{new:true}).then((docs)=>{
                         console.log('done update user')
+                        
+                    }).catch((err)=>{
+                        console.log(err);
+                    })
+                })
+            })
+            FundProviderOffer.find({deleted:false,status:{$ne:'PASS'}})
+            .then(async(data)=>{
+                data.map(async(e) =>{
+                    let fundProvider = await checkExistThenGet(e.fundProvider,FundProvider,{deleted:false})
+                    let status = e.status;
+                    if(now > e.startDateMillSec){
+                        status = 'ACTIVE'
+                        //update fun provider program
+                        let programsPercent = [];
+                        let arr = fundProvider.programsPercent;
+                        let arr2 = e.programsPercent;
+                        arr.forEach(element => {
+                            let newPercent = {
+                                oldMonthlyPercent:element.monthlyPercent,
+                                fundProgram:element.fundProgram
+                            }
+                            var found = arr2.find(function(val) {
+                                return val.fundProgram == element.fundProgram;
+                            }); 
+                            if(found){
+                                newPercent.monthlyPercent = found.monthlyPercent
+                                newPercent.hasOffer = true
+                            }else{
+                                newPercent.monthlyPercent = element.monthlyPercent
+                                newPercent.hasOffer = false
+                            }
+                            programsPercent.push(newPercent)
+                        });
+                        fundProvider.programsPercent = programsPercent
+                    }
+                    if(now > e.endDateMillSec){
+                        status = 'ENDED'
+                        fundProvider.fundProviderOffer = null;
+                        let programsPercent = [];
+                        let arr = fundProvider.programsPercent;
+                        arr.forEach(element => {
+                            let newPercent = {
+                                oldMonthlyPercent:element.oldMonthlyPercent,
+                                monthlyPercent: element.oldMonthlyPercent,
+                                fundProgram:element.fundProgram,
+                                hasOffer:false
+                            }
+                            programsPercent.push(newPercent)
+                        });
+                        fundProvider.programsPercent = programsPercent
+                    }
+                    await fundProvider.save();
+                    FundProviderOffer.findByIdAndUpdate(e.id,{status:status},{new:true}).then((docs)=>{
+                        console.log('done update FundProviderOffer')
                         
                     }).catch((err)=>{
                         console.log(err);

@@ -1027,26 +1027,26 @@ export default {
             let businessManagement = await BusinessManagement.findOne({ business: businessId, deleted: false })
             let services = []
             if (businessManagement.vacancy.supervisors) {
-                let supervisors = [... businessManagement.vacancy.supervisors,business.owner]
-                supervisors = [business.owner]
+                let supervisors = [... businessManagement.vacancy.supervisors]
+                supervisors.push(business.owner)
                 if (!isInArray(supervisors, req.user._id))
                     services.push('VACANCY')
             }
             if (businessManagement.admission.supervisors) {
-                let supervisors = [... businessManagement.admission.supervisors,business.owner]
-                supervisors = [business.owner]
+                let supervisors = [... businessManagement.admission.supervisors]
+                supervisors.push(business.owner)
                 if (!isInArray(supervisors, req.user._id))
                     services.push('ADMISSION')
             }
             if (businessManagement.events.supervisors) {
-                let supervisors = [... businessManagement.events.supervisors,business.owner]
-                supervisors = [business.owner]
+                let supervisors = [... businessManagement.events.supervisors]
+                supervisors.push(business.owner)
                 if (!isInArray(supervisors, req.user._id))
                     services.push('EVENTS')
             }
             if (businessManagement.courses.supervisors) {
-                let supervisors = [... businessManagement.courses.supervisors,business.owner]
-                supervisors = [business.owner]
+                let supervisors = [... businessManagement.courses.supervisors]
+                supervisors.push(business.owner)
                 if (!isInArray(supervisors, req.user._id))
                     services.push('COURSES')
             }

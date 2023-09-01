@@ -801,7 +801,7 @@ export default {
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1,
                 limit = +req.query.limit || 20;
-            let userId = req.user._id;
+            let userId = req.params;
             let query = { deleted: false, user: userId };
 
             await Activity.find(query).populate(populateActivityQuery)

@@ -118,7 +118,7 @@ router.route('/getAddresses')
         requireAuth,
         UserController.getAddress
     );
-router.route('/getActivities')
+router.route('/:userId/getActivities')
     .get(
         requireAuth,
         UserController.getActivities
