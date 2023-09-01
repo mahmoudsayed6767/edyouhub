@@ -802,8 +802,8 @@ export default {
             let page = +req.query.page || 1,
                 limit = +req.query.limit || 20;
             let userId = req.params;
-            let query = { deleted: false, user: userId };
-
+            let query = { deleted: false, user:userId };
+            console.log(query);
             await Activity.find(query).populate(populateActivityQuery)
                 .sort({ createdAt: -1 })
                 .limit(limit)
@@ -813,7 +813,7 @@ export default {
                         let index = await transformActivity(e, lang)
                         newdata.push(index);
                     }))
-                    const count = await Address.countDocuments(query);
+                    const count = await Activity.countDocuments(query);
                     const pageCount = Math.ceil(count / limit);
                     res.send(new ApiResponse(newdata, page, pageCount, limit, count, req));
                 })
