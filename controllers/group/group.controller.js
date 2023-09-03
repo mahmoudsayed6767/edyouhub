@@ -12,7 +12,7 @@ import ApiError from '../../helpers/ApiError';
 import { sendNotifiAndPushNotifi } from "../../services/notification-service";
 import Notif from "../../models/notif/notif.model"
 import Post from "../../models/post/post.model";
-
+import Activity from "../../models/user/activity.model"
 const populateQuery = [
     { path: 'owner', model: 'user' },
     { path: 'admins', model: 'user' },

@@ -39,6 +39,8 @@ function validatedLocation(location) {
 const populateQuery = [
     { path: 'owner', model: 'user' },
     { path: 'package', model: 'package' },
+    { path: 'sector', model: 'category' },
+    { path: 'subSector', model: 'category' },
 ];
 const populateQueryById = [
     { path: 'owner', model: 'user' },

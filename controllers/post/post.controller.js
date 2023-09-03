@@ -90,10 +90,10 @@ export default {
                 query.viewPlaceType = viewPlaceType
                 if(viewPlaceType == "WALL"){
                     let owners = myUser.connections
+                    owners.push(req.user._id)
                     console.log("owners",owners)
                     let business = myUser.following
                     console.log("business",business)
-
                     Object.assign(query ,{
                         $and: [
                             { $or: [
@@ -165,6 +165,7 @@ export default {
                 query.viewPlaceType = viewPlaceType
                 if(viewPlaceType == "WALL"){
                     let owners = myUser.connections
+                    owners.push(req.user._id)
                     let business = myUser.following
                     Object.assign(query ,{
                         $and: [
@@ -279,8 +280,8 @@ export default {
                 if(group.postedType == "BY-REQUEST"){
                     let arr = group.admins;
                     var found = arr.find((e) => e == validatedBody.group); 
-                    if(found){
-                        validatedBody.status = "ACCEPTED"
+                    if(!found){
+                        validatedBody.status = "PENDING"
                     }
                 }
             }
