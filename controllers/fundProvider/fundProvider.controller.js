@@ -11,6 +11,7 @@ import FundProgram from "../../models/fundProgram/fundProgram.model"
 import FundProviderOffer from "../../models/fundProvider/fundProviderOffer.model";
 const populateQuery = [
     { path: 'programsPercent.fundProgram', model: 'fundProgram' },
+    { path: 'fundProviderOffer', model: 'fundProviderOffer' },
 ];
 export default {
     validateBody(isUpdate = false) {
@@ -256,7 +257,7 @@ export default {
             .isISO8601().withMessage((value, { req }) => {
                 return req.__('endDate.invalid', { value });
             }),
-            body('MonthlyPercent').optional(),
+            body('monthlyPercent').optional(),
             body('programsPercent').optional()
             .custom(async(programsPercent, { req }) => {
                 for (let fundProgram of programsPercent) {
@@ -291,7 +292,7 @@ export default {
             if(current >= validatedBody.startDateMillSec) validatedBody.status = 'ACTIVE'
             let fundProvider = await checkExistThenGet(fundProviderId,FundProvider,{deleted:false})
            
-            if(validatedBody.programsPercent) validatedBody.offerType = 'BY-PROGRAM';
+            if(!validatedBody.programsPercent) validatedBody.offerType = 'BY-PROGRAM';
             //if fixed in all programs
             if(!validatedBody.programsPercent){
                 let programsPercent = [];
@@ -304,6 +305,7 @@ export default {
                 });
                 validatedBody.programsPercent = programsPercent
             }
+            console.log(validatedBody.programsPercent)
             let fundProviderOffer = await FundProviderOffer.create({ ...validatedBody});
             fundProvider.fundProviderOffer = fundProviderOffer._id;
             if(current >= validatedBody.startDateMillSec){

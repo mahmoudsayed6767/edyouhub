@@ -7,7 +7,6 @@ export async function transformFundProvider(e, lang) {
         expensesRatio:e.expensesRatio,
         monthlyPercentType:e.monthlyPercentType,
         logo: e.logo,
-        fundProviderOffer:e.fundProviderOffer,
         id: e._id,
         createdAt: e.createdAt,
     }
@@ -25,5 +24,14 @@ export async function transformFundProvider(e, lang) {
         programsPercent.push(monthlyPercent)
     }
     index.programsPercent = programsPercent
+    if(e.fundProviderOffer){
+        let fundProviderOffer = {
+            title:lang=="ar"?e.fundProviderOffer.title_ar:e.fundProviderOffer.title_en,
+            offerType:e.fundProviderOffer.offerType,
+            status:e.fundProviderOffer.status,
+            id:e.fundProviderOffer._id
+        }
+        index.fundProviderOffer = fundProviderOffer
+    }
     return index
 }
