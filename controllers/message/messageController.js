@@ -161,6 +161,7 @@ var messageController = {
                     let index = await transformMessage(e)
                     newdata.push(index);
                 }));
+                newdata = newdata.sort((a, b) => b.incommingDate - a.incommingDate);
                 const count = await Message.countDocuments({ $or: [query1, query2] });
                 const pageCount = Math.ceil(count / limit);
                 res.send(new ApiResponse(newdata, page, pageCount, limit, count, req));
@@ -294,6 +295,7 @@ var messageController = {
                         index.unseenCount = unseenCount
                         newdata.push(index);
                     }));
+                    newdata = newdata.sort((a, b) => b.incommingDate - a.incommingDate);
                     res.send(new ApiResponse(newdata, page, pageCount, limit, messagesCount, req));
                 })
 
