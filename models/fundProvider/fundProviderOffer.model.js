@@ -26,6 +26,10 @@ const fundProviderOfferSchema = new Schema({
         ref:'fundProvider',
         required: true,
     },
+    monthlyPercent: {
+        type: Number,
+        default:10
+    },
     programsPercent: [
         new Schema({
             monthlyPercent: {

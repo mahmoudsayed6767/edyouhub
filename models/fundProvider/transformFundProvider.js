@@ -29,6 +29,7 @@ export async function transformFundProvider(e, lang) {
             title:lang=="ar"?e.fundProviderOffer.title_ar:e.fundProviderOffer.title_en,
             offerType:e.fundProviderOffer.offerType,
             status:e.fundProviderOffer.status,
+            monthlyPercent:e.fundProviderOffer.monthlyPercent,
             id:e.fundProviderOffer._id
         }
         index.fundProviderOffer = fundProviderOffer
