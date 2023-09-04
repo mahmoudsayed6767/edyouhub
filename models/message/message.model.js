@@ -20,6 +20,7 @@ var message={
     business:{
         type:Number,
         ref:'business',
+        default:null
     },
     content:{
         type:String,

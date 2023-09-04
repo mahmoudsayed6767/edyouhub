@@ -9,6 +9,7 @@ import ApiError from '../../helpers/ApiError';
 import i18n from "i18n";
 import Report from "../../models/reports/report.model";
 import { transformMessage } from "../../models/message/transformMessage";
+import Business from "../../models/business/business.model";
 import Logger from "../../services/logger";
 const logger = new Logger('message '+ new Date(Date.now()).toDateString())
 const populateQuery = [
@@ -251,13 +252,18 @@ var messageController = {
             if(business){
                 query1.business = business;
                 query2.business = business
+            }else{
+                let businessIds = await Business.find({owner: req.user._id}).distinct('_id')
+                query1.business = {$nin:businessIds};
+                query2.business = {$nin:businessIds}
             }
             //user try to get other users chat
             if(!isInArray(["ADMIN","SUB-ADMIN"],req.user.type)){
                 if(req.user._id != id)
                     return next(new ApiError(403, i18n.__('admin.auth')));
             }
-
+            
+        
             await Message.find({ $or: [query1, query2] })
                 .sort({ _id: -1 })
                 .skip((page - 1) * limit)
@@ -269,7 +275,7 @@ var messageController = {
                     var queryCount = {
                         deleted: false,
                         to: id,
-                        seen: false
+                        seen: false,
                     }
                     var newdata = [];
                     await Promise.all(data.map(async (e) => {
@@ -278,8 +284,14 @@ var messageController = {
                         } else {
                             queryCount.from = e.from._id;
                         }
+                        if(e.business){
+                            queryCount.business = e.business._id
+                        }else{
+                            queryCount.business = null;
+                        }
+                        let unseenCount = await Message.countDocuments(queryCount);
                         let index = await transformMessage(e)
-                        index.unseenCount = await Message.countDocuments(queryCount);
+                        index.unseenCount = unseenCount
                         newdata.push(index);
                     }));
                     res.send(new ApiResponse(newdata, page, pageCount, limit, messagesCount, req));

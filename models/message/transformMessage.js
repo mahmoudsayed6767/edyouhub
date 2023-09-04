@@ -10,6 +10,7 @@ export async function transformMessage(e,lang) {
         seen: e.seen,
         seendate:e.seendate,
         createdAt:e.createdAt,
+        lastMessage:e.lastMessage,
         id:e._id
     }
     if(e.from){
