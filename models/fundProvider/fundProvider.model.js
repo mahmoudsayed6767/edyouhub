@@ -55,6 +55,10 @@ const fundProviderSchema = new Schema({
             
         }, { _id: false })
     ],
+    hasOffer:{
+        type:Boolean,
+        default:false
+    },
     fundProviderOffer: {
         type: Number,
         ref:'fundProviderOffer'

@@ -28,7 +28,6 @@ import { ValidationError } from "mongoose";
 import Follow from "../../models/follow/follow.model";
 import Post from "../../models/post/post.model";
 import Activity from "../../models/user/activity.model";
-
 //validate location
 function validatedLocation(location) {
     if (!isLng(location[0]))
@@ -142,9 +141,7 @@ export default {
             .withMessage((value, { req }) => {
                 return req.__('educationType.invalid', { value });
             }),
-            body('owner').not().isEmpty().withMessage((value, { req }) => {
-                return req.__('owner.required', { value });
-            }).isNumeric().withMessage((value, { req }) => {
+            body('owner').optional().isNumeric().withMessage((value, { req }) => {
                 return req.__('owner.numeric', { value });
             }).custom(async(value, { req }) => {
                 if (!await User.findOne({ _id: value, deleted: false }))
@@ -310,6 +307,7 @@ export default {
                 validatedBody.sector = subSector.parent
 
             }
+            if(!validatedBody.owner) validatedBody.type = 'NOT-ASSIGNED'
             let business = await Business.create({...validatedBody });
             let branches = []
             if (validatedBody.theBranches) {
@@ -554,7 +552,7 @@ export default {
         try {
             //get lang
             let lang = i18n.getLocale(req)
-            let {specializations, city, area, userId, educationType, owner, search, sector, subSector, educationSystem, status } = req.query;
+            let {type,specialization, city, area, userId, educationType, owner, search, sector, subSector, educationSystem, status } = req.query;
 
             let query = { deleted: false }
                 /*search by name */
@@ -572,6 +570,7 @@ export default {
                 };
             }
             if (specialization) query.specializations = specialization
+            if (type) query.type = type
 
             if (city) query.cities = city
             if (area) query.areas = area
@@ -615,7 +614,7 @@ export default {
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1,
                 limit = +req.query.limit || 20;
-            let {specialization, city, area, userId, educationType, owner, search, sector, subSector, educationSystem, status } = req.query;
+            let {type,specialization, city, area, userId, educationType, owner, search, sector, subSector, educationSystem, status } = req.query;
 
             let query = { deleted: false }
                 /*search by name */
@@ -632,6 +631,7 @@ export default {
                     ]
                 };
             }
+            if (type) query.type = type
             if (specialization) query.specializations = specialization
 
             if (city) query.cities = city
@@ -783,9 +783,9 @@ export default {
             });
             let notif = {
                 "description_en": 'Your business Request Has Been Rejected ',
-                "description_ar": '   تم رفض  طلب التمويل الخاص بك',
+                "description_ar": '   تم رفض  طلب الانضمام الخاص بك',
                 "title_en": 'Your business Request Has Been Rejected ',
-                "title_ar": ' تم رفض على طلب التمويل الخاص بك',
+                "title_ar": ' تم رفض على طلب الانضمام الخاص بك',
                 "type": 'BUSINESS'
             }
             await Notif.create({...notif, resource: req.user, target: business.owner, business: business.id });
@@ -1060,4 +1060,5 @@ export default {
             next(error);
         }
     },
+    
 }

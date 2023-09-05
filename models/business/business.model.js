@@ -13,6 +13,11 @@ const businessSchema = new Schema({
         ref: 'user',
         required: true,
     },
+    type: {
+        type: String,
+        enum: ['ASSIGNED', 'NOT-ASSIGNED'],
+        default: 'ASSIGNED'
+    },
     status: {
         type: String,
         enum: ['PENDING', 'ACCEPTED', 'REJECTED'],

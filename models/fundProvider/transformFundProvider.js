@@ -16,6 +16,7 @@ export async function transformFundProvider(e, lang) {
         let monthlyPercent = {
             oldMonthlyPercent:val.oldMonthlyPercent,
             monthlyPercent:val.monthlyPercent,
+            hasOffer:val.hasOffer,
         }
         if(val.fundProgram){
             monthlyPercent.fundProgram = {
@@ -32,7 +33,6 @@ export async function transformFundProvider(e, lang) {
             offerType:e.fundProviderOffer.offerType,
             status:e.fundProviderOffer.status,
             monthlyPercent:e.fundProviderOffer.monthlyPercent,
-            hasOffer:e.fundProviderOffer.hasOffer,
             id:e.fundProviderOffer._id
         }
         index.fundProviderOffer = fundProviderOffer
