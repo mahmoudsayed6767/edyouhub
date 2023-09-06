@@ -153,7 +153,9 @@ export default {
         try {
             let { businessRequestId } = req.params;
             let businessRequest = await checkExistThenGet(businessRequestId, BusinessRequest);
-            
+            if(businessRequest.status != "PENDING"){
+                return next(new ApiError(500, i18n.__('businessRequest.notPending')));
+            }
             let business = await checkExistThenGet(businessRequest.business, Business);
             businessRequest.status = 'ACCEPTED';
             business.type = 'ASSIGNED'
