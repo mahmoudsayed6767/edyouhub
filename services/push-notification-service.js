@@ -3,9 +3,8 @@ import User from '../models/user/user.model';
 const serviceAccount = require('../service-account.json');
 
 admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-    databaseURL: "https://what-do-you-like-bc82d-default-rtdb.firebaseio.com"
-  });
+    credential: admin.credential.cert(serviceAccount)
+});
 
  
 export async function sendPushNotification(notifi, title) { 
