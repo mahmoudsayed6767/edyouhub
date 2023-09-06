@@ -11,7 +11,6 @@ const businessSchema = new Schema({
     owner: {
         type: Number,
         ref: 'user',
-        required: true,
     },
     type: {
         type: String,

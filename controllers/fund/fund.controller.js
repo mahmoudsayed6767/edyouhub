@@ -407,14 +407,7 @@ export default {
                 }
                 return true;
             }),
-            body('fundProvider').optional().isNumeric().withMessage((value, { req }) => {
-                return req.__('fundProvider.numeric', { value });
-            }).custom(async(value, { req }) => {
-                if (!await FundProvider.findOne({ _id: value, deleted: false }))
-                    throw new Error(req.__('fundProvider.invalid'));
-                else
-                    return true;
-            }),
+            
             body('fundProgram').not().isEmpty().withMessage((value, { req }) => {
                 return req.__('fundProgram.required', { value });
             }).isNumeric().withMessage((value, { req }) => {
@@ -432,7 +425,7 @@ export default {
     async createCompleted(req, res, next) {
         try {
             const validatedBody = checkValidations(req);
-
+            validatedBody.status = 'COMPLETED'
             if (!validatedBody.owner) validatedBody.owner = req.user._id;
             let fund = await Fund.create({...validatedBody });
             let educationInstitutions = []
@@ -446,23 +439,6 @@ export default {
 
                 fund.students = students
             }
-            let fundProvider = await checkExistThenGet(fund.fundProvider, FundProvider, { deleted: false })
-            let fundProgram = await checkExistThenGet(fund.fundProgram, FundProgram, { deleted: false })
-            let setting = await Setting.findOne({deleted: false})
-            //مبلغ الفائده
-            let providerMonthlyPercent = 0
-            let arr = fundProvider.programsPercent;
-            var found = arr.find(element => element.fundProgram === fund.fundProgram);
-            if(!found){
-                providerMonthlyPercent = found.monthlyPercent;
-            }
-            let providerMonthlyPercentCost = (fund.totalFees * providerMonthlyPercent) / 100;
-            //الاجمالى مع مبلغ الفايده
-            fund.totalWithMonthlyPercent = fund.totalFees + providerMonthlyPercentCost * fundProgram.monthCount;
-            //firstpaid
-            let platformExpensesRatio = (fund.totalFees * setting.expensesRatio) / 100
-            let providerExpensesRatio = (fund.totalFees * fundProvider.expensesRatio) / 100
-            fund.firstPaid = platformExpensesRatio + providerExpensesRatio;
             await fund.save();
             let reports = {
                 "action": "Create New fund",

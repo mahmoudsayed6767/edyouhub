@@ -28,7 +28,6 @@ const fundProviderOfferSchema = new Schema({
     },
     monthlyPercent: {
         type: Number,
-        default:10
     },
     programsPercent: [
         new Schema({

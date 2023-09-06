@@ -1,6 +1,8 @@
 import express from 'express';
 import {  requireAuth} from '../../services/passport';
 import businessController from '../../controllers/business/business.controller';
+import businessRequestController from '../../controllers/business/businessRequest.controller';
+
 import {permissions} from '../../services/permissions';
 const router = express.Router();
 
@@ -54,5 +56,34 @@ router.route('/:businessId/getSupervisorPermissions')
     .get(  
         requireAuth,
         businessController.getSupervisorPermissions
+    )
+router.route('/addAssignRequest')
+    .post(  
+        requireAuth,
+        businessRequestController.validateBody(),
+        businessRequestController.create
+    )
+router.route('/assignRequests/getPagenation')
+    .get(  
+        requireAuth,
+        businessRequestController.getAllPaginated
+    )
+router.route('/:businessRequestId/acceptAssignRequests')
+    .put(  
+        requireAuth,
+        permissions('ADMIN'),
+        businessRequestController.accept
+    )
+router.route('/:businessRequestId/rejectAssignRequests')
+    .put(  
+        requireAuth,
+        permissions('ADMIN'),
+        businessRequestController.reject
+    )
+router.route('/:businessRequestId/deleteAssignRequests')
+    .put(  
+        requireAuth,
+        permissions('ADMIN'),
+        businessRequestController.delete
     )
 export default router;

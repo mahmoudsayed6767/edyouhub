@@ -401,7 +401,7 @@ export default {
             let { eventId } = req.params
             let event = await checkExistThenGet(eventId, Event, { deleted: false });
             if (event.feesType == "WITH-FEES")
-                return next(new ApiError(422, i18n.__('sorryEventWithFees')));
+                return next(new ApiError(500, i18n.__('sorryEventWithFees')));
             //add client to event attendance
             let arr = event.attendance;
             var found = arr.find((e) => e == req.user._id);

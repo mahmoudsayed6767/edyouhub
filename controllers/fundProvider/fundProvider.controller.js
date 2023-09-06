@@ -9,6 +9,7 @@ import i18n from "i18n";
 import { transformFundProvider } from "../../models/fundProvider/transformFundProvider";
 import FundProgram from "../../models/fundProgram/fundProgram.model"
 import FundProviderOffer from "../../models/fundProvider/fundProviderOffer.model";
+import Setting from "../../models/setting/setting.model"
 const populateQuery = [
     { path: 'programsPercent.fundProgram', model: 'fundProgram' },
     { path: 'fundProviderOffer', model: 'fundProviderOffer' },
@@ -160,11 +161,13 @@ export default {
             if(fundProgram){
                 Object.assign(query, {"programsPercent.fundProgram": fundProgram});
             } 
+            let setting = await Setting.findOne({deleted: false})
             await FundProvider.find(query).populate(populateQuery)
             .then(async (data) => {
                 var newdata = [];
                 await Promise.all(data.map(async(e) =>{
                     let index = await transformFundProvider(e,lang)
+                    index.appExpensesRatio = setting.expensesRatio
                     newdata.push(index);
                     
                 }))
@@ -197,6 +200,7 @@ export default {
             if(fundProgram){
                 Object.assign(query, {"programsPercent.fundProgram": fundProgram});
             } 
+            let setting = await Setting.findOne({deleted: false})
 
             await FundProvider.find(query).populate(populateQuery)
                 .limit(limit)
@@ -205,7 +209,7 @@ export default {
                     var newdata = [];
                     await Promise.all(data.map(async(e) =>{
                         let index = await transformFundProvider(e,lang)
-
+                        index.appExpensesRatio = setting.expensesRatio
                         newdata.push(index);
                     }))
                     const count = await FundProvider.countDocuments({deleted: false });
@@ -292,7 +296,7 @@ export default {
             if(current >= validatedBody.startDateMillSec) validatedBody.status = 'ACTIVE'
             let fundProvider = await checkExistThenGet(fundProviderId,FundProvider,{deleted:false})
            
-            if(!validatedBody.programsPercent) validatedBody.offerType = 'BY-PROGRAM';
+            if(validatedBody.programsPercent) validatedBody.offerType = 'BY-PROGRAM';
             //if fixed in all programs
             if(!validatedBody.programsPercent){
                 let programsPercent = [];
@@ -305,7 +309,6 @@ export default {
                 });
                 validatedBody.programsPercent = programsPercent
             }
-            console.log(validatedBody.programsPercent)
             let fundProviderOffer = await FundProviderOffer.create({ ...validatedBody});
             fundProvider.fundProviderOffer = fundProviderOffer._id;
             if(current >= validatedBody.startDateMillSec){

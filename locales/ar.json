@@ -306,7 +306,26 @@
 	"transaction not exist": "عمليه الدفع غير موجوده",
 	"section_en.required": "حقل اسم السكشن باللغه الانجليزيه مطلوب",
 	"section_ar.required": "حقل السكشن باللغه العربيه مطلوب",
-	"completeData":"يرجى اكمال البيانات"
+	"completeData":"يرجى اكمال البيانات",
+	"connectionRequest.notFound": "طلب التواصل غير موجود",
+	"user.required": "حقل العميل مطلوب",
+	"user.numeric": "حقل العميل يجب ان يكون قيمه رقميه",
+	"user.invalid": "حقل العميل غير صحيح",
+	"sorryEventWithFees": "عفوا هذا الحدث يوجد به مصاريف",
+	"Valid.coupon": "الكوبون صالح",
+	"fundProvider.invalid": "الممول غير صحيح",
+	"contactPersonName.required": "خانه اسم صاحب التواصل مطلوبه",
+	"academicYear.required": "خانه السنه الدراسيه مطلوبه",
+	"academicYear.invalid": "خانه السنه الدراسيه غير صالحه",
+	"totalFees.numeric": "اجمالى المصاريف يجب ان يكون قيمه رقميه",
+	"selectedFundProviders.required": "يجب اختيار الممولين",
+	"business.isAssigned":"حساب البيزنس خاص باحد عملائنا",
+	"anRequest.exist":"لديك طلب نشط بالفعل",
+	"businessRequest.notPending":"عفوا الطلب ليس فى قائمه الانتظار",
+	"preview.required":"حقل صوره الاستعراض مطلوب",
+	"video.required":"حقل الفيديو مطلوب",
+	"pendingReq.exist":"عفوا لديك طلب نشط بالفعل"
+
 	
 
 	
