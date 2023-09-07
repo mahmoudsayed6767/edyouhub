@@ -28,6 +28,7 @@ import { ValidationError } from "mongoose";
 import Follow from "../../models/follow/follow.model";
 import Post from "../../models/post/post.model";
 import Activity from "../../models/user/activity.model";
+import BusinessRequest from "../../models/business/businessRequest.model";
 //validate location
 function validatedLocation(location) {
     if (!isLng(location[0]))
@@ -614,7 +615,7 @@ export default {
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1,
                 limit = +req.query.limit || 20;
-            let {type,specialization, city, area, userId, educationType, owner, search, sector, subSector, educationSystem, status } = req.query;
+            let {all,type,specialization, city, area, userId, educationType, owner, search, sector, subSector, educationSystem, status } = req.query;
 
             let query = { deleted: false }
                 /*search by name */
@@ -648,9 +649,27 @@ export default {
                 let catIds = await Category.find({ deleted: false, educationType: educationType }).distinct('_id')
                 query.subSector = { $in: catIds }
             }
+            
             let myUser
             if (userId) {
                 myUser = await checkExistThenGet(userId, User)
+            }
+            if(all && userId){
+                let businessQuery = {
+                    $and: [{
+                        $or: [
+                            { owner: userId },
+                            { _id: myUser.managmentBusinessAccounts },
+
+                        ]
+                    },
+                    { deleted: false },
+                ]
+                }
+                let businessIds = await Business.find(businessQuery).distinct('_id')
+                let businessRequestsIds = await BusinessRequest.find({owner:userId}).distinct('business')
+                businessIds.push(...businessRequestsIds)
+                query._id = { $in: businessIds }
             }
             await Business.find(query).populate(populateQuery)
                 .sort({ _id: -1 })
@@ -839,16 +858,6 @@ export default {
                 }
 
             }),
-            body('events.supervisors').optional()
-            .custom(async(value, { req }) => {
-                for (const user of value) {
-                    if (!await User.findOne({ _id: user, deleted: false }))
-                        throw new Error(req.__('user.invalid'));
-                    else
-                        return true;
-                }
-
-            }),
             body('courses.supervisors').optional()
             .custom(async(value, { req }) => {
                 for (const user of value) {
@@ -880,7 +889,17 @@ export default {
             } else {
                 await BusinessManagement.create({...validatedBody });
             }
-
+            let allSupervisors = [...validatedBody.admission.supervisors,...validatedBody.events.supervisors
+                ,...validatedBody.vacancy.supervisors,...validatedBody.courses.supervisors];
+            for (let item of allSupervisors) {
+                let supervisor = await checkExistThenGet(item,User,{deleted:false});
+                let arr = supervisor.managmentBusinessAccounts
+                var found = arr.find(e => e == businessId)
+                if(!found){
+                    supervisor.managmentBusinessAccounts.push(businessId);
+                }
+                await supervisor.save()
+            }
             let reports = {
                 "action": "Update Business Setting",
                 "type": "ADMISSION",
@@ -988,7 +1007,14 @@ export default {
                 if (validatedBody.service == "VACANCY") arr = businessManagement.vacancy.supervisors = arr;
                 if (validatedBody.service == "EVENT") arr = businessManagement.events.supervisors = arr;
                 if (validatedBody.service == "COURSE") arr = businessManagement.courses.supervisors = arr;
-
+                
+                let supervisor = await checkExistThenGet(validatedBody.supervisor,User,{deleted:false});
+                let arr = supervisor.managmentBusinessAccounts
+                var found = arr.find(e => e == businessId)
+                if(!found){
+                    supervisor.managmentBusinessAccounts.push(businessId);
+                }
+                await supervisor.save()
             } else {
                 //remove admin to business management
                 if (validatedBody.service == "ADMISSION") arr = businessManagement.admission.supervisors;
@@ -1007,7 +1033,23 @@ export default {
                 if (validatedBody.service == "VACANCY") arr = businessManagement.vacancy.supervisors = arr;
                 if (validatedBody.service == "EVENT") arr = businessManagement.events.supervisors = arr;
                 if (validatedBody.service == "COURSE") arr = businessManagement.courses.supervisors = arr;
-
+                
+                let supervisor = await checkExistThenGet(validatedBody.supervisor,User,{deleted:false});
+                let allSupervisors = [...businessManagement.admission.supervisors,...businessManagement.vacancy.supervisors
+                ,...businessManagement.events.supervisors,...businessManagement.courses.supervisors]
+                
+                var found = allSupervisors.find(e => e == validatedBody.supervisor)
+                if(!found){
+                    arr = supervisor.managmentBusinessAccounts
+                    for(let i = 0;i<= arr.length;i=i+1){
+                        if(arr[i] == businessId){
+                            arr.splice(i, 1);
+                        }
+                    }
+                    supervisor.managmentBusinessAccounts = arr;
+                    await supervisor.save()
+                }
+                
             }
             await businessManagement.save();
             let reports = {

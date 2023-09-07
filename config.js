@@ -3,6 +3,7 @@ const config = {};
 config.mongoUrl = 'mongodb+srv://edhub:edhub@cluster0.gzdzusy.mongodb.net/?retryWrites=true&w=majority'
 
 //production
+//config.mongoUrl ='mongodb://localhost:27017/edyouhub'
 //config.mongoUrl = 'mongodb+srv://eduhub:eduhub1@cluster0.cmabrmv.mongodb.net/?retryWrites=true&w=majority'
 
 config.jwtSecret = 'EdHub';

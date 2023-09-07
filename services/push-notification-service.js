@@ -12,7 +12,7 @@ export async function sendPushNotification(notifi, title) {
     let user = await User.findById(notifi.targetUser);
     let tokens = user.tokens;
     console.log(tokens);
-    const payloadIos = {
+    const payload = {
         notification: {
             title: notifi.text,
             sound: 'default',
@@ -21,9 +21,6 @@ export async function sendPushNotification(notifi, title) {
             info:notifi.info?notifi.info:"",
             priority:'high',
         },
-        
-    }
-    const payloadAndroid = {
         data: {
             title: notifi.text,
             sound: 'default',
@@ -32,6 +29,7 @@ export async function sendPushNotification(notifi, title) {
             info:notifi.info?notifi.info:"",
             priority:'high',
         },
+        
     }
     let iosTokens = [];
     let androidTokens = [];
@@ -45,7 +43,7 @@ export async function sendPushNotification(notifi, title) {
 
     if (androidTokens && androidTokens.length >= 1) {
         console.log('ANDROIS TOKENS : ', androidTokens);
-        admin.messaging().sendToDevice(androidTokens, payloadAndroid)
+        admin.messaging().sendToDevice(androidTokens, payload)
             .then(response => {
                 console.log('Successfully sent a message')//, response);
             })
@@ -55,7 +53,7 @@ export async function sendPushNotification(notifi, title) {
     }
     if (iosTokens && iosTokens.length >= 1) {
         console.log('IOS TOKENS : ', iosTokens);
-        admin.messaging().sendToDevice(iosTokens, payloadIos)
+        admin.messaging().sendToDevice(iosTokens, payload)
             .then(response => {
                 console.log('Successfully sent a message')//, response);
             })

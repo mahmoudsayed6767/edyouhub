@@ -313,6 +313,11 @@ const userSchema = new Schema({
         type: Boolean,
         default: false
     },
+    managmentBusinessAccounts: {
+        type:[Number],
+        ref:'business'
+    },
+    
     deleted: {
         type: Boolean,
         default: false

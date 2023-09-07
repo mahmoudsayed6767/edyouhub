@@ -8,7 +8,7 @@ import ApiError from '../../helpers/ApiError';
 import { generateVerifyCode ,generateMaxCode} from '../../services/generator-code-service';
 import DeviceDetector from "device-detector-js";
 import { sendEmail } from "../../services/sendGrid";
-import {sendSms} from "../../services/message-service"
+import {sendSms} from "../../services/sms"
 import i18n from "i18n";
 import {transformUserById } from '../../models/user/transformUser';
 import Country from "../../models/country/country.model";
@@ -240,14 +240,17 @@ export default {
                 ...validatedBody
             });
             //send code
-            let theUser = await checkExistThenGet(createdUser.id, User,{deleted: false });            
+            let theUser = await checkExistThenGet(createdUser.id, User,{deleted: false });  
+            let realPhone = "+2" + theUser.phone;
+          
             let code = "0000"
             if(process.env.environment === 'PRODUCTION'){
+                code = generateVerifyCode(); 
                 if(code.toString().length < 4){
                     code = generateVerifyCode(); 
                 }
                 let message =  `رمز التحقيق لتطبيق EDYOUHUB هو ${theUser.verifycode} الرجاء استخدامه لتفعيل الحساب الخاص بك.` 
-                sendSms(message,realPhone)
+                sendSms(realPhone,message)
             }
             theUser.verifycode = code
             await theUser.save();
@@ -344,13 +347,13 @@ export default {
         try {
             let validatedBody = checkValidations(req);
             let user = await checkUserExistByEmail(validatedBody.email);
+            let realPhone = "+2" + validatedBody.phone;
+
             let code = "0000"
             if(process.env.environment === 'PRODUCTION'){
                 if(code.toString().length < 4){
                     code = generateVerifyCode(); 
                 }
-                let message =  `رمز التحقيق لتطبيق EDYOUHUB هو ${theUser.verifycode} الرجاء استخدامه لتفعيل الحساب الخاص بك.` 
-                sendSms(message,user.phone)
             }
             user.verifycode = code; 
             await user.save();
@@ -467,11 +470,13 @@ export default {
             let user = await checkUserExistByPhone(validatedBody.phone);
             let code = "0000"
             if(process.env.environment === 'PRODUCTION'){
+                code = generateVerifyCode(); 
                 if(code.toString().length < 4){
                     code = generateVerifyCode(); 
                 }
-                let message =  `رمز التحقيق لتطبيق EDYOUHUB هو ${theUser.verifycode} الرجاء استخدامه لتفعيل الحساب الخاص بك.` 
-                sendSms(message,realPhone)
+                let message =  `رمز التحقيق لتطبيق EDYOUHUB هو ${user.verifycode} الرجاء استخدامه لتفعيل الحساب الخاص بك.` 
+                console.log("send")
+                sendSms(realPhone,message)
             }
             user.verifycode = code
             await user.save();
