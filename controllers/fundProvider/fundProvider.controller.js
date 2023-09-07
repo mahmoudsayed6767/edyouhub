@@ -13,6 +13,10 @@ import Setting from "../../models/setting/setting.model"
 const populateQuery = [
     { path: 'programsPercent.fundProgram', model: 'fundProgram' },
     { path: 'fundProviderOffer', model: 'fundProviderOffer' },
+    {
+        path: 'fundProviderOffer', model: 'address',
+        populate: { path: 'programsPercent.fundProgram', model: 'fundProgram' },
+    },
 ];
 export default {
     validateBody(isUpdate = false) {
