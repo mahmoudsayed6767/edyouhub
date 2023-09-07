@@ -14,7 +14,7 @@ const populateQuery = [
     { path: 'programsPercent.fundProgram', model: 'fundProgram' },
     { path: 'fundProviderOffer', model: 'fundProviderOffer' },
     {
-        path: 'fundProviderOffer', model: 'address',
+        path: 'fundProviderOffer', model: 'fundProviderOffer',
         populate: { path: 'programsPercent.fundProgram', model: 'fundProgram' },
     },
 ];
