@@ -20,6 +20,7 @@ export async function sendPushNotification(notifi, title) {
             body: notifi.subjectType,
             info:notifi.info?notifi.info:"",
             priority:'high',
+            android_channel_id:"high_importance_channelss"
         },
         data: {
             title: notifi.text,
