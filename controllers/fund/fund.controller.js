@@ -30,6 +30,8 @@ const populateQuery = [
         model: 'student',
         populate: { path: 'educationInstitution', model: 'educationInstitution' },
     },
+    { path: 'selectedFundProviders', model: 'fundProvider' },
+    
 ];
 const populateQueryById = [
     { path: 'owner', model: 'user' },
