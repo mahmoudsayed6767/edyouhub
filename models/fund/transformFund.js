@@ -130,6 +130,7 @@ export async function transformFundById(e, lang) {
             id: val._id,
         })
     }
+    index.fundProviders = val.fundProviders
     /* students*/
     let students = []
     for (let val of e.students) {
