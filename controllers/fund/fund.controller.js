@@ -30,7 +30,7 @@ const populateQuery = [
         model: 'student',
         populate: { path: 'educationInstitution', model: 'educationInstitution' },
     },
-    { path: 'selectedFundProviders', model: 'fundProvider' },
+    
     
 ];
 const populateQueryById = [
@@ -40,6 +40,7 @@ const populateQueryById = [
     { path: 'area', model: 'area' },
     { path: 'fundProvider', model: 'fundProvider' },
     { path: 'fundProgram', model: 'fundProgram' },
+    { path: 'selectedFundProviders', model: 'fundProvider' },
     {
         path: 'students',
         model: 'student',
