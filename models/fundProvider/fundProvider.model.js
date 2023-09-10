@@ -29,6 +29,11 @@ const fundProviderSchema = new Schema({
         enum:['FIXED','BY-PROGRAM'],
         default: 'FIXED'
     },
+    oldMonthlyPercent: {
+        type: Number,
+        required: true,
+        default:0
+    },
     monthlyPercent: {//نسبه الفائده
         type: Number,
     },
@@ -37,7 +42,6 @@ const fundProviderSchema = new Schema({
             oldMonthlyPercent: {
                 type: Number,
                 required: true,
-                default:0
             },
             monthlyPercent: {
                 type: Number,

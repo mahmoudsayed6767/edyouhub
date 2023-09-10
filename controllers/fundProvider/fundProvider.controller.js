@@ -349,6 +349,10 @@ export default {
                 });
                 fundProvider.programsPercent = programsPercent
                 fundProvider.hasOffer = true;
+                if(validatedBody.monthlyPercent){
+                    fundProvider.oldMonthlyPercent = fundProvider.monthlyPercent
+                    fundProvider.monthlyPercent = validatedBody.monthlyPercent
+                }
 
             }
             await fundProvider.save();
@@ -387,6 +391,7 @@ export default {
                 programsPercent.push(newPercent)
             });
             fundProvider.programsPercent = programsPercent
+            fundProvider.monthlyPercent = fundProvider.oldMonthlyPercent
             await fundProvider.save();
             await fundProvider.save();
             let reports = {

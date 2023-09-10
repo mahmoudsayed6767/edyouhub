@@ -105,6 +105,10 @@ export function cronJop() {
                         });
                         fundProvider.hasOffer = true;
                         fundProvider.programsPercent = programsPercent
+                        if(e.offerType == "ALL-PROGRAM"){
+                            fundProvider.oldMonthlyPercent = fundProvider.monthlyPercent
+                            fundProvider.monthlyPercent = programsPercent[0].monthlyPercent
+                        }
                     }
                     if(now > e.endDateMillSec){
                         status = 'ENDED'
@@ -121,8 +125,8 @@ export function cronJop() {
                             programsPercent.push(newPercent)
                         });
                         fundProvider.hasOffer = false;
-
                         fundProvider.programsPercent = programsPercent
+                        fundProvider.monthlyPercent = fundProvider.oldMonthlyPercent
                     }
                     await fundProvider.save();
                     FundProviderOffer.findByIdAndUpdate(e.id,{status:status},{new:true}).then((docs)=>{
