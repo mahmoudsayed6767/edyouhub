@@ -9,6 +9,7 @@ export async function transformBusiness(e,lang,myUser,userId) {
         reason: e.reason,
         status: e.status,
         isFollowed:userId?isInArray(myUser.following,e._id):false,
+        isAdmin:userId?isInArray(myUser.managmentBusinessAccounts,e._id):false,
         createdAt: e.createdAt,
         hasPackage:e.hasPackage,
         id: e._id
@@ -45,6 +46,9 @@ export async function transformBusiness(e,lang,myUser,userId) {
             type: e.owner.type,
             id: e.owner._id
         }
+        index.isRequested = false;
+    }else{
+        index.isRequested = true;
     }
     return index
 }

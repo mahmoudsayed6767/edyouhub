@@ -147,7 +147,7 @@ export default {
     async getAll(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
-            let {fundProgram,search} = req.query;
+            let {fundProgram,search,ids} = req.query;
             let query = { deleted: false };
             if(search) {
                 query = {
@@ -162,6 +162,11 @@ export default {
                     ]
                 };
             }
+            if (ids) {
+                let values = ids.split(",");
+                console.log(values)
+                query._id = {$in:values};
+            };
             if(fundProgram){
                 Object.assign(query, {"programsPercent.fundProgram": fundProgram});
             } 
@@ -186,7 +191,7 @@ export default {
         try {    
             let lang = i18n.getLocale(req)       
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
-            let {search,fundProgram} = req.query;
+            let {search,fundProgram,ids} = req.query;
             let query = { deleted: false };
             if(search) {
                 query = {
@@ -201,6 +206,11 @@ export default {
                     ]
                 };
             }
+            if (ids) {
+                let values = ids.split(",");
+                console.log(values)
+                query._id = {$in:values};
+            };
             if(fundProgram){
                 Object.assign(query, {"programsPercent.fundProgram": fundProgram});
             } 

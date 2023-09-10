@@ -428,7 +428,7 @@ export default {
     async createCompleted(req, res, next) {
         try {
             const validatedBody = checkValidations(req);
-            validatedBody.status = 'COMPLETED'
+            validatedBody.status = 'NEW'
             if (!validatedBody.owner) validatedBody.owner = req.user._id;
             let fund = await Fund.create({...validatedBody });
             let educationInstitutions = []

@@ -1073,25 +1073,25 @@ export default {
             if (businessManagement.vacancy.supervisors) {
                 let supervisors = [... businessManagement.vacancy.supervisors]
                 supervisors.push(business.owner)
-                if (!isInArray(supervisors, req.user._id))
+                if (isInArray(supervisors, req.user._id))
                     services.push('VACANCY')
             }
             if (businessManagement.admission.supervisors) {
                 let supervisors = [... businessManagement.admission.supervisors]
                 supervisors.push(business.owner)
-                if (!isInArray(supervisors, req.user._id))
+                if (isInArray(supervisors, req.user._id))
                     services.push('ADMISSION')
             }
             if (businessManagement.events.supervisors) {
                 let supervisors = [... businessManagement.events.supervisors]
                 supervisors.push(business.owner)
-                if (!isInArray(supervisors, req.user._id))
+                if (isInArray(supervisors, req.user._id))
                     services.push('EVENTS')
             }
             if (businessManagement.courses.supervisors) {
                 let supervisors = [... businessManagement.courses.supervisors]
                 supervisors.push(business.owner)
-                if (!isInArray(supervisors, req.user._id))
+                if (isInArray(supervisors, req.user._id))
                     services.push('COURSES')
             }
             res.status(201).send({
