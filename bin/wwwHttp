@@ -16,7 +16,6 @@
   */
 
   //socket
-  // server-side
   var Server = require('socket.io');
   var io = Server(server);
   var socketService = require('../socketService/socketIoService');
