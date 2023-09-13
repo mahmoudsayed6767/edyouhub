@@ -669,19 +669,18 @@ export default {
             if (!isInArray(["PENDING", "NEED-ACTION"], fund.status))
                 return next(new ApiError(500, i18n.__('fund.pending')));
             const validatedBody = checkValidations(req);
-
+            let setting = await Setting.findOne({deleted: false})
             fund.status = 'ACCEPTED';
             fund.fundProvider = validatedBody.fundProvider;
             if (validatedBody.startDate) fund.startDate = validatedBody.startDate
             let fundProvider = await checkExistThenGet(fund.fundProvider, FundProvider)
             let fundProgram = await checkExistThenGet(fund.fundProgram, FundProgram, { deleted: false })
-            let setting = await Setting.findOne({deleted: false})
 
             if (validatedBody.firstPaid) {
                 fund.firstPaid = validatedBody.firstPaid
             } else {
-                let platformExpensesRatio = (fund.totalFees * fundProvider.platformExpensesRatio) / 100
-                let providerExpensesRatio = (fund.totalFees * setting.expensesRatio) / 100
+                let platformExpensesRatio = (fund.totalFees * setting.expensesRatio) / 100
+                let providerExpensesRatio = (fund.totalFees * fundProvider.expensesRatio) / 100
                 fund.firstPaid = platformExpensesRatio + providerExpensesRatio;
             }
             //مبلغ الفائده
