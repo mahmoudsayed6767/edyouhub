@@ -15,68 +15,68 @@ export function cronJop() {
         Schedule.scheduleJob('*/10 * * * * *', async function(){
             console.log("cron")
             let now = Date.parse(new Date());
-            // Offer.find({deleted:false,end:false,toDateMillSec:{$lte:now}})
-            // .then(async(data)=>{
-            //     data.map(async(e) =>{
-            //         Offer.findByIdAndUpdate(e._id,{end:true},{new:true}).then((docs)=>{
-            //             console.log('done update offer')
+            Offer.find({deleted:false,end:false,toDateMillSec:{$lte:now}})
+            .then(async(data)=>{
+                data.map(async(e) =>{
+                    Offer.findByIdAndUpdate(e._id,{end:true},{new:true}).then((docs)=>{
+                        console.log('done update offer')
                         
-            //         }).catch((err)=>{
-            //             console.log(err);
-            //         })
-            //     })
-            // })
-            // Story.find({deleted:false,end:false,expireDateMillSec:{$lte:now}})
-            // .then(async(data)=>{
-            //     data.map(async(e) =>{
-            //         Story.findByIdAndUpdate(e._id,{end:true},{new:true}).then((docs)=>{
-            //             console.log('done update story')
+                    }).catch((err)=>{
+                        console.log(err);
+                    })
+                })
+            })
+            Story.find({deleted:false,end:false,expireDateMillSec:{$lte:now}})
+            .then(async(data)=>{
+                data.map(async(e) =>{
+                    Story.findByIdAndUpdate(e._id,{end:true},{new:true}).then((docs)=>{
+                        console.log('done update story')
                         
-            //         }).catch((err)=>{
-            //             console.log(err);
-            //         })
-            //     })
-            // })
-            // Event.find({deleted:false,status:{$ne:'PASS'}})
-            // .then(async(data)=>{
-            //     data.map(async(e) =>{
-            //         let status = e.status;
-            //         if(now > e.fromDateMillSec) status = 'CURRENT'
-            //         if(now > e.toDateMillSec) status = 'PASS'
-            //         Event.findByIdAndUpdate(e._id,{status:status},{new:true}).then((docs)=>{
-            //             console.log('done update event')
+                    }).catch((err)=>{
+                        console.log(err);
+                    })
+                })
+            })
+            Event.find({deleted:false,status:{$ne:'PASS'}})
+            .then(async(data)=>{
+                data.map(async(e) =>{
+                    let status = e.status;
+                    if(now > e.fromDateMillSec) status = 'CURRENT'
+                    if(now > e.toDateMillSec) status = 'PASS'
+                    Event.findByIdAndUpdate(e._id,{status:status},{new:true}).then((docs)=>{
+                        console.log('done update event')
                         
-            //         }).catch((err)=>{
-            //             console.log(err);
-            //         })
-            //     })
-            // })
-            // Course.find({deleted:false,status:{$ne:'DONE'}})
-            // .then(async(data)=>{
-            //     data.map(async(e) =>{
-            //         let status = e.status;
-            //         if(now > e.fromDateMillSec) status = 'CURRENT'
-            //         if(now > e.toDateMillSec) status = 'DONE'
-            //         Course.findByIdAndUpdate(e.id,{status:status},{new:true}).then((docs)=>{
-            //             console.log('done update course')
+                    }).catch((err)=>{
+                        console.log(err);
+                    })
+                })
+            })
+            Course.find({deleted:false,status:{$ne:'DONE'}})
+            .then(async(data)=>{
+                data.map(async(e) =>{
+                    let status = e.status;
+                    if(now > e.fromDateMillSec) status = 'CURRENT'
+                    if(now > e.toDateMillSec) status = 'DONE'
+                    Course.findByIdAndUpdate(e.id,{status:status},{new:true}).then((docs)=>{
+                        console.log('done update course')
                         
-            //         }).catch((err)=>{
-            //             console.log(err);
-            //         })
-            //     })
-            // })
-            // User.find({deleted:false,
-            // hasPackage:true,packageEndDateMillSec:{$lte:Date.parse(new Date())}})
-            // .then(async(data)=>{
-            //     data.map(async(e) =>{
-            //         User.findByIdAndUpdate(e._id,{hasPackage:false},{new:true}).then((docs)=>{
-            //             console.log('done update user')
+                    }).catch((err)=>{
+                        console.log(err);
+                    })
+                })
+            })
+            User.find({deleted:false,
+            hasPackage:true,packageEndDateMillSec:{$lte:Date.parse(new Date())}})
+            .then(async(data)=>{
+                data.map(async(e) =>{
+                    User.findByIdAndUpdate(e._id,{hasPackage:false},{new:true}).then((docs)=>{
+                        console.log('done update user')
                         
-            //         }).catch((err)=>{
-            //             console.log(err);
-            //         })
-            //     })
-            // })
+                    }).catch((err)=>{
+                        console.log(err);
+                    })
+                })
+            })
             FundProviderOffer.find({deleted:false,status:{$ne:'ENDED'}})
             .then(async(data)=>{
                 data.map(async(e) =>{
