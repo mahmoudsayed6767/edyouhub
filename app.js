@@ -11,31 +11,29 @@ import helmet from 'helmet';
 import mongoose_delete from 'mongoose-delete';
 import i18n from 'i18n';
 import autoIncrement from 'mongoose-auto-increment';
-import config from './config';
 import router from './routes'; 
 import ApiError from './helpers/ApiError';
 import compression from 'compression'
 import Logger from "./services/logger";
-import fs from 'fs'
 import {cronJop} from './services/cronJop'
 import rateLimit from 'express-rate-limit'
+require('dotenv').config()
 
 const logger = new Logger('log '+ new Date(Date.now()).toDateString())
 const errorsLog = new Logger('errorsLog '+ new Date(Date.now()).toDateString())
 var app = express();
 
 mongoose.Promise = global.Promise;
-//mongoose.set('strictQuery', false);
 autoIncrement.initialize(mongoose.connection);
 //connect to mongodb
-mongoose.connect(config.mongoUrl, { 
+mongoose.connect(process.env.mongoUrl, { 
   useNewUrlParser: true , 
   useUnifiedTopology: true,
   useCreateIndex:true,
   useFindAndModify:false
 });
 mongoose.connection.on('connected', () => {
-    //cronJop();
+    cronJop();
     console.log('\x1b[32m%s\x1b[0m', '[DB] Connected...');
  
 });
@@ -96,7 +94,7 @@ app.use('/',(req, res, next) => {
 
 
     // set current host url
-    config.appUrl = url.format({
+    process.env.appUrl = url.format({
         protocol: req.protocol,
         host: req.get('host')
     });

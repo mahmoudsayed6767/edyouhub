@@ -36,12 +36,14 @@ const fundProviderSchema = new Schema({
     },
     monthlyPercent: {//نسبه الفائده
         type: Number,
+        default:0
     },
     programsPercent: [
         new Schema({
             oldMonthlyPercent: {
                 type: Number,
                 required: true,
+                default:0
             },
             monthlyPercent: {
                 type: Number,

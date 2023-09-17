@@ -356,6 +356,12 @@ export default {
 
             }
             await fundProvider.save();
+            //delete all prevous fundProviderOffer
+            let fundProviderOffers = await FundProviderOffer.find({deleted:false,fundProvider:fundProviderId})
+            for (let val of fundProviderOffers) {
+                val.deleted = false;
+                await val.save();
+            }
             let reports = {
                 "action":"Create Fud Provider Offer",
                 "type":"FUND-PROVIDER",
