@@ -10,6 +10,7 @@ const LocalStrategy = passportLocal.Strategy;
 const { ExtractJwt } = passportJwt;
 const { jwtSecret } = process.env;
 
+
 passport.use(new JwtStrategy({
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     secretOrKey: jwtSecret
