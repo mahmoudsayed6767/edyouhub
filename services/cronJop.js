@@ -133,7 +133,6 @@ export function cronJop() {
                     await fundProvider.save();
                     console.log("_id : " + e._id)
                     FundProviderOffer.findByIdAndUpdate(e._id,{status:status},{new:true}).then((docs)=>{
-                        
                         console.log('done update FundProviderOffer')
                         
                     }).catch((err)=>{
