@@ -1092,6 +1092,10 @@ export default {
                     if (isInArray(supervisors, req.user._id))
                         services.push('COURSES')
                 }
+            }else{
+                if(req.user._id == business.owner){
+                    services = ['VACANCY','ADMISSION','COURSES','EVENTS']
+                }
             }
             res.status(201).send({
                 success: true,
