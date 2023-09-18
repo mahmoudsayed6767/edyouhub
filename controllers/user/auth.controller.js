@@ -249,7 +249,7 @@ export default {
                 if(code.toString().length < 4){
                     code = generateVerifyCode(); 
                 }
-                let message =  `رمز التحقيق لتطبيق EDYOUHUB هو ${theUser.verifycode} الرجاء استخدامه لتفعيل الحساب الخاص بك.` 
+                let message =  `رمز التحقيق لتطبيق EDYOUHUB هو ${code} الرجاء استخدامه لتفعيل الحساب الخاص بك.` 
                 sendSms(realPhone,message)
             }
             theUser.verifycode = code
@@ -347,8 +347,6 @@ export default {
         try {
             let validatedBody = checkValidations(req);
             let user = await checkUserExistByEmail(validatedBody.email);
-            let realPhone = "+2" + validatedBody.phone;
-
             let code = "0000"
             if(process.env.environment === 'PRODUCTION'){
                 if(code.toString().length < 4){
@@ -474,7 +472,7 @@ export default {
                 if(code.toString().length < 4){
                     code = generateVerifyCode(); 
                 }
-                let message =  `رمز التحقيق لتطبيق EDYOUHUB هو ${user.verifycode} الرجاء استخدامه لتفعيل الحساب الخاص بك.` 
+                let message =  `رمز التحقيق لتطبيق EDYOUHUB هو ${code} الرجاء استخدامه لتفعيل الحساب الخاص بك.` 
                 console.log("send")
                 sendSms(realPhone,message)
             }
