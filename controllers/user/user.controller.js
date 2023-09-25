@@ -424,6 +424,18 @@ export default {
                 id7.deleted = true;
                 await id7.save();
             }
+            //remove orders
+            let orders = await Order.find({ client: userId });
+            for (let id7 of orders) {
+                id7.deleted = true;
+                await id7.save();
+            }
+            //remove business
+            let business = await Business.find({ owner: userId });
+            for (let id7 of business) {
+                id7.deleted = true;
+                await id7.save();
+            }
             user.deleted = true
             await user.save();
             let reports = {
