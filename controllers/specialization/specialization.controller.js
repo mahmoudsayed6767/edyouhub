@@ -18,7 +18,7 @@ export default {
             }),
             body('type').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('type.required', { value});
-            }).isIn(['FOR-EDUCATION','FOR-SERVICE-PROVIDER','FOR-COURSE']).withMessage((value, { req}) => {
+            }).isIn(['FOR-EDUCATION','FOR-HIGH-EDUCATION','FOR-BASIC-EDUCATION','FOR-SERVICE-PROVIDER','FOR-COURSE']).withMessage((value, { req}) => {
                 return req.__('type.invalid', { value});
             }),
         ];
