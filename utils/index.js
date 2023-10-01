@@ -10,6 +10,7 @@ cloudinary.config(JSON.parse(process.env.cloudinary));
 // Convert Local Upload To Cloudinary Url  toImgUrl
 export async function toImgUrl (multerObject) {
   try {
+      console.log("appUrl:  "+process.env.appUrl);
       multerObject.path = process.env.appUrl+multerObject.path;
       console.log("path:  "+multerObject.path);
       return multerObject.path;
