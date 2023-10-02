@@ -96,7 +96,7 @@ app.use('/',(req, res, next) => {
     // set current host url
     process.env.appUrl = url.format({
         protocol: req.protocol,
-        host: req.get('host')
+        host: req.get('host')+'/'
     });
     
 
