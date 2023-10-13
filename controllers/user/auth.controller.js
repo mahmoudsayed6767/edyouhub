@@ -239,6 +239,7 @@ export default {
             let createdUser = await User.create({
                 ...validatedBody
             });
+            
             //send code
             let theUser = await checkExistThenGet(createdUser.id, User,{deleted: false });  
             let realPhone = "+2" + theUser.phone;
@@ -253,6 +254,32 @@ export default {
                 sendSms(realPhone,message)
             }
             theUser.verifycode = code
+            if(req.body.token != null && req.body.token !=""){
+                let arr2 = theUser.tokens; 
+                if(!req.body.osType || req.body.osType == ""){
+                    const deviceDetector = new DeviceDetector();
+                    if(deviceDetector.parse(req.headers['user-agent']).os){
+                        let osType = deviceDetector.parse(req.headers['user-agent']).os.name
+                        if(isInArray(["Mac","iOS"],osType)){
+                            req.body.osType = "IOS"
+                        }else{
+                            req.body.osType = "ANDROID"
+                        }
+                    }else{
+                        req.body.osType = "WEB"
+                    }
+                    
+                }
+                var found2 = arr2.find(x => x.token == req.body.token)
+                
+                if(!found2){
+                    let theToken = {
+                        token: req.body.token,
+                        osType:req.body.osType
+                    }
+                    theUser.tokens.push(theToken);
+                }
+            }
             await theUser.save();
             let reports = {
                 "action":"User sign Up ",
