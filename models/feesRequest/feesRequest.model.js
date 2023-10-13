@@ -15,11 +15,6 @@ const feesRequestSchema=new Schema({
         trim:true,
         required: true
     },
-    email: {
-        type: String,
-        trim:true,
-        required: true
-    },
     city: {
         type: Number,
         ref:'city',
