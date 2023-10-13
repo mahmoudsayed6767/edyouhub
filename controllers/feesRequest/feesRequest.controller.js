@@ -6,6 +6,7 @@ import { checkValidations } from "../shared/shared.controller";
 import City from "../../models/city/city.model"
 import Area from "../../models/area/area.model"
 import {transformFeesRequest} from "../../models/feesRequest/transformFeesRequest"
+import i18n from "i18n"
 const populateQuery = [
     { path: 'city', model: 'city' },
     { path: 'area', model: 'area' },
@@ -63,6 +64,8 @@ export default {
     },
     async findAll(req, res, next) {        
         try {
+            //get lang
+            let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
             let query = { deleted: false };
             await FeesRequest.find(query).populate(populateQuery)
