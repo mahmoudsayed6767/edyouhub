@@ -45,6 +45,7 @@ export default {
             body('studentName').not().isEmpty().withMessage((value,{req}) => {
                 return req.__('studentName.required', { value});
             }),
+            body('studentId').optional(),
             body('sector').not().isEmpty().withMessage((value, { req}) => {
                 return req.__('sector.required', { value});
             }).isNumeric().withMessage((value, { req}) => {

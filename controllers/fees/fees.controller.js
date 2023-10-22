@@ -131,6 +131,7 @@ export default {
             body('studentName').not().isEmpty().withMessage((value, { req }) => {
                 return req.__('studentName.required', { value });
             }),
+            body('studentId').optional(),
             body('sector').not().isEmpty().withMessage((value, { req }) => {
                 return req.__('sector.required', { value });
             }).isNumeric().withMessage((value, { req }) => {
@@ -242,6 +243,7 @@ export default {
                 subSector: validatedBody.subSector,
                 educationSystem: validatedBody.educationSystem,
                 grade: validatedBody.grade,
+                studentId:validatedBody.studentId?validatedBody.studentId:''
 
             });
             let reports1 = {
@@ -324,6 +326,7 @@ export default {
                         body('studentName').not().isEmpty().withMessage((value, { req }) => {
                             return req.__('studentName.required', { value });
                         }),
+                        body('studentId').optional(),
                         body('sector').not().isEmpty().withMessage((value, { req }) => {
                             return req.__('sector.required', { value });
                         }).isNumeric().withMessage((value, { req }) => {
@@ -440,7 +443,7 @@ export default {
                     subSector: validatedBody.subSector,
                     educationSystem: validatedBody.educationSystem,
                     grade: validatedBody.grade,
-
+                    studentId:validatedBody.studentId?validatedBody.studentId:''
                 });
                 let reports1 = {
                     "action": "Create student",
