@@ -928,7 +928,7 @@ export default {
             };
             await Report.create({ ...reports });
 
-            res.send({ success: true });
+            res.send({ success: true ,section:await checkExistThenGet(sectionId, CourseTutorial, { deleted: false })});
         } catch (err) {
             next(err);
         }

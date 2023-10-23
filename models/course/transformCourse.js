@@ -154,6 +154,8 @@ export async function transformCourseById(e,lang,myUser,userId,owner = false) {
     for (let val of e.tutorials) {
         let tutorial = {
             section:lang=="ar"?val.section_ar:val.section_en,
+            section_en:val.section_en,
+            section_ar:val.section_ar,
             id:val._id,                         
         }
         let videos = []
