@@ -40,6 +40,7 @@ const populateQuery2 = [
     {path: 'offer', model: 'offer'},
     {path: 'user', model: 'user'},
     {path: 'event', model: 'event'},
+    {path:'business', model:'business'},
     {
         path: 'offerBooking', model: 'offerBooking',
         populate: { path: 'offers.offer', model: 'offer' },
@@ -308,7 +309,7 @@ const payEvent = async (theEvent,userId) => {
     var found = arr.find((e) => e == userId); 
     if(!found){
         event.attendance.push(userId);
-        await EventAttendance.create({ user: userId, event: event });
+        eventAttendance = await EventAttendance.create({ user: userId, event: event });
         let reports = {
             "action":"user will attend to event",
             "type":"EVENT",
@@ -316,6 +317,8 @@ const payEvent = async (theEvent,userId) => {
             "user": userId
         };
         await Report.create({...reports});
+    }else{
+        eventAttendance = await EventAttendance.findOne({ user: userId, event: event });
     }
     //remove user from under payment list
     let arr2 = event.waitToPaid;
@@ -329,17 +332,18 @@ const payEvent = async (theEvent,userId) => {
         event.waitToPaid = arr2;
     }
     await event.save();
-    return true;
+    return eventAttendance._id;
 };
 const payCourse = async (courseId,userId,paymentMethod) => {
     let theCourse = await checkExistThenGet(courseId, Course,{deleted:false});
     let attendedUser = await checkExistThenGet(userId, User,{deleted:false});
     let arr = attendedUser.attendedCourses;
     var found = arr.find((e) => e == courseId); 
+    let courseParticipant
     if(!found){
         attendedUser.attendedCourses.push(courseId);
         
-        await CourseParticipant.create({
+        courseParticipant = await CourseParticipant.create({
             user:userId,
             course:courseId,
             status:'PAID',
@@ -383,8 +387,13 @@ const payCourse = async (courseId,userId,paymentMethod) => {
             "user": userId
         };
         await Report.create({...reports});
+    }else{
+        courseParticipant = await CourseParticipant.findOne({
+            user:userId,
+            course:courseId
+        })
     }
-    return true;
+    return courseParticipant._id;
 };
 const callBack = async (merchantRefNumber,status,paymentMethod,data) => {
    
@@ -412,11 +421,13 @@ const callBack = async (merchantRefNumber,status,paymentMethod,data) => {
             await payPackage(theTransaction.package,userId,theTransaction.business)
         }
         if(theTransaction.type =="EVENT"){
-            await payEvent(theTransaction.event,userId)
+            let eventAttendance = await payEvent(theTransaction.event,userId)
+            theTransaction.eventAttendance = eventAttendance
         }
         if(theTransaction.type =="COURSE"){
             console.log("course")
-            await payCourse(theTransaction.course,userId,theTransaction.coursePaymentMethod)
+            let courseParticipant = await payCourse(theTransaction.course,userId,theTransaction.coursePaymentMethod)
+            theTransaction.courseParticipant = courseParticipant
         }
         if(theTransaction.type =="OFFER"){
             await payOfferBooking(theTransaction.offerBooking,userId)
@@ -471,6 +482,7 @@ export default {
                 "transactionId":data.id,
                 "paymentObject":JSON.stringify(data)
             }
+            if(validatedBody.business) transactionData.business = validatedBody.business
             if(validatedBody.coupon) transactionData.coupon = validatedBody.coupon
             if(validatedBody.type =="CASHBACK-PACKAGE"){
                 transactionData.cashbackPackage = validatedBody.cashbackPackage

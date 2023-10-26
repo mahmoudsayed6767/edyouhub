@@ -95,18 +95,22 @@ var messageController = {
                         nsp.to(toRoom).emit('unseenCount',{count : Count});
                         if (io.sockets.adapter.rooms[toRoom]){
                             logger.info(`friend is online`);
-                            nsp.to(fromRoom).emit('delivered', { friendId: data.toId });
+                            nsp.to(fromzoom).emit('delivered', { friendId: data.toId });
+                        }
+                        let senderName = theMessage.to.fulname;
+                        if(theMessage.from._id == theMessage.business.owner){
+                            senderName = theMessage.business.name_ar
                         }
                         sendNotifiAndPushNotifi({
                             targetUser: data.toId, 
                             fromUser: data.fromId, 
                             text: 'edyouhub',
                             subject: result2._id,
-                            subjectType: 'you have a new message',
+                            subjectType: senderName + ' sent you a new message',
                             info:'MESSAGE'
                         });
                         let notif = {
-                            "description_en":'you have a new message',
+                            "description_en":senderName + ' sent you a new message',
                             "description_ar":"لديك رساله جديده" ,
                             "title_en":"New Message",
                             "title_ar":"رساله جديده",

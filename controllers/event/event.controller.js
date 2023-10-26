@@ -275,7 +275,7 @@ export default {
         try {
             //get lang
             let lang = i18n.getLocale(req)
-            let { city, area, userId, search, educationInstitution, business, status, ownerType } = req.query;
+            let {startDate,endDate,feesType, city, area, userId, search, educationInstitution, business, status, ownerType } = req.query;
 
             let query = { deleted: false }
                 /*search  */
@@ -291,12 +291,21 @@ export default {
                     ]
                 };
             }
+            if(startDate && endDate) {
+                let from = startDate + 'T00:00:00.000Z';
+                let to= endDate + 'T23:59:00.000Z';
+                console.log( from)
+                query = { 
+                    fromDate: { $gt : new Date(from), $lt : new Date(to) }
+                };
+            } 
             if (educationInstitution) query.educationInstitution = educationInstitution
             if (business) query.business = business
             if (status) query.status = status
             if (ownerType) query.ownerType = ownerType;
             if (city) query.city = city
             if (area) query.area = area
+            if(feesType) query.feesType = feesType
             await Event.find(query).populate(populateQuery)
                 .sort({ _id: -1 })
                 .then(async(data) => {
@@ -321,7 +330,7 @@ export default {
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1,
                 limit = +req.query.limit || 20;
-            let { city, area, userId, search, educationInstitution, business, status, ownerType } = req.query;
+            let { startDate,endDate,feesType,city, area, userId, search, educationInstitution, business, status, ownerType } = req.query;
 
             let query = { deleted: false }
                 /*search  */
@@ -337,12 +346,21 @@ export default {
                     ]
                 };
             }
+            if(startDate && endDate) {
+                let from = startDate + 'T00:00:00.000Z';
+                let to= endDate + 'T23:59:00.000Z';
+                console.log( from)
+                query = { 
+                    fromDate: { $gt : new Date(from), $lt : new Date(to) }
+                };
+            } 
             if (educationInstitution) query.educationInstitution = educationInstitution
             if (business) query.business = business
             if (status) query.status = status
             if (ownerType) query.ownerType = ownerType;
             if (city) query.city = city
             if (area) query.area = area
+            if(feesType) query.feesType = feesType
             await Event.find(query).populate(populateQuery)
                 .sort({ _id: -1 })
                 .limit(limit)

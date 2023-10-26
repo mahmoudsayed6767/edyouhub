@@ -34,6 +34,10 @@ const AnoncementSchema=new Schema({
         type:Boolean,
         default:true
     },
+    priority:{
+        type:Number,
+        default:0
+    },
     deleted:{
         type:Boolean,
         default:false

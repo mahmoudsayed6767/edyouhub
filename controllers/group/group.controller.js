@@ -412,13 +412,13 @@ export default {
                 fromUser: req.user,
                 text: ' EdHub',
                 subject: groupParticipant.id,
-                subjectType: 'group Request Status',
+                subjectType: 'Join request response',
                 info: 'GROUP-REQUEST'
             });
             let notif = {
-                "description_en": 'Your join Request Has Been Accepted ',
+                "description_en": `your request to join group ${group.name} has been accepted`,
                 "description_ar": ' تم قبول الطلب الانضمام الخاص بك',
-                "title_en": 'Your join Request Has Been Accepted ',
+                "title_en": 'Join request response',
                 "title_ar": ' تم قبول الطلب الانضمام الخاص بك',
                 "type": 'GROUP-REQUEST'
             }
@@ -465,13 +465,13 @@ export default {
                 fromUser: req.user,
                 text: ' EdHub',
                 subject: groupParticipant.id,
-                subjectType: 'group Request Status',
+                subjectType: 'Join request response',
                 info: 'GROUP-REQUEST'
             });
             let notif = {
-                "description_en": 'Your join Request Has Been Rejected ',
+                "description_en": `your request to join group ${group.name} has been rejected`,
                 "description_ar": ' تم رفض الطلب الانضمام الخاص بك',
-                "title_en": 'Your join Request Has Been Rejected ',
+                "title_en": 'Join request response',
                 "title_ar": ' تم رفض الطلب الانضمام الخاص بك',
                 "type": 'GROUP-REQUEST'
             }

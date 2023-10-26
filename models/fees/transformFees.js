@@ -34,6 +34,7 @@ export async function transformFees(e, lang) {
     if (e.student) {
         let student = {
             studentName: e.student.studentName,
+            studentId:e.student.studentId,
             type: e.student.type,
             grade: e.student.grade,
             id: e.student._id,

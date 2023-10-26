@@ -18,7 +18,7 @@ export default {
             let query = { deleted: false };
             if (viewOn) query.viewOn = viewOn
             await Anoncement.find(query)
-                .sort({ createdAt: -1 })
+                .sort({ priority: -1 })
                 .limit(limit)
                 .skip((page - 1) * limit)
                 .then(async(data) => {
@@ -52,7 +52,7 @@ export default {
             let query = { deleted: false };
             if (viewOn) query.viewOn = viewOn
             await Anoncement.find(query)
-                .sort({ createdAt: -1 }).then(async(data) => {
+                .sort({ priority: -1 }).then(async(data) => {
                     let newdata = []
                     await Promise.all(data.map(async(e) => {
                         newdata.push({

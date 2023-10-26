@@ -392,14 +392,14 @@ export default {
                 fromUser: req.user,
                 text: ' EdHub',
                 subject: business.id,
-                subjectType: 'Admission Request Status',
+                subjectType: 'Admission Registration Response',
                 info: 'ADMISSION-REQUEST'
             });
             let notif = {
-                "description_en": businessManagement.acceptanceLetter,
+                "description_en": `Your registration in ${business.name_en} admission has been approved `,
                 "description_ar": businessManagement.acceptanceLetter,
-                "title_en": 'Your business Request Has Been Confirmed ',
-                "title_ar": ' تمت الموافقه على طلب  الخاص بك',
+                "title_en": 'Admission Registration Response',
+                "title_ar": ' تم الرد على طلب التسجيل الخاص بك',
                 "type": 'ADMISSION-REQUEST'
             }
             await Notif.create({...notif, resource: req.user, target: admissionRequest.owner, admissionRequest: admissionRequest.id });
@@ -442,20 +442,23 @@ export default {
                 subjectType: 'Admission Request Status',
                 info: 'ADMISSION-REQUEST'
             });
+            sendNotifiAndPushNotifi({
+                targetUser: admissionRequest.owner,
+                fromUser: req.user,
+                text: ' EdHub',
+                subject: business.id,
+                subjectType: 'Admission Registration Response',
+                info: 'ADMISSION-REQUEST'
+            });
             let notif = {
-                "description_en": businessManagement.rejectionLetter,
-                "description_ar": businessManagement.rejectionLetter,
-                "title_en": 'Your business Request Has Been Rejected ',
-                "title_ar": ' تم رفض الطلب الخاص بك',
+                "description_en": `Your registration in ${business.name_en} admission has been rejected `,
+                "description_ar": businessManagement.acceptanceLetter,
+                "title_en": 'Admission Registration Response',
+                "title_ar": ' تم الرد على طلب التسجيل الخاص بك',
                 "type": 'ADMISSION-REQUEST'
             }
             await Notif.create({...notif, resource: req.user, target: admissionRequest.owner, admissionRequest: admissionRequest.id });
-            let reports = {
-                "action": "reject admissionRequest",
-                "type": "ADMISSION-REQUEST",
-                "deepId": admissionRequestId,
-                "user": req.user._id
-            };
+            
             await Report.create({...reports });
             res.send({
                 success: true

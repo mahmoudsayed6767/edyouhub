@@ -41,6 +41,10 @@ const transactionSchema = new Schema({
         type:Number,
         ref:'event',
     },
+    eventAttendance:{
+        type:Number,
+        ref:'eventAttendance'
+    },
     offer:{//
         type:Number,
         ref:'offer',
@@ -53,9 +57,14 @@ const transactionSchema = new Schema({
         type:Number,
         ref:'order',
     },
+    
     course:{
         type:Number,
         ref:'course',
+    },
+    courseParticipant:{
+        type:Number,
+        ref:'courseParticipant'
     },
     coursePaymentMethod:{
         type:String,

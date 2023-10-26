@@ -17,6 +17,10 @@ import Event from "../../models/event/event.model";
 import Group from "../../models/group/group.model";
 import Activity from "../../models/user/activity.model";
 import GroupParticipant from "../../models/group/groupParticipant.model";
+import { sendNotifiAndPushNotifi } from "../../services/notification-service";
+import Notif from "../../models/notif/notif.model";
+import EventAttendance from "../../models/event/eventAttendance.model";
+
 const populateQuery = [
     {
         path: 'owner', model: 'user',
@@ -297,6 +301,29 @@ export default {
             createdPost.options = options
             await createdPost.save();
             await Activity.create({user:req.user._id,action:'CREATE-POST',post:createdPost._id});
+            if(validatedBody.event){
+                let event = await checkExistThenGet(validatedBody.event,Event)
+                let eventAttendances = await EventAttendance.find({event: validatedBody.event }).distinct('user');
+                for (let val of eventAttendances) {
+                    sendNotifiAndPushNotifi({
+                        targetUser: val,
+                        fromUser: val,
+                        text: ' EdHub',
+                        subject: createdPost.id,
+                        subjectType: 'A new event activity',
+                        info: 'POST'
+                    });
+                    let notif = {
+                        "description_en": `New Post are shared in the event ${event.title}`,
+                        "description_ar": ' تم اضافه منشور جديد متعلق باحد احداثك',
+                        "title_en": 'A new event activity',
+                        "title_ar": 'هناك تفاعل جديد على احد الاحداث المنتظره',
+                        "type": 'POST'
+                    }
+                    await Notif.create({...notif, resource: req.user, target: val, post: createdPost.id });
+                    
+                }
+            }
             let reports = {
                 "action":"Add Post",
                 "type":"POSTS",
@@ -441,7 +468,23 @@ export default {
                     let like = await Like.create({ user: req.user._id, post: postId });
                     await thePost.save();
                     await Activity.create({user:req.user._id,action:'ADD-LIKE',post:postId});
-
+                    sendNotifiAndPushNotifi({
+                        targetUser: thePost.owner,
+                        fromUser: req.user,
+                        text: ' EdHub',
+                        subject: thePost.id,
+                        subjectType: 'Post Like',
+                        info: 'POST'
+                    });
+                    let notif = {
+                        "description_en": `${req.user.fullname} liked on your post`,
+                        "description_ar": 'لديك اعجاب جديد على احد منشوراتك',
+                        "title_en": 'Post Like',
+                        "title_ar":'اعجاب على منشورك',
+                        "type": 'POST'
+                    }
+                    await Notif.create({...notif, resource: req.user, target: thePost.owner, post: thePost.id });
+                    
                     let reports = {
                         "action":"Add Like",
                         "type":"LIKES",
@@ -544,7 +587,23 @@ export default {
             await thePost.save();
             let createdComment = await Comment.create({ ...validatedBody});
             await Activity.create({user:req.user._id,action:'ADD-COMMENT',post:req.params.postId});
-
+            sendNotifiAndPushNotifi({
+                targetUser: thePost.owner,
+                fromUser: req.user,
+                text: ' EdHub',
+                subject: thePost.id,
+                subjectType: 'Post Comment',
+                info: 'POST'
+            });
+            let notif = {
+                "description_en": `${req.user.fullname} commented on your post`,
+                "description_ar": 'لديك تعليق جديد على احد منشوراتك',
+                "title_en": 'Post Comment',
+                "title_ar":'تعليق على منشورك',
+                "type": 'POST'
+            }
+            await Notif.create({...notif, resource: req.user, target: thePost.owner, post: thePost.id });
+            
             let reports = {
                 "action":"Add Comment",
                 "type":"COMMENTS",
@@ -608,15 +667,31 @@ export default {
         try {
             let { postId } = req.params;
             let post = await checkExistThenGet(postId, Post, { deleted: false });
-            
+            let group
             if(!isInArray(["ADMIN","SUB-ADMIN","USER"],req.user.type)){
                 //user is not the owner of post
                 if(post.group){
-                    let group = await checkExistThenGet(post.group, Group, { deleted: false });
+                    group = await checkExistThenGet(post.group, Group, { deleted: false });
                     if(!isInArray(group.admins,req.user._id))
                         return next(new ApiError(403, i18n.__('admin.auth')));
                 }
             }
+            sendNotifiAndPushNotifi({
+                targetUser: post.owner,
+                fromUser: req.user,
+                text: ' EdHub',
+                subject: post.id,
+                subjectType: 'Share post request',
+                info: 'POST'
+            });
+            let notif = {
+                "description_en": `your request to share a post in group ${group.name} has been accepted, your post is shared now`,
+                "description_ar": ' تم قبول  طلب اضافه منشور الخاص بك',
+                "title_en": 'Share post request',
+                "title_ar": ' طلب اضافه منشور',
+                "type": 'POST'
+            }
+            await Notif.create({...notif, resource: req.user, target: post.owner, post: post.id });
             
             post.status = 'ACCEPTED';
             await post.save();

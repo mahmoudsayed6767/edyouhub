@@ -9,6 +9,8 @@ export async function transformTransaction(e,lang) {
         tax:e.tax,
         coins:e.coins,
         totalCost:e.totalCost,
+        courseParticipant:e.courseParticipant,
+        eventAttendance:e.eventAttendance,
         paymentMethod:e.paymentMethod,
         billUrl:e.billUrl,
         id: e._id,
@@ -19,6 +21,13 @@ export async function transformTransaction(e,lang) {
             img:e.user.img?e.user.img:"",
             type:e.user.type,
             id:e.user._id, 
+        }
+    }
+    if(e.business){
+        index.business = {
+            name:lang=="ar"?e.business.name_ar:e.business.name_en,
+            img:e.business.img,
+            id: e.business._id,
         }
     }
     if(e.premium) {

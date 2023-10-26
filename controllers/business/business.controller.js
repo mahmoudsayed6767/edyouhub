@@ -553,7 +553,7 @@ export default {
         try {
             //get lang
             let lang = i18n.getLocale(req)
-            let {type,specialization, city, area, userId, educationType, owner, search, sector, subSector, educationSystem, status } = req.query;
+            let {thePackage,type,specialization, city, area, userId, educationType, owner, search, sector, subSector, educationSystem, status } = req.query;
 
             let query = { deleted: false }
                 /*search by name */
@@ -570,6 +570,7 @@ export default {
                     ]
                 };
             }
+            if(thePackage) query.package = thePackage
             if (specialization) query.specializations = specialization
             if (type) query.type = type
 
@@ -615,7 +616,7 @@ export default {
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1,
                 limit = +req.query.limit || 20;
-            let {all,type,specialization, city, area, userId, educationType, owner, search, sector, subSector, educationSystem, status } = req.query;
+            let {thePackage,all,type,specialization, city, area, userId, educationType, owner, search, sector, subSector, educationSystem, status } = req.query;
 
             let query = { deleted: false }
                 /*search by name */
@@ -632,6 +633,7 @@ export default {
                     ]
                 };
             }
+            if(thePackage) query.package = thePackage
             if (type) query.type = type
             if (specialization) query.specializations = specialization
 
@@ -759,14 +761,14 @@ export default {
                 fromUser: business.owner,
                 text: ' EdHub',
                 subject: business.id,
-                subjectType: 'Business Status',
+                subjectType: 'Account verification',
                 info: 'BUSINESS'
             });
             let notif = {
-                "description_en": 'Your business Request Has Been Confirmed ',
+                "description_en": `Congratulations, ${business.name_en} account verification has been approved `,
                 "description_ar": '  تمت الموافقه على طلب  الخاص بك',
-                "title_en": 'Your business Request Has Been Confirmed ',
-                "title_ar": ' تمت الموافقه على طلب  الخاص بك',
+                "title_en": 'Account verification',
+                "title_ar": 'تأكيد الحساب الخاص بك',
                 "type": 'BUSINESS'
             }
             await Notif.create({...notif, resource: req.user, target: business.owner, business: business.id });
@@ -797,14 +799,14 @@ export default {
                 fromUser: business.owner,
                 text: ' EdHub',
                 subject: business.id,
-                subjectType: 'business Status',
+                subjectType: 'Account verification',
                 info: 'BUSINESS'
             });
             let notif = {
-                "description_en": 'Your business Request Has Been Rejected ',
-                "description_ar": '   تم رفض  طلب الانضمام الخاص بك',
-                "title_en": 'Your business Request Has Been Rejected ',
-                "title_ar": ' تم رفض على طلب الانضمام الخاص بك',
+                "description_en": `${business.name_en} account verification has been rejected, check the reason`,
+                "description_ar": '  تمت الموافقه على طلب  الخاص بك',
+                "title_en": 'Account verification',
+                "title_ar": 'تأكيد الحساب الخاص بك',
                 "type": 'BUSINESS'
             }
             await Notif.create({...notif, resource: req.user, target: business.owner, business: business.id });

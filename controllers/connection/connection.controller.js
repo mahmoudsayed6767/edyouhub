@@ -203,11 +203,11 @@ export default {
                 fromUser: connection.from, 
                 text: ' EdHub',
                 subject: connection.id,
-                subjectType: 'connection Status',
+                subjectType: 'New Connection Request ',
                 info:'connection'
             });
             let notif = {
-                "description_en":`New connection Request from  ${req.user.fullname}`,
+                "description_en":`${req.user.fullname} sent you connection request`,
                 "description_ar":`لديك طلب تواصل جديد من ${req.user.fullname}`,
                 "title_en":'New connection Request',
                 "title_ar":'لديك طلب تواصل جديد',
@@ -361,13 +361,13 @@ export default {
                 fromUser: connection.to, 
                 text: ' EdHub',
                 subject: connection.id,
-                subjectType: 'connection Status',
+                subjectType: 'Accepted connection',
                 info:'connection'
             });
             let notif = {
-                "description_en":'Your connection Request Has Been Accepted ',
-                "description_ar":'   تم قبول  طلب التواصل الخاص بك',
-                "title_en":'Your connection Request Has Been Accepted ',
+                "description_en":req.user.fullname + ' accepted your connection request',
+                "description_ar":`تم قبول طلب التواصل الخاص بك ل ${req.user.fullname}`,
+                "title_en":'Accepted connection',
                 "title_ar":' تم قبول على طلب التواصل الخاص بك',
                 "type":'CONNECTION'
             }
