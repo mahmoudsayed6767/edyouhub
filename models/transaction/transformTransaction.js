@@ -59,6 +59,21 @@ export async function transformTransaction(e,lang) {
             id:e.fund._id
         }
     }
+    if(e.fees){
+        let fees = {
+            status:e.fees.status,
+            id:e.fees._id
+        }
+        let feesDetails=[]
+        for (let val of e.fees.feesDetails) {
+            let feesDetail = {
+                feesCost:val.feesCost,
+            }
+            feesDetails.push(feesDetail)
+        }
+        fees.feesDetails = feesDetails
+        index.fees = fees
+    }
     if(e.package){
         index.package = {
             title:lang=="ar"?e.package.title_ar:e.package.title_en,

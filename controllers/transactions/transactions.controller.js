@@ -32,22 +32,23 @@ import Course from "../../models/course/course.model";
 import FundProgram from "../../models/fundProgram/fundProgram.model";
 
 const populateQuery2 = [
-    {path: 'package', model: 'package'},
-    {path: 'cashbackPackage', model: 'cashbackPackage'},
-    {path: 'order', model: 'order'},
-    {path: 'fund', model: 'fund'},
-    {path: 'premium', model: 'premium'},
-    {path: 'offer', model: 'offer'},
-    {path: 'user', model: 'user'},
-    {path: 'event', model: 'event'},
-    {path:'business', model:'business'},
+    { path: 'package', model: 'package'},
+    { path: 'cashbackPackage', model: 'cashbackPackage'},
+    { path: 'order', model: 'order'},
+    { path: 'fund', model: 'fund'},
+    { path: 'premium', model: 'premium'},
+    { path: 'fees',model: 'fees'},
+    { path: 'offer', model: 'offer'},
+    { path: 'user', model: 'user'},
+    { path: 'event', model: 'event'},
+    { path:'business', model:'business'},
     {
         path: 'offerBooking', model: 'offerBooking',
-        populate: { path: 'offers.offer', model: 'offer' },
+        populate: {  path: 'offers.offer', model: 'offer' },
     },
     {
         path: 'offerBooking', model: 'offerBooking',
-        populate: { path: 'offers.place', model: 'place' },
+        populate: {  path: 'offers.place', model: 'place' },
     },
 ];
 const payPremium = async (premiums,client) => {
@@ -516,6 +517,14 @@ export default {
             }
             if(validatedBody.type =="PREMIUM"){
                 transactionData.premiums = validatedBody.premiums
+                let premium = await checkExistThenGet(validatedBody.premiums[0],Premium,{deleted:false})
+                if(premium.type === "FUND"){
+                    transactionData.fund = premium.fund
+                }
+                if(premium.type === "FEES"){
+                    transactionData.fees = premium.fees
+                }
+
             }
             if(validatedBody.type =="EVENT"){
                 transactionData.event = validatedBody.event
@@ -639,13 +648,12 @@ export default {
     async getById(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
-            
             let {transactionId} = req.params
-            const Securitykey =  process.env.Securitykey
-            console.log(transactionId.toString())
-            let decreptId = await decryptedData(transactionId.toString(),Securitykey)
-            console.log(decreptId)
-            await Transaction.findById(decreptId).populate(populateQuery2)
+            // const Securitykey =  process.env.Securitykey
+            // console.log(transactionId.toString())
+            // let decreptId = await decryptedData(transactionId.toString(),Securitykey)
+            // console.log(decreptId)
+            await Transaction.findById(transactionId).populate(populateQuery2)
             .then(async(e)=>{
                 let index = await transformTransaction(e,lang)
                 res.send({success:true,data:index});

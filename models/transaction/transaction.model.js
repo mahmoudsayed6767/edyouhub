@@ -19,8 +19,12 @@ const transactionSchema = new Schema({
     },
     fund:{
         type:Number,
-        ref:'booking',
-    },   
+        ref:'fund',
+    },  
+    fees:{
+        type:Number,
+        ref:'fees',
+    }, 
     premiums:{
         type:[Number],
         ref:'premium',
