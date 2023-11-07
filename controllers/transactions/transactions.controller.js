@@ -36,7 +36,7 @@ const populateQuery2 = [
     { path: 'cashbackPackage', model: 'cashbackPackage'},
     { path: 'order', model: 'order'},
     { path: 'fund', model: 'fund'},
-    { path: 'premium', model: 'premium'},
+    { path: 'premiums', model: 'premium'},
     { path: 'fees',model: 'fees'},
     { path: 'offer', model: 'offer'},
     { path: 'user', model: 'user'},
