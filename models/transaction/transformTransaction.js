@@ -30,10 +30,10 @@ export async function transformTransaction(e,lang) {
             id: e.business._id,
         }
     }
-    if(e.premium) {
+    if(e.premiums) {
         /* students*/
         let premiums=[]
-        for (let val of e.premium) {
+        for (let val of e.premiums) {
             premiums.push({
                 type:val.type,
                 cost:val.cost,
