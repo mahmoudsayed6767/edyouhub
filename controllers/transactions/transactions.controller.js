@@ -587,7 +587,7 @@ export default {
                 console.log("Payment free : ", data.id)
                 await callBack(data.id,'PAID',null)
             }
-            await Transaction.findById(createdTransaction.id).populate(populateQuery2)
+            await Transaction.findById(createdTransaction.id).populate(populateQueryById)
             .then(async(e)=>{
                 let index = await transformTransaction(e,lang)
                 res.send({
