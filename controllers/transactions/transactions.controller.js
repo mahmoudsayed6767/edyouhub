@@ -633,6 +633,7 @@ export default {
             if (thePackage) query.package = thePackage
             if (status) query.status = status;
             if (user) query.user = user;
+            console.log(query);
             let sortd = {_id: -1}
             await Transaction.find(query).populate(populateQuery)
             .sort(sortd)
