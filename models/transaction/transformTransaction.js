@@ -112,6 +112,19 @@ export async function transformTransactionById(e,lang) {
     if(e.package){
         index.package = {
             title:lang=="ar"?e.package.title_ar:e.package.title_en,
+            type:e.package.type,
+            badgeType:e.package.badgeType,
+            dataView:e.package.dataView,
+            createEvents:e.package.createEvents,
+            createReels:e.package.createReels,
+            createGroups:e.package.createGroups,
+            createBusiness:e.package.createBusiness,
+            enableFollow:e.package.enableFollow,
+            sendingMessages:e.package.sendingMessages,
+            createPosts:e.package.createPosts,
+            createCourses:e.package.createCourses,
+            createVacancies:e.package.createVacancies,
+            createAdmissions:e.package.createAdmissions,
             id: e.package._id,
         }
     }
