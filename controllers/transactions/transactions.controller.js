@@ -312,6 +312,7 @@ const payEvent = async (theEvent,userId) => {
     //add client to event attendance
     let arr = event.attendance;
     var found = arr.find((e) => e == userId); 
+    let eventAttendance
     if(!found){
         event.attendance.push(userId);
         eventAttendance = await EventAttendance.create({ user: userId, event: event });
