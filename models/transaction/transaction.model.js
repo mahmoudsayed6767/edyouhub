@@ -37,6 +37,10 @@ const transactionSchema = new Schema({
         type:Number,
         ref:'package',
     },
+    oldPackage:{
+        type:Number,
+        ref:'package',
+    },
     business:{
         type:Number,
         ref:'business',
@@ -81,7 +85,7 @@ const transactionSchema = new Schema({
     type:{
         type:String,
         required:true,
-        enum:["PACKAGE","CASHBACK-PACKAGE","COURSE","EVENT","PREMIUM","FUND-FIRSTPAID","OFFER","ORDER"]
+        enum:["USER-PACKAGE","BUSINESS-PACKAGE","CASHBACK-PACKAGE","ONLINE-COURSE","COURSE-PREMIUM","ON-SITE-COURSE","EVENT","FUND","FEES","FUND-FIRSTPAID","OFFER","ORDER"]
     },
 
     status:{

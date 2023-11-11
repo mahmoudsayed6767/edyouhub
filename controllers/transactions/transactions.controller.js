@@ -4,7 +4,7 @@ import ApiError from '../../helpers/ApiError';
 import {checkExistThenGet} from "../../helpers/CheckMethods";
 import Event from "../../models/event/event.model";
 import Transaction from "../../models/transaction/transaction.model";
-import {transformTransaction} from "../../models/transaction/transformTransaction"
+import {transformTransaction,transformTransactionById} from "../../models/transaction/transformTransaction"
 import User from "../../models/user/user.model";
 import Fund from "../../models/fund/fund.model";
 import Package from "../../models/package/package.model";
@@ -15,7 +15,6 @@ import Order from "../../models/order/order.model"
 import i18n from "i18n";
 import Setting from "../../models/setting/setting.model";
 import {encryptedData,decryptedData} from "../shared/shared.controller"
-import { sendEmail } from "../../services/sendGrid";
 import Offer from "../../models/offer/offer.model";
 import { generateCode } from '../../services/generator-code-service';
 import Bill from "../../models/bill/bill.model";
@@ -30,8 +29,13 @@ import Business from "../../models/business/business.model"
 import CourseParticipant from "../../models/course/courseParticipant.model";
 import Course from "../../models/course/course.model";
 import FundProgram from "../../models/fundProgram/fundProgram.model";
+const populateQuery = [
+    { path: 'user', model: 'user'},
+    { path:'business', model:'business'},
 
-const populateQuery2 = [
+];
+const populateQueryById = [
+    { path: 'oldPackage', model: 'package'},
     { path: 'package', model: 'package'},
     { path: 'cashbackPackage', model: 'cashbackPackage'},
     { path: 'order', model: 'order'},
@@ -413,32 +417,32 @@ const callBack = async (merchantRefNumber,status,paymentMethod,data) => {
         let userId = theTransaction.user
 
         let user = await checkExistThenGet(userId, User,{deleted:false})
-        if(theTransaction.type =="CASHBACK-PACKAGE"){
-            let cashbackPackage = await checkExistThenGet(theTransaction.cashbackPackage, CashbackPackage, { deleted: false });
-            user.balance  = user.balance + cashbackPackage.coins
-            await user.save();
-        }
-        if(theTransaction.type =="PACKAGE"){
+        
+        if(theTransaction.type =="USER-PACKAGE" || theTransaction.type == "BUSINESS-PACKAGE"){
             await payPackage(theTransaction.package,userId,theTransaction.business)
         }
         if(theTransaction.type =="EVENT"){
             let eventAttendance = await payEvent(theTransaction.event,userId)
             theTransaction.eventAttendance = eventAttendance
         }
-        if(theTransaction.type =="COURSE"){
+        if(theTransaction.type =="ON-SITE-COURSE" || theTransaction.type == "ONLINE-COURSE"){
             console.log("course")
             let courseParticipant = await payCourse(theTransaction.course,userId,theTransaction.coursePaymentMethod)
             theTransaction.courseParticipant = courseParticipant
         }
-        if(theTransaction.type =="OFFER"){
-            await payOfferBooking(theTransaction.offerBooking,userId)
-
-        }
-        if(theTransaction.type =="PREMIUM"){
+        if(theTransaction.type =="COURSE-PREMIUM" || theTransaction.type =="FUND" || theTransaction.type == "FEES"){
             await payPremium(theTransaction.premiums,userId)
         }
         if(theTransaction.type =="FUND-FIRSTPAID"){
             await payFirstPaid(theTransaction.fund,userId)
+        }
+        if(theTransaction.type =="CASHBACK-PACKAGE"){
+            let cashbackPackage = await checkExistThenGet(theTransaction.cashbackPackage, CashbackPackage, { deleted: false });
+            user.balance  = user.balance + cashbackPackage.coins
+            await user.save();
+        }
+        if(theTransaction.type =="OFFER"){
+            await payOfferBooking(theTransaction.offerBooking,userId)
         }
         if(theTransaction.type =="ORDER"){
             let order = await checkExistThenGet(theTransaction.order, Order, { deleted: false });
@@ -485,14 +489,63 @@ export default {
             }
             if(validatedBody.business) transactionData.business = validatedBody.business
             if(validatedBody.coupon) transactionData.coupon = validatedBody.coupon
-            if(validatedBody.type =="CASHBACK-PACKAGE"){
-                transactionData.cashbackPackage = validatedBody.cashbackPackage
-            }
+            
             if(validatedBody.type =="PACKAGE"){
                 transactionData.package = validatedBody.package
-                if(validatedBody.business){
-                    transactionData.business = validatedBody.business
+                let thePackage = await checkExistThenGet(validatedBody.package,Package,{deleted:false})
+                if(thePackage.type == "FOR-USER"){
+                    transactionData.type = "USER-PACKAGE"
+                    let theUser = await checkExistThenGet(validatedBody.client,User,{deleted:false})
+                    transactionData.oldPackage = theUser.package
                 }
+                if(thePackage.type == "FOR-BUSINESS"){
+                    transactionData.type = "BUSINESS-PACKAGE"
+                    let theBusiness = await checkExistThenGet(validatedBody.business,Business,{deleted:false})
+                    transactionData.oldPackage = theBusiness.package
+                }
+            }
+            
+            if(validatedBody.type =="PREMIUM"){
+                transactionData.premiums = validatedBody.premiums
+                let premium = await checkExistThenGet(validatedBody.premiums[0],Premium,{deleted:false})
+                if(premium.type === "FUND"){
+                    transactionData.fund = premium.fund
+                    transactionData.type = "FUND"
+                }
+                if(premium.type === "FEES"){
+                    transactionData.fees = premium.fees
+                    transactionData.type = "FEES"
+                }
+                if(premium.type === "COURSE"){
+                    transactionData.course = premium.course
+                    transactionData.type = "COURSE-PREMIUM"
+                }
+            }
+            if(validatedBody.type =="EVENT"){
+                transactionData.event = validatedBody.event
+                let event = await checkExistThenGet(validatedBody.event, Event, { deleted: false });
+                let arr = event.waitToPaid;
+                var found = arr.find((e) => e == validatedBody.client); 
+                if(!found){
+                    event.waitToPaid.push(validatedBody.client);
+                    await event.save();
+                }
+            }
+            if(validatedBody.type =="COURSE"){
+                transactionData.course = validatedBody.course
+                let course = await checkExistThenGet(validatedBody.course, Course, { deleted: false });
+                if(course.type == "ONLINE") transactionData.type = "ONLINE-COURSE"
+                if(course.type == "ON-SITE") transactionData.type = "ON-SITE-COURSE"
+                if(validatedBody.coursePaymentMethod)
+                    transactionData.coursePaymentMethod = validatedBody.coursePaymentMethod;
+                
+            }
+            
+            if(validatedBody.type =="FUND-FIRSTPAID"){
+                transactionData.fund = validatedBody.fund
+                let fund = await checkExistThenGet(validatedBody.fund, Fund,{deleted:false});
+                fund.active = true;
+                await fund.save();
             }
             if(validatedBody.type =="OFFER"){
                 let offers = []
@@ -515,41 +568,8 @@ export default {
                 transactionData.offerBooking = offerBooking.id
                 transactionData.coins = coins
             }
-            if(validatedBody.type =="PREMIUM"){
-                transactionData.premiums = validatedBody.premiums
-                let premium = await checkExistThenGet(validatedBody.premiums[0],Premium,{deleted:false})
-                if(premium.type === "FUND"){
-                    transactionData.fund = premium.fund
-                }
-                if(premium.type === "FEES"){
-                    transactionData.fees = premium.fees
-                }
-
-            }
-            if(validatedBody.type =="EVENT"){
-                transactionData.event = validatedBody.event
-                let event = await checkExistThenGet(validatedBody.event, Event, { deleted: false });
-                let arr = event.waitToPaid;
-                var found = arr.find((e) => e == validatedBody.client); 
-                if(!found){
-                    event.waitToPaid.push(validatedBody.client);
-                    await event.save();
-                }
-            }
-            if(validatedBody.type =="COURSE"){
-                transactionData.course = validatedBody.course
-                if(validatedBody.coursePaymentMethod){
-                    transactionData.coursePaymentMethod = validatedBody.coursePaymentMethod;
-                }else{
-                    transactionData.coursePaymentMethod = 'CASH'
-                }
-            }
-            
-            if(validatedBody.type =="FUND-FIRSTPAID"){
-                transactionData.fund = validatedBody.fund
-                let fund = await checkExistThenGet(validatedBody.fund, Fund,{deleted:false});
-                fund.active = true;
-                await fund.save();
+            if(validatedBody.type =="CASHBACK-PACKAGE"){
+                transactionData.cashbackPackage = validatedBody.cashbackPackage
             }
             if(validatedBody.type =="ORDER"){
                 transactionData.order = validatedBody.order
@@ -587,15 +607,33 @@ export default {
             
             let query = {deleted: false };
            
-            if (type) query.type = type;
-            if (type =="CASHBACK") query.type = {$in:['PACKAGE','OFFER']}
+            if (type =="CASHBACK") {
+                query.type = {$in:['PACKAGE','OFFER']}
+            }
+            else if (type =="FUND") {
+                Object.assign(query, {
+                    $and: [{
+                            $or: [
+                                { type: "FUND"},
+                                { type: "FUND-FIRSTPAID"},
+                                { fund: {$ne:null}},
+
+                            ]
+                        },
+                        { deleted: false },
+                    ]
+                })
+            }else{
+                query.type = type;
+            }
+            
             if (fund) query.fund = fund;
             if (fees) query.fees = fees;
             if (thePackage) query.package = thePackage
             if (status) query.status = status;
             if (user) query.user = user;
             let sortd = {_id: -1}
-            await Transaction.find(query).populate(populateQuery2)
+            await Transaction.find(query).populate(populateQuery)
             .sort(sortd)
             .limit(limit)
             .skip((page - 1) * limit)
@@ -653,9 +691,9 @@ export default {
             // console.log(transactionId.toString())
             // let decreptId = await decryptedData(transactionId.toString(),Securitykey)
             // console.log(decreptId)
-            await Transaction.findById(transactionId).populate(populateQuery2)
+            await Transaction.findById(transactionId).populate(populateQueryById)
             .then(async(e)=>{
-                let index = await transformTransaction(e,lang)
+                let index = await transformTransactionById(e,lang)
                 res.send({success:true,data:index});
             })
             
