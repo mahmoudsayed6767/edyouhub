@@ -404,11 +404,11 @@ const callBack = async (merchantRefNumber,status,paymentMethod,data) => {
    
     let theTransaction = await Transaction.findOne({transactionId:merchantRefNumber})
     if(!theTransaction)
-        return next(new ApiError(400, i18n.__('transaction not exist')))
+        throw new ApiError(400, i18n.__('transaction not exist'))
 
     let doneTransaction = await Transaction.findOne({status:{$ne:'PENDING'},transactionId:merchantRefNumber})
     if(doneTransaction)
-        return next(new ApiError(400, i18n.__('transaction is done')))
+        throw new ApiError(400, i18n.__('transaction is done'))
 
     if(status == "PAID"){
         theTransaction.status = "SUCCESS"
