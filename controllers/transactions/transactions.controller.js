@@ -606,25 +606,26 @@ export default {
             let {thePackage,type,user,fund,fees,status} = req.query;
             
             let query = {deleted: false };
-           
-            if (type =="CASHBACK") {
-                query.type = {$in:['PACKAGE','OFFER']}
-            }
-            else if (type =="FUND") {
-                Object.assign(query, {
-                    $and: [{
-                            $or: [
-                                { type: "FUND"},
-                                { type: "FUND-FIRSTPAID"},
-                                { fund: {$ne:null}},
+            if(type){
+                if (type =="CASHBACK") {
+                    query.type = {$in:['PACKAGE','OFFER']}
+                }
+                else if (type =="FUND") {
+                    Object.assign(query, {
+                        $and: [{
+                                $or: [
+                                    { type: "FUND"},
+                                    { type: "FUND-FIRSTPAID"},
+                                    { fund: {$ne:null}},
 
-                            ]
-                        },
-                        { deleted: false },
-                    ]
-                })
-            }else{
-                query.type = type;
+                                ]
+                            },
+                            { deleted: false },
+                        ]
+                    })
+                }else{
+                    query.type = type;
+                }
             }
             
             if (fund) query.fund = fund;
