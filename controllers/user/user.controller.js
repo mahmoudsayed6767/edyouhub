@@ -240,7 +240,7 @@ export default {
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1,
                 limit = +req.query.limit || 20,
-                { name, email, phone, userId, cashBack, phoneVerify, search, accountType, type, active, place } = req.query;
+                { thePackage,name, email, phone, userId, cashBack, phoneVerify, search, accountType, type, active, place } = req.query;
 
             let query = { deleted: false };
             if (place) query.place = place
@@ -280,6 +280,7 @@ export default {
                     phone: { $regex: '.*' + phone + '.*', '$options': 'i' },
                 })
             }
+            if(thePackage) query.package = thePackage
             let sortd = { createdAt: -1 }
             let myUser
             if (userId) {
@@ -308,7 +309,7 @@ export default {
     async getAll(req, res, next) {
         try {
             let lang = i18n.getLocale(req)
-            let { name, email, phone, userId, cashBack, phoneVerify, search, accountType, type, active, place } = req.query;
+            let { thePackage,name, email, phone, userId, cashBack, phoneVerify, search, accountType, type, active, place } = req.query;
 
             let query = { deleted: false };
             if (phoneVerify == "true") query.phoneVerify = true;
@@ -349,6 +350,7 @@ export default {
                     phone: { $regex: '.*' + phone + '.*', '$options': 'i' },
                 })
             }
+            if(thePackage) query.package = thePackage
             let sortd = { createdAt: -1 }
             let myUser
             if (userId) {
