@@ -42,6 +42,7 @@ router.route('/:couponId/reused')
 router.route('/checkValidateCoupon')
     .post(
         requireAuth,
+        CouponController.validateCheckCouponBody(),
         CouponController.checkValidateCoupon
     )
 

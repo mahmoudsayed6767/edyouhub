@@ -40,6 +40,11 @@ const SettingSchema = new Schema({
         required: true,
         default:"1V"
     },
+    processingFees:{
+        type: Number,
+        default:5,
+        required: true
+    },
     deleted:{
         type:Boolean,
         default:false

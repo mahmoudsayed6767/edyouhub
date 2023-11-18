@@ -50,6 +50,7 @@ export default {
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('expensesRatio.numeric', { value});
             }),
+            body('processingFees').optional()
            
         ];
         return validations;

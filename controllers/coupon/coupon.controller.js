@@ -171,10 +171,27 @@ export default {
             next(err);
         }
     },
+    validateCheckCouponBody(isUpdate = false) {
+        let validations = [
+       
+            body('cost').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('cost.required', { value});
+            }),
+            body('couponNumber').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('couponNumber.required', { value});
+            }),
+            body('type').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('type.required', { value});
+            }),
+        ];
+
+        return validations;
+    },
     async checkValidateCoupon(req, res, next) {        
         try {
+            const validatedBody = checkValidations(req);
             let theUser = await checkExistThenGet(req.user._id, User, { deleted: false });
-            let coupon = await Coupon.findOne({ couponNumber: { $regex: req.body.couponNumber , '$options' : 'i'  },deleted:false,expireDateMillSec:{$gte:Date.parse(new Date())}})
+            let coupon = await Coupon.findOne({ couponNumber: { $regex: validatedBody.couponNumber , '$options' : 'i'  },deleted:false,expireDateMillSec:{$gte:Date.parse(new Date())}})
             if(coupon){
                 var found = theUser.usedCoupons.find((e) => e == coupon)
                     if(found){
@@ -182,17 +199,18 @@ export default {
                             return next(new ApiError(422, i18n.__('coupon.used')));
                         }
                     }else{
-                        if(req.body.cost){
-                            let cost = req.body.cost
-                            if(coupon.discountType == "FIXED"){
-                                cost = req.body.cost - coupon.discount;
-                            }else{
-                                cost = req.body.cost - (coupon.discount * req.body.cost) / 100;
-                            }
+                        let cost = validatedBody.cost
+                        if(coupon.discountType == "FIXED"){
+                            cost = validatedBody.cost - coupon.discount;
+                        }else{
+                            cost = validatedBody.cost - (coupon.discount * validatedBody.cost) / 100;
+                        }
+                        if(coupon.type == validatedBody.type){
                             res.send({success: true,msg:i18n.__('Valid.coupon'),cost:cost,coupon:coupon}); 
                         }else{
-                            res.send({success: true,msg:i18n.__('Valid.coupon'),coupon:coupon});
+                            return next(new ApiError(422, i18n.__('InValid.coupon')));
                         }
+                        
                     }
                 
             }else{
