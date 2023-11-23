@@ -20,7 +20,6 @@ import GroupParticipant from "../../models/group/groupParticipant.model";
 import { sendNotifiAndPushNotifi } from "../../services/notification-service";
 import Notif from "../../models/notif/notif.model";
 import EventAttendance from "../../models/event/eventAttendance.model";
-import EventAttendance from "../../models/event/eventAttendance.model";
 
 const populateQuery = [
     {
