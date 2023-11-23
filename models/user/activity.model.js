@@ -5,15 +5,12 @@ const activitySchema = new Schema({
         type: Number,
         required: true
     },
-    type:{
-        type: String,
-        enum:['POST'],
-        default: 'POST'
-    },
+    
     action:{
         type: String,
-        enum:['CREATE-POST','UPDATE-POST','REMOVE-POST','ADD-COMMENT','REMOVE-COMMENT','ADD-LIKE','REMOVE-LIKE','ANSWER-POST'],
+        required: true,
         default: 'POST'
+        ['CREATE-POST','UPDATE-POST','REMOVE-POST','ADD-COMMENT','REMOVE-COMMENT','ADD-LIKE','REMOVE-LIKE','ANSWER-POST','UPDATE-USER-ACCOUNT','CREATE-ONLINE-COURSE','CREATE-ON-SIE-COURSE','UPDATE-BUSINESS-ACCOUNT','UPDATE-SUPERVISOR','CREATE-EVENT','CREATE-GALLERY','CREATE-GROUP','UPGRADE-PACKAGE']
     },
     user: {
         type: Number,
@@ -22,8 +19,31 @@ const activitySchema = new Schema({
     },
     post: {
         type: Number,
-        ref:'post',
-        required: true,
+        ref:'post'
+    },
+    package: {
+        type: Number,
+        ref:'package'
+    },
+    group: {
+        type: Number,
+        ref:'group'
+    },
+    gallery: {
+        type: Number,
+        ref:'gallery'
+    },
+    event: {
+        type: Number,
+        ref:'event'
+    },
+    course: {
+        type: Number,
+        ref:'course'
+    },
+    business: {
+        type: Number,
+        ref:'business'
     },
     
     deleted: {

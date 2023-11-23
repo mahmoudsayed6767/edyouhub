@@ -81,6 +81,9 @@ export default {
                 await admin.save();
                 await GroupParticipant.create({ user: element, status: 'ACCEPTED', group: group._id });
             });
+            let activityBody = {user:req.user._id,action:'CREATE-GROUP',group:group._id}
+            if(validatedBody.business) activityBody.business = validatedBody.business
+            await Activity.create({... activityBody});
             let reports = {
                 "action": "Create New group",
                 "type": "GROUP",

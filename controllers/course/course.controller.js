@@ -9,7 +9,6 @@ import Business from "../../models/business/business.model";
 import User from "../../models/user/user.model";
 import { checkExist, checkExistThenGet, isInArray } from "../../helpers/CheckMethods";
 
-import Branch from "../../models/branch/branch.model";
 import Specialization from "../../models/specialization/specialization.model"
 import CourseParticipant from "../../models/course/courseParticipant.model";
 import ApiError from "../../helpers/ApiError";
@@ -22,7 +21,7 @@ import { toImgUrl } from "../../utils";
 import bcrypt from 'bcryptjs';
 import Premium from "../../models/premium/premium.model";
 import { transformCourseParticipant } from "../../models/course/transformCourseParticipant";
-import { AuthRegistrationsCredentialListMappingList } from "twilio/lib/rest/api/v2010/account/sip/domain/authTypes/authRegistrationsMapping/authRegistrationsCredentialListMapping";
+import Activity from "../../models/user/activity.model";
 const populateQuery = [
     { path: 'business', model: 'business' },
     { path: 'specializations', model: 'specialization' },
@@ -77,8 +76,7 @@ export default {
             }),
             body('specializations').not().isEmpty().withMessage((value, { req }) => {
                 return req.__('specializations.required', { value });
-            })
-                .custom(async (specializations, { req }) => {
+            }).custom(async (specializations, { req }) => {
                     for (let value of specializations) {
                         if (!await Specialization.findOne({ _id: value, deleted: false }))
                             throw new Error(req.__('specialization.invalid'));
@@ -89,8 +87,7 @@ export default {
                 }),
             body('instractors').not().isEmpty().withMessage((value, { req }) => {
                 return req.__('instractors.required', { value });
-            })
-                .custom(async (instractors, { req }) => {
+            }).custom(async (instractors, { req }) => {
                     for (let value of instractors) {
                         if (!await User.findOne({ _id: value, deleted: false }))
                             throw new Error(req.__('instractor.invalid'));
@@ -229,6 +226,15 @@ export default {
             let secretKey = (await bcrypt.hash(course.id.toString(), bcrypt.genSaltSync())).substring(0, 16)
             course.secretKey = secretKey
             await course.save()
+            let activityBody = {user:req.user._id,course:course._id,business:validatedBody.business}
+
+            if(validatedBody.type == "ONLINE"){
+                activityBody.action = 'CREATE-ONLINE-COURSE'
+            }else{
+                activityBody.action = 'CREATE-ON-SIE-COURSE'
+            }
+
+            await Activity.create({... activityBody});
             let reports = {
                 "action": "Create New course",
                 "type": "COURSE",

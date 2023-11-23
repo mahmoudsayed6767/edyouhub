@@ -86,4 +86,10 @@ router.route('/:businessRequestId/deleteAssignRequests')
         permissions('ADMIN'),
         businessRequestController.delete
     )
+router.route('/:businessId/getActivities')
+    .get(  
+        requireAuth,
+        businessController.getActivities
+    )
+    
 export default router;

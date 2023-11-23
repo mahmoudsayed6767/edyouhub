@@ -29,6 +29,7 @@ import Post from "../../models/post/post.model";
 import Connection from "../../models/connection/connection.model";
 import Notif from "../../models/notif/notif.model";
 import Message from "../../models/message/message.model";
+
 const populateQuery = [
     { path: 'package', model: 'package' },
 ];
@@ -53,7 +54,6 @@ const populateActivityQuery = [{
         model: 'user',
         populate: { path: 'package', model: 'package' },
     },
-    { path: 'post', model: 'post' },
 ];
 
 export default {
@@ -559,7 +559,8 @@ export default {
                 validatedBody.img = image;
             }
             await User.findByIdAndUpdate(userId, {...validatedBody }, { new: true });
-
+            let activityBody = {user:req.user._id,action:'UPDATE-USER-ACCOUNT'}
+            await Activity.create({... activityBody});
             let reports = {
                 "action": "Update User",
                 "type": "USERS",

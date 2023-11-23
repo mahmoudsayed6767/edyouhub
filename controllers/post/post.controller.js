@@ -302,7 +302,9 @@ export default {
             }
             createdPost.options = options
             await createdPost.save();
-            await Activity.create({user:req.user._id,action:'CREATE-POST',post:createdPost._id});
+            let activityBody = {user:req.user._id,action:'CREATE-POST',post:createdPost._id}
+            if(validatedBody.business) activityBody.business = validatedBody.business
+            await Activity.create({... activityBody});
             if(validatedBody.event){
                 let event = await checkExistThenGet(validatedBody.event,Event)
                 let eventAttendances = await EventAttendance.find({event: validatedBody.event }).distinct('user');
@@ -380,8 +382,9 @@ export default {
             let updatedPost = await Post.findByIdAndUpdate(postId, {
                 ...validatedBody,
             }, { new: true });
-            await Activity.create({user:req.user._id,action:'UPDATE-POST',post:postId});
-
+            let activityBody = {user:req.user._id,action:'UPTDAE-POST',post:postId}
+            if(validatedBody.business) activityBody.business = validatedBody.business
+            await Activity.create({... activityBody});
             let reports = {
                 "action":"Update Post",
                 "type":"POSTS",
@@ -588,7 +591,10 @@ export default {
             thePost.commentsCount = thePost.commentsCount + 1;
             await thePost.save();
             let createdComment = await Comment.create({ ...validatedBody});
-            await Activity.create({user:req.user._id,action:'ADD-COMMENT',post:req.params.postId});
+
+            let activityBody = {user:req.user._id,action:'ADD-COMMENT',post:req.params.postId}
+            if(validatedBody.business) activityBody.business = validatedBody.business
+            await Activity.create({... activityBody});
             sendNotifiAndPushNotifi({
                 targetUser: thePost.owner,
                 fromUser: req.user,

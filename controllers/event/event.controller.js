@@ -16,6 +16,8 @@ import { transformUser } from "../../models/user/transformUser"
 import ApiError from "../../helpers/ApiError";
 import City from "../../models/city/city.model";
 import Area from "../../models/area/area.model";
+import Activity from "../../models/user/activity.model";
+
 const populateQuery = [
     { path: 'business', model: 'business' },
     { path: 'businessParticipants', model: 'business' },
@@ -195,6 +197,9 @@ export default {
                 type: 'EVENT',
                 content: event.description
             });
+            let activityBody = {user:req.user._id,action:'CREATE-EVENT',event:event._id}
+            if(validatedBody.business) activityBody.business = validatedBody.business
+            await Activity.create({... activityBody});
             let reports = {
                 "action": "Create New event",
                 "type": "EVENT",

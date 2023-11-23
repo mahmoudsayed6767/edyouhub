@@ -9,7 +9,6 @@ import User from "../../models/user/user.model";
 import Fund from "../../models/fund/fund.model";
 import Package from "../../models/package/package.model";
 import CashbackPackage from "../../models/cashbackPackage/cashbackPackage.model";
-
 import Fees from "../../models/fees/fees.model";
 import Order from "../../models/order/order.model"
 import i18n from "i18n";
@@ -29,6 +28,8 @@ import Business from "../../models/business/business.model"
 import CourseParticipant from "../../models/course/courseParticipant.model";
 import Course from "../../models/course/course.model";
 import FundProgram from "../../models/fundProgram/fundProgram.model";
+import Activity from "../../models/user/activity.model";
+
 const populateQuery = [
     { path: 'user', model: 'user'},
     { path:'business', model:'business'},
@@ -304,6 +305,10 @@ const payPackage = async (thePackage,userId,businessId) => {
         user.packageEndDateMillSec = endDateMillSec ;
         await user.save();
     }
+    let activityBody = {user:userId,action:'UPGRADE-PACKAGE',package:thePackage}
+    if(businessId) activityBody.business= businessId
+    await Activity.create({... activityBody});
+    
     
     return true;
 };

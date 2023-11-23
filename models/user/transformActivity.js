@@ -4,6 +4,13 @@ export async function transformActivity(e,lang) {
         createdAt:e.createdAt,
         action:e.action,
         type:e.type,
+        post:e.post,
+        business:e.business,
+        event:e.event,
+        gallery:e.gallery,
+        course:e.course,
+        group:e.group,
+        package:e.package,
         id:e._id,                         
     }
     if(e.user){
@@ -23,19 +30,6 @@ export async function transformActivity(e,lang) {
         }
         index.user = user
     }
-    if(e.post){
-        let post = {
-            content: e.post.content,
-            group:e.post.group,
-            status:e.post.status,
-            ownerType: e.post.ownerType,
-            likesCount:e.post.likesCount,
-            type:e.post.type,
-            dataType:e.post.dataType,
-            viewPlaceType:e.post.viewPlaceType,
-            id:e.post._id,
-        }
-        index.post = post
-    }
+
     return index
 }

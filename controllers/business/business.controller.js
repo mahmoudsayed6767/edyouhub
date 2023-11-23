@@ -27,7 +27,9 @@ import User from "../../models/user/user.model";
 import { ValidationError } from "mongoose";
 import Follow from "../../models/follow/follow.model";
 import Post from "../../models/post/post.model";
-import Activity from "../../models/user/activity.model";
+import Activity from "../../models/user/activity.model"
+import { transformActivity } from "../../models/user/transformActivity"
+
 import BusinessRequest from "../../models/business/businessRequest.model";
 //validate location
 function validatedLocation(location) {
@@ -73,6 +75,13 @@ const populateQueryById = [
         populate: { path: 'grades', model: 'grade' },
     },
 
+];
+const populateActivityQuery = [
+    {
+        path: 'user',
+        model: 'user',
+        populate: { path: 'package', model: 'package' },
+    },
 ];
 export default {
     //validate body
@@ -533,7 +542,8 @@ export default {
             validatedBody.branches = branches
             validatedBody.grades = grades
             await Business.findByIdAndUpdate(businessId, {...validatedBody });
-
+            let activityBody = {user:req.user._id,action:'UPDATE-BUSINESS-ACCOUNT',business:businessId}
+            await Activity.create({... activityBody});
             let reports = {
                 "action": "Update Business ",
                 "type": "BUSINESS",
@@ -1054,6 +1064,8 @@ export default {
                 
             }
             await businessManagement.save();
+            let activityBody = {user:req.user._id,action:'UPDATE-SUPERVISOR',business:businessId}
+            await Activity.create({... activityBody});
             let reports = {
                 "action": "Update service supervisors",
                 "type": "BUSINESS",
@@ -1107,5 +1119,30 @@ export default {
             next(error);
         }
     },
-    
+    async getActivities(req, res, next) {
+        try {
+            let lang = i18n.getLocale(req)
+            let page = +req.query.page || 1,
+                limit = +req.query.limit || 20;
+            let {businessId} = req.params;
+            let query = { deleted: false, business:businessId };
+            await Activity.find(query).populate(populateActivityQuery)
+                .sort({ createdAt: -1 })
+                .limit(limit)
+                .skip((page - 1) * limit).then(async(data) => {
+                    var newdata = [];
+                    await Promise.all(data.map(async(e) => {
+                        let index = await transformActivity(e, lang)
+                        newdata.push(index);
+                    }))
+                    const count = await Activity.countDocuments(query);
+                    const pageCount = Math.ceil(count / limit);
+                    res.send(new ApiResponse(newdata, page, pageCount, limit, count, req));
+                })
+
+
+        } catch (err) {
+            next(err);
+        }
+    },
 }

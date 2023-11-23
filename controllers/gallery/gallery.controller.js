@@ -9,6 +9,7 @@ import { body } from "express-validator";
 import i18n from "i18n";
 import { transformGallery } from "../../models/gallery/transformGallery";
 import { toImgUrl } from "../../utils";
+import Activity from "../../models/user/activity.model";
 
 const populateQuery = [
     //{ path: 'business', model: 'business'},
@@ -120,6 +121,8 @@ export default {
                 return next(new ApiError(422, i18n.__('imgs.required')));
             }
             let theGallery = await Gallery.create({ ...validatedBody});
+            let activityBody = {user:req.user._id,action:'CREATE-GALLERY',business:businessId,gallery:theGallery._id}
+            await Activity.create({... activityBody});
             let reports = {
                 "action":"Create gallery",
                 "type":"GALLERY",
