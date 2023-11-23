@@ -1,4 +1,4 @@
-import {transformStudent} from "../../models/student/transformStudent";
+import {transformStudent,transformStudentById} from "../../models/student/transformStudent";
 import Student from "../../models/student/student.model";
 import Report from "../../models/reports/report.model";
 import { body } from "express-validator";
@@ -20,7 +20,8 @@ const populateQuery = [
     { path: 'sector', model: 'category' },
     { path: 'subSector', model: 'category' },
     { path: 'educationSystem', model: 'educationSystem' },
-    { path: 'educationInstitution', model: 'educationInstitution' }
+    { path: 'educationInstitution', model: 'educationInstitution' },
+    { path: 'grade', model: 'grade' }
 
 ];
 const populatePremiumQuery = [
@@ -119,6 +120,7 @@ export default {
             await checkExist(studentId, Student, { deleted: false })
             let feesTypes = await FeesType.find({deleted:false})
             let fees = [];
+            let totalFees = 0
             for (let feesType of feesTypes) {
                 let premiums = []
                 await Premium.find({deleted:false,student:studentId,type:'FEES',feesType:feesType._id})
@@ -127,6 +129,7 @@ export default {
                     await Promise.all(data.map(async(premium) =>{
                         let thePremium = await transformPremium(premium,lang)
                         premiums.push(thePremium)
+                        totalFees = totalFees + premium.cost
                     }))
                 });
                 fees.push({
@@ -138,8 +141,9 @@ export default {
                 })
             }
             await Student.findById(studentId).populate(populateQuery).then(async(e) => {
-                let student = await transformStudent(e,lang)
+                let student = await transformStudentById(e,lang)
                 student.fees = fees
+                student.totalFees = totalFees
                 res.send({
                     success:true,
                     data:student
