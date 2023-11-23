@@ -25,7 +25,6 @@ const feesSchema = new Schema({
     academicYear: {
         type: Number,
         ref:'academicYear',
-        required: true,
     },
     feesDetails: [
         new Schema({

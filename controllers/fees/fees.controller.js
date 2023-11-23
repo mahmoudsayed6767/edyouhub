@@ -112,9 +112,7 @@ export default {
     },
     validateBody(isUpdate = false) {
         let validations = [
-            body('academicYear').not().isEmpty().withMessage((value, { req }) => {
-                return req.__('academicYear.required', { value });
-            }).custom(async(value, { req }) => {
+            body('academicYear').optional().custom(async(value, { req }) => {
                 if (!await AcademicYear.findOne({ _id: value, deleted: false }))
                     throw new Error(req.__('academicYear.invalid'));
                 else
@@ -502,9 +500,7 @@ export default {
             body('fees').optional()
             .custom(async(fees, { req }) => {
                 for (let feesId of fees) {
-                    body('academicYear').not().isEmpty().withMessage((value, { req }) => {
-                            return req.__('academicYear.required', { value });
-                        }).custom(async(value, { req }) => {
+                        body('academicYear').optional().custom(async(value, { req }) => {
                             if (!await AcademicYear.findOne({ _id: value, deleted: false }))
                                 throw new Error(req.__('academicYear.invalid'));
                             else

@@ -20,6 +20,7 @@ import GroupParticipant from "../../models/group/groupParticipant.model";
 import { sendNotifiAndPushNotifi } from "../../services/notification-service";
 import Notif from "../../models/notif/notif.model";
 import EventAttendance from "../../models/event/eventAttendance.model";
+import EventAttendance from "../../models/event/eventAttendance.model";
 
 const populateQuery = [
     {
@@ -94,16 +95,17 @@ export default {
                 query.viewPlaceType = viewPlaceType
                 if(viewPlaceType == "WALL"){
                     let owners = myUser.connections
-                    owners.push(req.user._id)
-                    console.log("owners",owners)
                     let business = myUser.following
-                    console.log("business",business)
+                    let groups = myUser.groups
+                    let events = await EventAttendance.find({deleted:false,user:req.user._id}).distinct('event')
                     Object.assign(query ,{
                         $and: [
                             { $or: [
                                 {business: {$in:business}}, 
                                 {owner: {$in:owners}},
                                 {ownerType: 'APP'}, 
+                                {group: {$in:groups}}, 
+                                {event: {$in:events}}, 
                               ] 
                             },
                             {deleted: false},
@@ -113,7 +115,6 @@ export default {
             }
             if (type) {
                 let values = type.split(",");
-                console.log(values)
                 query.type = {$in:values};
                 var found = values.find(function(element) {
                     return element == 'EVENT';
@@ -169,15 +170,17 @@ export default {
                 query.viewPlaceType = viewPlaceType
                 if(viewPlaceType == "WALL"){
                     let owners = myUser.connections
-                    owners.push(req.user._id)
                     let business = myUser.following
+                    let groups = myUser.groups
+                    let events = await EventAttendance.find({deleted:false,user:req.user._id}).distinct('event')
                     Object.assign(query ,{
                         $and: [
                             { $or: [
                                 {business: {$in:business}}, 
-                                {owner: {$in:owners}}, 
+                                {owner: {$in:owners}},
                                 {ownerType: 'APP'}, 
-
+                                {group: {$in:groups}}, 
+                                {event: {$in:events}}, 
                               ] 
                             },
                             {deleted: false},
