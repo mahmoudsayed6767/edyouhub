@@ -123,4 +123,9 @@ router.route('/:userId/getActivities')
         requireAuth,
         UserController.getActivities
     );
+router.route('/transferCoins')
+    .post(
+        requireAuth,
+        UserController.transferCoins
+    );
 export default router;

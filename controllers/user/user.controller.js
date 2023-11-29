@@ -837,4 +837,21 @@ export default {
             next(err);
         }
     },
+    async transferCoins(req, res, next) {
+        try {
+            let user = await checkExistThenGet(req.user._id, User);
+            user.balance = 0;
+            await user.save();
+            let reports = {
+                "action": "transfer Coins",
+                "type": "USERS",
+                "deepId": userId,
+                "user": req.user._id
+            };
+            await Report.create({...reports });
+            res.send({ success: true });
+        } catch (error) {
+            next(error);
+        }
+    },
 };
