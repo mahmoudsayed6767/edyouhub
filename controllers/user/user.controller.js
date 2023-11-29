@@ -845,7 +845,7 @@ export default {
             let reports = {
                 "action": "transfer Coins",
                 "type": "USERS",
-                "deepId": userId,
+                "deepId": req.user._id,
                 "user": req.user._id
             };
             await Report.create({...reports });
