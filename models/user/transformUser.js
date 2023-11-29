@@ -67,7 +67,7 @@ export async function transformUserById(e,lang,myUser,userId) {
         img:e.img,
         block:e.block,
         balance:e.balance,
-        coins:e.coins,
+        coins:e.balance,
         cashBack:e.cashBack,
         maritalStatus:e.maritalStatus,
         educationPhase:e.educationPhase,
