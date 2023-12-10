@@ -18,6 +18,8 @@ export async function transformTransaction(e,lang) {
     if(e.user){
         index.user = {
             fullname:e.user.fullname,
+            email:e.user.email,
+            phone:e.user.phone,
             img:e.user.img?e.user.img:"",
             type:e.user.type,
             id:e.user._id, 
@@ -51,6 +53,8 @@ export async function transformTransactionById(e,lang) {
     if(e.user){
         index.user = {
             fullname:e.user.fullname,
+            email:e.user.email,
+            phone:e.user.phone,
             img:e.user.img?e.user.img:"",
             type:e.user.type,
             packageEndDateMillSec:e.user.packageEndDateMillSec,
@@ -181,6 +185,29 @@ export async function transformTransactionById(e,lang) {
         }
         offerBooking.offers = offers
         index.offerBooking = offerBooking
+    }
+    if(e.event) {
+        let event = {
+            title:e.event.title,
+            fromDate:e.event.fromDate,
+            toDate:e.event.toDate,
+            time:e.event.time,
+            shortDescription:e.event.shortDescription,
+            id: e.event._id,
+            address:e.event.address,
+            location:e.event.location,
+
+        }
+        index.event = event;
+    }
+    if(e.course){
+        let course={
+            title:lang=="ar"?val.offer.title_ar:val.offer.title_en,
+            feesType: e.course.feesType,
+            price:e.course.price,
+            id:e.course._id,
+        }
+        index.course = course
     }
     return index
 }

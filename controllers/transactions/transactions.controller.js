@@ -46,6 +46,7 @@ const populateQueryById = [
     { path: 'offer', model: 'offer'},
     { path: 'user', model: 'user'},
     { path: 'event', model: 'event'},
+    { path: 'course', model: 'course'},
     { path:'business', model:'business'},
     {
         path: 'offerBooking', model: 'offerBooking',
