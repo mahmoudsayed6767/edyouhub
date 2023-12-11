@@ -54,6 +54,7 @@ const populateActivityQuery = [{
         model: 'user',
         populate: { path: 'package', model: 'package' },
     },
+    { path: 'post', model: 'post' },
 ];
 
 export default {
