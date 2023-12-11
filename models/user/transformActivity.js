@@ -30,6 +30,19 @@ export async function transformActivity(e,lang) {
         }
         index.user = user
     }
-
+    if(e.post){
+        let post = {
+            content: e.post.content,
+            group:e.post.group,
+            status:e.post.status,
+            ownerType: e.post.ownerType,
+            likesCount:e.post.likesCount,
+            type:e.post.type,
+            dataType:e.post.dataType,
+            viewPlaceType:e.post.viewPlaceType,
+            id:e.post._id,
+        }
+        index.post = post
+    }
     return index
 }
