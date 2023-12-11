@@ -83,6 +83,7 @@ const populateActivityQuery = [
         populate: { path: 'package', model: 'package' },
     },
 ];
+
 export default {
     //validate body
 
@@ -914,7 +915,7 @@ export default {
             }
             let reports = {
                 "action": "Update Business Setting",
-                "type": "ADMISSION",
+                "type": "BUSINESS",
                 "deepId": businessId,
                 "user": req.user._id
             };
@@ -1027,7 +1028,7 @@ export default {
                     supervisor.managmentBusinessAccounts.push(businessId);
                 }
                 await supervisor.save()
-            } else {
+            }else {
                 //remove admin to business management
                 if (validatedBody.service == "ADMISSION") arr = businessManagement.admission.supervisors;
                 if (validatedBody.service == "VACANCY") arr = businessManagement.vacancy.supervisors;
@@ -1145,4 +1146,5 @@ export default {
             next(err);
         }
     },
+    
 }

@@ -202,7 +202,7 @@ export async function transformTransactionById(e,lang) {
     }
     if(e.course){
         let course={
-            title:lang=="ar"?val.offer.title_ar:val.offer.title_en,
+            title:lang=="ar"?e.offer.title_ar:e.offer.title_en,
             feesType: e.course.feesType,
             price:e.course.price,
             id:e.course._id,
