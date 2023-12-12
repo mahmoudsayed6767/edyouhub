@@ -309,7 +309,6 @@
 	"section_ar.required": "section_ar is required",
 	"completeData": "please complete data",
 	"transaction is done": "transaction is done",
-
 	"connectionRequest.notFound": "connectionRequest notFound",
 	"user.required": "user is required",
 	"user.numeric": "user should be numeric",
@@ -322,11 +321,13 @@
 	"academicYear.invalid": "academic Year is invalid",
 	"totalFees.numeric": "totalFees should be numeric",
 	"selectedFundProviders.required": "selected Fund Providers is required",
-	"business.isAssigned":"business is assigned to another owner",
-	"anRequest.exist":"you have an request now",
-	"businessRequest.notPending":"business Request not pending",
-	"preview.required":"preview is required",
-	"video.required":"video is required",
-	"pendingReq.exist":"pending Request is already exist"
-
+	"business.isAssigned": "business is assigned to another owner",
+	"anRequest.exist": "you have an request now",
+	"businessRequest.notPending": "business Request not pending",
+	"preview.required": "preview is required",
+	"video.required": "video is required",
+	"pendingReq.exist": "pending Request is already exist",
+	"commercialRegistry.required": "commercialRegistry.required",
+	"taxId.required": "taxId.required",
+	"managerId.required": "managerId.required"
 }

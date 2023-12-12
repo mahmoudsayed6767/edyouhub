@@ -2,7 +2,8 @@ import express from 'express';
 import {  requireAuth} from '../../services/passport';
 import businessController from '../../controllers/business/business.controller';
 import businessRequestController from '../../controllers/business/businessRequest.controller';
-
+import verificationRequestController from '../../controllers/business/verificationRequest.controller';
+import { multerSaveTo } from '../../services/multer-service';
 import {permissions} from '../../services/permissions';
 const router = express.Router();
 
@@ -91,5 +92,28 @@ router.route('/:businessId/getActivities')
         requireAuth,
         businessController.getActivities
     )
-    
+
+router.route('/:businessId/sendVerificationRequest')
+    .post(  
+        requireAuth,
+        multerSaveTo('business').fields([
+            { name: 'commercialRegistry', maxCount: 2, options: false },
+            { name: 'taxId', maxCount: 2, options: false },
+            { name: 'managerId', maxCount: 2, options: false },
+        ]),
+        verificationRequestController.validateBody(),
+        verificationRequestController.create
+    )
+router.route('/verificationRequests/getAll')
+    .get(requireAuth,verificationRequestController.getAllPaginated);
+router.route('/:verificationRequestId/acceptVerificationRequest')
+    .put(
+        requireAuth,
+        verificationRequestController.accept
+    )
+router.route('/:verificationRequestId/rejectVerificationRequest')
+    .put(
+        requireAuth,
+        verificationRequestController.reject
+    )
 export default router;
