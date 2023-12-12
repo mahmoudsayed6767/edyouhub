@@ -60,10 +60,8 @@ import fundProviderRoute from "./fundProvider/fundProvider.route"
 import academicYearRoute from "./academicYear/academicYear.route"
 import feesTypeRoute from "./feesType/feesType.route"
 import feesRequestRoute from "./feesRequest/feesRequest.route"
-import adminRequestRoute from "./adminRequest/adminRequest.route"
 
 const router = express.Router();
-router.use('/adminRequests', adminRequestRoute);
 
 router.use('/academicYears', academicYearRoute);
 router.use('/feesTypes', feesTypeRoute);

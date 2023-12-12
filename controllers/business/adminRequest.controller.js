@@ -3,11 +3,12 @@ import { body } from "express-validator";
 import { checkValidations } from "../shared/shared.controller";
 import Report from "../../models/reports/report.model";
 import ApiResponse from "../../helpers/ApiResponse";
-import { checkExistThenGet } from "../../helpers/CheckMethods";
+import { checkExistThenGet ,isInArray} from "../../helpers/CheckMethods";
 import i18n from "i18n";
 import { transformAdminRequest } from "../../models/adminRequest/transformAdminRequest"
 import BusinessManagement from "../../models/business/businessManagement.model"
 import Business from "../../models/business/business.model";
+import User from "../../models/user/user.model";
 
 const populateQuery = [
     {
@@ -24,8 +25,22 @@ export default {
             let {business,to } = req.query
 
             let query = {deleted: false };
-            if(to) query.to = to
-            if(business) query.business = business
+            if (!isInArray(["ADMIN", "SUB-ADMIN"], req.user.type)) {
+                if (req.user.type == "USER" && to){
+                    query.to = req.user._id
+                }
+                if (req.user.type == "USER" && business){
+                    let business = await checkExistThenGet(business,Business,{deleted: false })
+                    if (req.user._id == business.owner){
+                        query.business = business
+                    }
+                    
+                }
+            }else{
+                if(to) query.to = to
+                if(business) query.business = business
+            }
+            
             await AdminRequest.find(query).populate(populateQuery)
                 .sort({ _id: -1 })
                 .limit(limit)
@@ -59,11 +74,6 @@ export default {
                 else
                     return true;
             }),
-            body('business').not().isEmpty().withMessage((value, { req }) => {
-                return req.__('business.required', { value });
-            }).isNumeric().withMessage((value, { req }) => {
-                return req.__('business.numeric', { value });
-            }),
             body('service').optional().isIn(['ADMISSION', 'VACANCY', 'EVENT', 'COURSES']).withMessage((value, { req }) => {
                 return req.__('service.invalid', { value });
             }),
@@ -74,19 +84,20 @@ export default {
     async create(req, res, next) {        
         try {
             const validatedBody = checkValidations(req);
-
-            let business = await checkExistThenGet(validatedBody.business, Business, { deleted: false })
+            let { businessId } = req.params
+            let business = await checkExistThenGet(businessId, Business, { deleted: false })
             if (!isInArray(["ADMIN", "SUB-ADMIN", "USER"], req.user.type)) {
                 if (business.owner != req.user._id)
                     return next(new ApiError(403, i18n.__('notAllow')));
             }
             validatedBody.from = business.owner
+            validatedBody.business = business
             let createdRequest = await AdminRequest.create({ ...validatedBody});
 
             let reports = {
                 "action":"Create Admin Request",
                 "type":"BUSINESS",
-                "deepId":validatedBody.business,
+                "deepId":businessId,
                 "user": req.user._id
             };
             await Report.create({...reports});
@@ -117,10 +128,10 @@ export default {
     
                 arr.push(adminRequest.to)
     
-                if (validatedBody.service == "ADMISSION")businessManagement.admission.supervisors = arr;
-                if (validatedBody.service == "VACANCY")  businessManagement.vacancy.supervisors = arr;
-                if (validatedBody.service == "EVENT") businessManagement.events.supervisors = arr;
-                if (validatedBody.service == "COURSE") businessManagement.courses.supervisors = arr;
+                if (adminRequest.service == "ADMISSION")businessManagement.admission.supervisors = arr;
+                if (adminRequest.service == "VACANCY")  businessManagement.vacancy.supervisors = arr;
+                if (adminRequest.service == "EVENT") businessManagement.events.supervisors = arr;
+                if (adminRequest.service == "COURSE") businessManagement.courses.supervisors = arr;
                 await businessManagement.save();
 
                 let supervisor = await checkExistThenGet(adminRequest.to,User,{deleted:false});

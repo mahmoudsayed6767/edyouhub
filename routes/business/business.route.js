@@ -3,6 +3,8 @@ import {  requireAuth} from '../../services/passport';
 import businessController from '../../controllers/business/business.controller';
 import businessRequestController from '../../controllers/business/businessRequest.controller';
 import verificationRequestController from '../../controllers/business/verificationRequest.controller';
+import adminRequestController from '../../controllers/business/adminRequest.controller';
+
 import { multerSaveTo } from '../../services/multer-service';
 import {permissions} from '../../services/permissions';
 const router = express.Router();
@@ -116,4 +118,27 @@ router.route('/:verificationRequestId/rejectVerificationRequest')
         requireAuth,
         verificationRequestController.reject
     )
+
+router.route('/:businessId/sendAdminRequest')
+    .post(
+        requireAuth,
+        adminRequestController.validateBody(),
+        adminRequestController.create
+    )
+router.route('/adminRequests/getAll')
+    .get(requireAuth,adminRequestController.getAllPaginated)
+
+router.route('/:adminRequestId/acceptAdminRequest')
+    .put(
+        requireAuth,
+        adminRequestController.accept
+    )
+router.route('/:adminRequestId/rejectAdminRequest')
+    .put(
+        requireAuth,
+        adminRequestController.reject
+    )
+    
+router.route('/:adminRequestId/removeAdminRequest')
+    .delete(requireAuth,adminRequestController.delete);
 export default router;

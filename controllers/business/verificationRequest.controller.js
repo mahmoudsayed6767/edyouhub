@@ -24,11 +24,25 @@ export default {
         try {
             let lang = i18n.getLocale(req) 
             let page = +req.query.page || 1, limit = +req.query.limit || 20 ;
-            let {business,status } = req.query
+            let {business,status,owner } = req.query
 
             let query = {deleted: false };
-            if(status) query.status = status
-            if(business) query.business = business
+            if (!isInArray(["ADMIN", "SUB-ADMIN"], req.user.type)) {
+                if (req.user.type == "USER" && owner){
+                    query.owner = req.user._id
+                }
+                if (req.user.type == "USER" && business){
+                    let business = await checkExistThenGet(business,Business,{deleted: false })
+                    if (req.user._id == business.owner){
+                        query.business = business
+                    }
+                    
+                }
+            }else{
+                if(status) query.status = status
+                if(business) query.business = business
+                if(owner) query.owner = owner
+            }
             await VerificationRequest.find(query).populate(populateQuery)
                 .sort({ _id: -1 })
                 .limit(limit)
