@@ -19,6 +19,12 @@ router.route('/')
         permissions('ADMIN'),
         TransactionController.findAllTransactions
     )
+router.route('/statistics')
+    .get(
+        requireAuth,
+        permissions('ADMIN'),
+        TransactionController.statistics
+    )
 router.route('/withoutPagenation/get')
     .get(
         requireAuth,

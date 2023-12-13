@@ -163,6 +163,10 @@ const businessSchema = new Schema({
         type: [String],
         enum: ['FEES-PAYMENT', 'FEES-INSTALLMENT', 'SUPPLIES', 'COURSES'],
     },
+    monthlyTransfer: {
+        type: Boolean,
+        default: false
+    },
     deleted: {
         type: Boolean,
         default: false

@@ -660,6 +660,8 @@ export default {
                             await Report.create({ ...reports });
                         }
                     }
+                    course.acceptanceNo = course.acceptanceNo + 1
+                    await course.save();
                     let reports = {
                         "action": "user will attend to course",
                         "type": "COURSE",
@@ -695,6 +697,8 @@ export default {
                     user.attendedCourses.push(courseId);
                     await user.save();
                     await CourseParticipant.create({ ...validatedBody });
+                    course.acceptanceNo = course.acceptanceNo + 1
+                    await course.save();
                     let reports = {
                         "action": "user enrolled to course",
                         "type": "COURSE",

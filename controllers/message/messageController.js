@@ -177,8 +177,14 @@ var messageController = {
     },
     async unseenCount(req, res, next) {        
         try {
-            let user = req.user._id;
-            let query = { deleted: false,to:user,seen:false };
+            let {business} = req.query;
+
+            let query = { deleted: false,to:req.user._id,seen:false };
+            if (business) {
+                query.business = business;
+            }else{
+                query.business = null;
+            }
             const unseenCount = await Message.countDocuments(query);
             res.status(200).send({
                 unseen:unseenCount,

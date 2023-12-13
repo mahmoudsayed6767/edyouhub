@@ -24,6 +24,13 @@ export async function transformPost(e,lang,myUser,userId) {
             hasPackage:e.business.hasPackage,
 
         }
+        if (e.business.subSector) {
+            business.subSector = {
+                name: lang == "ar" ? e.business.subSector.name_ar : e.business.subSector.name_en,
+                educationType: e.business.subSector.educationType,
+                id: e.business.subSector._id,
+            }
+        }
         if (e.business.package) {
             business.package = {
                 title:lang=="ar"?e.business.package.title_ar:e.business.package.title_en,
@@ -200,6 +207,13 @@ export async function transformPostById(e,lang,myUser,userId) {
             id: e.business._id,
             hasPackage:e.business.hasPackage,
 
+        }
+        if (e.business.subSector) {
+            business.subSector = {
+                name: lang == "ar" ? e.business.subSector.name_ar : e.business.subSector.name_en,
+                educationType: e.business.subSector.educationType,
+                id: e.business.subSector._id,
+            }
         }
         if (e.business.package) {
             business.package = {

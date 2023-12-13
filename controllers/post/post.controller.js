@@ -28,6 +28,10 @@ const populateQuery = [
     },
     {
         path: 'business', model: 'business',
+        populate: { path: 'subSector', model: 'category' },
+    },
+    {
+        path: 'business', model: 'business',
         populate: { path: 'package', model: 'package' },
     },
     { path: 'options', model: 'option'},

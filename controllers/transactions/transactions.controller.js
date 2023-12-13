@@ -392,6 +392,8 @@ const payCourse = async (courseId,userId,paymentMethod) => {
             }
         }
         await attendedUser.save();
+        theCourse.acceptanceNo = theCourse.acceptanceNo + 1
+        await theCourse.save();
         let reports = {
             "action":"user will attend to course",
             "type":"COURSE",
@@ -610,9 +612,17 @@ export default {
         try {
             let lang = i18n.getLocale(req)
             let page = req.query.page || 1, limit = +req.query.limit || 20 ;
-            let {thePackage,type,user,fund,fees,status} = req.query;
+            let {start,end,thePackage,type,user,fund,fees,status} = req.query;
             
             let query = {deleted: false };
+            if(start && end) {
+                let from = start + 'T00:00:00.000Z';
+                let to= end + 'T23:59:00.000Z';
+                console.log( from)
+                query = { 
+                    createdAt: { $gt : new Date(from), $lt : new Date(to) }
+                };
+            } 
             if(type){
                 if (type =="CASHBACK") {
                     query.type = {$in:['PACKAGE','OFFER']}
@@ -669,8 +679,36 @@ export default {
             
             let query = {deleted: false };
            
-            if (type) query.type = type;
-            if (type =="CASHBACK") query.type = {$in:['PACKAGE','OFFER','FEES','FUND-FIRSTPAID']}
+            if(start && end) {
+                let from = start + 'T00:00:00.000Z';
+                let to= end + 'T23:59:00.000Z';
+                console.log( from)
+                query = { 
+                    createdAt: { $gt : new Date(from), $lt : new Date(to) }
+                };
+            } 
+            if(type){
+                if (type =="CASHBACK") {
+                    query.type = {$in:['PACKAGE','OFFER']}
+                }
+                else if (type =="FUND") {
+                    Object.assign(query, {
+                        $and: [{
+                                $or: [
+                                    { type: "FUND"},
+                                    { type: "FUND-FIRSTPAID"},
+                                    { fund: {$ne:null}},
+
+                                ]
+                            },
+                            { deleted: false },
+                        ]
+                    })
+                }else{
+                    query.type = type;
+                }
+            }
+            
             if (fund) query.fund = fund;
             if (fees) query.fees = fees;
             if (thePackage) query.package = thePackage
@@ -688,6 +726,52 @@ export default {
                 res.send({success:true,data:newdata});
             })
             
+        } catch (err) {
+            next(err);
+        }
+    },
+    async statistics(req, res, next) {        
+        try {
+            let lang = i18n.getLocale(req)
+            let {start,end} = req.query;
+            
+            let query = {deleted: false };
+            if(start && end) {
+                let from = start + 'T00:00:00.000Z';
+                let to= end + 'T23:59:00.000Z';
+                query = { 
+                    createdAt: { $gt : new Date(from), $lt : new Date(to) }
+                };
+            } 
+            let data = []
+            let businessAccounts = await Business.find({deleted: false,status:'ACCEPTED'})
+            for (let business of businessAccounts) {
+                query.business = business._id
+                let paymentsCount = 0
+                let totalAmount = 0
+                let payments = await Transaction.find(query).select('totalCost cost tax monthlyTransfer')
+                for (let val of payments) {
+                    totalAmount = totalAmount + val.totalCost
+                    paymentsCount = paymentsCount + 1
+                    
+                }
+                let edyouhubAmount = (totalAmount * 15) / 100
+                let netAmount = totalAmount - edyouhubAmount
+                let value =  {
+                    business :{
+                        businessName: lang == "ar" ? business.name_ar : business.name_en,
+                        monthlyTransfer:business.monthlyTransfer,
+                        id:business._id
+                    },
+                    paymentsCount: paymentsCount,
+                    totalAmount:totalAmount,
+                    netAmount:netAmount,
+                    edyouhubAmount:edyouhubAmount
+                }
+                data.push(value)
+                
+            }
+            res.send({success:true,data:data});
         } catch (err) {
             next(err);
         }
