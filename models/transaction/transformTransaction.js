@@ -13,6 +13,7 @@ export async function transformTransaction(e,lang) {
         eventAttendance:e.eventAttendance,
         paymentMethod:e.paymentMethod,
         billUrl:e.billUrl,
+        edyouhubCommission:e.edyouhubCommission,
         id: e._id,
     }
     if(e.user){
@@ -48,6 +49,7 @@ export async function transformTransactionById(e,lang) {
         eventAttendance:e.eventAttendance,
         paymentMethod:e.paymentMethod,
         billUrl:e.billUrl,
+        edyouhubCommission:e.edyouhubCommission,
         id: e._id,
     }
     if(e.user){

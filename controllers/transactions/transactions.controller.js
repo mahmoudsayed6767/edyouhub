@@ -465,6 +465,13 @@ const callBack = async (merchantRefNumber,status,paymentMethod,data) => {
         //sendEmail(user.email,url, text)
         theTransaction.billUrl = url;
         await theTransaction.save();
+        if(theTransaction.business){
+            let business = await checkExistThenGet(theTransaction.business, Business,{deleted:false})
+            let netCost = theTransaction.cost - (theTransaction.processingFees + theTransaction.edyouhubCommission)
+            business.dues = business.dues + netCost
+            await business.save()
+        }
+        
         let reports = {
             "action":"Payment Process 2",
             "type":"PAYMENT",
@@ -485,12 +492,13 @@ export default {
             console.log(await Transaction.findOne({transactionId:data.id}))
             if(await Transaction.findOne({transactionId:data.id}))
                 return next(new ApiError(400, i18n.__('transaction exist')))
-
+            let setting = await Setting.findOne({deleted: false})
             const validatedBody = data
             let transactionData={
                 "cost":validatedBody.cost,
                 "tax":validatedBody.tax,
                 "totalCost": parseInt(validatedBody.cost) + parseInt(validatedBody.tax),
+                "processingFees":setting.processingFees,
                 "user":validatedBody.client,
                 "type":validatedBody.type,
                 "transactionId":data.id,
@@ -520,10 +528,12 @@ export default {
                 if(premium.type === "FUND"){
                     transactionData.fund = premium.fund
                     transactionData.type = "FUND"
+                    transactionData.edyouhubCommission = (validatedBody.cost - setting.processingFees) * setting.fundRatio
                 }
                 if(premium.type === "FEES"){
                     transactionData.fees = premium.fees
                     transactionData.type = "FEES"
+                    transactionData.edyouhubCommission = (validatedBody.cost - setting.processingFees) * setting.feesPaymentRatio
                 }
                 if(premium.type === "COURSE"){
                     transactionData.course = premium.course
@@ -532,6 +542,7 @@ export default {
             }
             if(validatedBody.type =="EVENT"){
                 transactionData.event = validatedBody.event
+                transactionData.edyouhubCommission = (validatedBody.cost - setting.processingFees) * setting.eventsRatio
                 let event = await checkExistThenGet(validatedBody.event, Event, { deleted: false });
                 let arr = event.waitToPaid;
                 var found = arr.find((e) => e == validatedBody.client); 
@@ -543,8 +554,14 @@ export default {
             if(validatedBody.type =="COURSE"){
                 transactionData.course = validatedBody.course
                 let course = await checkExistThenGet(validatedBody.course, Course, { deleted: false });
-                if(course.type == "ONLINE") transactionData.type = "ONLINE-COURSE"
-                if(course.type == "ON-SITE") transactionData.type = "ON-SITE-COURSE"
+                if(course.type == "ONLINE") {
+                    transactionData.edyouhubCommission = (validatedBody.cost - setting.processingFees) * setting.onlineCoursesRatio
+                    transactionData.type = "ONLINE-COURSE"
+                }
+                if(course.type == "ON-SITE") {
+                    transactionData.edyouhubCommission = (validatedBody.cost - setting.processingFees) * setting.onsiteCoursesRatio
+                    transactionData.type = "ON-SITE-COURSE"
+                }
                 if(validatedBody.coursePaymentMethod)
                     transactionData.coursePaymentMethod = validatedBody.coursePaymentMethod;
                 
@@ -555,6 +572,7 @@ export default {
                 let fund = await checkExistThenGet(validatedBody.fund, Fund,{deleted:false});
                 fund.active = true;
                 await fund.save();
+                transactionData.edyouhubCommission = (validatedBody.cost - setting.processingFees) * setting.fundRatio
             }
             if(validatedBody.type =="OFFER"){
                 let offers = []
@@ -743,24 +761,28 @@ export default {
                     createdAt: { $gt : new Date(from), $lt : new Date(to) }
                 };
             } 
+            query.type = {$in:['ONLINE-COURSE','COURSE-PREMIUM','ON-SITE-COURSE','EVENT','FUND','FUND-FIRSTPAID','FEES']}
             let data = []
             let businessAccounts = await Business.find({deleted: false,status:'ACCEPTED'})
             for (let business of businessAccounts) {
                 query.business = business._id
                 let paymentsCount = 0
                 let totalAmount = 0
+                let edyouhubAmount = 0
+                let processingFees = 0
                 let payments = await Transaction.find(query).select('totalCost cost tax monthlyTransfer')
                 for (let val of payments) {
                     totalAmount = totalAmount + val.totalCost
                     paymentsCount = paymentsCount + 1
-                    
+                    netAmount = netAmount + val.edyouhubCommission
+                    processingFees = processingFees + val.processingFees
                 }
-                let edyouhubAmount = (totalAmount * 15) / 100
-                let netAmount = totalAmount - edyouhubAmount
+                
+                let netAmount = totalAmount - (edyouhubAmount + processingFees)
                 let value =  {
                     business :{
                         businessName: lang == "ar" ? business.name_ar : business.name_en,
-                        monthlyTransfer:business.monthlyTransfer,
+                        status:business.dues > 0?true :false,
                         id:business._id
                     },
                     paymentsCount: paymentsCount,

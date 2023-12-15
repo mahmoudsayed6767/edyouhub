@@ -50,7 +50,36 @@ export default {
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('expensesRatio.numeric', { value});
             }),
-            body('processingFees').optional()
+            body('processingFees').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('processingFees.required', { value});
+            }).isNumeric().withMessage((value, { req}) => {
+                return req.__('processingFees.numeric', { value});
+            }),
+            body('onlineCoursesRatio').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('onlineCoursesRatio.required', { value});
+            }).isNumeric().withMessage((value, { req}) => {
+                return req.__('onlineCoursesRatio.numeric', { value});
+            }),
+            body('onsiteCoursesRatio').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('onsiteCoursesRatio.required', { value});
+            }).isNumeric().withMessage((value, { req}) => {
+                return req.__('onsiteCoursesRatio.numeric', { value});
+            }),
+            body('eventsRatio').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('eventsRatio.required', { value});
+            }).isNumeric().withMessage((value, { req}) => {
+                return req.__('eventsRatio.numeric', { value});
+            }),
+            body('feesPaymentRatio').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('feesPaymentRatio.required', { value});
+            }).isNumeric().withMessage((value, { req}) => {
+                return req.__('feesPaymentRatio.numeric', { value});
+            }),
+            body('fundRatio').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('fundRatio.required', { value});
+            }).isNumeric().withMessage((value, { req}) => {
+                return req.__('fundRatio.numeric', { value});
+            }),
            
         ];
         return validations;

@@ -127,6 +127,14 @@ const transactionSchema = new Schema({
     billUrl:{
         type:String,
     },
+    edyouhubCommission:{
+        type: Number,
+        default:0,
+    },
+    processingFees:{
+        type: Number,
+        default:10,
+    },
     deleted:{
         type:Boolean,
         default:false

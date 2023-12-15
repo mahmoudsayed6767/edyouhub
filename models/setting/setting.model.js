@@ -40,6 +40,31 @@ const SettingSchema = new Schema({
         required: true,
         default:"1V"
     },
+    onlineCoursesRatio:{
+        type: Number,
+        default:10,
+        required: true
+    },
+    onsiteCoursesRatio:{
+        type: Number,
+        default:10,
+        required: true
+    },
+    eventsRatio:{
+        type: Number,
+        default:10,
+        required: true
+    },
+    feesPaymentRatio:{
+        type: Number,
+        default:10,
+        required: true
+    },
+    fundRatio:{
+        type: Number,
+        default:10,
+        required: true
+    },
     processingFees:{
         type: Number,
         default:5,
