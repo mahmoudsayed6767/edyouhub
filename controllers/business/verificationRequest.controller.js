@@ -32,8 +32,8 @@ export default {
                     query.owner = req.user._id
                 }
                 if (req.user.type == "USER" && business){
-                    let business = await checkExistThenGet(business,Business,{deleted: false })
-                    if (req.user._id == business.owner){
+                    let theBusiness = await checkExistThenGet(business,Business,{deleted: false })
+                    if (req.user._id == theBusiness.owner){
                         query.business = business
                     }
                     

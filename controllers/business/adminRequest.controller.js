@@ -24,14 +24,15 @@ export default {
             let page = +req.query.page || 1, limit = +req.query.limit || 20 ;
             let {business,to,service } = req.query
 
+            
             let query = {deleted: false };
             if (!isInArray(["ADMIN", "SUB-ADMIN"], req.user.type)) {
-                if (req.user.type == "USER" && to){
+                if (to){
                     query.to = req.user._id
                 }
-                if (req.user.type == "USER" && business){
-                    let business = await checkExistThenGet(business,Business,{deleted: false })
-                    if (req.user._id == business.owner){
+                if (business){
+                    let theBusiness  = await checkExistThenGet(business,Business,{deleted: false })
+                    if (req.user._id == theBusiness.owner){
                         query.business = business
                     }
                     
