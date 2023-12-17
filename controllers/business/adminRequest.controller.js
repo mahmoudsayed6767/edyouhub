@@ -22,7 +22,7 @@ export default {
         try {
             let lang = i18n.getLocale(req) 
             let page = +req.query.page || 1, limit = +req.query.limit || 20 ;
-            let {business,to } = req.query
+            let {business,to,service } = req.query
 
             let query = {deleted: false };
             if (!isInArray(["ADMIN", "SUB-ADMIN"], req.user.type)) {
@@ -36,9 +36,11 @@ export default {
                     }
                     
                 }
+                if(service) query.service = service
             }else{
                 if(to) query.to = to
                 if(business) query.business = business
+                if(service) query.service = service
             }
             
             await AdminRequest.find(query).populate(populateQuery)
