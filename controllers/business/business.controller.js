@@ -1,10 +1,10 @@
 import Report from "../../models/reports/report.model";
 import { body } from "express-validator";
-import { checkValidations } from "../shared/shared.controller";
+import { checkValidations ,handleImg} from "../shared/shared.controller";
 import ApiError from "../../helpers/ApiError";
 import { checkExist, isInArray, isLat, isLng } from "../../helpers/CheckMethods";
 import ApiResponse from "../../helpers/ApiResponse";
-import { checkExistThenGet } from "../../helpers/CheckMethods";
+import { checkExistThenGet,isImgUrl } from "../../helpers/CheckMethods";
 import i18n from "i18n";
 import Country from "../../models/country/country.model";
 import City from "../../models/city/city.model";
@@ -29,8 +29,10 @@ import Follow from "../../models/follow/follow.model";
 import Post from "../../models/post/post.model";
 import Activity from "../../models/user/activity.model"
 import { transformActivity } from "../../models/user/transformActivity"
-
+import BusinessTransfer from "../../models/business/businessTransfer.model";
 import BusinessRequest from "../../models/business/businessRequest.model";
+import { transformBusinessTransfer } from "../../models/business/transformBusinessTransfer"
+
 //validate location
 function validatedLocation(location) {
     if (!isLng(location[0]))
@@ -83,6 +85,11 @@ const populateActivityQuery = [
         populate: { path: 'package', model: 'package' },
     },
 ];
+const populateQueryBusinessTransfer = [
+    { path: 'actionUser', model: 'user' },
+    { path: 'business', model: 'business' },
+];
+
 
 export default {
     //validate body
@@ -1146,7 +1153,90 @@ export default {
             next(err);
         }
     },
+    validatePayBody(isUpdate = false) {
+        let validations = [
+            body('cost').not().isEmpty().withMessage((value, { req }) => {
+                return req.__('cost.required', { value });
+            }).isNumeric().withMessage((value, { req }) => {
+                return req.__('cost.numeric', { value });
+            }),
+            body('transferImg').optional().custom(val => isImgUrl(val)).withMessage((value, { req}) => {
+                return req.__('transferImg.syntax', { value});
+            })
+        ];
+        return validations;
+    },
+    async payToBusiness(req, res, next) {
+        try {
+            const validatedBody = checkValidations(req);
+            let { businessId } = req.params
+            let business = await checkExistThenGet(businessId, Business);
+            business.dues = business.dues - validatedBody.cost;
+            validatedBody.actionUser = req.user._id
+            validatedBody.duesBefore = business.dues
+            validatedBody.business = businessId
+            let newDues = business.dues - validatedBody.cost;
+
+            validatedBody.duesAfter = newDues
+            business.dues = newDues
+            let transferImg = await handleImg(req);
+            validatedBody.transferImg = transferImg;
+            await BusinessTransfer.create({ ...validatedBody});
+            await business.save();
+            let reports = {
+                "action": "pay to Business",
+                "type": "BUSINESS",
+                "deepId": businessId,
+                "user": req.user._id
+            };
+            await Report.create({...reports });
+            res.send({
+                success: true
+            });
+        } catch (err) {
+            next(err);
+        }
+    },
     
+    async getAllBusinessTransfers(req, res, next) {        
+        try {
+            let lang = i18n.getLocale(req) 
+            let page = +req.query.page || 1, limit = +req.query.limit || 20 ;
+            let {business } = req.query
+
+            
+            let query = {deleted: false };
+            if (!isInArray(["ADMIN", "SUB-ADMIN"], req.user.type)) {
+                if (business){
+                    let theBusiness  = await checkExistThenGet(business,Business,{deleted: false })
+                    if (req.user._id == theBusiness.owner){
+                        query.business = business
+                    } 
+                }
+            }else{
+                if(business) query.business = business
+            }
+            
+            await BusinessTransfer.find(query).populate(populateQueryBusinessTransfer)
+                .sort({ _id: -1 })
+                .limit(limit)
+                .skip((page - 1) * limit)
+                .then(async (data) => {
+                    var newdata = [];
+                    await Promise.all(data.map(async(e) =>{
+                        let index = await transformBusinessTransfer(e,lang)
+                        newdata.push(index);
+                    }))
+                    const count = await BusinessTransfer.countDocuments(query);
+                    const pageCount = Math.ceil(count / limit);
     
+                    res.send(new ApiResponse(newdata, page, pageCount, limit, count, req));
+                });
+
+
+        } catch (err) {
+            next(err);
+        }
+    },
     
 }

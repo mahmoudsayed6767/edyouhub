@@ -94,7 +94,16 @@ router.route('/:businessId/getActivities')
         requireAuth,
         businessController.getActivities
     )
-
+router.route('/:businessId/payToBusiness')
+    .put(
+        requireAuth,
+        permissions('ADMIN'),
+        multerSaveTo('business').single('transferImg'),
+        businessController.validatePayBody(),
+        businessController.payToBusiness
+    )
+router.route('/businessTransfers/getAll')
+    .get(requireAuth,businessController.getAllBusinessTransfers);
 router.route('/:businessId/sendVerificationRequest')
     .post(  
         requireAuth,
