@@ -693,7 +693,7 @@ export default {
     async getAllTransactions(req, res, next) {        
         try {
             let lang = i18n.getLocale(req)
-            let {thePackage,type,user,fund,fees,status} = req.query;
+            let {start,end,thePackage,type,user,fund,fees,status} = req.query;
             
             let query = {deleted: false };
            
