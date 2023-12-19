@@ -25,7 +25,7 @@ const adminRequestSchema = new Schema({
     },
     service:{
         type: String,
-        enum:['ADMISSION', 'VACANCY', 'EVENT', 'COURSES'],
+        enum:['ADMISSION', 'VACANCY', 'EVENT', 'COURSE'],
         required: true,
     },
     business: {

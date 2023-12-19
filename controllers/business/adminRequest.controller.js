@@ -22,7 +22,7 @@ export default {
         try {
             let lang = i18n.getLocale(req) 
             let page = +req.query.page || 1, limit = +req.query.limit || 20 ;
-            let {business,to,service } = req.query
+            let {business,to,service,status } = req.query
 
             
             let query = {deleted: false };
@@ -34,13 +34,19 @@ export default {
                     let theBusiness  = await checkExistThenGet(business,Business,{deleted: false })
                     if (req.user._id == theBusiness.owner){
                         query.business = business
+                    }else{
+                        query.to = req.user._id
                     }
-                    
+                }
+                if (!to && !business){
+                    query.to = req.user._id
                 }
                 if(service) query.service = service
+                if(status) query.status = status
             }else{
                 if(to) query.to = to
                 if(business) query.business = business
+                if(status) query.status = status
                 if(service) query.service = service
             }
             
@@ -77,7 +83,7 @@ export default {
                 else
                     return true;
             }),
-            body('service').optional().isIn(['ADMISSION', 'VACANCY', 'EVENT', 'COURSES']).withMessage((value, { req }) => {
+            body('service').optional().isIn(['ADMISSION', 'VACANCY', 'EVENT', 'COURSE']).withMessage((value, { req }) => {
                 return req.__('service.invalid', { value });
             }),
 
@@ -128,7 +134,6 @@ export default {
                 if (adminRequest.service == "VACANCY") arr = businessManagement.vacancy.supervisors;
                 if (adminRequest.service == "EVENT") arr = businessManagement.events.supervisors;
                 if (adminRequest.service == "COURSE") arr = businessManagement.courses.supervisors;
-    
                 arr.push(adminRequest.to)
     
                 if (adminRequest.service == "ADMISSION")businessManagement.admission.supervisors = arr;
@@ -136,7 +141,6 @@ export default {
                 if (adminRequest.service == "EVENT") businessManagement.events.supervisors = arr;
                 if (adminRequest.service == "COURSE") businessManagement.courses.supervisors = arr;
                 await businessManagement.save();
-
                 let supervisor = await checkExistThenGet(adminRequest.to,User,{deleted:false});
                 arr = supervisor.managmentBusinessAccounts
                 var found = arr.find(e => e == adminRequest.business)

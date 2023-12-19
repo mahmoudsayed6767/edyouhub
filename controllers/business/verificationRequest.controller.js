@@ -36,7 +36,9 @@ export default {
                     if (req.user._id == theBusiness.owner){
                         query.business = business
                     }
-                    
+                }
+                if (!owner && !business){
+                    query.owner = req.user._id
                 }
             }else{
                 if(status) query.status = status
