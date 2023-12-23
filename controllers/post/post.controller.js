@@ -19,8 +19,8 @@ import Activity from "../../models/user/activity.model";
 import GroupParticipant from "../../models/group/groupParticipant.model";
 import { sendNotifiAndPushNotifi } from "../../services/notification-service";
 import Notif from "../../models/notif/notif.model";
+import Vacancy from "../../models/vacancy/vacancy.model";
 import EventAttendance from "../../models/event/eventAttendance.model";
-
 const populateQuery = [
     {
         path: 'owner', model: 'user',
@@ -35,7 +35,7 @@ const populateQuery = [
         populate: { path: 'package', model: 'package' },
     },
     { path: 'options', model: 'option'},
-    { path: 'vacancy', model: 'vacancy'},
+    { path: 'vacancies', model: 'vacancy'},
     { path: 'event', model: 'event'},
     {
         path: 'event', model: 'event',
@@ -241,6 +241,16 @@ export default {
                 else
                     return true;
             }),
+            body('vacancies').optional()
+            .custom(async(vacancies, { req }) => {
+                for (let value of vacancies) {
+                    if (!await Vacancy.findOne({ _id: value, deleted: false }))
+                        throw new Error(req.__('vacancy.invalid'));
+                    else
+                        return true;
+                }
+                return true;
+            }),
             body('theOptions').optional()
             .custom(async (options, { req }) => {
                 for (let option of options) {
@@ -277,6 +287,7 @@ export default {
             body('viewPlaceType').optional().isIn(['WALL', 'BOARD']).withMessage((value, { req}) => {
                 return req.__('viewPlaceType.invalid', { value});
             }),
+            body('sponser').optional()
         ];
         return validations;
     },
@@ -287,12 +298,20 @@ export default {
             if(validatedBody.business) validatedBody.ownerType = 'BUSINESS'
             if(validatedBody.group){
                 let group = await checkExistThenGet(validatedBody.group,Group)
+                let arr = group.admins;
                 if(group.postedType == "BY-REQUEST"){
-                    let arr = group.admins;
                     var found = arr.find((e) => e == validatedBody.group); 
                     if(!found){
                         validatedBody.status = "PENDING"
                     }
+                }
+                if(validatedBody.sponser == rue){
+                    var found = arr.find((e) => e == validatedBody.group); 
+                    if(!found){
+                        validatedBody.sponser = true;
+                    }
+                }else{
+                    validatedBody.sponser = false
                 }
             }
             let createdPost = await Post.create({ ...validatedBody});
@@ -305,6 +324,11 @@ export default {
                 }));  
             }
             createdPost.options = options
+            if(validatedBody.sponser && validatedBody.group){
+                let group = await checkExistThenGet(validatedBody.group,Group)
+                group.sponserPost = createdPost._id;
+                await group.save();
+            }
             await createdPost.save();
             let activityBody = {user:req.user._id,action:'CREATE-POST',post:createdPost._id}
             if(validatedBody.business) activityBody.business = validatedBody.business

@@ -12,6 +12,7 @@ export async function transformPost(e,lang,myUser,userId) {
         commentsCount:e.commentsCount,
         dataType:e.dataType,
         viewPlaceType:e.viewPlaceType,
+        sponser:e.sponser,
         isLike:userId?isInArray(e.likedList,userId):false,
         id:e._id,
         createdAt: e.createdAt
@@ -78,16 +79,18 @@ export async function transformPost(e,lang,myUser,userId) {
         options.push(option)
     }
     index.options = options;
-    if(e.vacancy) {
-        let vacancy = {
-            profession:e.vacancy.profession,
-            requirements:e.vacancy.requirements,
-            description: e.vacancy.description,
-            id: e.vacancy._id,
-            createdAt: e.vacancy.createdAt,   
+    if(e.vacancies) {
+        for (let val of e.vacancy) {
+            vacancies.push({
+                type:val.type,
+                img:val.img,
+                title:val.title,
+                id: val._id,
+                createdAt: val.createdAt,   
+            })
         }
-        index.vacancy = vacancy;
     }
+    index.vacancies = vacancies;
     if(e.admission){
         let admission = {
             status:e.admission.status,
@@ -189,6 +192,7 @@ export async function transformPostById(e,lang,myUser,userId) {
         commentsCount:e.commentsCount,
         dataType:e.dataType,
         viewPlaceType:e.viewPlaceType,
+        sponser:e.sponser,
         isLike:userId?isInArray(e.likedList,userId):false,
         id:e._id,
         createdAt: e.createdAt
@@ -257,16 +261,19 @@ export async function transformPostById(e,lang,myUser,userId) {
         options.push(option)
     }
     index.options = options;
-    if(e.vacancy) {
-        let vacancy = {
-            profession:e.vacancy.profession,
-            requirements:e.vacancy.requirements,
-            description: e.vacancy.description,
-            id: e.vacancy._id,
-            createdAt: e.vacancy.createdAt,   
+    if(e.vacancies) {
+        for (let val of e.vacancy) {
+            vacancies.push({
+                type:val.type,
+                img:val.img,
+                title:val.title,
+                id: val._id,
+                createdAt: val.createdAt,   
+            })
         }
-        index.vacancy = vacancy;
     }
+    index.vacancies = vacancies;
+
     if(e.admission){
         let index = {
             status:e.admission.status,

@@ -41,12 +41,12 @@ router.route('/:groupId/getParticipants')
 router.route('/:groupParticipantId/acceptMember')
     .put(
         requireAuth,
-        groupController.accept
+        groupController.acceptMember
     )
 router.route('/:groupParticipantId/rejectMember')
     .put(
         requireAuth,
-        groupController.reject
+        groupController.rejectMember
     )
 
 router.route('/:groupId/removeUser/:userId')
@@ -54,5 +54,27 @@ router.route('/:groupId/removeUser/:userId')
         requireAuth,
         groupController.removeUserFromGroup
     )
-
+router.route('/getAllGroupAdminRequests')
+    .get(requireAuth,groupController.getAllGroupAdminRequestsPaginated)
+router.route('/:groupId/sendGroupAdminRequest')
+    .post(
+        requireAuth,
+        groupController.validateSendGroupAdminRequestBody(),
+        groupController.sendGroupAdminRequest
+    )
+router.route('/:groupId/acceptGroupAdminRequest/:groupAdminRequestId')
+    .put(
+        requireAuth,
+        groupController.acceptGroupAdminRequest
+    )
+router.route('/:groupId/rejectGroupAdminRequest/:groupAdminRequestId')
+    .put(
+        requireAuth,
+        groupController.rejectGroupAdminRequest
+    )
+router.route('/:groupId/deleteGroupAdminRequest/:groupAdminRequestId')
+    .delete(
+        requireAuth,
+        groupController.deleteGroupAdminRequest
+    )
 export default router;

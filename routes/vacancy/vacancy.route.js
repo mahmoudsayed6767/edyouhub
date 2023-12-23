@@ -1,12 +1,14 @@
 import express from 'express';
 import { requireAuth } from '../../services/passport';
 import vacancyController from '../../controllers/vacancy/vacancy.controller';
+import { multerSaveTo } from '../../services/multer-service';
 
 const router = express.Router();
 
 router.route('/')
     .post(
         requireAuth,
+        multerSaveTo('users').single('img'),
         vacancyController.validateBody(),
         vacancyController.create
     )
@@ -18,6 +20,7 @@ router.route('/withoutPagenation/get')
 router.route('/:vacancyId')
     .put(
         requireAuth,
+        multerSaveTo('users').single('img'),
         vacancyController.validateBody(true),
         vacancyController.update
     )

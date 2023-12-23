@@ -1,11 +1,12 @@
 import ApiResponse from "../../helpers/ApiResponse";
 import Report from "../../models/reports/report.model";
 import { checkExist, checkExistThenGet } from "../../helpers/CheckMethods";
-import { handleImgs, checkValidations } from "../shared/shared.controller";
+import { checkValidations } from "../shared/shared.controller";
 import { body } from "express-validator";
 import Anoncement from "../../models/anoncement/anoncement.model";
 import moment from "moment";
 import { toImgUrl } from "../../utils";
+import Group from "../../models/group/group.model";
 
 export default {
     //find all data with pagenation
@@ -88,8 +89,11 @@ export default {
             body('endDate').optional().isISO8601().withMessage((value, { req }) => {
                 return req.__('invalid.date', { value });
             }),
-            body('viewOn').optional()
-
+            body('viewOn').optional(),
+            body('group').optional(),
+            body('type').optional().isIn(['STATIC', 'DISPLY']).withMessage((value, { req}) => {
+                return req.__('dataType.invalid', { value});
+            })
 
         ];
 
@@ -99,16 +103,14 @@ export default {
     async create(req, res, next) {
         try {
             const validatedBody = checkValidations(req);
+            
             //convert human date to dateMilleSec
-
             if (validatedBody.endDate) {
                 if (!validatedBody.startDate) validatedBody.startDate = new Date();
                 validatedBody.startDateMillSec = Date.parse(validatedBody.startDate)
                 validatedBody.endDateMillSec = Date.parse(validatedBody.endDate)
                 validatedBody.openPeriod = false
             }
-
-            //upload img
             //upload imgs
             if (req.files) {
                 if (req.files['imgs']) {
@@ -124,6 +126,16 @@ export default {
                 return next(new ApiError(422, i18n.__('imgs.required')));
             }
             let createdAnoncement = await Anoncement.create({...validatedBody });
+            if (validatedBody.group) {
+                let group = await checkExistThenGet(validatedBody.group,Group)
+                if (validatedBody.type == "STATIC") {
+                    group.staticBanars.push(createdAnoncement._id)
+                }
+                if (validatedBody.type == "DISPLY") {
+                    group.displyBanars.push(createdAnoncement._id)
+                }
+                await group.save()
+            }
             //reports
             let reports = {
                 "action": "Create New Anoncement",
@@ -215,6 +227,28 @@ export default {
             let { anonId } = req.params;
             let anoncement = await checkExistThenGet(anonId, Anoncement, { deleted: false });
             anoncement.deleted = true;
+            if (anoncement.group) {
+                let group = await checkExistThenGet(anoncement.group,Group)
+                if (anoncement.type == "STATIC") {
+                    let arr = group.staticBanars;
+                    for(let i = 0;i<= arr.length;i=i+1){
+                        if(arr[i] == anonId){
+                            arr.splice(i, 1);
+                        }
+                    }
+                    group.staticBanars = arr;
+                }
+                if (anoncement.type == "DISPLY") {
+                    let arr = group.displyBanars;
+                    for(let i = 0;i<= arr.length;i=i+1){
+                        if(arr[i] == anonId){
+                            arr.splice(i, 1);
+                        }
+                    }
+                    group.displyBanars = arr;
+                }
+                await group.save()
+            }
             await anoncement.save();
             let reports = {
                 "action": "Delete Anoncement",
@@ -232,6 +266,3 @@ export default {
         }
     },
 };
-//fund programs
-//fund service provider : name, logo, admin-fees(percent) can be zero, monthly percent
-//subscribe service

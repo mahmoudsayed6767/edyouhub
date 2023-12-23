@@ -1,9 +1,13 @@
 
 export async function transformVacancy(e,lang) {
     let index = {
+        title:e.title,
         profession:e.profession,
         requirements:e.requirements,
         description: e.description,
+        img:e.img,
+        salary:e.salary,
+        experiences:e.experiences,
         id: e._id,
         createdAt: e.createdAt,                       
     }
@@ -32,14 +36,25 @@ export async function transformVacancy(e,lang) {
             id: e.educationInstitution._id,
         }
     }
+    if(e.educationSystem){
+        index.educationSystem = {
+            name:lang=="ar"?e.educationSystem.name_ar:e.educationSystem.name_en,
+            img: e.educationSystem.img,
+            id: e.educationSystem._id,
+        }
+    }
     return index
 }
 
 export async function transformVacancyById(e,lang) {
     let index = {
+        title:e.title,
         profession:e.profession,
         requirements:e.requirements,
         description: e.description,
+        img:e.img,
+        salary:e.salary,
+        experiences:e.experiences,
         id: e._id,
         createdAt: e.createdAt,                       
     }

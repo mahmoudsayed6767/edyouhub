@@ -464,7 +464,7 @@ export default {
         try {
             let { businessId } = req.params;
             let business = await checkExistThenGet(businessId, Business, { deleted: false })
-            if (!isInArray(["ADMIN", "SUB-ADMIN", "USER"], req.user.type)) {
+            if (!isInArray(["ADMIN", "SUB-ADMIN"], req.user.type)) {
                 if (business.owner != req.user._id)
                     return next(new ApiError(403, i18n.__('notAllow')));
             }
@@ -899,7 +899,7 @@ export default {
             const validatedBody = checkValidations(req);
             validatedBody.business = businessId
             let business = await checkExistThenGet(businessId, Business, { deleted: false })
-            if (!isInArray(["ADMIN", "SUB-ADMIN", "USER"], req.user.type)) {
+            if (!isInArray(["ADMIN", "SUB-ADMIN"], req.user.type)) {
                 if (business.owner != req.user._id)
                     return next(new ApiError(403, i18n.__('notAllow')));
             }
@@ -943,7 +943,7 @@ export default {
                 limit = +req.query.limit || 20;
             let { service } = req.query
             let business = await checkExistThenGet(businessId, Business, { deleted: false })
-            if (!isInArray(["ADMIN", "SUB-ADMIN", "USER"], req.user.type)) {
+            if (!isInArray(["ADMIN", "SUB-ADMIN"], req.user.type)) {
                 if (business.owner != req.user._id)
                     return next(new ApiError(403, i18n.__('notAllow')));
             }
@@ -1006,7 +1006,7 @@ export default {
         try {
             let { businessId } = req.params
             let business = await checkExistThenGet(businessId, Business, { deleted: false })
-            if (!isInArray(["ADMIN", "SUB-ADMIN", "USER"], req.user.type)) {
+            if (!isInArray(["ADMIN", "SUB-ADMIN"], req.user.type)) {
                 if (business.owner != req.user._id)
                     return next(new ApiError(403, i18n.__('notAllow')));
             }

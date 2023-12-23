@@ -95,7 +95,7 @@ export default {
             const validatedBody = checkValidations(req);
             let { businessId } = req.params
             let business = await checkExistThenGet(businessId, Business, { deleted: false })
-            if (!isInArray(["ADMIN", "SUB-ADMIN", "USER"], req.user.type)) {
+            if (!isInArray(["ADMIN", "SUB-ADMIN"], req.user.type)) {
                 if (business.owner != req.user._id)
                     return next(new ApiError(403, i18n.__('notAllow')));
             }
@@ -120,7 +120,7 @@ export default {
         try {
             let { adminRequestId } = req.params;
             let adminRequest = await checkExistThenGet(adminRequestId, AdminRequest, { deleted: false })
-            if (!isInArray(["ADMIN", "SUB-ADMIN", "USER"], req.user.type)) {
+            if (!isInArray(["ADMIN", "SUB-ADMIN"], req.user.type)) {
                 if (adminRequest.from != req.user._id)
                     return next(new ApiError(403, i18n.__('notAllow')));
             }
@@ -152,7 +152,7 @@ export default {
                 let reports = {
                     "action":"accept Admin Request",
                     "type":"BUSINESS",
-                    "deepId":adminRequestId,
+                    "deepId":adminRequest.business,
                     "user": req.user._id
                 };
                 await Report.create({...reports});
@@ -167,7 +167,7 @@ export default {
         try {
             let { adminRequestId } = req.params;
             let adminRequest = await checkExistThenGet(adminRequestId, AdminRequest, { deleted: false })
-            if (!isInArray(["ADMIN", "SUB-ADMIN", "USER"], req.user.type)) {
+            if (!isInArray(["ADMIN", "SUB-ADMIN"], req.user.type)) {
                 if (adminRequest.from != req.user._id)
                     return next(new ApiError(403, i18n.__('notAllow')));
             }
@@ -177,7 +177,7 @@ export default {
                 let reports = {
                     "action":"reject Admin Request",
                     "type":"BUSINESS",
-                    "deepId":adminRequestId,
+                    "deepId":adminRequest.business,
                     "user": req.user._id
                 };
                 await Report.create({...reports});
@@ -193,6 +193,11 @@ export default {
         try {
             let { adminRequestId } = req.params;
             let adminRequest = await checkExistThenGet(adminRequestId, AdminRequest);
+            let business = await checkExistThenGet(adminRequest.business, Business, { deleted: false })
+            if (!isInArray(["ADMIN", "SUB-ADMIN"], req.user.type)) {
+                if (business.owner != req.user._id)
+                    return next(new ApiError(403, i18n.__('notAllow')));
+            }
             adminRequest.deleted = true;
             await adminRequest.save();
             res.send({success: true});

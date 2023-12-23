@@ -8,10 +8,10 @@ const vacancySchema = new Schema({
         type: Number,
         required: true
     },
-    profession: {
+    title: {
         type: String,
         required: true,
-        trim: true
+        default:''
     },
     requirements: {
         type: String,
@@ -22,10 +22,40 @@ const vacancySchema = new Schema({
         type: String,
         required: true,
     },
+    experiences: {
+        type: String,
+        required: true,
+        default:''
+    },
+    salary: {
+        type: String,
+        required: true,
+        default:''
+    },
+    type:{
+        type: String, 
+        enum: ['TEACHING','NON-TEACHING'],
+        default:'NON-TEACHING'
+    },
+    img:{
+        type: String,
+        required: true,
+        default:''
+    },
+    educationSystem: {
+        type: Number,
+        ref: 'educationSystem',
+    },
+    profession: {
+        type: String,
+    },
+    grades: {
+        type: [Number],
+        ref: 'grade',
+    },
     educationInstitution: {
         type: Number,
         ref: 'educationInstitution',
-        required: true,
     },
     business: {
         type: Number,

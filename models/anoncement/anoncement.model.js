@@ -15,7 +15,7 @@ const AnoncementSchema=new Schema({
     },
     viewOn:{
         type: String,
-        enum:['CATEGORIES','HOME','BOARD','COURSES','POSTS','DIRECTORIES'],
+        enum:['CATEGORIES','HOME','BOARD','COURSES','POSTS','DIRECTORIES','GROUPS'],
         default: 'HOME',
     },
     startDateMillSec:{

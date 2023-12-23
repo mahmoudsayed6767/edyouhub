@@ -81,8 +81,8 @@ const postSchema=new Schema({
         type: Number,
         ref:'admission',
     },
-    vacancy: {
-        type: Number,
+    vacancies: {
+        type: [Number],
         ref:'vacancy',
     },
     likedList: {
@@ -96,6 +96,10 @@ const postSchema=new Schema({
     commentsCount:{
         type:Number,
         default:0
+    },
+    sponser:{
+        type:Boolean,
+        default:false
     },
     deleted:{
         type:Boolean,

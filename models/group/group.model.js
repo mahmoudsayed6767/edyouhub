@@ -15,6 +15,16 @@ const groupSchema = new Schema({
         trim: true,
         required: true,
     },
+    description: {
+        type: String,
+        required: true,
+        default:''
+    },
+    shortDescription: {
+        type: String,
+        required: true,
+        default:''
+    },
     type: {
         type: String,
         enum: ['PRIVATE', 'PUBLIC'],
@@ -39,6 +49,22 @@ const groupSchema = new Schema({
     admins: {
         type: [Number],
         ref: 'user',
+    },
+    sponserPost: {
+        type: Number,
+        ref: 'post',
+    },
+    displyBanars: {
+        type: [Number],
+        ref: 'anoncement',
+    },
+    staticBanars: {
+        type: [Number],
+        ref: 'anoncement',
+    },
+    isVerified:{
+        type:Boolean,
+        default:false
     },
     deleted:{
         type:Boolean,

@@ -483,7 +483,7 @@ export default {
         try {
             let { fundId } = req.params;
             let fund = await checkExistThenGet(fundId, Fund, { deleted: false })
-            if (!isInArray(["ADMIN", "SUB-ADMIN", "USER"], req.user.type)) {
+            if (!isInArray(["ADMIN", "SUB-ADMIN"], req.user.type)) {
                 if (fund.owner != req.user._id)
                     return next(new ApiError(403, i18n.__('notAllow')));
             }
@@ -803,7 +803,7 @@ export default {
         try {
             let { fundId } = req.params;
             let fund = await checkExistThenGet(fundId, Fund);
-            if (!isInArray(["ADMIN", "SUB-ADMIN", "USER"], req.user.type)) {
+            if (!isInArray(["ADMIN", "SUB-ADMIN"], req.user.type)) {
                 if (fund.owner != req.user._id)
                     return next(new ApiError(403, i18n.__('notAllow')));
             }
@@ -992,7 +992,7 @@ export default {
         try {
             let { fundId } = req.params;
             let fund = await checkExistThenGet(fundId, Fund);
-            if (!isInArray(["ADMIN", "SUB-ADMIN", "USER"], req.user.type)) {
+            if (!isInArray(["ADMIN", "SUB-ADMIN"], req.user.type)) {
                 if (fund.owner != req.user._id)
                     return next(new ApiError(403, i18n.__('notAllow')));
             }

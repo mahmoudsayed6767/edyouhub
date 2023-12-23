@@ -13,12 +13,18 @@ import { sendNotifiAndPushNotifi } from "../../services/notification-service";
 import Notif from "../../models/notif/notif.model"
 import Post from "../../models/post/post.model";
 import Activity from "../../models/user/activity.model"
+import { transformGroupAdminRequest } from "../../models/groupAdminRequest/transformGroupAdminRequest"
+import GroupAdminRequest from "../../models/groupAdminRequest/groupAdminRequest.model"
 const populateQuery = [
     { path: 'owner', model: 'user' },
     { path: 'admins', model: 'user' },
 ];
 const populateQueryParticipant = [
     { path: 'user', model: 'user' },
+];
+const populateQueryGroupAdminRequest = [
+    { path: 'group',model: 'group'},
+    { path: 'to', model: 'user' },
 ];
 export default {
     validateBody(isUpdate = false) {
@@ -316,9 +322,13 @@ export default {
             //check if user is new or exist
             let user = await checkExistThenGet(validatedBody.user, User);
             validatedBody.user = user.id
-            if (group.type == "PUBLIC") {
+            let admins = group.admins;
+            var adminFound = admins.find((e) => e == req.user._id);
+            
+            if (group.type == "PUBLIC" || adminFound == true) {
                 validatedBody.status = 'ACCEPTED'
                 group.usersCount = group.usersCount + 1
+                if(group.usersCount >= 1000) group.isVerified = true
                 await group.save()
                 if (!await GroupParticipant.findOne({ user: validatedBody.user, group: groupId, status: { $ne: 'REJECTED' }, deleted: false })) {
                     let arr = user.groups;
@@ -381,7 +391,7 @@ export default {
             next(err);
         }
     },
-    async accept(req, res, next) {
+    async acceptMember(req, res, next) {
         try {
             let { groupParticipantId } = req.params;
             let groupParticipant = await checkExistThenGet(groupParticipantId, GroupParticipant);
@@ -393,7 +403,7 @@ export default {
             }
             groupParticipant.status = "ACCEPTED";
             group.usersCount = group.usersCount + 1
-
+            if(group.usersCount >= 1000) group.isVerified = true
             await group.save()
             await groupParticipant.save();
             let user = await checkExistThenGet(groupParticipant.user, User);
@@ -440,7 +450,7 @@ export default {
             next(err);
         }
     },
-    async reject(req, res, next) {
+    async rejectMember(req, res, next) {
         try {
             let { groupParticipantId } = req.params;
             let groupParticipant = await checkExistThenGet(groupParticipantId, GroupParticipant);
@@ -542,6 +552,188 @@ export default {
             res.send({
                 success: true
             });
+        } catch (err) {
+            next(err);
+        }
+    },
+    validateSendGroupAdminRequestBody() {
+        let validations = [
+            body('to').not().isEmpty().withMessage((value, { req }) => {
+                return req.__('to.required', { value });
+            }).isNumeric().withMessage((value, { req }) => {
+                return req.__('to.numeric', { value });
+            }).custom(async(value, { req }) => {
+                if (!await User.findOne({ _id: value, deleted: false }))
+                    throw new Error(req.__('to.invalid'));
+                else
+                    return true;
+            }),
+        ];
+        return validations;
+    },
+    async sendGroupAdminRequest(req, res, next) {        
+        try {
+            const validatedBody = checkValidations(req);
+            let { groupId } = req.params
+            let group = await checkExistThenGet(groupId, Group, { deleted: false })
+            let admins = group.admins;
+            var adminFound = admins.find((e) => e == req.user._id);
+            if (!adminFound) {
+                return next(new ApiError(403, i18n.__('notAllow')));
+            }
+            validatedBody.from = req.user._id
+            validatedBody.group = groupId
+            let createdRequest = await GroupGroupAdminRequest.create({ ...validatedBody});
+
+            let reports = {
+                "action":"Create Admin Request",
+                "type":"GROUPS",
+                "deepId":groupId,
+                "user": req.user._id
+            };
+            await Report.create({...reports});
+            
+            res.status(200).send({success: true,data:createdRequest});
+        } catch (err) {
+            next(err);
+        }
+    },
+    async acceptGroupAdminRequest(req, res, next) {        
+        try {
+            let { groupAdminRequestId } = req.params;
+            let groupAdminRequest = await checkExistThenGet(groupAdminRequestId, GroupAdminRequest, { deleted: false })
+            if (!isInArray(["ADMIN", "SUB-ADMIN"], req.user.type)) {
+                if (groupAdminRequest.from != req.user._id)
+                    return next(new ApiError(403, i18n.__('notAllow')));
+            }
+            let user = await checkExistThenGet(groupAdminRequest.from, User);
+            let group = await checkExistThenGet(groupAdminRequest.group, Group);
+            if(groupAdminRequest.status == "PENDING"){
+                groupAdminRequest.status = 'ACCEPTED'
+                await groupAdminRequest.save();
+                
+                if (!await GroupParticipant.findOne({ user: validatedBody.user, group: groupAdminRequest.group, status: { $ne: 'REJECTED' }, deleted: false })) {
+                    let arr = user.groups;
+                    var found = arr.find((e) => e == groupAdminRequest.group);
+                    if (!found) {
+                        user.groups.push(groupAdminRequest.group);
+                        await user.save();
+                        await GroupParticipant.create({user: groupAdminRequest.from, group: groupAdminRequest.group, status:'ACCEPTED' });
+                    }
+                    group.usersCount = group.usersCount + 1
+                    if(group.usersCount >= 1000) group.isVerified = true
+                    group.admins.push(groupAdminRequest.from)
+                    await group.save()
+                }else{
+                    group.admins.push(groupAdminRequest.from)
+                    await group.save()  
+                }
+                let reports = {
+                    "action":"accept Admin Request",
+                    "type":"GROUPS",
+                    "deepId":groupAdminRequest.group,
+                    "user": req.user._id
+                };
+                await Report.create({...reports});
+            }
+            res.status(200).send({success: true});
+        } catch (err) {
+            next(err);
+        }
+    },
+    async rejectGroupAdminRequest(req, res, next) {        
+        try {
+            let { groupAdminRequestId } = req.params;
+            let groupAdminRequest = await checkExistThenGet(groupAdminRequestId, GroupAdminRequest, { deleted: false })
+            if (!isInArray(["ADMIN", "SUB-ADMIN"], req.user.type)) {
+                if (groupAdminRequest.from != req.user._id)
+                    return next(new ApiError(403, i18n.__('notAllow')));
+            }
+            if(groupAdminRequest.status == "PENDING"){
+                groupAdminRequest.status = 'REJECTED'
+                await groupAdminRequest.save()
+                let reports = {
+                    "action":"reject Admin Request",
+                    "type":"GROUPS",
+                    "deepId":groupAdminRequest.group,
+                    "user": req.user._id
+                };
+                await Report.create({...reports});
+            }
+            res.status(200).send({success: true});
+        } catch (err) {
+            next(err);
+        }
+    },
+    async getAllGroupAdminRequestsPaginated(req, res, next) {        
+        try {
+            let lang = i18n.getLocale(req) 
+            let page = +req.query.page || 1, limit = +req.query.limit || 20 ;
+            let {group,to,status } = req.query
+
+            
+            let query = {deleted: false };
+            if (!isInArray(["ADMIN", "SUB-ADMIN"], req.user.type)) {
+                if (to){
+                    query.to = req.user._id
+                }
+                if (group){
+                    let theGroup  = await checkExistThenGet(group,Group,{deleted: false })
+                    let admins = theGroup.admins;
+                    var adminFound = admins.find((e) => e == req.user._id);
+                    if (adminFound) {
+                        query.group = group
+                    }else{
+                        query.to = req.user._id
+                    }
+                }
+                if (!to && !group){
+                    query.to = req.user._id
+                }
+                if(status) query.status = status
+            }else{
+                if(to) query.to = to
+                if(group) query.group = group
+                if(status) query.status = status
+            }
+            
+            await GroupAdminRequest.find(query).populate(populateQueryGroupAdminRequest)
+                .sort({ _id: -1 })
+                .limit(limit)
+                .skip((page - 1) * limit)
+                .then(async (data) => {
+                    var newdata = [];
+                    await Promise.all(data.map(async(e) =>{
+                        let index = await transformGroupAdminRequest(e,lang)
+                        newdata.push(index);
+                    }))
+                    const count = await GroupAdminRequest.countDocuments(query);
+                    const pageCount = Math.ceil(count / limit);
+    
+                    res.send(new ApiResponse(newdata, page, pageCount, limit, count, req));
+                });
+
+
+        } catch (err) {
+            next(err);
+        }
+    },
+    async deleteGroupAdminRequest(req, res, next) {        
+        try {
+            let { groupAdminRequestId } = req.params;
+            let groupAdminRequest = await checkExistThenGet(groupAdminRequestId, GroupAdminRequest);
+            let group = await checkExistThenGet(groupAdminRequest.group, Group, { deleted: false })
+            if (!isInArray(["ADMIN", "SUB-ADMIN"], req.user.type)) {
+                let admins = group.admins;
+                var adminFound = admins.find((e) => e == req.user._id);
+                if (!adminFound) {
+                    return next(new ApiError(403, i18n.__('notAllow')));
+                }
+            }
+            groupAdminRequest.deleted = true;
+            await groupAdminRequest.save();
+            res.send({success: true});
+
         } catch (err) {
             next(err);
         }

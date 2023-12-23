@@ -64,7 +64,6 @@ export default {
             .custom(async(grades, { req }) => {
                 if (grades.length == 0 && !req.body.faculties) {
                     throw new Error(req.__('grades.required'));
-
                 }
                 for (let value of grades) {
                     if (!await Grade.findOne({ _id: value, deleted: false }))

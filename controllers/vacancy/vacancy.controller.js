@@ -1,7 +1,7 @@
 import Vacancy from "../../models/vacancy/vacancy.model";
 import Report from "../../models/reports/report.model";
 import { body } from "express-validator";
-import { checkValidations } from "../shared/shared.controller";
+import { checkValidations ,handleImg} from "../shared/shared.controller";
 import { checkExist, isInArray } from "../../helpers/CheckMethods";
 import ApiResponse from "../../helpers/ApiResponse";
 import { checkExistThenGet } from "../../helpers/CheckMethods";
@@ -11,10 +11,14 @@ import Business from "../../models/business/business.model";
 import Post from "../../models/post/post.model";
 import BusinessManagement from "../../models/business/businessManagement.model"
 import VacancyRequest from "../../models/vacancyRequest/vacancyRequest.model";
+import Grade from "../../models/grade/grade.model";
+import EducationSystem from "../../models/education system/education system.model";
 
 const populateQuery = [
     { path: 'educationSystem', model: 'educationSystem' },
     { path: 'educationInstitution', model: 'educationInstitution' },
+    { path: 'educationSystem', model: 'educationSystem' },
+    { path: 'grades', model: 'grade' },
     {
         path: 'business',
         model: 'business',
@@ -25,8 +29,9 @@ export default {
     //validate body
     validateBody(isUpdate = false) {
         let validations = [
-            body('profession').not().isEmpty().withMessage((value, { req }) => {
-                return req.__('profession.required', { value });
+            
+            body('title').not().isEmpty().withMessage((value, { req }) => {
+                return req.__('title.required', { value });
             }),
             body('description').not().isEmpty().withMessage((value, { req }) => {
                 return req.__('description.required', { value });
@@ -34,19 +39,59 @@ export default {
             body('requirements').not().isEmpty().withMessage((value, { req }) => {
                 return req.__('requirements.required', { value });
             }),
+            body('salary').not().isEmpty().withMessage((value, { req }) => {
+                return req.__('salary.required', { value });
+            }),
+            body('experiences').not().isEmpty().withMessage((value, { req }) => {
+                return req.__('experiences.required', { value });
+            }),
+            body('type').not().isEmpty().withMessage((value, { req }) => {
+                return req.__('type.required', { value });
+            }).isIn(['TEACHING', 'NON-TEACHING']).withMessage((value, { req }) => {
+                return req.__('wrong.type', { value });
+            }),
+
             body('business').not().isEmpty().withMessage((value, { req }) => {
                 return req.__('business.required', { value });
             }).isNumeric().withMessage((value, { req }) => {
                 return req.__('business.numeric', { value });
             }),
+            body('profession').optional(),
+            body('grades').optional()
+            .custom(async(grades, { req }) => {
+                for (let value of grades) {
+                    if (!await Grade.findOne({ _id: value, deleted: false }))
+                        throw new Error(req.__('grade.invalid'));
+                    else
+                        return true;
+                }
+                return true;
+            }),
+            body('createPost').optional()
 
         ];
+        if (isUpdate)
+            validations.push([
+                body('img').optional().custom(val => isImgUrl(val)).withMessage((value, { req }) => {
+                    return req.__('image.invalid', { value });
+                })
+            ]);
+
         return validations;
     },
     //add new vacancy
     async create(req, res, next) {
         try {
             const validatedBody = checkValidations(req);
+            if(validatedBody.type == "NON-TEACHING" && !validatedBody.profession){
+                return next(new ApiError(422, i18n.__('profession.required')));
+            }
+            if (req.file) {
+                let image = await handleImg(req, { attributeName: 'img', isUpdate: true });
+                validatedBody.img = image;
+            }else{
+                return next(new ApiError(422, i18n.__('img.required')));
+            }
             let business = await checkExistThenGet(validatedBody.business, Business, { deleted: false })
             let businessManagement = await BusinessManagement.findOne({ deleted: false, business: business._id })
             if (!isInArray(["ADMIN", "SUB-ADMIN"], req.user.type)) {
@@ -63,14 +108,17 @@ export default {
             validatedBody.subSector = business.subSector
 
             let vacancy = await Vacancy.create({...validatedBody });
-            await Post.create({
-                vacancy: vacancy.id,
-                owner: req.user._id,
-                business: business.id,
-                ownerType: 'BUSINESS',
-                type: 'VACANCY',
-                content: vacancy.description
-            });
+            if(validatedBody.createPost != false){
+                await Post.create({
+                    vacancy: vacancy.id,
+                    owner: req.user._id,
+                    business: business.id,
+                    ownerType: 'BUSINESS',
+                    type: 'VACANCY',
+                    content: vacancy.description
+                });
+            }
+            
             let reports = {
                 "action": "Create New vacancy",
                 "type": "VACANCY",
@@ -114,6 +162,10 @@ export default {
             let { vacancyId } = req.params;
             await checkExist(vacancyId, Vacancy, { deleted: false })
             const validatedBody = checkValidations(req);
+            if (req.file) {
+                let image = await handleImg(req, { attributeName: 'img', isUpdate: true });
+                validatedBody.img = image;
+            }
             let business = await checkExistThenGet(validatedBody.business, Business, { deleted: false })
             let businessManagement = await BusinessManagement.findOne({ deleted: false, business: business._id })
             if (!isInArray(["ADMIN", "SUB-ADMIN"], req.user.type)) {
@@ -130,8 +182,11 @@ export default {
             validatedBody.subSector = business.subSector
             await Vacancy.findByIdAndUpdate(vacancyId, {...validatedBody });
             let thePost = await Post.findOne({ vacancy: vacancyId })
-            thePost.description = validatedBody.description
-            await thePost.save();
+            if(thePost){
+                thePost.description = validatedBody.description
+                await thePost.save();
+            }
+            
             let reports = {
                 "action": "Update vacancy",
                 "type": "VACANCY",
