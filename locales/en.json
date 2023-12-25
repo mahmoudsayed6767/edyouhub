@@ -329,5 +329,7 @@
 	"pendingReq.exist": "pending Request is already exist",
 	"commercialRegistry.required": "commercialRegistry.required",
 	"taxId.required": "taxId.required",
-	"managerId.required": "managerId.required"
+	"managerId.required": "managerId.required",
+	"admin.invalid": "admin.invalid",
+	"to.invalid": "to.invalid"
 }

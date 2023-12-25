@@ -54,7 +54,7 @@ router.route('/:groupId/removeUser/:userId')
         requireAuth,
         groupController.removeUserFromGroup
     )
-router.route('/getAllGroupAdminRequests')
+router.route('/groupAdminRequests/get')
     .get(requireAuth,groupController.getAllGroupAdminRequestsPaginated)
 router.route('/:groupId/sendGroupAdminRequest')
     .post(

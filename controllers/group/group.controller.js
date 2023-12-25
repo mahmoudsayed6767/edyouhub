@@ -32,6 +32,12 @@ export default {
             body('name').not().isEmpty().withMessage((value, { req }) => {
                 return req.__('name.required', { value });
             }),
+            body('description').not().isEmpty().withMessage((value, { req }) => {
+                return req.__('description.required', { value });
+            }),
+            body('shortDescription').not().isEmpty().withMessage((value, { req }) => {
+                return req.__('shortDescription.required', { value });
+            }),
             body('about').optional(),
             body('type').optional().isIn(['PRIVATE', 'PUBLIC'])
             .withMessage((value, { req }) => {
@@ -583,11 +589,11 @@ export default {
             }
             validatedBody.from = req.user._id
             validatedBody.group = groupId
-            let createdRequest = await GroupGroupAdminRequest.create({ ...validatedBody});
+            let createdRequest = await GroupAdminRequest.create({ ...validatedBody});
 
             let reports = {
                 "action":"Create Admin Request",
-                "type":"GROUPS",
+                "type":"GROUP",
                 "deepId":groupId,
                 "user": req.user._id
             };
@@ -603,34 +609,34 @@ export default {
             let { groupAdminRequestId } = req.params;
             let groupAdminRequest = await checkExistThenGet(groupAdminRequestId, GroupAdminRequest, { deleted: false })
             if (!isInArray(["ADMIN", "SUB-ADMIN"], req.user.type)) {
-                if (groupAdminRequest.from != req.user._id)
+                if (groupAdminRequest.to != req.user._id)
                     return next(new ApiError(403, i18n.__('notAllow')));
             }
-            let user = await checkExistThenGet(groupAdminRequest.from, User);
+            let user = await checkExistThenGet(groupAdminRequest.to, User);
             let group = await checkExistThenGet(groupAdminRequest.group, Group);
             if(groupAdminRequest.status == "PENDING"){
                 groupAdminRequest.status = 'ACCEPTED'
                 await groupAdminRequest.save();
                 
-                if (!await GroupParticipant.findOne({ user: validatedBody.user, group: groupAdminRequest.group, status: { $ne: 'REJECTED' }, deleted: false })) {
+                if (!await GroupParticipant.findOne({ user: groupAdminRequest.to, group: groupAdminRequest.group, status: { $ne: 'REJECTED' }, deleted: false })) {
                     let arr = user.groups;
                     var found = arr.find((e) => e == groupAdminRequest.group);
                     if (!found) {
                         user.groups.push(groupAdminRequest.group);
                         await user.save();
-                        await GroupParticipant.create({user: groupAdminRequest.from, group: groupAdminRequest.group, status:'ACCEPTED' });
+                        await GroupParticipant.create({user: groupAdminRequest.to, group: groupAdminRequest.group, status:'ACCEPTED' });
                     }
                     group.usersCount = group.usersCount + 1
                     if(group.usersCount >= 1000) group.isVerified = true
-                    group.admins.push(groupAdminRequest.from)
+                    group.admins.push(groupAdminRequest.to)
                     await group.save()
                 }else{
-                    group.admins.push(groupAdminRequest.from)
+                    group.admins.push(groupAdminRequest.to)
                     await group.save()  
                 }
                 let reports = {
                     "action":"accept Admin Request",
-                    "type":"GROUPS",
+                    "type":"GROUP",
                     "deepId":groupAdminRequest.group,
                     "user": req.user._id
                 };
@@ -646,7 +652,7 @@ export default {
             let { groupAdminRequestId } = req.params;
             let groupAdminRequest = await checkExistThenGet(groupAdminRequestId, GroupAdminRequest, { deleted: false })
             if (!isInArray(["ADMIN", "SUB-ADMIN"], req.user.type)) {
-                if (groupAdminRequest.from != req.user._id)
+                if (groupAdminRequest.to != req.user._id)
                     return next(new ApiError(403, i18n.__('notAllow')));
             }
             if(groupAdminRequest.status == "PENDING"){
@@ -654,7 +660,7 @@ export default {
                 await groupAdminRequest.save()
                 let reports = {
                     "action":"reject Admin Request",
-                    "type":"GROUPS",
+                    "type":"GROUP",
                     "deepId":groupAdminRequest.group,
                     "user": req.user._id
                 };
@@ -678,6 +684,7 @@ export default {
                     query.to = req.user._id
                 }
                 if (group){
+                    console.log("group",group)
                     let theGroup  = await checkExistThenGet(group,Group,{deleted: false })
                     let admins = theGroup.admins;
                     var adminFound = admins.find((e) => e == req.user._id);
