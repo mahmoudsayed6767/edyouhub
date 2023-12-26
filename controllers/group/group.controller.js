@@ -18,6 +18,15 @@ import GroupAdminRequest from "../../models/groupAdminRequest/groupAdminRequest.
 const populateQuery = [
     { path: 'owner', model: 'user' },
     { path: 'admins', model: 'user' },
+
+];
+const populateQueryById = [
+    { path: 'owner', model: 'user' },
+    { path: 'admins', model: 'user' },
+    { path: 'sponserPost', model: 'post' },
+    { path: 'displayBanars', model: 'anoncement' },
+    { path: 'staticBanars', model: 'anoncement' },
+
 ];
 const populateQueryParticipant = [
     { path: 'user', model: 'user' },
@@ -158,7 +167,7 @@ export default {
             if (userId) {
                 myUser = await checkExistThenGet(userId, User)
             }
-            await Group.findById(groupId).populate(populateQuery).then(async(e) => {
+            await Group.findById(groupId).populate(populateQueryById).then(async(e) => {
                 let index = await transformGroupById(e, lang, myUser, userId)
                 return res.send({
                     success: true,

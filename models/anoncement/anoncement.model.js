@@ -18,6 +18,11 @@ const AnoncementSchema=new Schema({
         enum:['CATEGORIES','HOME','BOARD','COURSES','POSTS','DIRECTORIES','GROUPS'],
         default: 'HOME',
     },
+    type:{
+        type: String,
+        enum:['NORMAL','STATIC', 'DISPLAY'],
+        default: 'NORMAL',
+    },
     startDateMillSec:{
         type: Number,
         //required: true,
@@ -37,6 +42,10 @@ const AnoncementSchema=new Schema({
     priority:{
         type:Number,
         default:0
+    },
+    group:{
+        type:Number,
+        ref:'group'
     },
     deleted:{
         type:Boolean,

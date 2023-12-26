@@ -54,7 +54,7 @@ const groupSchema = new Schema({
         type: Number,
         ref: 'post',
     },
-    displyBanars: {
+    displayBanars: {
         type: [Number],
         ref: 'anoncement',
     },

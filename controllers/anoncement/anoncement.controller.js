@@ -29,6 +29,8 @@ export default {
                             imgs: e.imgs,
                             link: e.link,
                             viewOn: e.viewOn,
+                            end:e.end,
+                            type:e.type,
                             openPeriod: e.openPeriod,
                             startDate: moment(e.startDateMillSec).format(),
                             endDate: moment(e.endDateMillSec).format(),
@@ -60,6 +62,8 @@ export default {
                             imgs: e.imgs,
                             link: e.link,
                             viewOn: e.viewOn,
+                            end:e.end,
+                            type:e.type,
                             startDate: moment(e.startDateMillSec).format(),
                             endDate: moment(e.endDateMillSec).format(),
                             openPeriod: e.openPeriod,
@@ -91,7 +95,7 @@ export default {
             }),
             body('viewOn').optional(),
             body('group').optional(),
-            body('type').optional().isIn(['STATIC', 'DISPLY']).withMessage((value, { req}) => {
+            body('type').optional().isIn(['STATIC', 'DISPLAY']).withMessage((value, { req}) => {
                 return req.__('dataType.invalid', { value});
             })
 
@@ -103,7 +107,14 @@ export default {
     async create(req, res, next) {
         try {
             const validatedBody = checkValidations(req);
-            
+            if(validatedBody.group){
+                let group = await checkExistThenGet(validatedBody.group,Group)
+                let arr = group.admins;
+                var found = arr.find((e) => e == validatedBody.group); 
+                if(!found){
+                    return next(new ApiError(403, i18n.__('notAllow')));
+                }
+            }
             //convert human date to dateMilleSec
             if (validatedBody.endDate) {
                 if (!validatedBody.startDate) validatedBody.startDate = new Date();
@@ -131,8 +142,8 @@ export default {
                 if (validatedBody.type == "STATIC") {
                     group.staticBanars.push(createdAnoncement._id)
                 }
-                if (validatedBody.type == "DISPLY") {
-                    group.displyBanars.push(createdAnoncement._id)
+                if (validatedBody.type == "DISPLAY") {
+                    group.displayBanars.push(createdAnoncement._id)
                 }
                 await group.save()
             }
@@ -162,6 +173,8 @@ export default {
                     let anoncement = {
                         link: e.link,
                         viewOn: e.viewOn,
+                        end:e.end,
+                        type:e.type,
                         openPeriod: e.openPeriod,
                         imgs: e.imgs,
                         startDate: moment(e.startDateMillSec).format(),
@@ -185,6 +198,14 @@ export default {
             await checkExist(anonId, Anoncement, { deleted: false });
 
             const validatedBody = checkValidations(req);
+            if(validatedBody.group){
+                let group = await checkExistThenGet(validatedBody.group,Group)
+                let arr = group.admins;
+                var found = arr.find((e) => e == validatedBody.group); 
+                if(!found){
+                    return next(new ApiError(403, i18n.__('notAllow')));
+                }
+            }
             //convert human date to milliseconds
             if (validatedBody.endDate) {
                 if (!validatedBody.startDate) validatedBody.startDate = new Date();
@@ -229,6 +250,11 @@ export default {
             anoncement.deleted = true;
             if (anoncement.group) {
                 let group = await checkExistThenGet(anoncement.group,Group)
+                let arr = group.admins;
+                var found = arr.find((e) => e == anoncement.group); 
+                if(!found){
+                    return next(new ApiError(403, i18n.__('notAllow')));
+                }
                 if (anoncement.type == "STATIC") {
                     let arr = group.staticBanars;
                     for(let i = 0;i<= arr.length;i=i+1){
@@ -238,14 +264,14 @@ export default {
                     }
                     group.staticBanars = arr;
                 }
-                if (anoncement.type == "DISPLY") {
-                    let arr = group.displyBanars;
+                if (anoncement.type == "DISPLAY") {
+                    let arr = group.displayBanars;
                     for(let i = 0;i<= arr.length;i=i+1){
                         if(arr[i] == anonId){
                             arr.splice(i, 1);
                         }
                     }
-                    group.displyBanars = arr;
+                    group.displayBanars = arr;
                 }
                 await group.save()
             }

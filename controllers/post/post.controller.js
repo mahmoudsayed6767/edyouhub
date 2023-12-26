@@ -305,13 +305,13 @@ export default {
                         validatedBody.status = "PENDING"
                     }
                 }
-                if(validatedBody.sponser == rue){
+                if(validatedBody.sponser == true){
                     var found = arr.find((e) => e == validatedBody.group); 
                     if(!found){
                         validatedBody.sponser = true;
+                    }else{
+                        validatedBody.sponser = false
                     }
-                }else{
-                    validatedBody.sponser = false
                 }
             }
             let createdPost = await Post.create({ ...validatedBody});
