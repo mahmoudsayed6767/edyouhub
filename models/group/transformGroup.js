@@ -1,6 +1,6 @@
 
 import {isInArray} from "../../helpers/CheckMethods";
-
+import moment from "moment"
 export async function transformGroup(e,lang,myUser,userId) {
     let index = {
         name:e.name,

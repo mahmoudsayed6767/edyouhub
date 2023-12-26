@@ -10,7 +10,6 @@ const router = express.Router();
 router.route('/')
     .post(
         requireAuth,
-        permissions('ADMIN'),
         multerSaveTo('anoncements').fields([
             { name: 'imgs', maxCount: 8, options: false },
         ]),
@@ -24,7 +23,6 @@ router.route('/withoutPagenation/get')
 router.route('/:anonId')
     .put(
         requireAuth,
-        permissions('ADMIN'),
         multerSaveTo('anoncements').fields([
             { name: 'imgs', maxCount: 8, options: false },
         ]),
@@ -32,7 +30,7 @@ router.route('/:anonId')
         AnoncementController.update
     )
     .get(cache(10),AnoncementController.findById)
-    .delete( requireAuth,permissions('ADMIN'),AnoncementController.delete);
+    .delete( requireAuth,AnoncementController.delete);
 
 
 

@@ -7,7 +7,8 @@ import Anoncement from "../../models/anoncement/anoncement.model";
 import moment from "moment";
 import { toImgUrl } from "../../utils";
 import Group from "../../models/group/group.model";
-
+import ApiError from '../../helpers/ApiError';
+import i18n from 'i18n'
 export default {
     //find all data with pagenation
     async findAll(req, res, next) {
@@ -110,7 +111,7 @@ export default {
             if(validatedBody.group){
                 let group = await checkExistThenGet(validatedBody.group,Group)
                 let arr = group.admins;
-                var found = arr.find((e) => e == validatedBody.group); 
+                var found = arr.find((e) => e == req.user._id); 
                 if(!found){
                     return next(new ApiError(403, i18n.__('notAllow')));
                 }

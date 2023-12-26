@@ -300,13 +300,13 @@ export default {
                 let group = await checkExistThenGet(validatedBody.group,Group)
                 let arr = group.admins;
                 if(group.postedType == "BY-REQUEST"){
-                    var found = arr.find((e) => e == validatedBody.group); 
+                    var found = arr.find((e) => e ==  req.user._id); 
                     if(!found){
                         validatedBody.status = "PENDING"
                     }
                 }
                 if(validatedBody.sponser == true){
-                    var found = arr.find((e) => e == validatedBody.group); 
+                    var found = arr.find((e) => e ==  req.user._id); 
                     if(!found){
                         validatedBody.sponser = true;
                     }else{
