@@ -67,6 +67,8 @@ export default {
                 }
                 return true;
             }),
+            body('importantNeeds').optional(),
+            body('subject').optional(),
             body('createPost').optional()
 
         ];

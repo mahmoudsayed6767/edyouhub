@@ -13,6 +13,12 @@ const vacancySchema = new Schema({
         required: true,
         default:''
     },
+    importantNeeds: {
+        type: String,
+    },
+    subject: {
+        type: String,
+    },
     requirements: {
         type: String,
         required: true,
