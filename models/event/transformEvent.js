@@ -68,6 +68,7 @@ export async function transformEventById(e,lang,userId) {
         waitToPaid:userId?isInArray(e.waitToPaid,userId):false,
         discount:e.discount,
         discountType:e.discountType,
+        accessCode:e.accessCode,
         id: e._id,
         createdAt: e.createdAt,                       
     }

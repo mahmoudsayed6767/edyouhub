@@ -444,16 +444,6 @@ export default {
             await Event.findByIdAndUpdate(eventId, {...validatedBody });
             validatedBody.fromDateMillSec = Date.parse(validatedBody.fromDate)
             validatedBody.toDateMillSec = Date.parse(validatedBody.toDate)
-            if (validatedBody.feesType == 'WITH-FEES') {
-                if (!validatedBody.paymentMethod) {
-                    return next(new ApiError(422, i18n.__('paymentMethod.required')));
-                } else {
-                    if (validatedBody.paymentMethod == "INSTALLMENT" && !validatedBody.installmentPrice)
-                        return next(new ApiError(422, i18n.__('installmentPrice.required')));
-                    if (validatedBody.paymentMethod != "CASH" && !validatedBody.installmentPrice)
-                        return next(new ApiError(422, i18n.__('cashPrice.required')));
-                }
-            }
             await Event.findByIdAndUpdate(eventId, {
                 ...validatedBody,
             }, { new: true });
@@ -788,6 +778,7 @@ export default {
     },
     async accessEvent(req, res, next) {        
         try {
+            console.log(req.user._id)
             const validatedBody = checkValidations(req);
             let {eventId} = req.params
             let event = await checkExistThenGet(eventId,Event,{deleted:false})
@@ -801,7 +792,7 @@ export default {
                         await AccessEvent.create({ user: req.user._id, event: eventId });
                         let reports = {
                             "action":"Get Access to Event",
-                            "type":"EVENTS",
+                            "type":"EVENT",
                             "deepId":eventId,
                             "user": req.user._id
                         };
