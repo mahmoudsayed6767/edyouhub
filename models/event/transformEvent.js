@@ -4,6 +4,8 @@ import {isInArray} from "../../helpers/CheckMethods";
 export async function transformEvent(e,lang,userId) {
     let index = {
         title:e.title,
+        privacyType:e.privacyType,
+        type:e.type,
         ownerType:e.ownerType,
         description:e.description,
         shortDescription:e.shortDescription,
@@ -13,8 +15,7 @@ export async function transformEvent(e,lang,userId) {
         imgs:e.imgs,
         feesType:e.feesType,
         paymentMethod:e.paymentMethod,
-        cashPrice:e.cashPrice,
-        installmentPrice:e.installmentPrice,
+        tickets:e.tickets,
         address:e.address,
         isInterest:userId?isInArray(e.interesting,userId):false,
         isAttendance:userId?isInArray(e.attendance,userId):false,
@@ -28,26 +29,6 @@ export async function transformEvent(e,lang,userId) {
             id: e.business._id,
         }
     }
-    /*usersParticipants*/
-    let usersParticipants=[]
-    for (let val of e.usersParticipants) {
-        usersParticipants.push({
-            fullname:val.fullname,
-            img:val.img,
-            id:val._id,                         
-        })
-    }
-    index.usersParticipants = usersParticipants;
-    /*businessParticipants*/
-    let businessParticipants=[]
-    for (let val of e.businessParticipants) {
-        businessParticipants.push({
-            name:lang=="ar"?val.name_ar:val.name_en,
-            img:val.img,
-            id: val._id,                      
-        })
-    }
-    index.businessParticipants = businessParticipants;
     return index
 }
 export async function transformEventById(e,lang,userId) {
@@ -56,7 +37,20 @@ export async function transformEventById(e,lang,userId) {
         ownerType:e.ownerType,
         description:e.description,
         shortDescription:e.shortDescription,
-        hostname:e.hostname,
+        privacyType:e.privacyType,
+        type:e.type,
+        joinCode:e.joinCode,
+        hosts:e.hosts,
+        sponsers:e.sponsers,
+        speakers:e.speakers,
+        organizers:e.organizers,
+        partners:e.partners,
+        exhibitors:e.exhibitors,
+        daysCount:e.daysCount,
+        travelType:e.travelType,
+        transportation:e.transportation,
+        nationalityType:e.nationalityType,
+        tickets:e.tickets,
         address:e.address,
         location:e.location,
         contactNumbers:e.contactNumbers,
@@ -67,9 +61,6 @@ export async function transformEventById(e,lang,userId) {
         imgs:e.imgs,
         feesType:e.feesType,
         paymentMethod:e.paymentMethod,
-        cashPrice:e.cashPrice,
-        installments:e.installments,
-        installmentPrice:e.installmentPrice,
         isInterest:userId?isInArray(e.interesting,userId):false,
         isAttendance:userId?isInArray(e.attendance,userId):false,
         waitToPaid:userId?isInArray(e.waitToPaid,userId):false,
@@ -97,25 +88,5 @@ export async function transformEventById(e,lang,userId) {
             id: e.area._id,
         }
     }
-    /*usersParticipants*/
-    let usersParticipants=[]
-    for (let val of e.usersParticipants) {
-        usersParticipants.push({
-            fullname:val.fullname,
-            img:val.img,
-            id:val._id,                         
-        })
-    }
-    index.usersParticipants = usersParticipants;
-    /*businessParticipants*/
-    let businessParticipants=[]
-    for (let val of e.businessParticipants) {
-        businessParticipants.push({
-            name:lang=="ar"?val.name_ar:val.name_en,
-            img:val.img,
-            id: val._id,                      
-        })
-    }
-    index.businessParticipants = businessParticipants;
     return index
 }

@@ -5,23 +5,24 @@ const eventSchema = new Schema({
         type: Number,
         required: true
     },
-    business: {
-        type: Number,
-        ref: 'business',
-    },
-    educationInstitution: {
-        type: Number,
-        ref: 'educationInstitution',
-    },
+    
     status: {
         type: String,
         enum: ['COMING', 'CURRENT', 'PASS'],
         default: 'COMING'
     },
-    ownerType: {
+    privacyType: {
         type: String,
-        enum: ['BUSINESS', 'APP'],
-        default: 'BUSINESS'
+        enum: ['PRIVAET', 'PUBLIC'],
+        default: 'PUBLIC'
+    },
+    joinCode: {
+        type: String,
+    },
+    type: {
+        type: String,
+        enum: ['ANNONCE', 'TRIP','CAMP','CONCERT','STAGE-EVENT','FAIR','BAZAR'],
+        default: 'ANNONCE'
     },
     title: {
         type: String,
@@ -35,10 +36,236 @@ const eventSchema = new Schema({
         type: String,
         default: ''
     },
-    hostname: {
+    ownerType: {
         type: String,
-        required: true
+        enum: ['BUSINESS', 'APP'],
+        default: 'BUSINESS'
     },
+    business: {
+        type: Number,
+        ref: 'business',
+    },
+    educationInstitution: {
+        type: Number,
+        ref: 'educationInstitution',
+    },
+    hosts: [
+        new Schema({
+            name: {
+                type: String,
+                required: true
+            },
+            type: {
+                type: String,
+                required: true
+            },
+            phone: {
+                type: String,
+                required: true
+            },
+            email: {
+                type: String,
+                required: true
+            },
+            logo: {
+                type: String,
+                required: true
+            },
+            website: {
+                type: String,
+                required: true
+            },
+            flag: {
+                type: String
+            },
+            appLink: {
+                type: String
+            },
+            
+        }, { _id: false })
+    ],
+    sponsers: [
+        new Schema({
+            name: {
+                type: String,
+                required: true
+            },
+            type: {
+                type: String,
+                required: true
+            },
+            phone: {
+                type: String,
+                required: true
+            },
+            email: {
+                type: String,
+                required: true
+            },
+            logo: {
+                type: String,
+                required: true
+            },
+            website: {
+                type: String,
+                required: true
+            },
+            flag: {
+                type: String
+            },
+            appLink: {
+                type: String
+            },
+            
+        }, { _id: false })
+    ],
+    speakers: [
+        new Schema({
+            name: {
+                type: String,
+                required: true
+            },
+            type: {
+                type: String,
+                required: true
+            },
+            phone: {
+                type: String,
+                required: true
+            },
+            email: {
+                type: String,
+                required: true
+            },
+            logo: {
+                type: String,
+                required: true
+            },
+            website: {
+                type: String,
+                required: true
+            },
+            flag: {
+                type: String
+            },
+            appLink: {
+                type: String
+            },
+            
+        }, { _id: false })
+    ],
+    organizers: [
+        new Schema({
+            name: {
+                type: String,
+                required: true
+            },
+            phone: {
+                type: String,
+                required: true
+            },
+            email: {
+                type: String,
+                required: true
+            },
+            logo: {
+                type: String,
+                required: true
+            },
+            website: {
+                type: String,
+                required: true
+            },
+            flag: {
+                type: String
+            },
+            appLink: {
+                type: String
+            },
+            
+        }, { _id: false })
+    ],
+    partners: [
+        new Schema({
+            name: {
+                type: String,
+                required: true
+            },
+            type: {
+                type: String,
+                required: true
+            },
+            phone: {
+                type: String,
+                required: true
+            },
+            email: {
+                type: String,
+                required: true
+            },
+            logo: {
+                type: String,
+                required: true
+            },
+            website: {
+                type: String,
+                required: true
+            },
+            flag: {
+                type: String
+            },
+            appLink: {
+                type: String
+            },
+            
+        }, { _id: false })
+    ],
+    exhibitors: [
+        new Schema({
+            name: {
+                type: String,
+                required: true
+            },
+            phone: {
+                type: String,
+                required: true
+            },
+            email: {
+                type: String,
+                required: true
+            },
+            logo: {
+                type: String,
+                required: true
+            },
+            website: {
+                type: String,
+                required: true
+            },
+            flag: {
+                type: String
+            },
+            appLink: {
+                type: String
+            },
+            
+        }, { _id: false })
+    ],
+    daysCount: {
+        type: String,
+    },
+    travelType: {
+        type: String,
+        enum: ['LOCAL','ABROAD']
+    },
+    transportation: {
+        type: String,
+    },
+    nationalityType: {
+        type: String,
+        enum: ['NATIONAL','INTERNAIONAL']
+    },
+
     address: {
         type: String,
         required: true
@@ -93,14 +320,6 @@ const eventSchema = new Schema({
             },
         }, { _id: false })
     ],
-    usersParticipants: [{
-        type: Number,
-        ref: 'user',
-    }],
-    businessParticipants: [{
-        type: Number,
-        ref: 'business',
-    }],
     imgs: [{
         type: String,
     }],
@@ -113,11 +332,28 @@ const eventSchema = new Schema({
         type: String,
         enum: ['CASH', 'INSTALLMENT', 'BOTH'],
     },
-    cashPrice: {
-        type: Number,
+    tickets: [
+        new Schema({
+            type: {
+                type: String,
+                required: true
+            },
+            cashPrice: {
+                type: Number,
+            },
+            installmentPrice: {
+                type: Number,
+            },
+        }, { _id: false })
+    ],
+    discountType: {
+        type: String,
+        enum: ['FIXED', 'RATIO'],
+        default: 'RATIO',
     },
-    installmentPrice: {
+    discount: {
         type: Number,
+        default: 0
     },
     installments: [
         new Schema({
@@ -139,15 +375,7 @@ const eventSchema = new Schema({
         type: Number,
         ref: 'user',
     }],
-    discountType: {
-        type: String,
-        enum: ['FIXED', 'RATIO'],
-        default: 'RATIO',
-    },
-    discount: {
-        type: Number,
-        default: 0
-    },
+    
     deleted: {
         type: Boolean,
         default: false

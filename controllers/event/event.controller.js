@@ -20,19 +20,19 @@ import Activity from "../../models/user/activity.model";
 
 const populateQuery = [
     { path: 'business', model: 'business' },
-    { path: 'businessParticipants', model: 'business' },
-    { path: 'usersParticipants', model: 'user' },
     { path: 'city', model: 'city' },
     { path: 'area', model: 'area' },
 
 ];
 //validate location
-function validatedLocation(location) {
+async function validatedLocation(location) {
     if (!isLng(location[0]))
         throw new ValidationError.UnprocessableEntity({ keyword: 'location', message: i18n.__("lng.validate") });
     if (!isLat(location[1]))
         throw new ValidationError.UnprocessableEntity({ keyword: 'location', message: i18n.__("lat.validate") });
+    return true;
 }
+
 export default {
     //validate body
     validateBody(isUpdate = false) {
@@ -44,15 +44,202 @@ export default {
                 return req.__('description.required', { value });
             }),
             body('shortDescription').optional(),
-            body('hostname').not().isEmpty().withMessage((value, { req }) => {
-                return req.__('hostname.required', { value });
+            body('privacyType').not().isEmpty().withMessage((value, { req }) => {
+                return req.__('privacyType.required', { value });
+            }).isIn(['PRIVAET', 'PUBLIC']).withMessage((value, { req }) => {
+                return req.__('privacyType.invalid', { value });
+            }),
+            body('joinCode').optional(),
+            body('type').not().isEmpty().withMessage((value, { req }) => {
+                return req.__('type.required', { value });
+            }).isIn(['ANNONCE', 'TRIP','CAMP','CONCERT','STAGE-EVENT','FAIR','BAZAR']).withMessage((value, { req }) => {
+                return req.__('type.invalid', { value });
+            }),
+            body('hosts').not().isEmpty().withMessage((value, { req }) => {
+                return req.__('hosts.required', { value });
+            }).isLength({ min: 1 }).withMessage((value, { req}) => {
+                return req.__('hosts.atLeastOne', { value});
+            }).custom(async(hosts, { req }) => {
+                for (let val of hosts) {
+                    body('name').not().isEmpty().withMessage((value, { req }) => {
+                        return req.__('name.required', { value });
+                    }),
+                    body('type').not().isEmpty().withMessage((value, { req }) => {
+                        return req.__('type.required', { value });
+                    }),
+                    body('phone').not().isEmpty().withMessage((value, { req }) => {
+                        return req.__('phone.required', { value });
+                    }),
+                    body('email').not().isEmpty().withMessage((value, { req }) => {
+                        return req.__('email.required', { value });
+                    }),
+                    body('website').not().isEmpty().withMessage((value, { req }) => {
+                        return req.__('website.required', { value });
+                    }),
+                    body('logo').not().isEmpty().withMessage((value, { req }) => {
+                        return req.__('logo.required', { value });
+                    }),
+                    body('flag').optional(),
+                    body('appLink').optional()
+                }
+                return true;
+            }),
+            body('organizers').not().isEmpty().withMessage((value, { req }) => {
+                return req.__('organizers.required', { value });
+            }).isLength({ min: 1 }).withMessage((value, { req}) => {
+                return req.__('organizers.atLeastOne', { value});
+            }).custom(async(organizers, { req }) => {
+                for (let val of organizers) {
+                    body('name').not().isEmpty().withMessage((value, { req }) => {
+                        return req.__('name.required', { value });
+                    }),
+                    body('type').not().isEmpty().withMessage((value, { req }) => {
+                        return req.__('type.required', { value });
+                    }),
+                    body('phone').not().isEmpty().withMessage((value, { req }) => {
+                        return req.__('phone.required', { value });
+                    }),
+                    body('email').not().isEmpty().withMessage((value, { req }) => {
+                        return req.__('email.required', { value });
+                    }),
+                    body('website').not().isEmpty().withMessage((value, { req }) => {
+                        return req.__('website.required', { value });
+                    }),
+                    body('logo').not().isEmpty().withMessage((value, { req }) => {
+                        return req.__('logo.required', { value });
+                    }),
+                    body('flag').optional(),
+                    body('appLink').optional()
+                }
+                return true;
+            }),
+            body('sponsers').optional().isLength({ min: 1 }).withMessage((value, { req}) => {
+                return req.__('sponsers.atLeastOne', { value});
+            }).custom(async(sponsers, { req }) => {
+                for (let val of sponsers) {
+                    body('name').not().isEmpty().withMessage((value, { req }) => {
+                        return req.__('name.required', { value });
+                    }),
+                    body('type').not().isEmpty().withMessage((value, { req }) => {
+                        return req.__('type.required', { value });
+                    }),
+                    body('phone').not().isEmpty().withMessage((value, { req }) => {
+                        return req.__('phone.required', { value });
+                    }),
+                    body('email').not().isEmpty().withMessage((value, { req }) => {
+                        return req.__('email.required', { value });
+                    }),
+                    body('website').not().isEmpty().withMessage((value, { req }) => {
+                        return req.__('website.required', { value });
+                    }),
+                    body('logo').not().isEmpty().withMessage((value, { req }) => {
+                        return req.__('logo.required', { value });
+                    }),
+                    body('flag').optional(),
+                    body('appLink').optional()
+                }
+                return true;
+            }),
+            body('speakers').optional().isLength({ min: 1 }).withMessage((value, { req}) => {
+                return req.__('speakers.atLeastOne', { value});
+            }).custom(async(speakers, { req }) => {
+                for (let val of speakers) {
+                    body('name').not().isEmpty().withMessage((value, { req }) => {
+                        return req.__('name.required', { value });
+                    }),
+                    body('type').not().isEmpty().withMessage((value, { req }) => {
+                        return req.__('type.required', { value });
+                    }),
+                    body('phone').not().isEmpty().withMessage((value, { req }) => {
+                        return req.__('phone.required', { value });
+                    }),
+                    body('email').not().isEmpty().withMessage((value, { req }) => {
+                        return req.__('email.required', { value });
+                    }),
+                    body('website').not().isEmpty().withMessage((value, { req }) => {
+                        return req.__('website.required', { value });
+                    }),
+                    body('logo').not().isEmpty().withMessage((value, { req }) => {
+                        return req.__('logo.required', { value });
+                    }),
+                    body('flag').optional(),
+                    body('appLink').optional()
+                }
+                return true;
+            }),
+            body('partners').optional().isLength({ min: 1 }).withMessage((value, { req}) => {
+                return req.__('partners.atLeastOne', { value});
+            }).custom(async(partners, { req }) => {
+                for (let val of partners) {
+                    body('name').not().isEmpty().withMessage((value, { req }) => {
+                        return req.__('name.required', { value });
+                    }),
+                    body('type').not().isEmpty().withMessage((value, { req }) => {
+                        return req.__('type.required', { value });
+                    }),
+                    body('phone').not().isEmpty().withMessage((value, { req }) => {
+                        return req.__('phone.required', { value });
+                    }),
+                    body('email').not().isEmpty().withMessage((value, { req }) => {
+                        return req.__('email.required', { value });
+                    }),
+                    body('website').not().isEmpty().withMessage((value, { req }) => {
+                        return req.__('website.required', { value });
+                    }),
+                    body('logo').not().isEmpty().withMessage((value, { req }) => {
+                        return req.__('logo.required', { value });
+                    }),
+                    body('flag').optional(),
+                    body('appLink').optional()
+                }
+                return true;
+            }),
+            body('exhibitors').optional().isLength({ min: 1 }).withMessage((value, { req}) => {
+                return req.__('exhibitors.atLeastOne', { value});
+            }).custom(async(exhibitors, { req }) => {
+                for (let val of exhibitors) {
+                    body('name').not().isEmpty().withMessage((value, { req }) => {
+                        return req.__('name.required', { value });
+                    }),
+                    body('type').not().isEmpty().withMessage((value, { req }) => {
+                        return req.__('type.required', { value });
+                    }),
+                    body('phone').not().isEmpty().withMessage((value, { req }) => {
+                        return req.__('phone.required', { value });
+                    }),
+                    body('email').not().isEmpty().withMessage((value, { req }) => {
+                        return req.__('email.required', { value });
+                    }),
+                    body('website').not().isEmpty().withMessage((value, { req }) => {
+                        return req.__('website.required', { value });
+                    }),
+                    body('logo').not().isEmpty().withMessage((value, { req }) => {
+                        return req.__('logo.required', { value });
+                    }),
+                    body('flag').optional(),
+                    body('appLink').optional()
+                }
+                return true;
+            }),
+            body('daysCount').optional(),
+            body('travelType').optional().isIn(['LOCAL','ABROAD']).withMessage((value, { req }) => {
+                return req.__('travelType.invalid', { value });
+            }),
+            body('transportation').optional(),
+
+            body('nationalityType').optional().isIn(['NATIONAL','INTERNAIONAL']).withMessage((value, { req }) => {
+                return req.__('nationalityType.invalid', { value });
             }),
             body('address').not().isEmpty().withMessage((value, { req }) => {
                 return req.__('address.required', { value });
             }),
             body('location').not().isEmpty().withMessage((value, { req }) => {
                 return req.__('location.required', { value });
+            }).custom(async(value, { req }) => {
+                await validatedLocation(value);
             }),
+
+            
             body('city').not().isEmpty().withMessage((value, { req }) => {
                 return req.__('city.required', { value });
             }).isNumeric().withMessage((value, { req }) => {
@@ -92,26 +279,6 @@ export default {
             body('business').optional().isNumeric().withMessage((value, { req }) => {
                 return req.__('business.numeric', { value });
             }),
-            body('usersParticipants').optional()
-            .custom(async(users, { req }) => {
-                for (let value of users) {
-                    if (!await User.findOne({ _id: value, deleted: false }))
-                        throw new Error(req.__('user.invalid'));
-                    else
-                        return true;
-                }
-                return true;
-            }),
-            body('businessParticipants').optional()
-            .custom(async(users, { req }) => {
-                for (let value of users) {
-                    if (!await Business.findOne({ _id: value, deleted: false }))
-                        throw new Error(req.__('business.invalid'));
-                    else
-                        return true;
-                }
-                return true;
-            }),
             body('dailyTimes').optional()
             .custom(async(dailyTimes, { req }) => {
                 for (let val of dailyTimes) {
@@ -137,12 +304,23 @@ export default {
             .withMessage((value, { req }) => {
                 return req.__('paymentMethod.invalid', { value });
             }),
-            body('cashPrice').optional().isNumeric().withMessage((value, { req }) => {
-                return req.__('cashPrice.numeric', { value });
+            body('tickets').optional()
+            .custom(async(tickets, { req }) => {
+                for (let val of tickets) {
+                    body('type').not().isEmpty().withMessage((value, { req }) => {
+                        return req.__('type.required', { value });
+                    })
+                    body('cashPrice').optional().isNumeric().withMessage((value, { req }) => {
+                        return req.__('cashPrice.numeric', { value });
+                    }),
+                    body('installmentPrice').optional().isNumeric().withMessage((value, { req }) => {
+                        return req.__('installmentPrice.numeric', { value });
+                    })
+                }
+                return true;
             }),
-            body('installmentPrice').optional().isNumeric().withMessage((value, { req }) => {
-                return req.__('installmentPrice.numeric', { value });
-            }),
+            
+            
             body('installments').optional()
             .custom(async(installments, { req }) => {
                 for (let val of installments) {
@@ -166,6 +344,31 @@ export default {
     async create(req, res, next) {
         try {
             const validatedBody = checkValidations(req);
+            if (validatedBody.feesType == 'WITH-FEES') {
+                if (!validatedBody.paymentMethod) {
+                    return next(new ApiError(422, i18n.__('paymentMethod.required')));
+                } else {
+                    if (validatedBody.paymentMethod == "INSTALLMENT" && !validatedBody.installments)
+                        return next(new ApiError(422, i18n.__('installments.required')));
+                    if (!validatedBody.tickets)
+                        return next(new ApiError(422, i18n.__('tickets.required')));
+                }
+            }
+            if(validatedBody.privacyType == "PRIVAET" && !validatedBody.joinCode)
+                return next(new ApiError(422, i18n.__('joinCode.required')));
+
+            if(isInArray(validatedBody.type,['TRIP','CAMP']) && !validatedBody.daysCount)
+                return next(new ApiError(422, i18n.__('daysCount.required')));
+
+            if(isInArray(validatedBody.type,['TRIP','CAMP']) && !validatedBody.travelType)
+                return next(new ApiError(422, i18n.__('travelType.required')));
+
+            if(isInArray(validatedBody.type,['TRIP','CAMP']) && !validatedBody.transportation)
+                return next(new ApiError(422, i18n.__('travelType.required')));
+
+            if(isInArray(validatedBody.type,['FAIR','BAZAR']) && !validatedBody.nationalityType)
+                return next(new ApiError(422, i18n.__('nationalityType.required')));
+
             if (validatedBody.business) {
                 validatedBody.ownerType = "BUSINESS"
                 let business = await checkExistThenGet(validatedBody.business, Business, { deleted: false })
@@ -173,21 +376,13 @@ export default {
             } else {
                 validatedBody.ownerType = "APP"
             }
-            validatedLocation(validatedBody.location);
+            
             validatedBody.location = { type: 'Point', coordinates: [+req.body.location[0], +req.body.location[1]] };
             validatedBody.fromDateMillSec = Date.parse(validatedBody.fromDate)
             validatedBody.toDateMillSec = Date.parse(validatedBody.toDate)
 
-            if (validatedBody.feesType == 'WITH-FEES') {
-                if (!validatedBody.paymentMethod) {
-                    return next(new ApiError(422, i18n.__('paymentMethod.required')));
-                } else {
-                    if (validatedBody.paymentMethod == "INSTALLMENT" && !validatedBody.installmentPrice)
-                        return next(new ApiError(422, i18n.__('installmentPrice.required')));
-                    if (validatedBody.paymentMethod == "CASH" && !validatedBody.cashPrice)
-                        return next(new ApiError(422, i18n.__('cashPrice.required')));
-                }
-            }
+            
+                
             let event = await Event.create({...validatedBody });
             await Post.create({
                 event: event.id,
