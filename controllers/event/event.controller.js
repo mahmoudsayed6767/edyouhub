@@ -16,6 +16,7 @@ import { transformUser } from "../../models/user/transformUser"
 import ApiError from "../../helpers/ApiError";
 import City from "../../models/city/city.model";
 import Area from "../../models/area/area.model";
+import AccessEvent from "../../models/event/accessEvent.model";
 import Activity from "../../models/user/activity.model";
 
 const populateQuery = [
@@ -49,7 +50,7 @@ export default {
             }).isIn(['PRIVAET', 'PUBLIC']).withMessage((value, { req }) => {
                 return req.__('privacyType.invalid', { value });
             }),
-            body('joinCode').optional(),
+            body('accessCode').optional(),
             body('type').not().isEmpty().withMessage((value, { req }) => {
                 return req.__('type.required', { value });
             }).isIn(['ANNONCE', 'TRIP','CAMP','CONCERT','STAGE-EVENT','FAIR','BAZAR']).withMessage((value, { req }) => {
@@ -354,8 +355,8 @@ export default {
                         return next(new ApiError(422, i18n.__('tickets.required')));
                 }
             }
-            if(validatedBody.privacyType == "PRIVAET" && !validatedBody.joinCode)
-                return next(new ApiError(422, i18n.__('joinCode.required')));
+            if(validatedBody.privacyType == "PRIVAET" && !validatedBody.accessCode)
+                return next(new ApiError(422, i18n.__('accessCode.required')));
 
             if(isInArray(validatedBody.type,['TRIP','CAMP']) && !validatedBody.daysCount)
                 return next(new ApiError(422, i18n.__('daysCount.required')));
@@ -775,6 +776,46 @@ export default {
                 })
         } catch (err) {
             next(err);
+        }
+    },
+    validateAccessEventBody(isUpdate = false) {
+        let validations = [
+            body('accessCode').not().isEmpty().withMessage((value, { req}) => {
+                return req.__('accessCode.required', { value});
+            })
+        ];
+        return validations;
+    },
+    async accessEvent(req, res, next) {        
+        try {
+            const validatedBody = checkValidations(req);
+            let {eventId} = req.params
+            let event = await checkExistThenGet(eventId,Event,{deleted:false})
+            if(event.accessCode == validatedBody.accessCode){
+                if (!await AccessEvent.findOne({ user: req.user._id, event: eventId, deleted: false })) {
+                    let arr = event.canAccess;
+                    var found = arr.find((e) => e == req.user._id);
+                    if (!found) {
+                        event.canAccess.push(req.user._id);
+                        await event.save();
+                        await AccessEvent.create({ user: req.user._id, event: eventId });
+                        let reports = {
+                            "action":"Get Access to Event",
+                            "type":"EVENTS",
+                            "deepId":eventId,
+                            "user": req.user._id
+                        };
+                        await Report.create({...reports });
+                    }
+                }
+                
+            }else{
+                return next(new ApiError(500, i18n.__('code.incorrect')));
+            }
+            
+            return res.status(200).send({success:true});
+        } catch (error) {
+            next(error);
         }
     },
 

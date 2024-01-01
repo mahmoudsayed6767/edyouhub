@@ -1,8 +1,6 @@
 import express from 'express';
 import { requireAuth } from '../../services/passport';
 import eventController from '../../controllers/event/event.controller';
-import { multerSaveTo } from '../../services/multer-service';
-import { parseStringToArrayOfObjectsMwv2 } from '../../utils';
 const router = express.Router();
 
 router.route('/')
@@ -50,5 +48,10 @@ router.route('/:eventId/unFollow')
  router.route('/:eventId/getEventFollowers')
     .get(requireAuth,eventController.getEventFollowers);
 
-
+router.route('/:eventId/accessEvent')
+    .post(
+        requireAuth,
+        eventController.validateAccessEventBody(),
+        eventController.accessEvent
+    )
 export default router;

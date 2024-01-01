@@ -16,7 +16,7 @@ const eventSchema = new Schema({
         enum: ['PRIVAET', 'PUBLIC'],
         default: 'PUBLIC'
     },
-    joinCode: {
+    accessCode: {
         type: String,
     },
     type: {
@@ -372,6 +372,10 @@ const eventSchema = new Schema({
         ref: 'user',
     }],
     waitToPaid: [{
+        type: Number,
+        ref: 'user',
+    }],
+    canAccess: [{
         type: Number,
         ref: 'user',
     }],
