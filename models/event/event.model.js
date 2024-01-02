@@ -49,6 +49,41 @@ const eventSchema = new Schema({
         type: Number,
         ref: 'educationInstitution',
     },
+    owners: [
+        new Schema({
+            name: {
+                type: String,
+                required: true
+            },
+            type: {
+                type: String,
+                required: true
+            },
+            phone: {
+                type: String,
+                required: true
+            },
+            email: {
+                type: String,
+                required: true
+            },
+            logo: {
+                type: String,
+                required: true
+            },
+            website: {
+                type: String,
+                required: true
+            },
+            flag: {
+                type: String
+            },
+            appLink: {
+                type: String
+            },
+            
+        }, { _id: false })
+    ],
     hosts: [
         new Schema({
             name: {

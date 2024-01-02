@@ -56,6 +56,35 @@ export default {
             }).isIn(['ANNONCE', 'TRIP','CAMP','CONCERT','STAGE-EVENT','FAIR','BAZAR']).withMessage((value, { req }) => {
                 return req.__('type.invalid', { value });
             }),
+            body('owners').not().isEmpty().withMessage((value, { req }) => {
+                return req.__('owners.required', { value });
+            }).isLength({ min: 1 }).withMessage((value, { req}) => {
+                return req.__('owners.atLeastOne', { value});
+            }).custom(async(owners, { req }) => {
+                for (let val of owners) {
+                    body('name').not().isEmpty().withMessage((value, { req }) => {
+                        return req.__('name.required', { value });
+                    }),
+                    body('type').not().isEmpty().withMessage((value, { req }) => {
+                        return req.__('type.required', { value });
+                    }),
+                    body('phone').not().isEmpty().withMessage((value, { req }) => {
+                        return req.__('phone.required', { value });
+                    }),
+                    body('email').not().isEmpty().withMessage((value, { req }) => {
+                        return req.__('email.required', { value });
+                    }),
+                    body('website').not().isEmpty().withMessage((value, { req }) => {
+                        return req.__('website.required', { value });
+                    }),
+                    body('logo').not().isEmpty().withMessage((value, { req }) => {
+                        return req.__('logo.required', { value });
+                    }),
+                    body('flag').optional(),
+                    body('appLink').optional()
+                }
+                return true;
+            }),
             body('hosts').not().isEmpty().withMessage((value, { req }) => {
                 return req.__('hosts.required', { value });
             }).isLength({ min: 1 }).withMessage((value, { req}) => {

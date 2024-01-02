@@ -16,6 +16,7 @@ export async function transformEvent(e,lang,userId) {
         feesType:e.feesType,
         paymentMethod:e.paymentMethod,
         tickets:e.tickets,
+        owners:e.owners,
         address:e.address,
         canAccess:userId?isInArray(e.canAccess,userId):false,
         isInterest:userId?isInArray(e.interesting,userId):false,
@@ -23,12 +24,23 @@ export async function transformEvent(e,lang,userId) {
         waitToPaid:userId?isInArray(e.waitToPaid,userId):false,
         id: e._id,                    
     }
+    if(e.privacyType == "PUBLIC") index.canAccess = true
     if(e.business){
-        index.business = {
+        let business = {
             name:lang=="ar"?e.business.name_ar:e.business.name_en,
             img:e.business.img,
             id: e.business._id,
         }
+        if (e.business.package) {
+            business.package = {
+                title:lang=="ar"?e.business.package.title_ar:e.business.package.title_en,
+                type:e.business.package.type,
+                badgeType:e.business.package.badgeType,
+                dataView:e.business.package.dataView,
+                id: e.business.package._id,
+            }
+        }
+        index.business = business
     }
     return index
 }
@@ -42,6 +54,7 @@ export async function transformEventById(e,lang,userId) {
         type:e.type,
         accessCode:e.accessCode,
         hosts:e.hosts,
+        owners:e.owners,
         sponsers:e.sponsers,
         speakers:e.speakers,
         organizers:e.organizers,
@@ -72,12 +85,23 @@ export async function transformEventById(e,lang,userId) {
         id: e._id,
         createdAt: e.createdAt,                       
     }
+    if(e.privacyType == "PUBLIC") index.canAccess = true
     if(e.business){
-        index.business = {
+        let business = {
             name:lang=="ar"?e.business.name_ar:e.business.name_en,
             img:e.business.img,
             id: e.business._id,
         }
+        if (e.business.package) {
+            business.package = {
+                title:lang=="ar"?e.business.package.title_ar:e.business.package.title_en,
+                type:e.business.package.type,
+                badgeType:e.business.package.badgeType,
+                dataView:e.business.package.dataView,
+                id: e.business.package._id,
+            }
+        }
+        index.business = business
     }
     if(e.city){
         index.city = {
