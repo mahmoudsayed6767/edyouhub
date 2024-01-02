@@ -20,7 +20,10 @@ import AccessEvent from "../../models/event/accessEvent.model";
 import Activity from "../../models/user/activity.model";
 
 const populateQuery = [
-    { path: 'business', model: 'business' },
+    {
+        path: 'business', model: 'business',
+        populate: { path: 'package', model: 'package' },
+    },
     { path: 'city', model: 'city' },
     { path: 'area', model: 'area' },
 
