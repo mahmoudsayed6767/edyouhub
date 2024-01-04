@@ -398,6 +398,38 @@ const eventSchema = new Schema({
             },
         }, { _id: false })
     ],
+    useMap: {
+        type: Boolean,
+        default: false
+    },
+    halls: [
+        new Schema({
+            name: {
+                type: String,
+                required: true
+            },
+            numberOfBooths: {
+                type: Number,
+                required: true
+            },
+            booths: [
+                new Schema({
+                    size: {
+                        type: String,
+                        required: true
+                    },
+                    number: {
+                        type: Number,
+                        required: true
+                    },
+                    exhibitor: {
+                        type: Number,
+                        required: true
+                    },
+                }, { _id: false })
+            ],
+        }, { _id: false })
+    ],
     attendance: [{
         type: Number,
         ref: 'user',

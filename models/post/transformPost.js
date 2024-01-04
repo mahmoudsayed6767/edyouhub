@@ -79,6 +79,7 @@ export async function transformPost(e,lang,myUser,userId) {
         options.push(option)
     }
     index.options = options;
+    let vacancies = []
     if(e.vacancies) {
         for (let val of e.vacancy) {
             vacancies.push({
@@ -132,52 +133,7 @@ export async function transformPost(e,lang,myUser,userId) {
         admission.faculties = faculties;
         index.admission = admission;
     }
-    if(e.event) {
-        let event = {
-            title:e.event.title,
-            fromDate:e.event.fromDate,
-            toDate:e.event.toDate,
-            time:e.event.time,
-            description: e.event.description,
-            shortDescription:e.event.shortDescription,
-            id: e.event._id,
-            createdAt: e.event.createdAt,   
-            imgs:e.event.imgs,
-            feesType:e.event.feesType,
-            paymentMethod:e.event.paymentMethod,
-            cashPrice:e.event.cashPrice,
-            hostname:e.event.hostname,
-            address:e.event.address,
-            location:e.event.location,
-            contactNumbers:e.event.contactNumbers,
-            ownerType:e.event.ownerType,
-            isInterest:userId?isInArray(e.event.interesting,userId):false,
-            isAttendance:userId?isInArray(e.event.attendance,userId):false,
-            waitToPaid:userId?isInArray(e.event.waitToPaid,userId):false,
-
-        }
-        /*usersParticipants*/
-        let usersParticipants=[]
-        for (let val of e.event.usersParticipants) {
-            usersParticipants.push({
-                fullname:val.fullname,
-                img:val.img,
-                id:val._id,                         
-            })
-        }
-        event.usersParticipants = usersParticipants;
-        /*businessParticipants*/
-        let businessParticipants=[]
-        for (let val of e.event.businessParticipants) {
-            businessParticipants.push({
-                name:lang=="ar"?val.name_ar:val.name_en,
-                img:val.img,
-                id: val._id,                      
-            })
-        }
-        event.businessParticipants = businessParticipants;
-        index.event = event;
-    }
+    
     return index
 }
 export async function transformPostById(e,lang,myUser,userId) {
@@ -301,51 +257,6 @@ export async function transformPostById(e,lang,myUser,userId) {
         admission.grades = grades;
         index.admission = admission;
     }
-    if(e.event) {
-        let event = {
-            title:e.event.title,
-            fromDate:e.event.fromDate,
-            toDate:e.event.toDate,
-            time:e.event.time,
-            description: e.event.description,
-            shortDescription:e.event.shortDescription,
-            id: e.event._id,
-            createdAt: e.event.createdAt,   
-            imgs:e.event.imgs,
-            feesType:e.event.feesType,
-            paymentMethod:e.event.paymentMethod,
-            cashPrice:e.event.cashPrice,
-            hostname:e.event.hostname,
-            address:e.event.address,
-            location:e.event.location,
-            contactNumbers:e.event.contactNumbers,
-            ownerType:e.event.ownerType,
-            isInterest:userId?isInArray(e.event.interesting,userId):false,
-            isAttendance:userId?isInArray(e.event.attendance,userId):false,
-            waitToPaid:userId?isInArray(e.event.waitToPaid,userId):false,
 
-        }
-        /*usersParticipants*/
-        let usersParticipants=[]
-        for (let val of e.event.usersParticipants) {
-            usersParticipants.push({
-                fullname:val.fullname,
-                img:val.img,
-                id:val._id,                         
-            })
-        }
-        event.usersParticipants = usersParticipants;
-        /*businessParticipants*/
-        let businessParticipants=[]
-        for (let val of e.event.businessParticipants) {
-            businessParticipants.push({
-                name:lang=="ar"?val.name_ar:val.name_en,
-                img:val.img,
-                id: val._id,                      
-            })
-        }
-        event.businessParticipants = businessParticipants;
-        index.event = event;
-    }
     return index
 }

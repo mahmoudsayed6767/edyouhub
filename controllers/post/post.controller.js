@@ -36,15 +36,7 @@ const populateQuery = [
     },
     { path: 'options', model: 'option'},
     { path: 'vacancies', model: 'vacancy'},
-    { path: 'event', model: 'event'},
-    {
-        path: 'event', model: 'event',
-        populate: { path: 'usersParticipants', model: 'user' },
-    },
-    {
-        path: 'event', model: 'event',
-        populate: { path: 'businessParticipants', model: 'business' },
-    },
+
     {
         path: 'admission', model: 'admission',
         populate: { path: 'grades', model: 'grade' },
