@@ -312,7 +312,9 @@ export default {
             body('business').optional().isNumeric().withMessage((value, { req }) => {
                 return req.__('business.numeric', { value });
             }),
-            body('dailyTimes').optional()
+            body('dailyTimes').optional().isLength({ min: 1 }).withMessage((value, { req}) => {
+                return req.__('dailyTimes.atLeastOne', { value});
+            })
             .custom(async(dailyTimes, { req }) => {
                 for (let val of dailyTimes) {
                     body('fromDate').not().isEmpty().withMessage((value, { req }) => {
@@ -328,6 +330,51 @@ export default {
                 }
                 return true;
             }),
+            body('useMap').optional(),
+            body('numberOfHalls').optional(),
+            body('halls').optional().isLength({ min: 1 }).withMessage((value, { req}) => {
+                return req.__('halls.atLeastOne', { value});
+            })
+            .custom(async(halls, { req }) => {
+                for (let val of halls) {
+                    body('name').not().isEmpty().withMessage((value, { req }) => {
+                        return req.__('name.required', { value });
+                    }),
+                    body('numberOfBooths').not().isEmpty().withMessage((value, { req }) => {
+                        return req.__('numberOfBooths.required', { value });
+                    }).isNumeric().withMessage((value, { req }) => {
+                        return req.__('numberOfBooths.numeric', { value });
+                    }),
+                    body('booths').not().isEmpty().withMessage((value, { req }) => {
+                        return req.__('booths.required', { value });
+                    })
+                   .custom(async(booths, { req }) => {
+                        for (let val2 of booths) {
+                            body('size').not().isEmpty().withMessage((value, { req }) => {
+                                return req.__('size.required', { value });
+                            }),
+                            body('number').not().isEmpty().withMessage((value, { req }) => {
+                                return req.__('number.required', { value });
+                            }).isNumeric().withMessage((value, { req }) => {
+                                return req.__('number.numeric', { value });
+                            }),
+                            body('exhibitor').not().isEmpty().withMessage((value, { req }) => {
+                                return req.__('exhibitor.required', { value });
+                            }).isNumeric().withMessage((value, { req }) => {
+                                return req.__('exhibitor.numeric', { value });
+                            }).custom(async(value, { req }) => {
+                                let exhibitors = req.body.exhibitors;
+                                if (!exhibitors.includes(exhibitors[value])) {
+                                    throw new Error(req.__('exhibitor.invalid'));
+                                }
+                            })
+                            
+                        }
+                        return true;
+                    })
+                }
+                return true;
+            }),
             body('feesType').not().isEmpty().withMessage((value, { req }) => {
                 return req.__('feesType.required', { value });
             }).isIn(['NO-FEES', 'WITH-FEES']).withMessage((value, { req }) => {
@@ -337,7 +384,9 @@ export default {
             .withMessage((value, { req }) => {
                 return req.__('paymentMethod.invalid', { value });
             }),
-            body('tickets').optional()
+            body('tickets').optional().isLength({ min: 1 }).withMessage((value, { req}) => {
+                return req.__('tickets.atLeastOne', { value});
+            })
             .custom(async(tickets, { req }) => {
                 for (let val of tickets) {
                     body('type').not().isEmpty().withMessage((value, { req }) => {
@@ -354,7 +403,9 @@ export default {
             }),
             
             
-            body('installments').optional()
+            body('installments').optional().isLength({ min: 1 }).withMessage((value, { req}) => {
+                return req.__('installments.atLeastOne', { value});
+            })
             .custom(async(installments, { req }) => {
                 for (let val of installments) {
                     body('price').not().isEmpty().withMessage((value, { req }) => {
@@ -387,6 +438,8 @@ export default {
                         return next(new ApiError(422, i18n.__('tickets.required')));
                 }
             }
+            if(validatedBody.useMap && !validatedBody.halls)
+                return next(new ApiError(422, i18n.__('halls.required')));
             if(validatedBody.privacyType == "PRIVAET" && !validatedBody.accessCode)
                 return next(new ApiError(422, i18n.__('accessCode.required')));
 

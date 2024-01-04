@@ -402,6 +402,10 @@ const eventSchema = new Schema({
         type: Boolean,
         default: false
     },
+    numberOfHalls: {
+        type: Number,
+        default: 0
+    },
     halls: [
         new Schema({
             name: {

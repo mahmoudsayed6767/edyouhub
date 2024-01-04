@@ -82,6 +82,8 @@ export async function transformEventById(e,lang,userId) {
         discount:e.discount,
         discountType:e.discountType,
         accessCode:e.accessCode,
+        useMap:e.useMap,
+        numberOfHalls:e.numberOfHalls,
         id: e._id,
         createdAt: e.createdAt,                       
     }
@@ -115,5 +117,24 @@ export async function transformEventById(e,lang,userId) {
             id: e.area._id,
         }
     }
+    let halls = []
+    for (let val of e.halls) {
+        let hall = {
+            name:val.name,
+            numberOfBooths: val.numberOfBooths,
+        }
+        let booths = []
+        for (let val2 of val.booths) {
+            let booth = {
+                size:val2.size,
+                number: val2.number,
+                exhibitor:e.exhibitors[val2.exhibitor]
+            }
+            booths.push(booth)
+        }
+        hall.booths = booths
+        halls.push(hall)
+    }
+    index.halls = halls
     return index
 }
