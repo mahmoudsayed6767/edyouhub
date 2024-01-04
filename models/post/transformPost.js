@@ -81,7 +81,7 @@ export async function transformPost(e,lang,myUser,userId) {
     index.options = options;
     let vacancies = []
     if(e.vacancies) {
-        for (let val of e.vacancy) {
+        for (let val of e.vacancies) {
             vacancies.push({
                 type:val.type,
                 img:val.img,
@@ -218,7 +218,7 @@ export async function transformPostById(e,lang,myUser,userId) {
     }
     index.options = options;
     if(e.vacancies) {
-        for (let val of e.vacancy) {
+        for (let val of e.vacancies) {
             vacancies.push({
                 type:val.type,
                 img:val.img,
