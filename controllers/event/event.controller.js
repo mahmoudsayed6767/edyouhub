@@ -4,7 +4,7 @@ import { body } from "express-validator";
 import { checkValidations } from "../shared/shared.controller";
 import ApiResponse from "../../helpers/ApiResponse";
 import i18n from "i18n";
-import { transformEvent, transformEventById } from "../../models/event/transformEvent";
+import { transformEvent, transformEventById,transformEventAttendance } from "../../models/event/transformEvent";
 import Business from "../../models/business/business.model";
 import Post from "../../models/post/post.model";
 import User from "../../models/user/user.model";
@@ -18,6 +18,7 @@ import City from "../../models/city/city.model";
 import Area from "../../models/area/area.model";
 import AccessEvent from "../../models/event/accessEvent.model";
 import Activity from "../../models/user/activity.model";
+import { generateCode } from '../../services/generator-code-service';
 
 const populateQuery = [
     {
@@ -26,6 +27,13 @@ const populateQuery = [
     },
     { path: 'city', model: 'city' },
     { path: 'area', model: 'area' },
+
+];
+const eventAttendancePopulate = [
+    {
+        path: 'user', model: 'user',
+        populate: { path: 'package', model: 'package' },
+    },
 
 ];
 //validate location
@@ -690,9 +698,29 @@ export default {
             next(err);
         }
     },
+    validateAttendEventBody(isUpdate = false) {
+        let validations = [
+            body('tickets').optional().isLength({ min: 1 }).withMessage((value, { req}) => {
+                return req.__('tickets.atLeastOne', { value});
+            })
+            .custom(async(tickets, { req }) => {
+                for (let val of tickets) {
+                    body('name').not().isEmpty().withMessage((value, { req }) => {
+                        return req.__('name.required', { value });
+                    })
+                    body('phone').not().isEmpty().withMessage((value, { req }) => {
+                        return req.__('phone.required', { value });
+                    })
+                }
+                return true;
+            }),
+        ];
+        return validations;
+    },
     async attendEvent(req, res, next) {
         try {
             let { eventId } = req.params
+            const validatedBody = checkValidations(req);
             let event = await checkExistThenGet(eventId, Event, { deleted: false });
             if (event.feesType == "WITH-FEES")
                 return next(new ApiError(500, i18n.__('sorryEventWithFees')));
@@ -701,7 +729,12 @@ export default {
             var found = arr.find((e) => e == req.user._id);
             if (!found) {
                 event.attendance.push(req.user._id);
-                await EventAttendance.create({ user: req.user._id, event: eventId });
+                let tickets = [];
+                await Promise.all(validatedBody.tickets.map(async(ticket) => {
+                    ticket.code = generateCode(6);
+                    tickets.push(ticket)
+                }));
+                await EventAttendance.create({ user: req.user._id, event: eventId,tickets:tickets });
                 let reports = {
                     "action": "user will attend to event",
                     "type": "EVENT",
@@ -745,20 +778,19 @@ export default {
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1,
                 limit = +req.query.limit || 20;
-
-            let ids = await EventAttendance.find({ event: req.params.eventId })
-                .distinct('user')
-            let query = { deleted: false, _id: ids };
-            await User.find(query)
+                
+            let query = { deleted: false, event: req.params.eventId };
+            await EventAttendance.find(query).populate(eventAttendancePopulate)
                 .sort({ createdAt: -1 })
                 .limit(limit)
                 .skip((page - 1) * limit).then(async(data) => {
                     let newdata = []
                     await Promise.all(data.map(async(e) => {
-                        let index = await transformUser(e, lang)
+                        console.log(e._id)
+                        let index = await transformEventAttendance(e, lang)
                         newdata.push(index)
                     }))
-                    const count = await User.countDocuments(query);
+                    const count = await EventAttendance.countDocuments(query);
                     const pageCount = Math.ceil(count / limit);
                     res.send(new ApiResponse(newdata, page, pageCount, limit, count, req));
                 })

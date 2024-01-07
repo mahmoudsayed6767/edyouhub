@@ -36,6 +36,22 @@ const eventAttendanceSchema = new Schema({
             }
         }, { _id: false })
     ],
+    tickets: [
+        new Schema({
+            name: {
+                type: String,
+                required: true
+            },
+            phone: {
+                type: String,
+                required: true
+            },
+            code: {
+                type: String,
+                default: ""
+            }
+        }, { _id: false })
+    ],
     deleted: {
         type: Boolean,
         default: false

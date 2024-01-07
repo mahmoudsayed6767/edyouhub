@@ -53,6 +53,22 @@ const transactionSchema = new Schema({
         type:Number,
         ref:'eventAttendance'
     },
+    tickets: [//for events
+        new Schema({
+            name: {
+                type: String,
+                required: true
+            },
+            phone: {
+                type: String,
+                required: true
+            },
+            code: {
+                type: String,
+                default: ""
+            }
+        }, { _id: false })
+    ],
     offer:{//
         type:Number,
         ref:'offer',

@@ -25,6 +25,7 @@ router.route('/:eventId')
 router.route('/:eventId/attend')
     .put(
         requireAuth,
+        eventController.validateAttendEventBody(),
         eventController.attendEvent
     )
 router.route('/:eventId/removeAttend')

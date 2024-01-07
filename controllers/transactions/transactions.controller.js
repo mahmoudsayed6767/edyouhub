@@ -313,7 +313,7 @@ const payPackage = async (thePackage,userId,businessId) => {
     
     return true;
 };
-const payEvent = async (theEvent,userId) => {
+const payEvent = async (theEvent,userId,tickets=[]) => {
     let event = await checkExistThenGet(theEvent, Event, { deleted: false });
     //add client to event attendance
     let arr = event.attendance;
@@ -321,7 +321,7 @@ const payEvent = async (theEvent,userId) => {
     let eventAttendance
     if(!found){
         event.attendance.push(userId);
-        eventAttendance = await EventAttendance.create({ user: userId, event: event });
+        eventAttendance = await EventAttendance.create({ user: userId, event: event,tickets:tickets });
         let reports = {
             "action":"user will attend to event",
             "type":"EVENT",
@@ -431,7 +431,7 @@ const callBack = async (merchantRefNumber,status,paymentMethod,data) => {
             await payPackage(theTransaction.package,userId,theTransaction.business)
         }
         if(theTransaction.type =="EVENT"){
-            let eventAttendance = await payEvent(theTransaction.event,userId)
+            let eventAttendance = await payEvent(theTransaction.event,userId,theTransaction.tickets)
             theTransaction.eventAttendance = eventAttendance
         }
         if(theTransaction.type =="ON-SITE-COURSE" || theTransaction.type == "ONLINE-COURSE"){
@@ -550,6 +550,15 @@ export default {
                     event.waitToPaid.push(validatedBody.client);
                     await event.save();
                 }
+                if(validatedBody.tickets){
+                    let tickets = [];
+                    await Promise.all(validatedBody.tickets.map(async(ticket) => {
+                        ticket.code = generateCode(6);
+                        tickets.push(ticket)
+                    }));
+                    transactionData.tickets = tickets
+                }
+                
             }
             if(validatedBody.type =="COURSE"){
                 transactionData.course = validatedBody.course

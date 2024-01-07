@@ -138,3 +138,34 @@ export async function transformEventById(e,lang,userId) {
     index.halls = halls
     return index
 }
+
+export async function transformEventAttendance(e,lang) {
+    let index = {
+        paymentMethod:e.paymentMethod,
+        installments:e.installments,
+        tickets:e.tickets,
+        id: e._id,                    
+    }
+    if (e.user) {
+        let user = {
+            phone: e.user.phone,
+            fullname: e.user.fullname,
+            type: e.user.type,
+            img:e.user.img,
+            hasPackage:e.user.hasPackage,
+            id: e.user._id
+        }
+        if (e.user.package) {
+            user.package = {
+                title:lang=="ar"?e.user.package.title_ar:e.user.package.title_en,
+                type:e.user.package.type,
+                badgeType:e.user.package.badgeType,
+                dataView:e.user.package.dataView,
+                id: e.user.package._id,
+            }
+        }
+        index.user = user
+
+    }
+    return index
+}
