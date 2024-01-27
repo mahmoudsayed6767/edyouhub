@@ -36,9 +36,7 @@ export default {
             body('description').not().isEmpty().withMessage((value, { req }) => {
                 return req.__('description.required', { value });
             }),
-            body('requirements').not().isEmpty().withMessage((value, { req }) => {
-                return req.__('requirements.required', { value });
-            }),
+            body('requirements').optional(),
             body('salary').not().isEmpty().withMessage((value, { req }) => {
                 return req.__('salary.required', { value });
             }),
@@ -62,6 +60,16 @@ export default {
                 for (let value of grades) {
                     if (!await Grade.findOne({ _id: value, deleted: false }))
                         throw new Error(req.__('grade.invalid'));
+                    else
+                        return true;
+                }
+                return true;
+            }),
+            body('educationSystem').optional()
+            .custom(async(educationSystem, { req }) => {
+                for (let value of educationSystem) {
+                    if (!await EducationSystem.findOne({ _id: value, deleted: false }))
+                        throw new Error(req.__('educationSystem.invalid'));
                     else
                         return true;
                 }
@@ -298,7 +306,7 @@ export default {
     async delete(req, res, next) {
         try {
             let { vacancyId } = req.params;
-            let vacancy = await checkExistThenGet(vacancyId, vacancy);
+            let vacancy = await checkExistThenGet(vacancyId, Vacancy);
             let business = await checkExistThenGet(vacancy.business, Business, { deleted: false })
             let businessManagement = await BusinessManagement.findOne({ deleted: false, business: business._id })
             if (!isInArray(["ADMIN", "SUB-ADMIN"], req.user.type)) {

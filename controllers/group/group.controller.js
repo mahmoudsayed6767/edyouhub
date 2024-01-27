@@ -41,12 +41,8 @@ export default {
             body('name').not().isEmpty().withMessage((value, { req }) => {
                 return req.__('name.required', { value });
             }),
-            body('description').not().isEmpty().withMessage((value, { req }) => {
-                return req.__('description.required', { value });
-            }),
-            body('shortDescription').not().isEmpty().withMessage((value, { req }) => {
-                return req.__('shortDescription.required', { value });
-            }),
+            body('description').optional(),
+            body('shortDescription').optional(),
             body('about').optional(),
             body('type').optional().isIn(['PRIVATE', 'PUBLIC'])
             .withMessage((value, { req }) => {
@@ -343,7 +339,7 @@ export default {
             if (group.type == "PUBLIC" || adminFound == true) {
                 validatedBody.status = 'ACCEPTED'
                 group.usersCount = group.usersCount + 1
-                if(group.usersCount >= 1000) group.isVerified = true
+                if(group.usersCount >= 3) group.isVerified = true
                 await group.save()
                 if (!await GroupParticipant.findOne({ user: validatedBody.user, group: groupId, status: { $ne: 'REJECTED' }, deleted: false })) {
                     let arr = user.groups;
@@ -418,7 +414,7 @@ export default {
             }
             groupParticipant.status = "ACCEPTED";
             group.usersCount = group.usersCount + 1
-            if(group.usersCount >= 1000) group.isVerified = true
+            if(group.usersCount >= 3) group.isVerified = true
             await group.save()
             await groupParticipant.save();
             let user = await checkExistThenGet(groupParticipant.user, User);
@@ -636,7 +632,7 @@ export default {
                         await GroupParticipant.create({user: groupAdminRequest.to, group: groupAdminRequest.group, status:'ACCEPTED' });
                     }
                     group.usersCount = group.usersCount + 1
-                    if(group.usersCount >= 1000) group.isVerified = true
+                    if(group.usersCount >= 3) group.isVerified = true
                     group.admins.push(groupAdminRequest.to)
                     await group.save()
                 }else{

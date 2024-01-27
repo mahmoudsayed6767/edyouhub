@@ -11,6 +11,8 @@ router.route('/')
         requireAuth,
         multerSaveTo('users').single('img'),
         parseStringToArrayOfObjectsMw('grades'),
+        parseStringToArrayOfObjectsMw('requirements'),
+        parseStringToArrayOfObjectsMw('importantNeeds'),
         vacancyController.validateBody(),
         vacancyController.create
     )
@@ -24,6 +26,8 @@ router.route('/:vacancyId')
         requireAuth,
         multerSaveTo('users').single('img'),
         parseStringToArrayOfObjectsMw('grades'),
+        parseStringToArrayOfObjectsMw('requirements'),
+        parseStringToArrayOfObjectsMw('importantNeeds'),
         vacancyController.validateBody(true),
         vacancyController.update
     )

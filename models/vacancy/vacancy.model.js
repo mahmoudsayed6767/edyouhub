@@ -14,15 +14,14 @@ const vacancySchema = new Schema({
         default:''
     },
     importantNeeds: {
-        type: String,
+        type: [String],
     },
     subject: {
         type: String,
     },
     requirements: {
-        type: String,
-        required: true,
-        trim: true
+        type: [String],
+
     },
     description: {
         type: String,

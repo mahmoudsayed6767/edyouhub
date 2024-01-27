@@ -59,6 +59,11 @@ const transactionSchema = new Schema({
                 type: String,
                 required: true
             },
+            type: {
+                type: String,
+                required: true,
+                default: ""
+            },
             phone: {
                 type: String,
                 required: true

@@ -17,12 +17,10 @@ const groupSchema = new Schema({
     },
     description: {
         type: String,
-        required: true,
         default:''
     },
     shortDescription: {
         type: String,
-        required: true,
         default:''
     },
     type: {

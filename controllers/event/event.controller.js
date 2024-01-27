@@ -559,7 +559,7 @@ export default {
         try {
             //get lang
             let lang = i18n.getLocale(req)
-            let {startDate,endDate,feesType, city, area, userId, search, educationInstitution, business, status, ownerType } = req.query;
+            let {myEvents,startDate,endDate,feesType, city, area, userId, search, educationInstitution, business, status, ownerType } = req.query;
 
             let query = { deleted: false }
                 /*search  */
@@ -590,6 +590,10 @@ export default {
             if (city) query.city = city
             if (area) query.area = area
             if(feesType) query.feesType = feesType
+            if(myEvents && userId){ 
+                let eventsIds = await EventAttendance.find({ deleted: false ,user:userId}).distinct('event')
+                query._id = eventsIds
+            }
             await Event.find(query).populate(populateQuery)
                 .sort({ _id: -1 })
                 .then(async(data) => {
@@ -614,7 +618,7 @@ export default {
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1,
                 limit = +req.query.limit || 20;
-            let { startDate,endDate,feesType,city, area, userId, search, educationInstitution, business, status, ownerType } = req.query;
+            let { myEvents,startDate,endDate,feesType,city, area, userId, search, educationInstitution, business, status, ownerType } = req.query;
 
             let query = { deleted: false }
                 /*search  */
@@ -645,6 +649,10 @@ export default {
             if (city) query.city = city
             if (area) query.area = area
             if(feesType) query.feesType = feesType
+            if(myEvents && userId){ 
+                let eventsIds = await EventAttendance.find({ deleted: false ,user:userId}).distinct('event')
+                query._id = eventsIds
+            }
             await Event.find(query).populate(populateQuery)
                 .sort({ _id: -1 })
                 .limit(limit)
