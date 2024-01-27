@@ -339,7 +339,7 @@ export default {
             if (group.type == "PUBLIC" || adminFound == true) {
                 validatedBody.status = 'ACCEPTED'
                 group.usersCount = group.usersCount + 1
-                if(group.usersCount >= 3) group.isVerified = true
+                if(group.usersCount >= 2) group.isVerified = true
                 await group.save()
                 if (!await GroupParticipant.findOne({ user: validatedBody.user, group: groupId, status: { $ne: 'REJECTED' }, deleted: false })) {
                     let arr = user.groups;
@@ -414,7 +414,7 @@ export default {
             }
             groupParticipant.status = "ACCEPTED";
             group.usersCount = group.usersCount + 1
-            if(group.usersCount >= 3) group.isVerified = true
+            if(group.usersCount >= 2) group.isVerified = true
             await group.save()
             await groupParticipant.save();
             let user = await checkExistThenGet(groupParticipant.user, User);
@@ -632,7 +632,7 @@ export default {
                         await GroupParticipant.create({user: groupAdminRequest.to, group: groupAdminRequest.group, status:'ACCEPTED' });
                     }
                     group.usersCount = group.usersCount + 1
-                    if(group.usersCount >= 3) group.isVerified = true
+                    if(group.usersCount >= 2) group.isVerified = true
                     group.admins.push(groupAdminRequest.to)
                     await group.save()
                 }else{
