@@ -622,7 +622,6 @@ export default {
             if(groupAdminRequest.status == "PENDING"){
                 groupAdminRequest.status = 'ACCEPTED'
                 await groupAdminRequest.save();
-                
                 if (!await GroupParticipant.findOne({ user: groupAdminRequest.to, group: groupAdminRequest.group, status: { $ne: 'REJECTED' }, deleted: false })) {
                     let arr = user.groups;
                     var found = arr.find((e) => e == groupAdminRequest.group);
