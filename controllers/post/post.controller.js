@@ -35,6 +35,7 @@ const populateQuery = [
         populate: { path: 'package', model: 'package' },
     },
     { path: 'options', model: 'option'},
+    { path: 'event', model: 'event'},
     { path: 'vacancies', model: 'vacancy'},
 
     {

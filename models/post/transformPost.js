@@ -133,6 +133,28 @@ export async function transformPost(e,lang,myUser,userId) {
         admission.faculties = faculties;
         index.admission = admission;
     }
+    if(e.event){
+        let event = {
+            title:e.event.title,
+            privacyType:e.event.privacyType,
+            type:e.event.type,
+            description:e.event.description,
+            shortDescription:e.event.shortDescription,
+            fromDate:e.event.fromDate,
+            toDate:e.event.toDate,
+            imgs:e.event.imgs,
+            feesType:e.event.feesType,
+            owners:e.event.owners,
+            address:e.event.address,
+            canAccess:userId?isInArray(e.event.canAccess,userId):false,
+            isInterest:userId?isInArray(e.event.interesting,userId):false,
+            isAttendance:userId?isInArray(e.event.attendance,userId):false,
+            waitToPaid:userId?isInArray(e.event.waitToPaid,userId):false,             
+        }
+        if(e.event.privacyType == "PUBLIC") event.canAccess = true
+
+        index.event = event;
+    }
     
     return index
 }
@@ -256,6 +278,28 @@ export async function transformPostById(e,lang,myUser,userId) {
         }
         admission.grades = grades;
         index.admission = admission;
+    }
+    if(e.event){
+        let event = {
+            title:e.event.title,
+            privacyType:e.event.privacyType,
+            type:e.event.type,
+            description:e.event.description,
+            shortDescription:e.event.shortDescription,
+            fromDate:e.event.fromDate,
+            toDate:e.event.toDate,
+            imgs:e.event.imgs,
+            feesType:e.event.feesType,
+            owners:e.event.owners,
+            address:e.event.address,
+            canAccess:userId?isInArray(e.event.canAccess,userId):false,
+            isInterest:userId?isInArray(e.event.interesting,userId):false,
+            isAttendance:userId?isInArray(e.event.attendance,userId):false,
+            waitToPaid:userId?isInArray(e.event.waitToPaid,userId):false,             
+        }
+        if(e.event.privacyType == "PUBLIC") event.canAccess = true
+
+        index.event = event;
     }
 
     return index

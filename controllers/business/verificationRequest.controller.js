@@ -8,6 +8,8 @@ import i18n from "i18n";
 import { transformVerificationRequest } from "../../models/verificationRequest/transformVerificationRequest"
 import Business from "../../models/business/business.model";
 import Package from "../../models/package/package.model";
+import User from "../../models/user/user.model";
+
 import { toImgUrl } from "../../utils";
 import ApiError from "../../helpers/ApiError";
 import moment from "moment";
@@ -165,6 +167,28 @@ export default {
             let { verificationRequestId } = req.params;
             let verificationRequest = await checkExistThenGet(verificationRequestId, VerificationRequest, { deleted: false })
             verificationRequest.status = 'ACCEPTED'
+            let owner = await checkExistThenGet(verificationRequest.owner, User, { deleted: false })
+
+            if (!isInArray(["ADMIN", "SUB-ADMIN"], owner.type)) {
+                let newPackage = await checkExistThenGet(verificationRequest.package, Package, { deleted: false });
+                let endDateMillSec
+                if(newPackage.durationType == "DAILY"){
+                    endDateMillSec = Date.parse(moment(new Date()).add(newPackage.duration, "d").format()) ;
+                }
+                if(newPackage.durationType == "MONTHLY"){
+                    endDateMillSec = Date.parse(moment(new Date()).add(newPackage.duration, "M").format()) ;
+                }
+                if(newPackage.durationType == "YEARLY"){
+                    endDateMillSec = Date.parse(moment(new Date()).add(newPackage.duration, "Y").format()) ;
+                }
+                let theBusiness = await checkExistThenGet(verificationRequest.business, Business, { deleted: false });
+                theBusiness.package = verificationRequest.package;
+                theBusiness.hasPackage = true;
+                theBusiness.packageStartDateMillSec = Date.parse(new Date());
+                theBusiness.packageEndDateMillSec = endDateMillSec ;
+                await theBusiness.save();
+            }
+            
             await verificationRequest.save();
             res.status(200).send({success: true});
             
