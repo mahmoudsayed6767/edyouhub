@@ -239,6 +239,7 @@ export async function transformPostById(e,lang,myUser,userId) {
         options.push(option)
     }
     index.options = options;
+    let vacancies = []
     if(e.vacancies) {
         for (let val of e.vacancies) {
             vacancies.push({

@@ -9,7 +9,6 @@ import { transformVerificationRequest } from "../../models/verificationRequest/t
 import Business from "../../models/business/business.model";
 import Package from "../../models/package/package.model";
 import User from "../../models/user/user.model";
-
 import { toImgUrl } from "../../utils";
 import ApiError from "../../helpers/ApiError";
 import moment from "moment";
