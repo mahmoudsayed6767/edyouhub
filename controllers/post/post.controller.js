@@ -714,7 +714,7 @@ export default {
                 info: 'POST'
             });
             let notif = {
-                "description_en": `your request to share a post in group ${group.name} has been accepted, your post is shared now`,
+                "description_en": `your request to share a post in group ${group.name?group.name:""} has been accepted, your post is shared now`,
                 "description_ar": ' تم قبول  طلب اضافه منشور الخاص بك',
                 "title_en": 'Share post request',
                 "title_ar": ' طلب اضافه منشور',

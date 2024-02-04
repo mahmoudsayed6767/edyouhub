@@ -330,7 +330,7 @@ export default {
                 await id.save();
             }
             vacancy.deleted = true;
-            await Vacancy.save();
+            await vacancy.save();
             let reports = {
                 "action": "Delete vacancy",
                 "type": "VACANCY",
