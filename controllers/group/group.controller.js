@@ -434,9 +434,9 @@ export default {
             sendNotifiAndPushNotifi({
                 targetUser: groupParticipant.user,
                 fromUser: req.user,
-                text: ' EdHub',
+                text: 'Join request response',
                 subject: groupParticipant.id,
-                subjectType: 'Join request response',
+                body: `your request to join group ${group.name} has been accepted`,
                 info: 'GROUP-REQUEST'
             });
             let notif = {
@@ -487,9 +487,9 @@ export default {
             sendNotifiAndPushNotifi({
                 targetUser: groupParticipant.user,
                 fromUser: req.user,
-                text: ' EdHub',
+                text: 'Join request response',
                 subject: groupParticipant.id,
-                subjectType: 'Join request response',
+                body: `your request to join group ${group.name} has been rejected`,
                 info: 'GROUP-REQUEST'
             });
             let notif = {

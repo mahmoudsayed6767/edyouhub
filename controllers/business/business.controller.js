@@ -777,9 +777,9 @@ export default {
             sendNotifiAndPushNotifi({
                 targetUser: business.owner,
                 fromUser: business.owner,
-                text: ' EdHub',
+                text: 'Account verification',
                 subject: business.id,
-                subjectType: 'Account verification',
+                body: `Congratulations, ${business.name_en} account verification has been approved `,
                 info: 'BUSINESS'
             });
             let notif = {
@@ -815,9 +815,9 @@ export default {
             sendNotifiAndPushNotifi({
                 targetUser: business.owner,
                 fromUser: business.owner,
-                text: ' EdHub',
+                text: 'Account verification',
                 subject: business.id,
-                subjectType: 'Account verification',
+                body:  `${business.name_en} account verification has been rejected, check the reason`,,
                 info: 'BUSINESS'
             });
             let notif = {

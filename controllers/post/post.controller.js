@@ -333,9 +333,9 @@ export default {
                     sendNotifiAndPushNotifi({
                         targetUser: val,
                         fromUser: val,
-                        text: ' EdHub',
+                        text: 'A new event activity',
                         subject: createdPost.id,
-                        subjectType: 'A new event activity',
+                        body: `New Post are shared in the event ${event.title}`,
                         info: 'POST'
                     });
                     let notif = {
@@ -497,9 +497,9 @@ export default {
                     sendNotifiAndPushNotifi({
                         targetUser: thePost.owner,
                         fromUser: req.user,
-                        text: ' EdHub',
+                        text: 'Post Like',
                         subject: thePost.id,
-                        subjectType: 'Post Like',
+                        body: `${req.user.fullname} liked on your post`,
                         info: 'POST'
                     });
                     let notif = {
@@ -619,9 +619,9 @@ export default {
             sendNotifiAndPushNotifi({
                 targetUser: thePost.owner,
                 fromUser: req.user,
-                text: ' EdHub',
+                text: 'Post Comment',
                 subject: thePost.id,
-                subjectType: 'Post Comment',
+                body: `${req.user.fullname} commented on your post`,
                 info: 'POST'
             });
             let notif = {
@@ -708,9 +708,9 @@ export default {
             sendNotifiAndPushNotifi({
                 targetUser: post.owner,
                 fromUser: req.user,
-                text: ' EdHub',
+                text: 'Share post request',
                 subject: post.id,
-                subjectType: 'Share post request',
+                body: `your request to share a post in group ${group.name?group.name:""} has been accepted, your post is shared now`,
                 info: 'POST'
             });
             let notif = {

@@ -213,9 +213,9 @@ export default {
                 sendNotifiAndPushNotifi({
                     targetUser: fund.owner, 
                     fromUser: fund.owner, 
-                    text: 'EdHub',
+                    text: 'fund Premium Paid',
                     subject: fund.id,
-                    subjectType: 'fund Premium Paid',
+                    body: 'Your Fund Premium Has Been Paid ',
                     info:'PREMIUM'
                 });
                 let notif = {
@@ -269,9 +269,9 @@ export default {
                     sendNotifiAndPushNotifi({
                         targetUser: fund.owner, 
                         fromUser: fund.owner, 
-                        text: 'EdHub',
+                        text: 'fund Premium Paid',
                         subject: fund.id,
-                        subjectType: 'fund Premium Paid',
+                        body: 'Your Fund Premium Has Been Paid ',
                         info:'PREMIUM'
                     });
                     let notif = {
@@ -300,9 +300,9 @@ export default {
                     sendNotifiAndPushNotifi({
                         targetUser: fees.owner, 
                         fromUser: fees.owner, 
-                        text: 'EdHub',
+                        text: 'Fees Premium Paid',
                         subject: fees.id,
-                        subjectType: 'Fees Premium Paid',
+                        body: 'Your Fees Premium Has Been Paid ',
                         info:'PREMIUM'
                     });
                     let notif = {

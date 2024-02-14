@@ -390,9 +390,9 @@ export default {
             sendNotifiAndPushNotifi({
                 targetUser: admissionRequest.owner,
                 fromUser: req.user,
-                text: ' EdHub',
+                text: 'Admission Registration Response',
                 subject: business.id,
-                subjectType: 'Admission Registration Response',
+                body: `Your registration in ${business.name_en} admission has been approved `,
                 info: 'ADMISSION-REQUEST'
             });
             let notif = {
@@ -437,17 +437,9 @@ export default {
             sendNotifiAndPushNotifi({
                 targetUser: admissionRequest.owner,
                 fromUser: req.user,
-                text: ' EdHub',
+                text: 'Admission Registration Response',
                 subject: business.id,
-                subjectType: 'Admission Request Status',
-                info: 'ADMISSION-REQUEST'
-            });
-            sendNotifiAndPushNotifi({
-                targetUser: admissionRequest.owner,
-                fromUser: req.user,
-                text: ' EdHub',
-                subject: business.id,
-                subjectType: 'Admission Registration Response',
+                body: `Your registration in ${business.name_en} admission has been rejected `,
                 info: 'ADMISSION-REQUEST'
             });
             let notif = {

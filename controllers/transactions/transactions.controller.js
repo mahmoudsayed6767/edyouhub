@@ -75,9 +75,9 @@ const payPremium = async (premiums,client) => {
             sendNotifiAndPushNotifi({
                 targetUser: fund.owner, 
                 fromUser: fund.owner, 
-                text: 'EdHub',
+                text: 'Your Fund Premium Has Been Paid ',
                 subject: fund.id,
-                subjectType: 'fund Premium Paid',
+                body: 'Your Fund Premium Has Been Paid ',
                 info:'PREMIUM'
             });
             let notif = {
@@ -107,9 +107,9 @@ const payPremium = async (premiums,client) => {
             sendNotifiAndPushNotifi({
                 targetUser: fees.owner, 
                 fromUser: client, 
-                text: 'EdHub',
+                text: 'Your Fees Premium Has Been Paid ',
                 subject: fees.id,
-                subjectType: 'Fees Premium Paid',
+                body: 'Your Fees Premium Has Been Paid ',
                 info:'PREMIUM'
             });
             let notif = {

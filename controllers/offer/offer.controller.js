@@ -495,9 +495,9 @@ export default {
                 sendNotifiAndPushNotifi({
                     targetUser: bill.client, 
                     fromUser: bill.place, 
-                    text: ' Edu Hub',
+                    text: 'Your Order Has Been Confirmed ',
                     subject: bill.id,
-                    subjectType: 'Bill Status',
+                    body: 'Your Order Has Been Confirmed ',
                     info:'BILL'
                 });
                 let notif = {

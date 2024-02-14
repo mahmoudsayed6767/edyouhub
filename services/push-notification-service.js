@@ -17,7 +17,7 @@ export async function sendPushNotification(notifi, title) {
             title: notifi.text,
             sound: 'default',
             itemID: notifi.subject.toString(),
-            body: notifi.subjectType,
+            body: notifi.body,
             info:notifi.info?notifi.info:"",
             priority:'high',
             android_channel_id:"high_importance_channelss"
@@ -26,7 +26,7 @@ export async function sendPushNotification(notifi, title) {
             title: notifi.text,
             sound: 'default',
             itemID: notifi.subject.toString(),
-            body: notifi.subjectType,
+            body: notifi.body,
             info:notifi.info?notifi.info:"",
             priority:'high',
         },

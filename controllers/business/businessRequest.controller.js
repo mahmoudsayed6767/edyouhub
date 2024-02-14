@@ -166,9 +166,9 @@ export default {
             sendNotifiAndPushNotifi({
                 targetUser: businessRequest.owner,
                 fromUser: businessRequest.owner,
-                text: ' EdHub',
+                text: 'Business Request Status',
                 subject: business.id,
-                subjectType: 'Business Status',
+                body: 'Your business Request Has Been Confirmed ',
                 info: 'BUSINESS'
             });
             let notif = {
@@ -186,9 +186,9 @@ export default {
                 sendNotifiAndPushNotifi({
                     targetUser: request.owner,
                     fromUser: request.owner,
-                    text: ' EdHub',
+                    text: 'Business Request Status',
                     subject: business.id,
-                    subjectType: 'business Status',
+                    body: 'Your business Request Has Been Rejected ',
                     info: 'BUSINESS'
                 });
                 let notif = {
@@ -227,9 +227,9 @@ export default {
             sendNotifiAndPushNotifi({
                 targetUser: businessRequest.owner,
                 fromUser: businessRequest.owner,
-                text: ' EdHub',
+                text: 'Business Request Status',
                 subject: business.id,
-                subjectType: 'business Status',
+                body: 'Your business Request Has Been Rejected ',
                 info: 'BUSINESS'
             });
             let notif = {
