@@ -817,7 +817,7 @@ export default {
                 fromUser: business.owner,
                 text: 'Account verification',
                 subject: business.id,
-                body:  `${business.name_en} account verification has been rejected, check the reason`,,
+                body:  `${business.name_en} account verification has been rejected, check the reason`,
                 info: 'BUSINESS'
             });
             let notif = {
