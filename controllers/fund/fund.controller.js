@@ -615,9 +615,9 @@ export default {
             sendNotifiAndPushNotifi({
                 targetUser: fund.owner,
                 fromUser: fund.owner,
-                text: ' EdHub',
+                text: 'Your Fund Request is Reviewing ',
                 subject: fund.id,
-                subjectType: 'fund Status',
+                body: 'Your Fund Request is Reviewing ',
                 info: 'FUND'
             });
             let notif = {
@@ -697,9 +697,9 @@ export default {
             sendNotifiAndPushNotifi({
                 targetUser: fund.owner,
                 fromUser: fund.owner,
-                text: ' EdHub',
+                text: 'Your Fund Request Has Been Confirmed ',
                 subject: fund.id,
-                subjectType: 'fund Status',
+                body: 'Your Fund Request Has Been Confirmed ',
                 info: 'FUND'
             });
             let notif = {
@@ -749,9 +749,9 @@ export default {
             sendNotifiAndPushNotifi({
                 targetUser: fund.owner,
                 fromUser: fund.owner,
-                text: ' EdHub',
+                text: 'Your Fund Request Need Some Fix ',
                 subject: fund.id,
-                subjectType: 'fund Status',
+                body: 'Your Fund Request Need Some Fix ',
                 info: 'FUND'
             });
             let notif = {
@@ -865,9 +865,9 @@ export default {
             sendNotifiAndPushNotifi({
                 targetUser: fund.owner,
                 fromUser: fund.owner,
-                text: ' EdHub',
+                text: 'Your Fund Request has an partial acceptance',
                 subject: fund.id,
-                subjectType: 'fund Status',
+                body: 'Your Fund Request has an partial acceptance',
                 info: 'FUND'
             });
             let notif = {
@@ -913,9 +913,9 @@ export default {
             sendNotifiAndPushNotifi({
                 targetUser: fund.owner,
                 fromUser: fund.owner,
-                text: ' EdHub',
+                text: 'Your Fund Request Has Been Rejected ',
                 subject: fund.id,
-                subjectType: 'fund Status',
+                body: 'Your Fund Request Has Been Rejected ',
                 info: 'FUND'
             });
             let notif = {

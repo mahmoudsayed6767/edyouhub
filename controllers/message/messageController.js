@@ -104,9 +104,9 @@ var messageController = {
                         sendNotifiAndPushNotifi({
                             targetUser: data.toId, 
                             fromUser: data.fromId, 
-                            text: 'edyouhub',
+                            text: "New Message",
                             subject: result2._id,
-                            subjectType: senderName + ' sent you a new message',
+                            body: senderName + ' sent you a new message',
                             info:'MESSAGE'
                         });
                         let notif = {

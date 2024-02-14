@@ -442,9 +442,9 @@ export default {
                 sendNotifiAndPushNotifi({////////
                     targetUser: user.id, 
                     fromUser: req.user._id, 
-                    text: 'new notification',
+                    text: "New Order",
                     subject: createdOrder.id,
-                    subjectType: 'new order',
+                    body: "New Order",
                     info:'order'
                 });
                 let notif = {
@@ -460,9 +460,9 @@ export default {
             sendNotifiAndPushNotifi({
                 targetUser: req.user._id, 
                 fromUser: 'EdHub', 
-                text: 'new notification',
+                text: 'your order on progress',
                 subject: createdOrder.id,
-                subjectType: 'your order on progress',
+                body: "your order under review ,you will khnow the next updated soon",
                 info:'order'
             });
             let notif = {
@@ -533,9 +533,9 @@ export default {
             sendNotifiAndPushNotifi({
                 targetUser: order.client, 
                 fromUser: req.user, 
-                text: 'new notification',
+                text: 'Delivery in Progress',
                 subject: order.id,
-                subjectType: 'EdHub accept your order'
+                body: 'EdHub accept your order'
             });
             let notif = {
                 "description_en":'EdHub accept your order',
@@ -579,9 +579,9 @@ export default {
             sendNotifiAndPushNotifi({
                 targetUser: order.client, 
                 fromUser: req.user, 
-                text: 'new notification',
+                text: 'The Client cancel the order ',
                 subject: order.id,
-                subjectType: 'The Client cancel the order'
+                body: 'The Client cancel the order'
             });
             let notif = {
                 "description_en":'The Client cancel the order',
@@ -627,14 +627,14 @@ export default {
             sendNotifiAndPushNotifi({
                 targetUser: order.client, 
                 fromUser: req.user, 
-                text: 'new notification',
+                text: 'EdHub refuse your order ',
                 subject: order.id,
-                subjectType: 'EdHub refused your order'
+                body: 'EdHub refused your order'
             });
             let notif = {
                 "description_en":'EdHub refused your order',
                 "description_ar":'تم رفض طلبك',
-                "title_en": 'EdHub refuse your order because ',
+                "title_en": 'EdHub refuse your order ',
                 "title_ar":'  تم رفض  طلبك بسبب' ,
                 "type":"ORDER"
             }
@@ -662,9 +662,9 @@ export default {
             sendNotifiAndPushNotifi({
                 targetUser: order.client, 
                 fromUser: req.user, 
-                text: 'new notification',
+                text: 'your order out for delivery',
                 subject: order.id,
-                subjectType: ' your order out for delivery'
+                body: ' your order out for delivery'
             });
             let notif = {
                 "description_en":'your order out for delivery',
@@ -697,9 +697,9 @@ export default {
             sendNotifiAndPushNotifi({
                 targetUser: order.client, 
                 fromUser: req.user, 
-                text: 'new notification',
+                text: ' your order has been arrived',
                 subject: order.id,
-                subjectType: ' your order has been arrived'
+                body: ' your order has been arrived'
             });
             let notif = {
                 "description_en":'your order has been arrived',

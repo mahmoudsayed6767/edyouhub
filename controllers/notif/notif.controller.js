@@ -194,9 +194,9 @@ export default {
                     sendNotifiAndPushNotifi({
                         targetUser: user.id, 
                         fromUser: req.user._id, 
-                        text: 'Edu Hub',
+                        text: validatedBody.title,
                         subject: validatedBody.title,
-                        subjectType: validatedBody.description,
+                        body: validatedBody.description,
                         info:'APP'
                     });
                     let notif = {
@@ -219,9 +219,9 @@ export default {
                     sendNotifiAndPushNotifi({
                         targetUser: user.id, 
                         fromUser: req.user._id, 
-                        text: 'Edu Hub',
+                        text:  validatedBody.title,
                         subject: validatedBody.title,
-                        subjectType:validatedBody.description ,
+                        body:validatedBody.description ,
                         info:'APP'
                     });
                     let notif = {

@@ -121,9 +121,9 @@ export default {
             sendNotifiAndPushNotifi({
                 targetUser: userId,
                 fromUser: user._id,
-                text: 'Edu Hub ',
+                text: 'logout',
                 subject: userId,
-                subjectType: 'logout',
+                body: 'logout',
                 info: 'LOGOUT',
                 content_available: true
             });

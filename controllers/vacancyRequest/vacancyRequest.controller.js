@@ -266,9 +266,9 @@ export default {
             sendNotifiAndPushNotifi({
                 targetUser: vacancyRequest.owner, 
                 fromUser: req.user, 
-                text: ' EdHub',
+                text: 'Your business Request Has Been Confirmed ',
                 subject: business.id,
-                subjectType: 'Vacancy Request Status',
+                body: businessManagement.acceptanceLetter,
                 info:'VACANCY-REQUEST'
             });
             let notif = {
@@ -314,9 +314,9 @@ export default {
             sendNotifiAndPushNotifi({
                 targetUser: vacancyRequest.owner, 
                 fromUser: req.user, 
-                text: ' EdHub',
+                text: 'Your business Request Has Been Rejected ',
                 subject: business.id,
-                subjectType: 'Vacancy Request Status',
+                body: businessManagement.rejectionLetter,
                 info:'VACANCY-REQUEST'
             });
             let notif = {

@@ -54,9 +54,9 @@ export default {
             sendNotifiAndPushNotifi({
                 targetUser: connection.to, 
                 fromUser: connection.from, 
-                text: ' EdHub',
+                text: 'New connection Request',
                 subject: connection.id,
-                subjectType: 'connection Status',
+                body: `New connection Request from  ${req.user.fullname}`,
                 info:'connection'
             });
             let notif = {
@@ -201,9 +201,9 @@ export default {
             sendNotifiAndPushNotifi({
                 targetUser: connection.to, 
                 fromUser: connection.from, 
-                text: ' EdHub',
+                text: 'New Connection Request ',
                 subject: connection.id,
-                subjectType: 'New Connection Request ',
+                body: `${req.user.fullname} sent you connection request`,
                 info:'connection'
             });
             let notif = {
@@ -359,9 +359,9 @@ export default {
             sendNotifiAndPushNotifi({
                 targetUser: connection.from, 
                 fromUser: connection.to, 
-                text: ' EdHub',
+                text: 'Accepted connection',
                 subject: connection.id,
-                subjectType: 'Accepted connection',
+                body: req.user.fullname + ' accepted your connection request',
                 info:'connection'
             });
             let notif = {
@@ -450,9 +450,9 @@ export default {
             sendNotifiAndPushNotifi({
                 targetUser: connection.from, 
                 fromUser: connection.to, 
-                text: ' EdHub',
+                text: 'connection Status',
                 subject: connection.id,
-                subjectType: 'connection Status',
+                body: 'Your connection Request Has Been Rejected ',
                 info:'connection'
             });
             let notif = {
