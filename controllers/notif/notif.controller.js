@@ -197,6 +197,7 @@ export default {
                         text: validatedBody.title,
                         subject: validatedBody.title,
                         body: validatedBody.description,
+                        image:validatedBody.img,
                         info:'APP'
                     });
                     let notif = {
@@ -222,6 +223,7 @@ export default {
                         text:  validatedBody.title,
                         subject: validatedBody.title,
                         body:validatedBody.description ,
+                        image:validatedBody.img,
                         info:'APP'
                     });
                     let notif = {

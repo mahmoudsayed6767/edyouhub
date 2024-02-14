@@ -20,7 +20,8 @@ export async function sendPushNotification(notifi, title) {
             body: notifi.body,
             info:notifi.info?notifi.info:"",
             priority:'high',
-            android_channel_id:"high_importance_channelss"
+            android_channel_id:"high_importance_channelss",
+            image:notifi.image?notifi.image:null
         },
         data: {
             title: notifi.text,
@@ -29,6 +30,7 @@ export async function sendPushNotification(notifi, title) {
             body: notifi.body,
             info:notifi.info?notifi.info:"",
             priority:'high',
+            image:notifi.image?notifi.image:null
         },
         
     }
