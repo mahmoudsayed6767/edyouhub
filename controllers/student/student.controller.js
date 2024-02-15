@@ -209,13 +209,14 @@ export default {
              //get lang
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1, limit = +req.query.limit || 20,
-            {type,sector,subSector,educationSystem,educationInstitution} = req.query;
+            {type,sector,subSector,educationSystem,educationInstitution,studentId} = req.query;
             let query = {  deleted: false }
             if(type) query.type = type
             if(sector) query.sector = sector
             if(subSector) query.subSector = subSector
             if(educationSystem) query.educationSystem = educationSystem
             if(educationInstitution) query.educationInstitution = educationInstitution
+            if(studentId) query.studentId = studentId
             await Student.find(query).populate(populateQuery)
                 .sort({ _id: -1 })
                 .limit(limit)
