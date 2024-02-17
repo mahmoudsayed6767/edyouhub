@@ -15,6 +15,8 @@ import EventAttendance from "../../models/event/eventAttendance.model";
 import { transformUser } from "../../models/user/transformUser"
 import ApiError from "../../helpers/ApiError";
 import City from "../../models/city/city.model";
+import Country from "../../models/country/country.model";
+
 import Area from "../../models/area/area.model";
 import AccessEvent from "../../models/event/accessEvent.model";
 import Activity from "../../models/user/activity.model";
@@ -271,19 +273,20 @@ export default {
             body('nationalityType').optional().isIn(['NATIONAL','INTERNAIONAL']).withMessage((value, { req }) => {
                 return req.__('nationalityType.invalid', { value });
             }),
-            body('address').not().isEmpty().withMessage((value, { req }) => {
-                return req.__('address.required', { value });
-            }),
-            body('location').not().isEmpty().withMessage((value, { req }) => {
-                return req.__('location.required', { value });
-            }).custom(async(value, { req }) => {
+            body('address').optional(),
+            body('location').optional().custom(async(value, { req }) => {
                 await validatedLocation(value);
             }),
 
-            
-            body('city').not().isEmpty().withMessage((value, { req }) => {
-                return req.__('city.required', { value });
-            }).isNumeric().withMessage((value, { req }) => {
+            body('country').optional().isNumeric().withMessage((value, { req }) => {
+                return req.__('country.numeric', { value });
+            }).custom(async(value, { req }) => {
+                if (!await Country.findOne({ _id: value, deleted: false }))
+                    throw new Error(req.__('country.invalid'));
+                else
+                    return true;
+            }),
+            body('city').optional().isNumeric().withMessage((value, { req }) => {
                 return req.__('city.numeric', { value });
             }).custom(async(value, { req }) => {
                 if (!await City.findOne({ _id: value, deleted: false }))
@@ -291,9 +294,7 @@ export default {
                 else
                     return true;
             }),
-            body('area').not().isEmpty().withMessage((value, { req }) => {
-                return req.__('area.required', { value });
-            }).isNumeric().withMessage((value, { req }) => {
+            body('area').optional().isNumeric().withMessage((value, { req }) => {
                 return req.__('area.numeric', { value });
             }).custom(async(value, { req }) => {
                 if (!await Area.findOne({ _id: value, deleted: false }))
@@ -470,8 +471,9 @@ export default {
             } else {
                 validatedBody.ownerType = "APP"
             }
+            if(validatedBody.location)
+                validatedBody.location = { type: 'Point', coordinates: [+req.body.location[0], +req.body.location[1]] };
             
-            validatedBody.location = { type: 'Point', coordinates: [+req.body.location[0], +req.body.location[1]] };
             validatedBody.fromDateMillSec = Date.parse(validatedBody.fromDate)
             validatedBody.toDateMillSec = Date.parse(validatedBody.toDate)
 
