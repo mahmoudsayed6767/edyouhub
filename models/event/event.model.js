@@ -303,21 +303,22 @@ const eventSchema = new Schema({
 
     address: {
         type: String,
-        required: true
     },
     location: {
         type: { type: String, enum: ['Point'] },
         coordinates: { type: [Number] },
     },
+    country: {
+        type: Number,
+        ref: 'country'
+    },
     city: {
         type: Number,
-        ref: 'city',
-        required: true,
+        ref: 'city'
     },
     area: {
         type: Number,
-        ref: 'area',
-        required: true,
+        ref: 'area'
     },
     contactNumbers: {
         type: [String],
