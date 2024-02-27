@@ -54,13 +54,9 @@ export default {
             body('title').not().isEmpty().withMessage((value, { req }) => {
                 return req.__('title.required', { value });
             }),
-            body('description').not().isEmpty().withMessage((value, { req }) => {
-                return req.__('description.required', { value });
-            }),
+            body('description').optional(),
             body('shortDescription').optional(),
-            body('privacyType').not().isEmpty().withMessage((value, { req }) => {
-                return req.__('privacyType.required', { value });
-            }).isIn(['PRIVAET', 'PUBLIC']).withMessage((value, { req }) => {
+            body('privacyType').optional().isIn(['PRIVAET', 'PUBLIC']).withMessage((value, { req }) => {
                 return req.__('privacyType.invalid', { value });
             }),
             body('accessCode').optional(),
@@ -69,9 +65,7 @@ export default {
             }).isIn(['ANNONCE', 'TRIP','CAMP','CONCERT','STAGE-EVENT','FAIR','BAZAR']).withMessage((value, { req }) => {
                 return req.__('type.invalid', { value });
             }),
-            body('owners').not().isEmpty().withMessage((value, { req }) => {
-                return req.__('owners.required', { value });
-            }).isLength({ min: 1 }).withMessage((value, { req}) => {
+            body('owners').optional().isLength({ min: 1 }).withMessage((value, { req}) => {
                 return req.__('owners.atLeastOne', { value});
             }).custom(async(owners, { req }) => {
                 for (let val of owners) {
@@ -98,9 +92,7 @@ export default {
                 }
                 return true;
             }),
-            body('hosts').not().isEmpty().withMessage((value, { req }) => {
-                return req.__('hosts.required', { value });
-            }).isLength({ min: 1 }).withMessage((value, { req}) => {
+            body('hosts').optional().isLength({ min: 1 }).withMessage((value, { req}) => {
                 return req.__('hosts.atLeastOne', { value});
             }).custom(async(hosts, { req }) => {
                 for (let val of hosts) {
@@ -127,9 +119,7 @@ export default {
                 }
                 return true;
             }),
-            body('organizers').not().isEmpty().withMessage((value, { req }) => {
-                return req.__('organizers.required', { value });
-            }).isLength({ min: 1 }).withMessage((value, { req}) => {
+            body('organizers').optional().isLength({ min: 1 }).withMessage((value, { req}) => {
                 return req.__('organizers.atLeastOne', { value});
             }).custom(async(organizers, { req }) => {
                 for (let val of organizers) {
@@ -302,20 +292,12 @@ export default {
                 else
                     return true;
             }),
-            body('contactNumbers').not().isEmpty().withMessage((value, { req }) => {
-                return req.__('contactNumbers.required', { value });
-            }),
-            body('email').not().isEmpty().withMessage((value, { req }) => {
-                return req.__('email.required', { value });
-            }),
-            body('fromDate').not().isEmpty().withMessage((value, { req }) => {
-                return req.__('fromDate.required', { value });
-            }).isISO8601().withMessage((value, { req }) => {
+            body('contactNumbers').optional(),
+            body('email').optional(),
+            body('fromDate').optional().isISO8601().withMessage((value, { req }) => {
                 return req.__('invalid.date', { value });
             }),
-            body('toDate').not().isEmpty().withMessage((value, { req }) => {
-                return req.__('toDate.required', { value });
-            }).isISO8601().withMessage((value, { req }) => {
+            body('toDate').optional().isISO8601().withMessage((value, { req }) => {
                 return req.__('invalid.date', { value });
             }),
             body('business').optional().isNumeric().withMessage((value, { req }) => {
@@ -384,9 +366,7 @@ export default {
                 }
                 return true;
             }),
-            body('feesType').not().isEmpty().withMessage((value, { req }) => {
-                return req.__('feesType.required', { value });
-            }).isIn(['NO-FEES', 'WITH-FEES']).withMessage((value, { req }) => {
+            body('feesType').optional().isIn(['NO-FEES', 'WITH-FEES']).withMessage((value, { req }) => {
                 return req.__('feesType.invalid', { value });
             }),
             body('paymentMethod').optional().isIn(['CASH', 'INSTALLMENT', 'BOTH'])

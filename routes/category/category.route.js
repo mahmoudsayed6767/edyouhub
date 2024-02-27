@@ -10,14 +10,18 @@ const router = express.Router();
 //find sub category under category without pagenation
 router.route('/:categoryId/sub-categories')
     .get(
-        CategoryController.findsubCategory
+        CategoryController.findSubCategory
     )
 
 //find sub category under category with pagenation
 
 router.route('/:categoryId/pagenation-subCategories')
     .get(
-        CategoryController.findsubCategoryPagenation
+        CategoryController.findSubCategoryPagenation
+    )
+router.route('/pagenation-subCategories')
+    .get(
+        CategoryController.findAllSubCategoriesPagenation
     )
 //find category under category with pagenation
 
