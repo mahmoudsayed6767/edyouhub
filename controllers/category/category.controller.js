@@ -3,7 +3,7 @@ import { checkExist, checkExistThenGet, isImgUrl } from "../../helpers/CheckMeth
 import { handleImg, checkValidations } from "../shared/shared.controller";
 import { body } from "express-validator";
 import Category from "../../models/category/category.model";
-import subCategory from "../../models/category/sub-category.model";
+import SubCategory from "../../models/category/sub-category.model";
 import User from "../../models/user/user.model";
 import Offer from "../../models/offer/offer.model";
 import Report from "../../models/reports/report.model";
@@ -50,43 +50,7 @@ export default {
             next(err);
         }
     },
-    //get subCategory under category with pagenation
-    async findsubCategoryPagenation(req, res, next) {        
-        try {
-             //get lang
-            let lang = i18n.getLocale(req)
-            let { categoryId ,orderByPriority} = req.params,
-                page = +req.query.page || 1,
-                limit = +req.query.limit || 20;
-
-            await checkExist(categoryId, Category);
-
-            let query = { parent: categoryId, deleted: false };
-            let sortd = { createdAt: 1 }
-            if(orderByPriority){
-                sortd = { priority: 1 }
-            }
-            await subCategory.find(query)
-                .populate(populateQuery)
-                .sort(sortd)
-                .limit(limit)
-                .skip((page - 1) * limit)
-                .then(async (data) => {
-                    var newdata = [];
-                    await Promise.all(data.map(async(e) =>{
-                        let index = await transformCategory(e,lang)
-                        newdata.push(index);
-                    }))
-                    const count = await subCategory.countDocuments(query);
-                    const pageCount = Math.ceil(count / limit);
-
-                    res.send(new ApiResponse(newdata, page, pageCount, limit, count, req));
-                })
-
-        } catch (error) {
-            next(error);
-        }
-    },
+    
     //get main categories without pagenation
     async findCategory(req, res, next) {        
         try {         
@@ -117,8 +81,45 @@ export default {
             next(err);
         }
     },
+    //get subCategory under category with pagenation
+    async findSubCategoryPagenation(req, res, next) {        
+        try {
+             //get lang
+            let lang = i18n.getLocale(req)
+            let { categoryId ,orderByPriority} = req.params,
+                page = +req.query.page || 1,
+                limit = +req.query.limit || 20;
+
+            await checkExist(categoryId, Category);
+
+            let query = { parent: categoryId, deleted: false };
+            let sortd = { createdAt: 1 }
+            if(orderByPriority){
+                sortd = { priority: 1 }
+            }
+            await SubCategory.find(query)
+                .populate(populateQuery)
+                .sort(sortd)
+                .limit(limit)
+                .skip((page - 1) * limit)
+                .then(async (data) => {
+                    var newdata = [];
+                    await Promise.all(data.map(async(e) =>{
+                        let index = await transformCategory(e,lang)
+                        newdata.push(index);
+                    }))
+                    const count = await SubCategory.countDocuments(query);
+                    const pageCount = Math.ceil(count / limit);
+
+                    res.send(new ApiResponse(newdata, page, pageCount, limit, count, req));
+                })
+
+        } catch (error) {
+            next(error);
+        }
+    },
     //get subCategories under category without pagenation
-    async findsubCategory(req, res, next) {        
+    async findSubCategory(req, res, next) {        
         try {
              //get lang
             let lang = i18n.getLocale(req)
@@ -135,7 +136,7 @@ export default {
             if(orderByPriority){
                 sortd = { priority: 1 }
             }
-            await subCategory.find(query).populate(populateQuery)
+            await SubCategory.find(query).populate(populateQuery)
                 .sort(sortd)
                 .then(async (data) => {
                     var newdata = [];
@@ -147,6 +148,36 @@ export default {
                         success:true,
                         data:newdata
                     });
+                })
+
+        } catch (error) {
+            next(error);
+        }
+    },
+    //get all subCategories with pagenation
+    async findAllSubCategoriesPagenation(req, res, next) {        
+        try {
+             //get lang
+            let lang = i18n.getLocale(req)
+            let page = +req.query.page || 1, limit = +req.query.limit || 20;
+
+            let query = { parent: { $ne: null }, deleted: false };
+            let sortd = { createdAt: 1 }
+            await SubCategory.find(query)
+                .populate(populateQuery)
+                .sort(sortd)
+                .limit(limit)
+                .skip((page - 1) * limit)
+                .then(async (data) => {
+                    var newdata = [];
+                    await Promise.all(data.map(async(e) =>{
+                        let index = await transformCategory(e,lang)
+                        newdata.push(index);
+                    }))
+                    const count = await SubCategory.countDocuments(query);
+                    const pageCount = Math.ceil(count / limit);
+
+                    res.send(new ApiResponse(newdata, page, pageCount, limit, count, req));
                 })
 
         } catch (error) {
@@ -222,7 +253,7 @@ export default {
                 let parentCategory = await checkExistThenGet(validatedBody.parent, Category);
                 parentCategory.hasChild = true;
                 await parentCategory.save();
-                model = subCategory;
+                model = SubCategory;
             }
             else {
                 model = Category;
@@ -234,7 +265,7 @@ export default {
            
 
             let createdCategory = await model.create({ ...validatedBody});
-            if(model == subCategory){
+            if(model == SubCategory){
                 let parentCategory = await checkExistThenGet(validatedBody.parent, Category);
                 parentCategory.child.push(createdCategory._id);
                 await parentCategory.save();
@@ -276,7 +307,7 @@ export default {
                 let parentCategory = await checkExistThenGet(item.parent, Category);
                 parentCategory.hasChild = true;
 
-                let createdItem = await subCategory.create({ ...item });
+                let createdItem = await SubCategory.create({ ...item });
                 parentCategory.child.push(createdItem._id);
                 await parentCategory.save();
 
@@ -317,7 +348,7 @@ export default {
                 let parentCategory = await checkExistThenGet(validatedBody.parent, Category);
                 parentCategory.hasChild = true;
                 await parentCategory.save();
-                model = subCategory;
+                model = SubCategory;
             }
             else {
                 model = Category;
@@ -331,7 +362,7 @@ export default {
             let updatedCategory = await model.findByIdAndUpdate(categoryId, {
                 ...validatedBody,
             }, { new: true });
-            if(model == subCategory){
+            if(model == SubCategory){
                 let parentCategory = await checkExistThenGet(validatedBody.parent, Category);
                 parentCategory.child.push(updatedCategory._id);
                 await parentCategory.save();
@@ -374,7 +405,7 @@ export default {
             }
             /* delete all category children */
             if(category.hasChild == true){
-                let childs = await subCategory.find({parent : categoryId });
+                let childs = await SubCategory.find({parent : categoryId });
                 for (let child of childs ) {
                     console.log(child)
                     child.deleted = true;
