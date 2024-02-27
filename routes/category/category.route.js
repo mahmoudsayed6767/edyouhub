@@ -19,7 +19,7 @@ router.route('/:categoryId/pagenation-subCategories')
     .get(
         CategoryController.findSubCategoryPagenation
     )
-router.route('/pagenation-subCategories')
+router.route('/pagenation-subCategories/get')
     .get(
         CategoryController.findAllSubCategoriesPagenation
     )
