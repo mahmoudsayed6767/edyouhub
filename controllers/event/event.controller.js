@@ -54,7 +54,7 @@ export default {
             body('title').not().isEmpty().withMessage((value, { req }) => {
                 return req.__('title.required', { value });
             }),
-            body('description').optional(),,
+            body('description').optional(),
             body('shortDescription').optional(),
             body('privacyType').not().isEmpty().withMessage((value, { req }) => {
                 return req.__('privacyType.required', { value });
