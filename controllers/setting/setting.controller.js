@@ -80,6 +80,8 @@ export default {
             }).isNumeric().withMessage((value, { req}) => {
                 return req.__('fundRatio.numeric', { value});
             }),
+            body('courseCashBackRatio').optional(),
+            body('eventCashBackRatio').optional()
            
         ];
         return validations;

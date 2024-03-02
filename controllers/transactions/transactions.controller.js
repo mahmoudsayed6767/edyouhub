@@ -93,7 +93,6 @@ const payPremium = async (premiums,client) => {
             let fees = await checkExistThenGet(premium.fees, Fees,{deleted:false});
             let setting = await Setting.findOne({deleted: false})
             let cashBack = (premium.cost * setting.feesCashBackRatio) / 100 
-            console.log("cashBack",cashBack)
             let fundOwner = await checkExistThenGet(client, User,{deleted:false})
             fundOwner.balance = fundOwner.balance + cashBack
             fundOwner.cashBack = true
@@ -313,7 +312,7 @@ const payPackage = async (thePackage,userId,businessId) => {
     
     return true;
 };
-const payEvent = async (theEvent,userId,tickets=[]) => {
+const payEvent = async (theEvent,userId,tickets=[],cost) => {
     let event = await checkExistThenGet(theEvent, Event, { deleted: false });
     //add client to event attendance
     let arr = event.attendance;
@@ -322,6 +321,12 @@ const payEvent = async (theEvent,userId,tickets=[]) => {
     if(!found){
         event.attendance.push(userId);
         eventAttendance = await EventAttendance.create({ user: userId, event: event,tickets:tickets });
+        let setting = await Setting.findOne({deleted: false})
+        let cashBack = (cost * setting.eventCashBackRatio) / 100 
+        let user = await checkExistThenGet(userId, User,{deleted:false})
+        user.balance = user.balance + cashBack
+        user.cashBack = true
+        await user.save();
         let reports = {
             "action":"user will attend to event",
             "type":"EVENT",
@@ -354,7 +359,6 @@ const payCourse = async (courseId,userId,paymentMethod) => {
     let courseParticipant
     if(!found){
         attendedUser.attendedCourses.push(courseId);
-        
         courseParticipant = await CourseParticipant.create({
             user:userId,
             course:courseId,
@@ -391,6 +395,10 @@ const payCourse = async (courseId,userId,paymentMethod) => {
                 await Report.create({...reports });
             }
         }
+        let setting = await Setting.findOne({deleted: false})
+        let cashBack = (cost * setting.courseCashBackRatio) / 100 
+        attendedUser.balance = attendedUser.balance + cashBack
+        attendedUser.cashBack = true
         await attendedUser.save();
         theCourse.acceptanceNo = theCourse.acceptanceNo + 1
         await theCourse.save();
@@ -431,12 +439,12 @@ const callBack = async (merchantRefNumber,status,paymentMethod,data) => {
             await payPackage(theTransaction.package,userId,theTransaction.business)
         }
         if(theTransaction.type =="EVENT"){
-            let eventAttendance = await payEvent(theTransaction.event,userId,theTransaction.tickets)
+            let eventAttendance = await payEvent(theTransaction.event,userId,theTransaction.tickets,theTransaction.cost)
             theTransaction.eventAttendance = eventAttendance
         }
         if(theTransaction.type =="ON-SITE-COURSE" || theTransaction.type == "ONLINE-COURSE"){
             console.log("course")
-            let courseParticipant = await payCourse(theTransaction.course,userId,theTransaction.coursePaymentMethod)
+            let courseParticipant = await payCourse(theTransaction.course,userId,theTransaction.coursePaymentMethod,theTransaction.cost)
             theTransaction.courseParticipant = courseParticipant
         }
         if(theTransaction.type =="COURSE-PREMIUM" || theTransaction.type =="FUND" || theTransaction.type == "FEES"){

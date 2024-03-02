@@ -20,6 +20,16 @@ const SettingSchema = new Schema({
         default:5,
         required: true
     },
+    courseCashBackRatio:{
+        type: Number,
+        default:10,
+        required: true
+    },
+    eventCashBackRatio:{
+        type: Number,
+        default:10,
+        required: true
+    },
     affiliateRatio:{
         type: Number,
         default:5,
