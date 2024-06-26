@@ -155,7 +155,7 @@ export default {
                 }
             }),
             body('educationType').optional()
-            .isIn(['SCHOOL','TUTOR', 'UNIVERSITY', 'HIGH-ACADEMY', 'NURSERY', 'HIGH-CENTER', 'BASIC-CENTER', 'HIGH-TUTOR', 'BASIC-TUTOR', 'SERVICE-PROVIDER', 'INSTITUTE', 'BASIC-ACADEMY', 'HIGH', 'BASIC'])
+            .isIn(['SCHOOL','TUTOR','UNIVERSITY', 'HIGH-ACADEMY', 'NURSERY', 'HIGH-CENTER', 'BASIC-CENTER', 'HIGH-TUTOR', 'BASIC-TUTOR', 'SERVICE-PROVIDER', 'INSTITUTE', 'BASIC-ACADEMY', 'HIGH', 'BASIC'])
             .withMessage((value, { req }) => {
                 return req.__('educationType.invalid', { value });
             }),
@@ -320,7 +320,7 @@ export default {
         try {
             const validatedBody = checkValidations(req);
             if (validatedBody.educationType) {
-                let subSector = await Category.findOne({ deleted: false, educationType: validatedBody.educationType })
+                let subSector = await Category.findOne({ deleted: false, main:false,educationType: validatedBody.educationType })
                 validatedBody.subSector = subSector._id
                 validatedBody.sector = subSector.parent
 
