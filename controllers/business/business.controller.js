@@ -155,7 +155,7 @@ export default {
                 }
             }),
             body('educationType').optional()
-            .isIn(['SCHOOL', 'UNIVERSITY', 'HIGH-ACADEMY', 'NURSERY', 'HIGH-CENTER', 'BASIC-CENTER', 'HIGH-TUTOR', 'BASIC-TUTOR', 'SERVICE-PROVIDER', 'INSTITUTE', 'BASIC-ACADEMY', 'HIGH', 'BASIC'])
+            .isIn(['SCHOOL','TUTOR', 'UNIVERSITY', 'HIGH-ACADEMY', 'NURSERY', 'HIGH-CENTER', 'BASIC-CENTER', 'HIGH-TUTOR', 'BASIC-TUTOR', 'SERVICE-PROVIDER', 'INSTITUTE', 'BASIC-ACADEMY', 'HIGH', 'BASIC'])
             .withMessage((value, { req }) => {
                 return req.__('educationType.invalid', { value });
             }),
