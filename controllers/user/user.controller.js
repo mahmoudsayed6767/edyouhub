@@ -29,6 +29,7 @@ import Post from "../../models/post/post.model";
 import Connection from "../../models/connection/connection.model";
 import Notif from "../../models/notif/notif.model";
 import Message from "../../models/message/message.model";
+import Order from "../../models/order/order.model";
 
 const populateQuery = [
     { path: 'package', model: 'package' },
