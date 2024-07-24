@@ -351,7 +351,7 @@ const payEvent = async (theEvent,userId,tickets=[],cost) => {
     await event.save();
     return eventAttendance._id;
 };
-const payCourse = async (courseId,userId,paymentMethod) => {
+const payCourse = async (courseId,userId,paymentMethod,cost) => {
     let theCourse = await checkExistThenGet(courseId, Course,{deleted:false});
     let attendedUser = await checkExistThenGet(userId, User,{deleted:false});
     let arr = attendedUser.attendedCourses;
