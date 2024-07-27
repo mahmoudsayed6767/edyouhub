@@ -17,7 +17,6 @@ export default {
                 return req.__('name_en.required', { value});
             })
         ];
-
         return validations;
     },
     async create(req, res, next) {        
