@@ -6,7 +6,7 @@ import { checkExist } from "../../helpers/CheckMethods";
 import ApiResponse from "../../helpers/ApiResponse";
 import { checkExistThenGet } from "../../helpers/CheckMethods";
 import i18n from "i18n";
-
+ 
 export default {
     validateBody(isUpdate = false) {
         let validations = [
