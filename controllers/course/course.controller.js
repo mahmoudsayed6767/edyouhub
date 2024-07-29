@@ -407,7 +407,7 @@ export default {
                 limit = +req.query.limit || 20;
             let { all,showingStatus,feesType, city, area, myCourses, userId, type, search, instractor, paymentMethod, specialization, business, status, ownerType } = req.query;
 
-            let query = { deleted: false, showingStatus:'APPROVED'}
+            let query = { deleted: false}
             /*search  */
             if (search) {
                 query = {
