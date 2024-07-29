@@ -407,7 +407,7 @@ export default {
                 limit = +req.query.limit || 20;
             let { all,showingStatus,feesType, city, area, myCourses, userId, type, search, instractor, paymentMethod, specialization, business, status, ownerType } = req.query;
 
-            let query = { deleted: false}
+            let query = { deleted: false, showingStatus:'APPROVED'}
             /*search  */
             if (search) {
                 query = {
@@ -450,9 +450,6 @@ export default {
                     var newdata = [];
                     await Promise.all(data.map(async (e) => {
                         let index = await transformCourse(e, lang, myUser, userId)
-                        let course = await checkExistThenGet(e._id,Course)
-                        course.showingStatus = 'APPROVED'
-                        await course.save()
                         newdata.push(index)
                     }))
                     const count = await Course.countDocuments(query);
