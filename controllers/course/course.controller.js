@@ -345,7 +345,7 @@ export default {
         try {
             //get lang
             let lang = i18n.getLocale(req)
-            let {feesType,showingStatus, city, area, userId, myCourses, type, search, instractor, paymentMethod, specialization, business, status, ownerType } = req.query;
+            let {all,feesType,showingStatus, city, area, userId, myCourses, type, search, instractor, paymentMethod, specialization, business, status, ownerType } = req.query;
 
             let query = { deleted: false, showingStatus:'APPROVED'}
             /*search  */
@@ -405,7 +405,7 @@ export default {
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1,
                 limit = +req.query.limit || 20;
-            let { showingStatus,feesType, city, area, myCourses, userId, type, search, instractor, paymentMethod, specialization, business, status, ownerType } = req.query;
+            let { all,showingStatus,feesType, city, area, myCourses, userId, type, search, instractor, paymentMethod, specialization, business, status, ownerType } = req.query;
 
             let query = { deleted: false, showingStatus:'APPROVED'}
             /*search  */
