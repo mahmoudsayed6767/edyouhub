@@ -71,6 +71,7 @@ export default {
             body('sessionsNo').optional(),
             body('maxApplications').optional(),
             body('maxAcceptance').optional(),
+            body('availableSets').optional(),
             body('type').optional().isIn(['ONLINE', 'ON-SITE']).withMessage((value, { req }) => {
                 return req.__('type.invalid', { value });
             }),

@@ -44,10 +44,7 @@ const courseSchema = new Schema({
         type: Number,
         default: 0
     },
-    acceptanceNo: {
-        type: Number,
-        default: 0
-    },
+    
     imgs: [{
         type: String,
         required: true
@@ -127,6 +124,14 @@ const courseSchema = new Schema({
         default: 0
     },
     maxAcceptance: {
+        type: Number,
+        default: 0
+    },
+    availableSets: {
+        type: Number,
+        default: 0
+    },
+    acceptanceNo: {
         type: Number,
         default: 0
     },

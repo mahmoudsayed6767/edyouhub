@@ -9,6 +9,7 @@ import { transformAdminRequest } from "../../models/adminRequest/transformAdminR
 import BusinessManagement from "../../models/business/businessManagement.model"
 import Business from "../../models/business/business.model";
 import User from "../../models/user/user.model";
+import ApiError from "../../helpers/ApiError";
 
 const populateQuery = [
     {
@@ -121,7 +122,7 @@ export default {
             let { adminRequestId } = req.params;
             let adminRequest = await checkExistThenGet(adminRequestId, AdminRequest, { deleted: false })
             if (!isInArray(["ADMIN", "SUB-ADMIN"], req.user.type)) {
-                if (adminRequest.from != req.user._id)
+                if (adminRequest.to != req.user._id)
                     return next(new ApiError(403, i18n.__('notAllow')));
             }
             if(adminRequest.status == "PENDING"){
@@ -168,7 +169,7 @@ export default {
             let { adminRequestId } = req.params;
             let adminRequest = await checkExistThenGet(adminRequestId, AdminRequest, { deleted: false })
             if (!isInArray(["ADMIN", "SUB-ADMIN"], req.user.type)) {
-                if (adminRequest.from != req.user._id)
+                if (adminRequest.to != req.user._id)
                     return next(new ApiError(403, i18n.__('notAllow')));
             }
             if(adminRequest.status == "PENDING"){
