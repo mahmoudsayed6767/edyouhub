@@ -25,6 +25,11 @@ const courseSchema = new Schema({
         enum: ['CURRENT', 'COMING', 'DONE'],
         default: 'COMING',
     },
+    showingStatus: {
+        type: String,
+        enum: ['PENDING', 'APPROVED', 'REJECTED'],
+        default: 'PENDING',
+    },
     description_en: {
         type: String,
         required: true,

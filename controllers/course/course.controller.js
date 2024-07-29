@@ -345,9 +345,9 @@ export default {
         try {
             //get lang
             let lang = i18n.getLocale(req)
-            let { feesType, city, area, userId, myCourses, type, search, instractor, paymentMethod, specialization, business, status, ownerType } = req.query;
+            let {feesType,showingStatus, city, area, userId, myCourses, type, search, instractor, paymentMethod, specialization, business, status, ownerType } = req.query;
 
-            let query = { deleted: false }
+            let query = { deleted: false, showingStatus:'APPROVED'}
             /*search  */
             if (search) {
                 query = {
@@ -358,9 +358,12 @@ export default {
                         ]
                     },
                     { deleted: false },
+                    { showingStatus: 'APPROVED' },
                     ]
                 };
             }
+            if (showingStatus) query.showingStatus = showingStatus;
+            if(all == "true") query.showingStatus = {$in:['APPROVED', 'PENNDING','REJECTED']}
             if (feesType) query.feesType = feesType;
             if (city) query.cities = city
             if (area) query.areas = area
@@ -402,9 +405,9 @@ export default {
             let lang = i18n.getLocale(req)
             let page = +req.query.page || 1,
                 limit = +req.query.limit || 20;
-            let { feesType, city, area, myCourses, userId, type, search, instractor, paymentMethod, specialization, business, status, ownerType } = req.query;
+            let { showingStatus,feesType, city, area, myCourses, userId, type, search, instractor, paymentMethod, specialization, business, status, ownerType } = req.query;
 
-            let query = { deleted: false }
+            let query = { deleted: false, showingStatus:'APPROVED'}
             /*search  */
             if (search) {
                 query = {
@@ -415,9 +418,12 @@ export default {
                         ]
                     },
                     { deleted: false },
+                    { showingStatus: 'APPROVED' },
                     ]
                 };
             }
+            if (showingStatus) query.showingStatus = showingStatus;
+            if(all == "true") query.showingStatus = {$in:['APPROVED', 'PENNDING','REJECTED']}
             if (feesType) query.feesType = feesType;
 
             if (type) query.type = type
@@ -444,6 +450,9 @@ export default {
                     var newdata = [];
                     await Promise.all(data.map(async (e) => {
                         let index = await transformCourse(e, lang, myUser, userId)
+                        let course = await checkExistThenGet(e._id,Course)
+                        course.showingStatus = 'APPROVED'
+                        await course.save()
                         newdata.push(index)
                     }))
                     const count = await Course.countDocuments(query);
@@ -975,6 +984,46 @@ export default {
                 "action": "Delete course section",
                 "type": "COURSE",
                 "deepId": section.course,
+                "user": req.user._id
+            };
+            await Report.create({ ...reports });
+            res.send({
+                success: true
+            });
+        } catch (err) {
+            next(err);
+        }
+    },
+    async approve(req, res, next) {
+        try {
+            let { courseId } = req.params;
+            let course = await checkExistThenGet(courseId, Course);
+            course.showingStatus = "APPROVED"
+            await section.save();
+            let reports = {
+                "action": "Approve course ",
+                "type": "COURSE",
+                "deepId": courseId,
+                "user": req.user._id
+            };
+            await Report.create({ ...reports });
+            res.send({
+                success: true
+            });
+        } catch (err) {
+            next(err);
+        }
+    },
+    async reject(req, res, next) {
+        try {
+            let { courseId } = req.params;
+            let course = await checkExistThenGet(courseId, Course);
+            course.showingStatus = "REJECTED"
+            await section.save();
+            let reports = {
+                "action": "Reject course ",
+                "type": "COURSE",
+                "deepId": courseId,
                 "user": req.user._id
             };
             await Report.create({ ...reports });

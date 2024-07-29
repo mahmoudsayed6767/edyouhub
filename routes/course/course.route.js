@@ -2,6 +2,7 @@ import express from 'express';
 import { requireAuth } from '../../services/passport';
 import courseController from '../../controllers/course/course.controller';
 import { multerSaveTo } from '../../services/multer-service';
+import { permissions } from '../../services/permissions';
 
 const router = express.Router();
 
@@ -73,5 +74,16 @@ router.route('/:sectionId/sections')
         courseController.updateSection
     )
     .delete(requireAuth,courseController.deleteSection);
-
+router.route('/:courseId/approve')
+    .put(
+        requireAuth,
+        permissions('ADMIN'),
+        courseController.approve
+    )
+router.route('/:courseId/reject')
+    .put(
+        requireAuth,
+        permissions('ADMIN'),
+        courseController.reject
+    )
 export default router;

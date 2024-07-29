@@ -108,6 +108,10 @@ export async function transformUserById(e,lang,myUser,userId) {
             createCourses:e.package.createCourses,
             createVacancies:e.package.createVacancies,
             createAdmissions:e.package.createAdmissions,
+            enrollCourse:e.package.enrollCourse,
+            enrollOnlineCourse:e.package.enrollOnlineCourse,
+            joinEvent:e.package.joinEvent,
+            feesPayment:e.package.feesPayment,
             id: e.package._id,
         }
     }

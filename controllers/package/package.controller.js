@@ -124,6 +124,10 @@ export default {
             body('createAdmissions').optional(),
             body('enableFollow').optional(),
             body('sendingMessages').optional(),
+            body('enrollCourse').optional(),
+            body('enrollOnlineCourse').optional(),
+            body('joinEvent').optional(),
+            body('feesPayment').optional(),
         ];
     },
     //add package

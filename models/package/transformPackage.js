@@ -23,6 +23,10 @@ export async function transformPackage(e,lang) {
         createCourses:e.createCourses,
         createVacancies:e.createVacancies,
         createAdmissions:e.createAdmissions,
+        enrollCourse:e.enrollCourse,
+        enrollOnlineCourse:e.enrollOnlineCourse,
+        joinEvent:e.joinEvent,
+        feesPayment:e.feesPayment,
         id: e._id,
         createdAt: e.createdAt,
     }

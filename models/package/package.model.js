@@ -96,6 +96,22 @@ const PackageSchema=new Schema({
         type:Boolean,
         default:false
     },
+    enrollCourse:{
+        type:Boolean,
+        default:false
+    },
+    enrollOnlineCourse:{
+        type:Boolean,
+        default:false
+    },
+    joinEvent:{
+        type:Boolean,
+        default:false
+    },
+    feesPayment:{
+        type:Boolean,
+        default:false
+    },
     usersCount:{
         type:Number,
         default:0
