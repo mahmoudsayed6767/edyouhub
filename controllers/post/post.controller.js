@@ -676,7 +676,7 @@ export default {
             let page = +req.query.page || 1, limit = +req.query.limit || 20;
             let query = {deleted: false,post:req.params.postId };
             await Comment.find(query).populate(populateQueryComment)
-                .sort({ createdAt: -1 })
+                .sort({ createdAt: 1 })
                 .limit(limit)
                 .skip((page - 1) * limit).then(async(data)=>{
                     let newdata =[]

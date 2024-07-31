@@ -1016,7 +1016,8 @@ export default {
         try {
             let { courseId } = req.params;
             let course = await checkExistThenGet(courseId, Course);
-            course.showingStatus = "REJECTED"
+            course.showingStatus = "REJECTED",
+            course.rejectReason = req.body.rejectReason
             await course.save();
             let reports = {
                 "action": "Reject course ",

@@ -72,18 +72,10 @@ export default {
                     body('name').not().isEmpty().withMessage((value, { req }) => {
                         return req.__('name.required', { value });
                     }),
-                    body('type').not().isEmpty().withMessage((value, { req }) => {
-                        return req.__('type.required', { value });
-                    }),
-                    body('phone').not().isEmpty().withMessage((value, { req }) => {
-                        return req.__('phone.required', { value });
-                    }),
-                    body('email').not().isEmpty().withMessage((value, { req }) => {
-                        return req.__('email.required', { value });
-                    }),
-                    body('website').not().isEmpty().withMessage((value, { req }) => {
-                        return req.__('website.required', { value });
-                    }),
+                    body('type').optional(),
+                    body('phone').optional(),
+                    body('email').optional(),
+                    body('website').optional(),
                     body('logo').not().isEmpty().withMessage((value, { req }) => {
                         return req.__('logo.required', { value });
                     }),
@@ -99,18 +91,10 @@ export default {
                     body('name').not().isEmpty().withMessage((value, { req }) => {
                         return req.__('name.required', { value });
                     }),
-                    body('type').not().isEmpty().withMessage((value, { req }) => {
-                        return req.__('type.required', { value });
-                    }),
-                    body('phone').not().isEmpty().withMessage((value, { req }) => {
-                        return req.__('phone.required', { value });
-                    }),
-                    body('email').not().isEmpty().withMessage((value, { req }) => {
-                        return req.__('email.required', { value });
-                    }),
-                    body('website').not().isEmpty().withMessage((value, { req }) => {
-                        return req.__('website.required', { value });
-                    }),
+                    body('type').optional(),
+                    body('phone').optional(),
+                    body('email').optional(),
+                    body('website').optional(),
                     body('logo').not().isEmpty().withMessage((value, { req }) => {
                         return req.__('logo.required', { value });
                     }),
@@ -126,18 +110,10 @@ export default {
                     body('name').not().isEmpty().withMessage((value, { req }) => {
                         return req.__('name.required', { value });
                     }),
-                    body('type').not().isEmpty().withMessage((value, { req }) => {
-                        return req.__('type.required', { value });
-                    }),
-                    body('phone').not().isEmpty().withMessage((value, { req }) => {
-                        return req.__('phone.required', { value });
-                    }),
-                    body('email').not().isEmpty().withMessage((value, { req }) => {
-                        return req.__('email.required', { value });
-                    }),
-                    body('website').not().isEmpty().withMessage((value, { req }) => {
-                        return req.__('website.required', { value });
-                    }),
+                    body('type').optional(),
+                    body('phone').optional(),
+                    body('email').optional(),
+                    body('website').optional(),
                     body('logo').not().isEmpty().withMessage((value, { req }) => {
                         return req.__('logo.required', { value });
                     }),
@@ -153,18 +129,10 @@ export default {
                     body('name').not().isEmpty().withMessage((value, { req }) => {
                         return req.__('name.required', { value });
                     }),
-                    body('type').not().isEmpty().withMessage((value, { req }) => {
-                        return req.__('type.required', { value });
-                    }),
-                    body('phone').not().isEmpty().withMessage((value, { req }) => {
-                        return req.__('phone.required', { value });
-                    }),
-                    body('email').not().isEmpty().withMessage((value, { req }) => {
-                        return req.__('email.required', { value });
-                    }),
-                    body('website').not().isEmpty().withMessage((value, { req }) => {
-                        return req.__('website.required', { value });
-                    }),
+                    body('type').optional(),
+                    body('phone').optional(),
+                    body('email').optional(),
+                    body('website').optional(),
                     body('logo').not().isEmpty().withMessage((value, { req }) => {
                         return req.__('logo.required', { value });
                     }),
@@ -180,18 +148,10 @@ export default {
                     body('name').not().isEmpty().withMessage((value, { req }) => {
                         return req.__('name.required', { value });
                     }),
-                    body('type').not().isEmpty().withMessage((value, { req }) => {
-                        return req.__('type.required', { value });
-                    }),
-                    body('phone').not().isEmpty().withMessage((value, { req }) => {
-                        return req.__('phone.required', { value });
-                    }),
-                    body('email').not().isEmpty().withMessage((value, { req }) => {
-                        return req.__('email.required', { value });
-                    }),
-                    body('website').not().isEmpty().withMessage((value, { req }) => {
-                        return req.__('website.required', { value });
-                    }),
+                    body('type').optional(),
+                    body('phone').optional(),
+                    body('email').optional(),
+                    body('website').optional(),
                     body('logo').not().isEmpty().withMessage((value, { req }) => {
                         return req.__('logo.required', { value });
                     }),
@@ -207,18 +167,10 @@ export default {
                     body('name').not().isEmpty().withMessage((value, { req }) => {
                         return req.__('name.required', { value });
                     }),
-                    body('type').not().isEmpty().withMessage((value, { req }) => {
-                        return req.__('type.required', { value });
-                    }),
-                    body('phone').not().isEmpty().withMessage((value, { req }) => {
-                        return req.__('phone.required', { value });
-                    }),
-                    body('email').not().isEmpty().withMessage((value, { req }) => {
-                        return req.__('email.required', { value });
-                    }),
-                    body('website').not().isEmpty().withMessage((value, { req }) => {
-                        return req.__('website.required', { value });
-                    }),
+                    body('type').optional(),
+                    body('phone').optional(),
+                    body('email').optional(),
+                    body('website').optional(),
                     body('logo').not().isEmpty().withMessage((value, { req }) => {
                         return req.__('logo.required', { value });
                     }),
@@ -234,18 +186,10 @@ export default {
                     body('name').not().isEmpty().withMessage((value, { req }) => {
                         return req.__('name.required', { value });
                     }),
-                    body('type').not().isEmpty().withMessage((value, { req }) => {
-                        return req.__('type.required', { value });
-                    }),
-                    body('phone').not().isEmpty().withMessage((value, { req }) => {
-                        return req.__('phone.required', { value });
-                    }),
-                    body('email').not().isEmpty().withMessage((value, { req }) => {
-                        return req.__('email.required', { value });
-                    }),
-                    body('website').not().isEmpty().withMessage((value, { req }) => {
-                        return req.__('website.required', { value });
-                    }),
+                    body('type').optional(),
+                    body('phone').optional(),
+                    body('email').optional(),
+                    body('website').optional(),
                     body('logo').not().isEmpty().withMessage((value, { req }) => {
                         return req.__('logo.required', { value });
                     }),
@@ -378,9 +322,7 @@ export default {
             })
             .custom(async(tickets, { req }) => {
                 for (let val of tickets) {
-                    body('type').not().isEmpty().withMessage((value, { req }) => {
-                        return req.__('type.required', { value });
-                    })
+                    body('type').optional()
                     body('cashPrice').optional().isNumeric().withMessage((value, { req }) => {
                         return req.__('cashPrice.numeric', { value });
                     }),
@@ -698,9 +640,7 @@ export default {
                     body('name').not().isEmpty().withMessage((value, { req }) => {
                         return req.__('name.required', { value });
                     })
-                    body('phone').not().isEmpty().withMessage((value, { req }) => {
-                        return req.__('phone.required', { value });
-                    })
+                    body('phone').optional()
                 }
                 return true;
             }),
